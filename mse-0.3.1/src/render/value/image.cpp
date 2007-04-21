@@ -1,0 +1,111 @@
+//+----------------------------------------------------------------------------+
+//| Description:  Magic Set Editor - Program to make Magic (tm) cards          |
+//| Copyright:    (C) 2001 - 2007 Twan van Laarhoven                           |
+//| License:      GNU General Public License 2 or later (see file COPYING)     |
+//+----------------------------------------------------------------------------+
+
+// ----------------------------------------------------------------------------- : Includes
+
+#include <render/value/image.hpp>
+#include <render/card/viewer.hpp>
+#include <data/set.hpp>
+#include <data/stylesheet.hpp>
+#include <gui/util.hpp>
+
+// ----------------------------------------------------------------------------- : ImageValueViewer
+
+void ImageValueViewer::draw(RotatedDC& dc) {
+	drawFieldBorder(dc);
+	// try to load image
+	if (!bitmap.Ok() && !value().filename.empty()) {
+		try {
+			InputStreamP image_file = getSet().openIn(value().filename);
+			Image image;
+			if (image.LoadFile(*image_file)) {
+				image.Rescale((int)dc.trS(style().width), (int)dc.trS(style().height));
+				// apply mask to image
+				loadMask(dc);
+				if (alpha_mask) alpha_mask->setAlpha(image);
+				bitmap = Bitmap(image);
+			}
+		} catch (Error e) {
+			handle_error(e, false, false); // don't handle now, we are in onPaint
+		}
+	}
+	// if there is no image, generate a placeholder, only if there is enough room for it
+	if (!bitmap.Ok() && style().width > 40) {
+		bitmap = imagePlaceholder(dc, (int)dc.trS(style().width), (int)dc.trS(style().height), viewer.drawEditing());
+		loadMask(dc);
+		if (alpha_mask) alpha_mask->setAlpha(bitmap);
+	}
+	// draw image, if any
+	if (bitmap.Ok()) {
+		dc.DrawBitmap(bitmap, style().getPos());
+	}
+}
+
+bool ImageValueViewer::containsPoint(const RealPoint& p) const {
+	double x = p.x - style().left;
+	double y = p.y - style().top;
+	if (x < 0 || y < 0 || x >= style().width || y >= style().height) {
+		return false; // outside rectangle
+	}
+	// check against mask
+	if (!style().mask_filename().empty()) {
+		loadMask(viewer.getRotation());
+		return !alpha_mask || !alpha_mask->isTransparent((int)x, (int)y);
+	} else {
+		return true;
+	}
+}
+
+void ImageValueViewer::onValueChange() {
+	bitmap = Bitmap();
+}
+
+void ImageValueViewer::onStyleChange() {
+	bitmap = Bitmap();
+	alpha_mask = AlphaMaskP();
+}
+
+void ImageValueViewer::loadMask(const Rotation& rot) const {
+	if (style().mask_filename().empty()) return; // no mask
+	int w = (int) rot.trS(style().width), h = (int) rot.trS(style().height);
+	if (alpha_mask && alpha_mask->size == wxSize(w,h)) return; // mask loaded and right size
+	// (re) load the mask
+	Image image;
+	InputStreamP image_file = viewer.stylesheet->openIn(style().mask_filename);
+	if (image.LoadFile(*image_file)) {
+		Image resampled(w,h);
+		resample(image, resampled);
+		alpha_mask = new_shared1<AlphaMask>(resampled);
+	}
+}
+
+Bitmap ImageValueViewer::imagePlaceholder(const Rotation& rot, UInt w, UInt h, bool editing) {
+	// Bitmap and memory dc
+	Bitmap bmp(w, h, 24);
+	wxMemoryDC mdc;
+	mdc.SelectObject(bmp);
+	RealRect rect(0,0,w,h);
+	RotatedDC dc(mdc, 0, rect, 1.0, QUALITY_AA);
+	// Draw checker background
+	draw_checker(dc, rect);
+	// Draw text
+	if (editing) {
+		// only when in editor mode
+		for (UInt size = 12 ; size > 2 ; --size) {
+			dc.SetFont(wxFont(size, wxSWISS, wxNORMAL, wxNORMAL));
+			RealSize rs = dc.GetTextExtent(_("double click to load image"));
+			if (rs.width <= w - 10 && rs.height < h - 10) {
+				// text fits
+				dc.SetTextForeground(*wxBLACK);
+				dc.DrawText(_("double click to load image"), align_in_rect(ALIGN_MIDDLE_CENTER, rs, rect));
+				break;
+			}
+		}
+	}
+	// Done
+	mdc.SelectObject(wxNullBitmap);
+	return bmp;
+}
