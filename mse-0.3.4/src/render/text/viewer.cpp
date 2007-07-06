@@ -1,0 +1,594 @@
+//+----------------------------------------------------------------------------+
+//| Description:  Magic Set Editor - Program to make Magic (tm) cards          |
+//| Copyright:    (C) 2001 - 2007 Twan van Laarhoven                           |
+//| License:      GNU General Public License 2 or later (see file COPYING)     |
+//+----------------------------------------------------------------------------+
+
+// ----------------------------------------------------------------------------- : Includes
+
+#include <render/text/viewer.hpp>
+#include <algorithm>
+
+DECLARE_TYPEOF_COLLECTION(TextViewer::Line);
+DECLARE_TYPEOF_COLLECTION(double);
+
+// ----------------------------------------------------------------------------- : Line
+
+struct TextViewer::Line {
+	size_t         start;		///< Index of the first character in this line
+	vector<double> positions;	///< x position of each character in this line, gives the number of characters + 1, never empty
+	double         top;			///< y position of (the top of) this line
+	double         line_height;	///< The height of this line in pixels
+	bool           separator_after;	///< Is there a saparator after this line?
+	
+	Line()
+		: start(0), top(0), line_height(0), separator_after(false)
+	{}
+	
+	/// The position (just beyond) the bottom of this line
+	double bottom() const { return top + line_height; }
+	/// The width of this line
+	double width()  const { return positions.back() - positions.front(); }
+	/// Index just beyond the last character on this line
+	size_t end() const { return start + positions.size() - 1; }
+	/// Find the index of the character at the given position on this line
+	/** Always returns a value in the range [start..end()] */
+	size_t posToIndex(double x) const;
+	
+	/// Is this line visible using the given rectangle?
+	bool visible(const Rotation& rot) const {
+		return top + line_height > 0 && top < rot.getInternalSize().height;
+	}
+	
+	/// Draws a selection indicator on this line from start to end
+	/** start and end need not be in this line */
+	void drawSelection(RotatedDC& dc, size_t start, size_t end);
+};
+
+size_t TextViewer::Line::posToIndex(double x) const {
+	// largest index with pos <= x
+	vector<double>::const_iterator it2 = lower_bound(positions.begin(), positions.end(), x);
+	if (it2 == positions.begin()) return start;
+	if (it2 == positions.end()) --it2; // we don't want to find the position beyond the end
+	// first index with pos > x
+	vector<double>::const_iterator it1 = it2 - 1;
+	if (x - *it1 <= *it2 - x) return it1 - positions.begin() + start; // it1 is closer
+	else                      return it2 - positions.begin() + start; // it2 is closer
+}
+
+// ----------------------------------------------------------------------------- : TextViewer
+
+// can't be declared in header because we need to know sizeof(Line)
+TextViewer:: TextViewer() {}
+TextViewer::~TextViewer() {}
+
+// ----------------------------------------------------------------------------- : Drawing
+
+void TextViewer::draw(RotatedDC& dc, const TextStyle& style, DrawWhat what) {
+	assert(!lines.empty());
+	Rotater r(dc, style.getRotation());
+	// separator lines?
+	// do this first, so pen is still set from drawing the field border
+	if (what & DRAW_BORDERS) {
+		drawSeparators(dc);
+	}
+	// Draw the text, line by line
+	FOR_EACH(l, lines) {
+		if (l.visible(dc)) {
+			if (justifying) {
+				// Draw characters separatly
+				for (size_t i = 0 ; i < l.positions.size() - 1 ; ++i) {
+					RealRect rect(l.positions[i], l.top, l.positions[i+1] - l.positions[i] , l.line_height);
+					elements.draw(dc, scale, rect, &l.positions[i], what, l.start + i, l.start + i + 1);
+				}
+			} else {
+				RealRect rect(l.positions.front(), l.top, l.width(), l.line_height);
+				elements.draw(dc, scale, rect, &*l.positions.begin(), what, l.start, l.end());
+			}
+		}
+	}
+}
+
+void TextViewer::drawSelection(RotatedDC& dc, const TextStyle& style, size_t sel_start, size_t sel_end) {
+	Rotater r(dc, style.getRotation());
+	if (sel_start == sel_end) return;
+	if (sel_end < sel_start) swap(sel_start, sel_end);
+	dc.SetBrush(*wxBLACK_BRUSH);
+	dc.SetPen(*wxTRANSPARENT_PEN);
+	dc.SetLogicalFunction(wxINVERT);
+	FOR_EACH(l, lines) {
+		l.drawSelection(dc, sel_start, sel_end);
+	}
+	dc.SetLogicalFunction(wxCOPY);
+}
+
+void TextViewer::Line::drawSelection(RotatedDC& dc, size_t sel_start, size_t sel_end) {
+	if (!visible(dc)) return;
+	if (sel_start < end() && sel_end > start) {
+		double x1 = positions[max(start, sel_start) - start];
+		double x2 = positions[min(end(), sel_end)   - start];
+		dc.DrawRectangle(RealRect(x1, top, x2 - x1, line_height));
+	}
+}
+
+void TextViewer::drawSeparators(RotatedDC& dc) {
+	// separator lines
+	bool separator = false;
+	double y = 0;
+	FOR_EACH(l, lines) {
+		double y2 = l.top + l.line_height;
+		if (separator && l.visible(dc)) {
+			// between the two lines
+			y = (y + l.top) / 2;
+			dc.DrawLine(RealPoint(0, y), RealPoint(dc.getInternalRect().width, y));
+		}
+		separator = l.separator_after;
+		y = y2;
+	}
+	// separator at the end?
+	if (separator) {
+		dc.DrawLine(RealPoint(0, y), RealPoint(dc.getInternalRect().width, y));
+	}
+}
+
+bool TextViewer::prepare(RotatedDC& dc, const String& text, TextStyle& style, Context& ctx) {
+	if (lines.empty()) {
+		// not prepared yet
+		Rotater r(dc, style.getRotation());
+		prepareElements(text, style, ctx);
+		prepareLines(dc, text, style, ctx);
+		return true;
+	} else {
+		return false;
+	}
+}
+void TextViewer::reset() {
+	elements.clear();
+	lines.clear();
+}
+bool TextViewer::prepared() const {
+	return !lines.empty();
+}
+
+// ----------------------------------------------------------------------------- : Positions
+
+const TextViewer::Line& TextViewer::findLine(size_t index) const {
+	FOR_EACH_CONST(l, lines) {
+		if (l.end() >= index) return l;
+	}
+	return lines.front();
+}
+
+size_t TextViewer::moveLine(size_t index, int delta) const {
+	if (lines.empty()) return index;
+	const Line* line1 = &findLine(index);
+	const Line* line2 = line1 + delta;
+	if (line2 >= &lines.front() && line2 <= &lines.back()) {
+		size_t idx = index - line1->start;
+		if (idx < 0 || idx >= line1->positions.size()) return index; // can't move
+		return line2->posToIndex(line1->positions[idx]); // character at the same position
+	} else {
+		return index; // can't move
+	}
+}
+
+size_t TextViewer::lineStart(size_t index) const {
+	if (lines.empty()) return 0;
+	return findLine(index).start;
+}
+
+size_t TextViewer::lineEnd(size_t index) const {
+	if (lines.empty()) return 0;
+	return findLine(index).end();
+}
+
+struct CompareTop {
+	inline bool operator () (const TextViewer::Line& l, double y) const { return l.top < y; }
+	inline bool operator () (double y, const TextViewer::Line& l) const { return y < l.top; }
+};
+size_t TextViewer::indexAt(const RealPoint& pos) const {
+	// 1. find the line
+	if (lines.empty()) return 0;
+	vector<Line>::const_iterator l = lower_bound(lines.begin(), lines.end(), pos.y, CompareTop());
+	if (l != lines.begin()) l--;
+	assert(l != lines.end());
+	// 2. find char on line
+	return l->posToIndex(pos.x);
+}
+
+RealRect TextViewer::charRect(size_t index) const {
+	if (lines.empty()) return RealRect(0,0,0,0);
+	const Line& l = findLine(index);
+	size_t pos = index - l.start;
+	if (pos + 1 >= l.positions.size()) {
+		return RealRect(l.positions.back(), l.top, 0, l.line_height);
+	} else {
+		return RealRect(l.positions[pos], l.top, l.positions[pos + 1] - l.positions[pos], l.line_height);
+	}
+}
+
+bool TextViewer::isVisible(size_t index) const {
+	if (lines.empty()) return false;
+	const Line& l = findLine(index);
+	size_t pos = index - l.start;
+	if (pos >= l.positions.size()) {
+		return false;
+	} else if (pos + 1 == l.positions.size()) {
+		return true; // last char of the line
+	} else {
+		return l.positions[pos + 1] - l.positions[pos] > 0.0001;
+	}
+}
+size_t TextViewer::firstVisibleChar(size_t index, int delta) const {
+	if (lines.empty()) return index;
+	const Line* l = &findLine(index);
+	while (true) {
+		int pos = (int)(index - l->start);
+		while (index == l->end() || (pos + delta >= 0 && (size_t)pos + delta < l->positions.size())) {
+			if (index == l->end() || l->positions[pos + 1] - l->positions[pos] > 0.0001) {
+				return index;
+			}
+			pos   += delta;
+			index += delta;
+		}
+		// move to another line, if not at start/end
+		if (l + delta < &lines.front()) return 0;
+		if (l + delta > &lines.back())  return l->end();
+		index += delta;
+		l     += delta;
+	}
+}
+
+double TextViewer::heightOfLastLine() const {
+	if (lines.empty()) return 0;
+	return lines.back().line_height;
+}
+
+// ----------------------------------------------------------------------------- : Scrolling
+
+size_t TextViewer::lineCount() const {
+	return lines.size();
+}
+size_t TextViewer::visibleLineCount(double height) const {
+	size_t count = 0;
+	FOR_EACH_CONST(l, lines) {
+		if (l.top + l.line_height > height) return count;
+		if (l.top >= 0) ++count;
+	}
+	return count;
+}
+size_t TextViewer::firstVisibleLine() const {
+	size_t i = 0;
+	FOR_EACH_CONST(l, lines) {
+		if (l.top >= 0) return i;
+		i++;
+	}
+	return 0; //no visible lines
+}
+
+void TextViewer::scrollTo(size_t line_id) {
+	scrollBy(-lines.at(line_id).top);
+}
+void TextViewer::scrollBy(double delta) {
+	if (delta == 0) return;
+	FOR_EACH(l, lines) {
+		l.top += delta;
+	}
+}
+
+bool TextViewer::ensureVisible(double height, size_t char_id) {
+	const Line& line = findLine(char_id);
+	if (line.top < 0) {
+		// scroll up
+		scrollBy(-line.top);
+		return true;
+	} else if (line.bottom() > height) {
+		// scroll down
+		FOR_EACH(l, lines) {
+			if (l.top > 0) scrollBy(-l.line_height); // scroll down a single line ...
+			if (line.bottom() <= height) break;      // ... until we can see the current line
+		}
+		return true;
+	} else {
+		return false; // line was already visible
+	}
+}
+
+double TextViewer::getExactScrollPosition() const {
+	if (lines.empty()) return 0;
+	return -lines.front().top;
+}
+void TextViewer::setExactScrollPosition(double pos) {
+	if (lines.empty()) return; // no scrolling is needed
+	pos += lines.front().top;
+	scrollBy(-pos);
+}
+
+// ----------------------------------------------------------------------------- : Elements
+
+void TextViewer::prepareElements(const String& text, const TextStyle& style, Context& ctx) {
+	if (style.always_symbol) {
+		elements.elements.clear();
+		elements.elements.push_back(new_intrusive5<SymbolTextElement>(text, 0, text.size(), style.symbol_font, &ctx));
+	} else {
+		elements.fromString(text, 0, text.size(), style, ctx);
+	}
+}
+
+
+// ----------------------------------------------------------------------------- : Layout
+
+void TextViewer::prepareLines(RotatedDC& dc, const String& text, TextStyle& style, Context& ctx) {
+	// try to layout, at different scales
+	vector<CharInfo> chars;
+	scale = 1;
+	double min_scale = elements.minScale();
+	double scale_step = max(0.05,elements.scaleStep());
+	while (true) {
+		double next_scale = scale - scale_step;
+		bool   last = next_scale < min_scale;
+		// fits?
+		chars.clear();
+		elements.getCharInfo(dc, scale, 0, text.size(), chars);
+		bool fits = prepareLinesScale(dc, chars, style, last);
+		if (fits && (lines.empty() || lines.back().bottom() <= dc.getInternalSize().height - style.padding_bottom)) {
+			break; // text fits in box
+		}
+		if (last) break;
+		// TODO: smarter iteration
+		scale = next_scale;
+	}
+	
+	/*
+	double scale_1 = 1.
+	double fit_1   = fitLines(dc, text, style, scale_1);
+	if (fit_1 <= 0 || scale_1 >= scale_2) {
+		// ok
+	} else {
+		// find best text size, using the 'false position' root finding method
+		double scale_2 = elements.minScale();
+		double fit_2   = fitLines(dc, text, style, scale_2);
+		if (fit_2 > 0) {
+			// still doesn't fit at smallest size
+		} else {
+			// invariant: fit_1 > 0 && fit_2 <= 0
+			while (abs(scale_2 - scale_1) > 0.01) {
+				double scale_3 = scale_2 - fit_2 * (scale_2 - scale_1)/(fit_2 - fit_1);
+				double fit_3 = fitLines(dc, text, style, scale_3);
+				if (fit_3 > 0) {
+					scale_2 = scale_3;
+					fit_2   = fit_3;
+				} else {
+					scale_2 = scale_3;
+					fit_2   = fit_3;
+				}
+			}
+		}
+	}
+	
+	// returns negative values if it fits, positive if it doesn't
+	*/
+	
+	// store information about the content/layout, allow this to change alignment
+	style.content_width  = 0;
+	FOR_EACH(l, lines) {
+		style.content_width = max(style.content_width, l.width());
+	}
+	style.content_height = 0;
+	FOR_EACH_REVERSE(l, lines) {
+		style.content_height = l.top + l.line_height;
+		if (l.line_height) break; // not an empty line
+	}
+	style.content_lines = (int)lines.size();
+	style.alignment.update(ctx); // allow this to affect the alignment
+	
+	// no text, find a dummy height for the single line we have
+	if (lines.size() == 1 && lines[0].width() < 0.0001) {
+		if (style.always_symbol && style.symbol_font.valid()) {
+			lines[0].line_height = style.symbol_font.font->defaultSymbolSize(style.symbol_font.size).height;
+		} else {
+			dc.SetFont(style.font, scale);
+			lines[0].line_height = dc.GetCharHeight();
+		}
+	}
+	
+	// align
+	alignLines(dc, chars, style);
+	
+	// HACK : fix empty first line before <line>, do this after align, so layout is not affected
+	if (lines.size() > 1 && lines[0].line_height == 0) {
+		dc.SetFont(style.font, scale);
+		double h = dc.GetCharHeight();
+		lines[0].line_height =  h;
+		lines[0].top         -= h;
+	}
+}
+
+bool TextViewer::prepareLinesScale(RotatedDC& dc, const vector<CharInfo>& chars, const TextStyle& style, bool stop_if_too_long) {
+	// Try to layout the text at the current scale
+	// first line
+	lines.clear();
+	Line line;
+	line.top = style.padding_top;
+	// size of the line so far
+	RealSize line_size(lineLeft(dc, style, 0), 0);
+	line.positions.push_back(line_size.width);
+	// The word we are currently reading
+	RealSize       word_size;
+	vector<double> positions_word; // positios for this word
+	size_t         word_start = 0;
+	// For each character ...
+	for(size_t i = 0 ; i < chars.size() ; ++i) {
+		const CharInfo& c = chars[i];
+		// Should we break?
+		bool   break_now    = false;
+		bool   accept_word  = false; // the current word should be added to the line
+		bool   hide_breaker = true;  // hide the \n or _(' ') that caused a line break
+		double line_height_multiplier = 1; // multiplier for line height for next line top
+		if (c.break_after == BREAK_SOFT) {
+			break_now   = true;
+			accept_word = true;
+			line_height_multiplier = style.line_height_soft;
+		} else if (c.break_after == BREAK_HARD) {
+			break_now   = true;
+			accept_word = true;
+			line_height_multiplier = style.line_height_hard;
+		} else if (c.break_after == BREAK_LINE) {
+			line.separator_after = true;
+			break_now   = true;
+			accept_word = true;
+			line_height_multiplier = style.line_height_line;
+		} else if (c.break_after == BREAK_SPACE && style.field().multi_line) {
+			// Soft break == end of word
+			accept_word = true;
+		} else if (c.break_after == BREAK_MAYBE && style.direction == TOP_TO_BOTTOM) {
+			break_now   = true;
+			accept_word = true;
+			hide_breaker = false;
+			line_height_multiplier = style.line_height_soft;
+		}
+		// Add size of the character
+		if (c.break_after != BREAK_LINE) {
+			// ^^ HACK: don't count the line height of <line> tags, if they are the only thing on a line
+			//          then the linebreak is 'ignored'.
+			word_size = add_horizontal(word_size, c.size);
+		}
+		positions_word.push_back(word_size.width);
+		// Did the word become too long?
+		if (style.field().multi_line && !break_now) {
+			double max_width = lineRight(dc, style, line.top);
+			if (word_start == line.start && word_size.width > max_width) {
+				// single word on this line; the word is too long
+				if (stop_if_too_long) {
+					return false; // just give up
+				} else {
+					// force a word break
+					break_now = true;
+					accept_word = true;
+					hide_breaker = false;
+					line_height_multiplier = style.line_height_soft;
+				}
+			} else if (line_size.width + word_size.width > max_width) {
+				// line would become too long, break before the current word
+				break_now = true;
+				line_height_multiplier = style.line_height_soft;
+			}
+		}
+		// Ending the current word
+		if (accept_word) {
+			// move word pos to line
+			FOR_EACH(p, positions_word) {
+				line.positions.push_back(line_size.width + p);
+			}
+			// add size; next word
+			line_size = add_horizontal(line_size, word_size);
+			word_size = RealSize(0, 0);
+			word_start = i + 1;
+			positions_word.clear();
+		}
+		// Breaking (ending the current line)
+		if (break_now) {
+			// remove the _('\n') or _(' ') that caused the break
+			if (hide_breaker && line.positions.size() > 1) {
+				line.positions.pop_back();
+			}
+			// height of the line
+			if (line_size.height < 0.01 && !lines.empty()) {
+				// if a line has 0 height, use the height of the line above it, but at most once
+			} else {
+				line.line_height = line_size.height;
+			}
+			// push
+			lines.push_back(line);
+			// reset line object for next line
+			line.top += line.line_height * line_height_multiplier;
+			line.start = word_start;
+			line.positions.clear();
+			if (line.separator_after) line.line_height = 0;
+			line.separator_after = false;
+			// reset line_size
+			line_size = RealSize(lineLeft(dc, style, line.top), 0);
+			while (line.top < style.height && line_size.width + 1 >= style.width - style.padding_right) {
+				// nothing fits on this line, move down one pixel
+				line.top += 1;
+				line_size = RealSize(lineLeft(dc, style, line.top), 0);
+			}
+			line.positions.push_back(line_size.width); // start position
+		}
+	}
+	// the last word
+	FOR_EACH(p, positions_word) {
+		line.positions.push_back(line_size.width + p);
+	}
+	line_size = add_horizontal(line_size, word_size);
+	// the last line
+	if (line_size.height < 0.01 && !lines.empty()) {
+		// if a line has 0 height, use the height of the line above it, but at most once
+	} else {
+		line.line_height = line_size.height;
+	}
+	lines.push_back(line);
+	return true;
+}
+
+double TextViewer::lineLeft(RotatedDC& dc, const TextStyle& style, double y) {
+	return style.mask.rowLeft(y, dc.getInternalSize()) + style.padding_left;
+}
+double TextViewer::lineRight(RotatedDC& dc, const TextStyle& style, double y) {
+	return style.mask.rowRight(y, dc.getInternalSize()) - style.padding_right;
+}
+
+void TextViewer::alignLines(RotatedDC& dc, const vector<CharInfo>& chars, const TextStyle& style) {
+	if (style.alignment == ALIGN_TOP_LEFT) return;
+	// Find height of the text, don't count the last lines if they are empty
+	double height = 0;
+	FOR_EACH_REVERSE(l, lines) {
+		height = l.top + l.line_height;
+		if (l.line_height) break; // not an empty line
+	}
+	// amount to shift all lines vertically
+	RealSize s = add_diagonal(
+					dc.getInternalSize(),
+					-RealSize(style.padding_left+style.padding_right, style.padding_top + style.padding_bottom));
+	double vdelta = align_delta_y(style.alignment, s.height, height);
+	// align all lines
+	FOR_EACH(l, lines) {
+		l.top += vdelta;
+		// amount to shift all characters horizontally
+		double width = l.positions.back();
+		if ((style.alignment & ALIGN_JUSTIFY) ||
+			(style.alignment & ALIGN_JUSTIFY_OVERFLOW && width > s.width)) {
+			// justify text
+			justifying = true;
+			double hdelta = s.width - width;         // amount of space to distribute
+			int count = (int)l.positions.size() - 1; // distribute it among this many characters
+			if (count == 0) count = 1;               // prevent div by 0
+			int i = 0;
+			FOR_EACH(c, l.positions) {
+				c += hdelta * i++ / count;
+			}
+		} else if (style.alignment & ALIGN_JUSTIFY_WORDS) {
+			// justify text, by words
+			justifying = true;
+			double hdelta = s.width - width;         // amount of space to distribute
+			int count = 0;                           // distribute it among this many words
+			for (size_t k = l.start + 1 ; k < l.end() - 1 ; ++k) {
+				if (chars[k].break_after == BREAK_SPACE) ++count;
+			}
+			if (count == 0) count = 1;               // prevent div by 0
+			int i = 0; size_t j = l.start;
+			FOR_EACH(c, l.positions) {
+				c += hdelta * i / count;
+				if (j < l.end() && chars[j++].break_after == BREAK_SPACE) i++;
+			}
+		} else {
+			// simple alignment
+			justifying = false;
+			double hdelta = align_delta_x(style.alignment, s.width, width);
+			FOR_EACH(c, l.positions) {
+				c += hdelta;
+			}
+		}
+	}
+	// TODO : work well with mask
+}

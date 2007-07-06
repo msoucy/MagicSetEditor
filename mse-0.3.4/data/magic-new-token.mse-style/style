@@ -1,0 +1,376 @@
+mse version: 0.3.4
+game: magic
+short name: Tokens
+full name: Modern style
+icon: card-sample.png
+position hint: 010
+version: 2007-06-27
+depends on:
+	package: magic.mse-game
+	version: 2007-05-05
+
+card width: 375
+card height: 523
+card dpi: 150
+
+#error list:
+############################################################## Extra scripts
+
+init script:
+	# Load scripts for default images
+	include file: magic-default-image.mse-include/scripts
+		
+	# What should the textbox look like?
+	text_shape := {
+		if card.rule_text == ""
+		   and card.flavor_text == "<i-flavor></i-flavor>" then "0" # no textbox
+		else if styling.one_textline_tokens
+		   and card_style.text.content_lines == 2
+		   and card.flavor_text == "<i-flavor></i-flavor>" then "1" # small textbox
+		else "2" # large textbox
+	}
+	
+	artifact_template := {
+		if input == "a" and styling.artifact_style == "light" then "oa"
+		else input
+	}
+	
+	template      := { artifact_template() + "{type}.jpg" }
+	land_template := { "c{type}.jpg" }
+	colored_lands := false
+		
+	# Use the normal tap symbol
+	mana_t := {
+		if      styling.tap_symbol == "old"        then "old"
+		else if styling.tap_symbol == "diagonal T" then "older"
+		else                                            "new"
+	}
+	
+	# Use guild mana symbols?
+	guild_mana := { styling.use_guild_mana_symbols }
+	
+	# We have no land template
+	font_colors_white := { input == "b" }
+
+	
+############################################################## Set info fields
+
+############################################################## Extra style
+
+styling field:
+	type: choice
+	name: artifact style
+	description: Choose the style of artifacts: light = before Fifth Dawn, dark = used since Fifth Dawn
+	initial: dark
+	choice: light
+	choice: dark
+styling field:
+	type: boolean
+	name: use guild mana symbols
+	description: Use the Ravnica guild symbols instead of the official half/half circles for hybrid mana.
+	initial: no
+styling field:
+	type: boolean
+	name: popup mana symbols
+	description: Use the symbols of the casting cost line inside the text box as well
+	initial: no
+styling field:
+	type: boolean
+	name: one textline tokens
+	description: Should token frames with a single line for text be enabled?
+	initial: no
+styling field:
+	type: choice
+	name: tap symbol
+	description: What tap symbol should be used on cards?
+	initial: modern
+	choice: modern
+	choice: old
+	choice: diagonal T
+
+styling style:
+	artifact style:
+		render style: both
+		choice images:
+			light: oacard0.jpg
+			dark:  acard0.jpg
+	popup mana symbols:
+		choice images:
+			yes: /magic-mana-large.mse-symbol-font/mana_w.png
+			no:  /magic-mana-small.mse-symbol-font/mana_w.png
+	use guild mana symbols:
+		choice images:
+			yes: /magic-mana-small.mse-symbol-font/mana_guild_rg.png
+			no:  /magic-mana-small.mse-symbol-font/mana_rg.png
+	tap symbol:
+		render style: both
+		choice images:
+			modern:     /magic-mana-large.mse-symbol-font/mana_t.png
+			old:        /magic-mana-large.mse-symbol-font/mana_t_old.png
+			diagonal T: /magic-mana-large.mse-symbol-font/mana_t_older.png
+
+############################################################## Card fields
+card style:
+	############################# Background stuff
+	border color:
+		left: 0
+		top : 0
+		width:	375
+		height:	523
+		radius: 18
+		left width:   17
+		right width:  17
+		top width:    17
+		bottom width: 18
+		z index: -1
+	card color:
+		left:	0
+		top:	0
+		width:	375
+		height:	523
+		z index: -2
+		render style: image
+		popup style: in place
+		image: { color_background(type:"card" + text_shape(), base_hybrid:card_hybrid) }
+
+	###################C######### Name line
+	name:
+		left: 50
+		top: 25
+		width: 275
+		height: 28
+		alignment: bottom center shrink-overflow
+		padding bottom: -2
+		padding top: 2
+		z index: 3
+		symbol font:
+			name: magic-embossedletters
+			size: 22
+			alignment: bottom center
+		always symbol: true
+
+	############################# Image
+	image:
+		left:	30
+		top: { if text_shape() == 2 then 58 else 59 }
+		width:	315
+		height:
+			{ if      text_shape() == "0" then 366
+			  else if text_shape() == "1" then 349
+			  else                             288 }
+		mask: { "imagemask{text_shape()}.png" }
+		z index: 1
+
+
+	################H############ Card type
+
+	type:
+		left: 35
+		top:
+			{ if      text_shape() == "0" then 432
+			  else if text_shape() == "1" then 414
+			  else                             353 }
+		width: 286
+		height: 20
+		alignment: top shrink-overflow
+		z index: 1
+		padding top: 2
+		padding bottom: 4
+		padding right: 2
+		font:
+			name: Matrix
+			size: 15
+			color: rgb(0,0,0)
+			separator color: rgb(128,128,128)
+
+	rarity:
+		left: 320
+		top:
+			{ if      text_shape() == "0" then 432
+			  else if text_shape() == "1" then 414
+			  else                             353 }
+		width: 22
+		height: 22
+		z index: 1
+		render style: image
+		choice images:
+			# Images based on the set symbol
+			basic land: script: symbol_variation(symbol: set.symbol, variation: "common")
+			common:     script: symbol_variation(symbol: set.symbol, variation: "common")
+			uncommon:   script: symbol_variation(symbol: set.symbol, variation: "uncommon")
+			rare:       script: symbol_variation(symbol: set.symbol, variation: "rare")
+			special:    script: symbol_variation(symbol: set.symbol, variation: "special")
+
+	############################# Text box
+	text:
+		left: 31
+		top:
+			{ if      text_shape() == "0" then 300
+			  else if text_shape() == "1" then 444
+			  else                             388 }
+		width: 311
+		height: 
+			{ if   text_shape() == "1" then 22
+			  else                          80 }
+		font:
+			name: MPlantin
+			italic name: MPlantin-Italic
+			size: 15
+			scale down to: 15
+			color: rgb(0,0,0)
+		symbol font:
+			name:
+				script:
+					if styling.popup_mana_symbols
+					then "magic-mana-large"
+					else "magic-mana-small"
+			size: 14
+		alignment:
+			script:
+				if card_style.text.content_lines == 2 and
+				   not contains(match:",", card.rule_text) and
+				   not contains(match: ".", card.rule_text) and
+				   not contains(match: ";", card.rule_text) and
+				   not contains(match: ":", card.rule_text) and
+				   not contains (match: "!", card.rule_text) and
+				   not contains (match: "?", card.rule_text) and
+				   card.flavor_text == "<i-flavor></i-flavor>"
+				then "middle center"
+				else "middle left"
+		z index: 2
+		padding left:   6
+		padding top:    2
+		padding right:  4
+		padding bottom: 2
+		line height hard: 1.2
+		line height line: 1.5
+
+	############################# PT
+	pt:
+		z index: 4
+		left:
+			{ if text_shape() == "2" then 288
+			  else                        284 }
+		top:
+			{ if text_shape() == "2" then 472
+			  else                        467 }
+		width:	60
+		height:	28
+		alignment: center middle shrink-overflow
+		font:
+			name: Mplantin
+			size: 16
+			weight: bold
+			color: rgb(0,0,0)
+			separator color: rgb(200,0,0)
+
+	############################# Copyright stuff
+
+	illustrator:
+		left: 27
+		top : 481
+		width: 246
+		height: 16
+		z index: 2
+		font:
+			name: Matrix
+			size: 11
+			weight: bold
+			color: { font_color(card.card_color) }
+		symbol font:
+			name: magic-paintbrush
+			size: 10.5
+
+	copyright line:
+		left: 30
+		top : 493
+		width: 247
+		height: 12
+		z index: 2
+		font:
+			name: MPlantin
+			size: 6.5
+			color: { font_color(card.card_color) }
+
+############################################################## Extra card fields
+
+extra card field:
+	type: choice
+	name: pt box
+	script: card.card_color
+	editable: false
+	save value: false
+	show statistics: false
+extra card field:
+	type: choice
+	name: name box
+	choice: black
+	editable: false
+	save value: false
+	show statistics: false
+extra card field:
+	type: choice
+	name: name box left
+	choice: black
+	editable: false
+	save value: false
+	show statistics: false
+extra card field:
+	type: choice
+	name: name box right
+	choice: black
+	editable: false
+	save value: false
+	show statistics: false
+
+extra card style:
+	pt box:
+		left:
+			{ if text_shape() == "2" then 275
+			  else                        271 }
+		top:
+			{ if text_shape() == "2" then 463
+			  else                        461 }
+		width:	81
+		height:	42
+		z index: 1
+		visible: { card.pt != "" }
+		render style: image
+		image: { color_background(type:"pt" + text_shape(), base_hybrid:pt_hybrid) }
+
+	name box:
+		left:
+			{ if card_style.name.content_width > 275 then 50
+			   else card_style.name.content_width * -0.5 + 187.5 }
+		top: 26
+		width:
+			{ if card_style.name.content_width > 275 then 275
+			   else card_style.name.content_width }
+		height: 35
+		z index: 2
+		visible: { card.name != "" }
+		render style: image
+		image: name-mid.png
+	name box left:
+		right:
+			{ if card_style.name.content_width > 275 then 50
+			   else card_style.name.content_width * -0.5 + 187.5 }
+		top: 26
+		width: 15
+		height: 35
+		z index: 2
+		visible: { card.name != "" }
+		render style: image
+		image: name-left.png
+	name box right:
+		left:
+			{ if card_style.name.content_width > 275 then 325
+			   else card_style.name.content_width * 0.5 + 187.5 }
+		top: 26
+		width: 14
+		height: 35
+		z index: 2
+		visible: { card.name != "" }
+		render style: image
+		image: name-right.png
+
