@@ -1,0 +1,35 @@
+mse version: 0.3.4
+# Symbol font for level symbols
+
+image font size: 16
+horizontal space: 3
+symbol:
+	code: %
+	image: continuous.png
+symbol:
+	code: !
+	image: counter.png
+symbol:
+	code: +
+	image: equipment.png
+symbol:
+	code: &
+	image: field.png
+symbol:
+	code: $
+	image: quickplay.png
+symbol:
+	code: #
+	image: ritual.png
+symbol:
+	code: [
+	image: leftbracket.png
+	image font size: 28
+symbol:
+	code: ]
+	image: rightbracket.png
+	image font size: 28
+symbol:
+	code: *
+	image: star.png
+	image font size: 20
