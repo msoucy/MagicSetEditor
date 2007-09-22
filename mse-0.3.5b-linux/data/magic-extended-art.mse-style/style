@@ -1,0 +1,307 @@
+﻿mse version: 0.3.4
+game: magic
+full name: Extended Art
+short name: Extended Art
+icon: card-sample.png
+position hint: 006
+
+card width: 375
+card height: 523
+card dpi: 150
+
+# Made by artfreakwiu, edited by Megrin_kai and Pichoro
+############################################################## Extra scripts
+
+init script:
+	# Load scripts for image box
+	include file: magic-default-image.mse-include/scripts
+	
+	# Should hybrids have a grey name?
+	mask_hybrid_with_land := { styling.grey_hybrid_name }
+	
+	# Which artifact template should be used?
+	artifact_template := {
+		if input == "a" and not styling.darker_artifacts
+		then	"oa"
+		else	input
+	}
+	template      := { (if type == "pt" then "/magic-new.mse-style/" else "") + artifact_template() + "{type}.jpg" }
+	land_template := { (if type == "pt" then "/magic-new.mse-style/" else "") +(if input == "a" then "c" else input) + "l{type}.jpg" }
+	
+	# Use the normal tap symbol
+	mana_t := {
+		if      styling.tap_symbol == "old"        then "old"
+		else if styling.tap_symbol == "diagonal T" then "older"
+		else                                            "new"
+	}
+	# Use guild mana symbols?
+	guild_mana := { styling.use_guild_mana_symbols }
+
+############################################################## Set info fields
+set info style:
+	symbol:
+		variation:
+			name: invertedcommon
+			border radius: 0.10
+			fill type: solid
+			fill color:   rgb(255,255,255)
+			border color: rgb(0,0,0)
+
+############################################################## Extra style
+
+styling field:
+	type: boolean
+	name: darker artifacts
+	description: Use darker artifacts, as used by Wizards since Fifth Dawn.
+styling field:
+	type: boolean
+	name: grey hybrid name
+	description: Use a grey background for the name and type line on hybrid cards. This is done on real cards.
+styling field:
+	type: boolean
+	name: use guild mana symbols
+	description: Use the Ravnica guild symbols instead of the official half/half circles for hybrid mana.
+	initial: no
+styling field:
+	type: boolean
+	name: popup mana symbols
+	description: Use the symbols of the casting cost line inside the text box as well
+	initial: no
+styling field:
+	type: choice
+	name: tap symbol
+	description: What tap symbol should be used on cards?
+	initial: modern
+	choice: modern
+	choice: old
+	choice: diagonal T
+styling field:
+	type: choice
+	name: center text
+	description: When to center text (short text only means only on one-line cards with no flavor text)
+	choice: always
+	choice: short text only
+	choice: never
+	initial: never
+styling field:
+	type: boolean
+	name: inverted common symbol
+	description: Should the common rarity symbol be inverted, like in Coldsnap?
+	initial: no
+
+styling style:
+	popup mana symbols:
+		choice images:
+			yes: /magic-mana-large.mse-symbol-font/mana_w.png
+			no:  /magic-mana-small.mse-symbol-font/mana_w.png
+	tap symbol:
+		render style: both
+		choice images:
+			modern:     /magic-mana-large.mse-symbol-font/mana_t.png
+			old:        /magic-mana-large.mse-symbol-font/mana_t_old.png
+			diagonal T: /magic-mana-large.mse-symbol-font/mana_t_older.png
+
+############################################################## Card fields
+card style:
+	############################# Background stuff
+	border color:
+		left: 0
+		top : 0
+		width:	375
+		height:	523
+		radius: 18
+		left width:   17
+		right width:  17
+		top width:    17
+		bottom width: 18
+		z index: -1
+	card color:
+		left:	0
+		top:	0
+		width:	375
+		height:	523
+		z index: -2
+		render style: image
+		popup style: in place
+		image: { card_background() }
+
+	############################# Name line
+	name:
+		left: { if card.card_symbol=="none" then 32 else 51 }
+		top : 30
+		right:  { 341 - card_style.casting_cost.content_width }
+		height: 23
+		alignment: bottom shrink-overflow
+		padding bottom: 0
+		z index: 1
+		font:
+			name: Matrix
+			size: 17
+			weight: bold
+			color: rgb(0,0,0)
+	casting cost:
+		right: 343
+		top : 30
+		width: { max(30, card_style.casting_cost.content_width) + 5 }
+		height: 23
+		alignment: middle right
+		symbol font:
+			name: magic-mana-large
+			size: 15
+			alignment: bottom right
+		always symbol: true
+		z index: 2
+		padding top: 0
+	card symbol:
+		left: { if card.card_symbol=="none" then 20 else 32 }
+		top : 31
+		height: 20
+		width: 14
+		render style: image
+		choice images:
+			tombstone: tombstone.png
+
+	############################# Image
+	image:
+		left:	32
+		top:	62
+		width:	311
+		height:	376
+		z index: 1
+		default: {default_image(card.card_color)}
+
+	############################# Card type
+
+	type:
+		left: 33
+		top : 445
+		width: { 308 - max(22,card_style.rarity.content_width) }
+		height: 18
+		alignment: top shrink-overflow
+		z index: 3
+		font:
+			name: Matrix
+			size: 14
+			color: rgb(0,0,0)
+			separator color: rgb(128,128,128)
+
+	rarity:
+		right: 344
+		top : 445
+		width: 40
+		height: 20
+		z index: 3
+		alignment: middle right
+		render style: image
+		choice images:
+			# Images based on the set symbol
+			basic land:
+				script:
+					if styling.inverted_common_symbol then symbol_variation(symbol: set.symbol, variation: "invertedcommon")
+					else symbol_variation(symbol: set.symbol, variation: "common")
+			common:
+				script:
+					if styling.inverted_common_symbol then symbol_variation(symbol: set.symbol, variation: "invertedcommon")
+					else symbol_variation(symbol: set.symbol, variation: "common")
+			uncommon:   script: symbol_variation(symbol: set.symbol, variation: "uncommon")
+			rare:       script: symbol_variation(symbol: set.symbol, variation: "rare")
+			special:	script: symbol_variation(symbol: set.symbol, variation: "special")
+
+	############################# Text box
+	text:
+		left: 34
+		top : 258
+		width: 311
+		height: 176
+		font:
+			name: MPlantin
+			italic name: MPlantin-Italic
+			size: 12
+			scale down to: 8
+			shadow color: rgb(0,0,0)
+			shadow displacement x: -1
+			shadow displacement y: 1
+			color: rgb(255,255,255)
+		symbol font:
+			name:
+				script:
+					if styling.popup_mana_symbols
+					then "magic-mana-large"
+					else "magic-mana-small"
+			size: 14
+		alignment:
+			script:
+				if (styling.center_text == "short text only" and
+				   not contains(match:"\n", card.rule_text) and
+				   card.flavor_text == "<i-flavor></i-flavor>" and
+				   card_style.text.content_lines <= 2) or
+				   styling.center_text == "always"
+				then "bottom center"
+				else "bottom left"
+		z index: 2
+		padding left:   6
+		padding top:    2
+		padding right:  4
+		padding bottom: 2
+		line height hard: 1.2
+		line height line: 1.5
+		line height soft: 0.9
+
+	############################# PT
+	pt:
+		z index: 4
+		left:	284
+		top:	467
+		width:	60
+		height:	28
+		alignment: center middle
+		font:
+			name: Mplantin
+			size: 16
+			weight: bold
+			color: rgb(0,0,0)
+			separator color: rgb(200,0,0)
+
+	############################# Copyright stuff
+
+	illustrator:
+		left: 56
+		top : 477
+		width: 217
+		height: 13
+		z index: 1
+		font:
+			name: Matrix
+			size: 10
+			color: { font_color(card.card_color) }
+
+	copyright line:
+		left: 26
+		top : 493
+		width: 247
+		height: 12
+		z index: 1
+		font:
+			name: MPlantin
+			size: 6.5
+			color: { font_color(card.card_color) }
+
+############################################################## Extra card fields
+
+extra card field:
+	type: choice
+	name: pt box
+	script: card.card_color
+	editable: false
+
+extra card style:
+	pt box:
+		left:	271
+		top:	461
+		width:	81
+		height:	42
+		z index: 1
+		visible: { card.pt != "" }
+		render style: image
+		mask: mask_pt.png
+		image: { card_ptbox() }
