@@ -1,0 +1,31 @@
+Function: linear_blend
+
+--Usage--
+> linear_blend(
+>    image1: image, image2: image,
+>    x1: coordinate, y1: coordinate,
+>    x2: coordinate, y2: coordinate,
+> )
+
+Blend two images together using a linear gradient.
+
+Coordinates range from 0 to 1, where 0 is the top and the left, and 1 is the right and the bottom.
+So for example a blend from @x1:0, y1:0@ to @x2:0, y2:1@ is from top to bottom.
+
+The images must have the same size.
+
+--Parameters--
+! Parameter	Type			Description
+| @image1@	[[type:image]]		First image to blend
+| @image2@	[[type:image]]		Second image to blend
+| @x1@,@y1@	[[type:double]]		Coordinates where the gradient begins, and the first image is shown for 100%
+| @x2@,@y2@	[[type:double]]		Coordinates where the gradient ends, and the second image is shown for 100%
+
+--Examples--
+This gives a vertical gradient:
+> linear_blend(image1: "image1.png", image2: "image2.png", x1:0, y1:0, x2:0, y2:1)  ==  [[Image]]
+>>> linear_blend(image1: <img src="image1.png" alt='"image1.png"' style="border:1px solid black;vertical-align:middle;margin:1px;" />, image2: <img src="image2.png" alt='"image2.png"' style="border:1px solid black;vertical-align:middle;margin:1px;" />, x1:0, y1:0, x2:1, y2:1) == <img src="image_linear_blend.png" alt='"image_linear_blend.png"' style="border:1px solid black;vertical-align:middle;margin:1px;" />
+
+--See also--
+| [[fun:masked_blend]]		Blend two images together using a third mask image.
+| [[fun:combine_blend]]		Blend two images together using a given [[type:combine|combining mode]].
