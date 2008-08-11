@@ -1,0 +1,73 @@
+﻿
+############################################################## Card pack items
+
+pack item:
+	name: common
+	filter: card.rarity == "common" and card.shape != "token" and card.shape != "rulestip"
+pack item:
+	name: uncommon
+	filter: card.rarity == "uncommon" and card.shape != "token" and card.shape != "rulestip"
+pack item:
+	name: rare
+	filter: card.rarity == "rare" and card.shape != "token" and card.shape != "rulestip"
+pack item:
+	name: special
+	filter: card.rarity == "special" and card.shape != "token" and card.shape != "rulestip"
+pack item:
+	name: basic land
+	filter: card.rarity == "basic land" and card.shape != "token" and card.shape != "rulestip"
+pack item:
+	name: token / rulestip
+	filter: card.shape == "token" or card.shape == "rulestip"
+############################################################## Card packs
+
+pack type:
+	name: tournament pack
+	item:
+		name: rare
+		amount: 3
+	item:
+		name: uncommon
+		amount: 9
+	item:
+		name: common
+		amount: 33
+	item:
+		name: basic land
+		amount: 30
+		type: cyclic
+	item:
+		name: token / rulestip
+pack type:
+	name: booster pack
+	item:
+		name: rare
+		amount: 1
+	item:
+		name: uncommon
+		amount: 3
+	item:
+		name: common
+		amount: 11
+	item:
+		name: token / rulestip
+pack type:
+	name: additional common
+	item:
+		name: common
+pack type:
+	name: additional uncommon
+	item:
+		name: uncommon
+pack type:
+	name: additional rare
+	item:
+		name: rare
+pack type:
+	name: additional special
+	item:
+		name: special
+pack type:
+	name: additional token / rulestip
+	item:
+		name: token / rulestip
