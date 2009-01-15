@@ -1,0 +1,31 @@
+Function: filter_text
+
+--Usage--
+> filter_text(some_string, match: regular expression, in_context: regular expression)
+
+Filter text by only keeping the parts of the input that match the regular expression.
+
+If @in_context@ is given, the context must also match the string where the match is represented as <tt>&lt;match></tt>.
+
+When the @filter_text@ is used many times with the same @match@ or @in_context@ values it is more efficient to declare these as default arguments:
+> my_filter := filter_text@(match: "something")
+> my_filter("input") # called many times
+This way the regular expression is only compiled once.
+
+--Parameters--
+! Parameter	Type			Description
+| @input@	[[type:string]]		String to replace in.
+| @match@	[[type:regex]]		Regular expression to match.
+| @in_context@	[[type:regex]] (optional)	Context to match
+
+--Examples--
+> filter_text(match: "a", "banana")  ==  "aaa"
+> filter_text(match: ".", in_context:"a<match>", "banana")  ==  "nn"
+> filter_text(match: "[xy]", "xyz")  ==  "xy"
+>
+> f := filter_text@(match: "xx+")
+> f("xyzxxyyzz") == "xx"
+
+--See also--
+| [[fun:break_text]]	Break text into parts each matching a regular expression.
+| [[fun:replace]]	Replace text matching a regular expression.

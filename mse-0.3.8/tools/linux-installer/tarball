@@ -1,0 +1,12 @@
+#!/bin/bash
+# Magic Set Editor installer tarball generator.
+
+mkdir magicseteditor
+mkdir magicseteditor/program
+
+cp -rP ../../data ~/.magicseteditor/resource ../../magicseteditor magicseteditor/program;
+cp install README magicseteditor;
+
+tar -cf magicseteditor.tar.gz --owner root --exclude=.* --exclude=*~ --exclude=.svn magicseteditor;
+
+rm -rf magicseteditor;
