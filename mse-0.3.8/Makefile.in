@@ -338,7 +338,7 @@ AM_CXXFLAGS = @WX_CXXFLAGS@ $(BOOST_CXXFLAGS) -DUNICODE -I . -Wall
 AM_LDFLAGS = @WX_LIBS@ $(BOOST_LDFLAGS)
 magicseteditor_LDADD = $(BOOST_REGEX_LIB)
 
-# The script used to generate is MakeAM.sh
+# The script used to generate is MakeAM.sh 
 magicseteditor_SOURCES = ./src/util/version.cpp \
 	./src/util/alignment.cpp ./src/util/rotation.cpp \
 	./src/util/tagged_string.cpp ./src/util/spell_checker.cpp \
