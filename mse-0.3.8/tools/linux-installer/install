@@ -43,6 +43,6 @@ esac;
 echo "Installing...";
 
 mkdir "$INSTALL_DIR";
-cp -r program/* "$INSTALL_DIR";
+cp -r program/* "$INSTALL_DIR";s
 
 ln -s "$INSTALL_DIR/magicseteditor" "$EXEC_SYMLINK"
