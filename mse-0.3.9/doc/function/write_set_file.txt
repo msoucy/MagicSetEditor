@@ -1,0 +1,25 @@
+Function: write_set_file
+
+DOC_MSE_VERSION: since 0.3.8
+
+--Usage--
+> write_set_file(set:the_set, file: filename)
+
+Write the current set to a file in the output directory.
+If a file with the given name already exists it is overwritten.
+
+Returns the name of the file written.
+
+This function can only be used in an [[type:export template]], when <tt>create directory</tt> is true.
+
+--Parameters--
+! Parameter	Type			Description
+| @set@		[[type:set]]		Set to write to the file.
+| @file@	[[type:string]]		Name of the file to write to
+
+--Examples--
+> write_set_file(file:"the-set.mse-set") == "the-set.mse-set" # the-set.mse-set now contains the set
+
+--See also--
+| [[fun:write_image_file]]	Write an image file to the output directory.
+| [[fun:write_text_file]]	Write a text file to the output directory.
