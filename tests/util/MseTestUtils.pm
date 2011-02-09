@@ -8,7 +8,7 @@ use strict;
 use File::Basename;
 
 # -----------------------------------------------------------------------------
-# Utilities for testing scripts
+# Invoking Magic Set Editor
 # -----------------------------------------------------------------------------
 
 # Find magicseteditor executable
@@ -42,6 +42,10 @@ sub run_script_test {
 	# TODO: diff against expected output?
 	#my $expected = basename($script,".mse-script") . ".out.expected";
 }
+
+# -----------------------------------------------------------------------------
+# Invoking Magic Set Editor
+# -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
 # Dummy sets
