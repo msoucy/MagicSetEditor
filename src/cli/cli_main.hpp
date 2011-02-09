@@ -21,6 +21,11 @@ class CLISetInterface : public SetView {
 	/// The set is optional
 	CLISetInterface(const SetP& set, bool quiet = false);
 	~CLISetInterface();
+	
+	void run_interactive();
+	bool run_script(ScriptP const& script);
+	bool run_script_string(String const& code, bool multiline = false);
+	bool run_script_file(String const& filename);
   protected:
 	virtual void onAction(const Action&, bool) {}
 	virtual void onChangeSet();
@@ -29,7 +34,6 @@ class CLISetInterface : public SetView {
 	bool quiet;    ///< Supress prompts and other non-vital stuff
 	bool running;  ///< Still running?
 	
-	void run();
 	void showWelcome();
 	void showUsage();
 	void handleCommand(const String& command);

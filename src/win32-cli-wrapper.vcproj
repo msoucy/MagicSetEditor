@@ -169,7 +169,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copy to output directory"
-				CommandLine="copy &quot;$(OutDir)\mse.com&quot; &quot;..\build\$(ConfigurationName)\mse.com&quot;&#x0D;&#x0A;copy &quot;$(OutDir)\mse.com&quot; &quot;..\build\$(ConfigurationName) Unicode\mse.com&quot;&#x0D;&#x0A;copy &quot;$(OutDir)\mse.com&quot; &quot;..\build\Release Unicode fast build\mse.com&quot;&#x0D;&#x0A;"
+				CommandLine="copy &quot;$(OutDir)\mse.com&quot; &quot;..\build\$(ConfigurationName)\mse.com&quot;&#x0D;&#x0A;copy &quot;$(OutDir)\mse.com&quot; &quot;..\build\$(ConfigurationName) Unicode\mse.com&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

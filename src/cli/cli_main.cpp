@@ -14,6 +14,9 @@
 #include <script/profiler.hpp>
 #include <data/format/formats.hpp>
 #include <wx/process.h>
+#include <wx/wfstream.h>
+
+String read_utf8_line(wxInputStream& input, bool eat_bom = true, bool until_eof = false);
 
 DECLARE_TYPEOF_COLLECTION(ScriptParseError);
 
@@ -29,7 +32,9 @@ CLISetInterface::CLISetInterface(const SetP& set, bool quiet)
 	ei.allow_writes_outside = true;
 	setExportInfoCwd();
 	setSet(set);
-	run();
+	// show welcome logo
+	if (!quiet) showWelcome();
+	print_pending_errors();
 }
 
 CLISetInterface::~CLISetInterface() {
@@ -72,10 +77,7 @@ void CLISetInterface::setExportInfoCwd() {
 
 // ----------------------------------------------------------------------------- : Running
 
-void CLISetInterface::run() {
-	// show welcome logo
-	if (!quiet) showWelcome();
-	print_pending_errors();
+void CLISetInterface::run_interactive() {
 	// loop
 	running = true;
 	while (running) {
@@ -92,6 +94,52 @@ void CLISetInterface::run() {
 		cli.flush();
 		cli.flushRaw();
 	}
+}
+
+bool CLISetInterface::run_script(ScriptP const& script) {
+	try {
+		WITH_DYNAMIC_ARG(export_info, &ei);
+		Context& ctx = getContext();
+		ScriptValueP result = ctx.eval(*script,false);
+		// show result (?)
+		cli << result->toCode() << ENDL;
+		return true;
+	} CATCH_ALL_ERRORS(true);
+	return false;
+}
+
+bool CLISetInterface::run_script_string(String const& command, bool multiline) {
+	vector<ScriptParseError> errors;
+	ScriptP script = parse(command,nullptr,false,errors);
+	if (errors.empty()) {
+		return run_script(script);
+	} else {
+		FOR_EACH(error,errors) {
+			if (multiline) {
+				cli.show_message(MESSAGE_ERROR, String::Format(_("On line %d:\t"), error.line) + error.what());
+			} else {
+				cli.show_message(MESSAGE_ERROR, error.what());
+			}
+		}
+		return false;
+	}
+}
+
+bool CLISetInterface::run_script_file(String const& filename) {
+	// read file
+	if (!wxFileExists(filename)) {
+		cli.show_message(MESSAGE_ERROR, _("File not found: ")+filename);
+		return false;
+	}
+	wxFileInputStream is(filename);
+	if (!is.Ok()) {
+		cli.show_message(MESSAGE_ERROR, _("Unable to open file: ")+filename);
+		return false;
+	}
+	wxBufferedInputStream bis(is);
+	String code = read_utf8_line(bis, true, true);
+	run_script_string(code);
+	return true;
 }
 
 void CLISetInterface::showWelcome() {
@@ -198,19 +246,7 @@ void CLISetInterface::handleCommand(const String& command) {
 		} else if (command == _("help")) {
 			cli << _("Use :help for help\n");
 		} else {
-			// parse command
-			vector<ScriptParseError> errors;
-			ScriptP script = parse(command,nullptr,false,errors);
-			if (!errors.empty()) {
-				FOR_EACH(error,errors) cli.show_message(MESSAGE_ERROR,error.what());
-				return;
-			}
-			// execute command
-			WITH_DYNAMIC_ARG(export_info, &ei);
-			Context& ctx = getContext();
-			ScriptValueP result = ctx.eval(*script,false);
-			// show result
-			cli << result->toCode() << ENDL;
+			run_script_string(command);
 		}
 	} catch (const Error& e) {
 		cli.show_message(MESSAGE_ERROR,e.what());

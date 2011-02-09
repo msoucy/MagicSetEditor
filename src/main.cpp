@@ -28,6 +28,8 @@
 #include <wx/txtstrm.h>
 #include <wx/socket.h>
 
+DECLARE_TYPEOF_COLLECTION(String);
+
 // ----------------------------------------------------------------------------- : Main function/class
 
 /// The application class for MSE.
@@ -175,12 +177,14 @@ int MSE::OnRun() {
 					cli << _("\n         \tExport the cards in a set to image files,");
 					cli << _("\n         \tIMAGE is the same format as for 'export all card images'.");
 					cli << _("\n\n  ") << BRIGHT << _("--cli") << NORMAL << _(" [")
-					                   << PARAM << _("FILE") << NORMAL << _("] [")
 					                   << BRIGHT << _("--quiet") << NORMAL << _("] [")
-					                   << BRIGHT << _("--raw") << NORMAL << _("]");
+					                   << BRIGHT << _("--raw") << NORMAL << _("] [")
+					                   << BRIGHT << _("--script ") << NORMAL << PARAM << _("FILE") << NORMAL << _("] [")
+					                   << PARAM << _("SETFILE") << NORMAL << _("]");
 					cli << _("\n         \tStart the command line interface for performing commands on the set file.");
 					cli << _("\n         \tUse ") << BRIGHT << _("-q") << NORMAL << _(" or ") << BRIGHT << _("--quiet") << NORMAL << _(" to supress the startup banner and prompts.");
-					cli << _("\n         \tUse ") << BRIGHT << _("-raw") << NORMAL << _(" for raw output mode.");
+					cli << _("\n         \tUse ") << BRIGHT << _("--raw") << NORMAL << _(" for raw output mode.");
+					cli << _("\n         \tUse ") << BRIGHT << _("--script") << NORMAL << _(" to execute a script file.");
 					cli << _("\n\nRaw output mode is intended for use by other programs:");
 					cli << _("\n    - The only output is only in response to commands.");
 					cli << _("\n    - For each command a single 'record' is written to the standard output.");
@@ -200,20 +204,35 @@ int MSE::OnRun() {
 				} else if (arg == _("--cli")) {
 					// command line interface
 					SetP set;
+					vector<String> scripts;
 					bool quiet = false;
 					for (int i = 2 ; i < argc ; ++i) {
 						String arg = argv[i];
 						wxFileName f(argv[i]);
 						if (f.GetExt() == _("mse-set") || f.GetExt() == _("mse") || f.GetExt() == _("set")) {
 							set = import_set(arg);
-						} else if (arg == _("-q") || arg == _("--quiet")) {
+						} else if (arg == _("-q") || arg == _("--quiet") || arg == _("--silent")) {
 							quiet = true;
 						} else if (arg == _("-r") || arg == _("--raw")) {
 							quiet = true;
 							cli.enableRaw();
+						} else if ((arg == _("-s") || arg == _("--script")) && i+1 < argc) {
+							scripts.push_back(argv[i+1]);
+							++i;
+						} else if (arg == _("--color")) {
+							// ignore
+						} else {
+							handle_error(_("Invalid command line argument: ") + String(argv[i]));
 						}
 					}
 					CLISetInterface cli_interface(set,quiet);
+					if (scripts.empty()) {
+						cli_interface.run_interactive();
+					} else {
+						FOR_EACH(script, scripts) {
+							cli_interface.run_script_file(script);
+						}
+					}
 					return EXIT_SUCCESS;
 				} else if (arg == _("--export")) {
 					if (argc <= 2 || (argc <= 3 && starts_with(argv[2],_("--")))) {
@@ -237,7 +256,7 @@ int MSE::OnRun() {
 					export_images(set, set->cards, path, out, CONFLICT_NUMBER_OVERWRITE);
 					return EXIT_SUCCESS;
 				} else {
-					handle_error(_("Invalid command line argument:\n") + String(argv[1]));
+					handle_error(_("Invalid command line argument: ") + String(argv[1]));
 				}
 			} catch (const Error& e) {
 				handle_error(e);
@@ -273,7 +292,12 @@ int MSE::OnExit() {
 void MSE::HandleEvent(wxEvtHandler *handler, wxEventFunction func, wxEvent& event) const {
 	try {
 		wxApp::HandleEvent(handler, func, event);
+		return;
 	} CATCH_ALL_ERRORS(true);
+	if (wxNotifyEvent* nev = dynamic_cast<wxNotifyEvent*>(&event)) {
+		// notifications about for instance list box selection will fail if an exception is thrown
+		nev->Veto();
+	}
 }
 
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(_CRT_WIDE)
