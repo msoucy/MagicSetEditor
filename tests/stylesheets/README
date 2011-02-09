@@ -1,0 +1,7 @@
+These tests work by:
+ 1. creating a set file for each style
+ 2. loading that set file into magicseteditor --cli
+ (3. exporting a card image)
+ 4. comparing the card image against expected output
+
+Tests are invoked by run-tests.pl

@@ -4,9 +4,8 @@
 #| License:      GNU General Public License 2 or later (see file COPYING)     |
 #+----------------------------------------------------------------------------+
 
-package MseTestUtils;
-
 use strict;
+use File::Basename;
 
 # -----------------------------------------------------------------------------
 # Utilities for testing scripts
@@ -22,6 +21,52 @@ if ($is_windows) {
 	$MAGICSETEDITOR = "../../magicseteditor";
 }
 
+# Invoke a script
+sub run_script_test {
+	my $script   = shift;
+	my $args     = shift;
+	my $outfile  = basename($script,".mse-script") . ".out";
+	my $command  = "$MAGICSETEDITOR --cli --quiet --script $script $args > $outfile";
+	print "$command\n";
+	`$command`;
+	
+	# Check for errors / warnings
+	open FILE,"< $outfile";
+	foreach (<FILE>) {
+		if (/^(WARNING|ERROR)/) {
+			print $_;
+		}
+	}
+	close FILE;
+	
+	# TODO: diff against expected output?
+	#my $expected = basename($script,".mse-script") . ".out.expected";
+}
+
+# -----------------------------------------------------------------------------
+# Dummy sets
+# -----------------------------------------------------------------------------
+
+sub file_set_contents {
+	my $filename = shift;
+	my $contents = shift;
+	open FILE,"> $filename";
+	print FILE $contents;
+	close FILE;
+}
+
+sub write_dummy_set {
+	my $setname = shift;
+	my $contents = shift;
+	mkdir($setname);
+	file_set_contents("$setname/set", "mse version: 2.0.0\n$contents");
+}
+
+sub remove_dummy_set {
+	my $setname = shift;
+	unlink("$setname/set");
+	rmdir($setname);
+}
 
 # -----------------------------------------------------------------------------
 1;
