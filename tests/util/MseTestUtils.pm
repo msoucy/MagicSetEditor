@@ -14,7 +14,7 @@ use File::Basename;
 # Find magicseteditor executable
 
 our $MAGICSETEDITOR;
-my $is_windows = $^O =~ /win/i;
+my $is_windows = $^O =~ /win/i || -e "C:";
 if ($is_windows) {
 	$MAGICSETEDITOR = "\"../../build/Release Unicode/mse.exe\"";
 } else {
@@ -32,9 +32,17 @@ sub run_script_test {
 	
 	# Check for errors / warnings
 	open FILE,"< $outfile";
+	my $in_error = 0;
 	foreach (<FILE>) {
 		if (/^(WARNING|ERROR)/) {
 			print $_;
+			$in_error = 1;
+		} elsif ($in_error) {
+			if (/^    /) {
+				print $_;
+			} else {
+				$in_error = 0;
+			}
 		}
 	}
 	close FILE;
