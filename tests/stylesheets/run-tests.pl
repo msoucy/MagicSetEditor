@@ -24,18 +24,18 @@ sub test_stylesheet {
 	my $game;
 	open STYLE, "< $path/style";
 	while (<STYLE>) {
-		$game = $1 if /^game: (.*)/;
+		$game = $1 if /^game:\s*(\S*)/;
 	}
 	close STYLE;
 	die ("No game found for $package") if !$game;
 	
 	# Stylesheet suffix
 	my $suffix;
-	if ($package =~ /$game-(.+).mse-style/) {
+	if ($package =~ /$game-(.+).mse-style$/) {
 		$suffix = $1;
 	} else {
 		#die ("Stylesheet filename doesn't match game");
-		print ("  Stylesheet filename doesn't match game!\n");
+		print ("  Stylesheet filename doesn't match game ($game)!\n");
 		return;
 	}
 	
