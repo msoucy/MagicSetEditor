@@ -4,8 +4,15 @@
 #| License:      GNU General Public License 2 or later (see file COPYING)     |
 #+----------------------------------------------------------------------------+
 
+package MseTestUtils;
+
+require Exporter;
+@ISA = qw(Exporter);
+@EXPORT = qw(run_script_test file_set_contents write_dummy_set remove_dummy_set); 
+
 use strict;
 use File::Basename;
+use TestFramework;
 
 # -----------------------------------------------------------------------------
 # Invoking Magic Set Editor
@@ -16,7 +23,7 @@ use File::Basename;
 our $MAGICSETEDITOR;
 my $is_windows = $^O =~ /win/i || -e "C:";
 if ($is_windows) {
-	$MAGICSETEDITOR = "\"../../build/Release Unicode/mse.exe\"";
+	$MAGICSETEDITOR = "\"../../build/Release Unicode/mse.com\"";
 } else {
 	$MAGICSETEDITOR = "../../magicseteditor";
 }
@@ -26,7 +33,7 @@ sub run_script_test {
 	my $script   = shift;
 	my $args     = shift;
 	my $outfile  = basename($script,".mse-script") . ".out";
-	my $command  = "$MAGICSETEDITOR --cli --quiet --script $script $args > $outfile";
+	my $command  = "$MAGICSETEDITOR --cli --quiet --script \"$script\" $args > \"$outfile\"";
 	print "$command\n";
 	`$command`;
 	
@@ -37,6 +44,7 @@ sub run_script_test {
 		if (/^(WARNING|ERROR)/) {
 			print $_;
 			$in_error = 1;
+			fail_current_test();
 		} elsif ($in_error) {
 			if (/^    /) {
 				print $_;
@@ -52,8 +60,29 @@ sub run_script_test {
 }
 
 # -----------------------------------------------------------------------------
-# Invoking Magic Set Editor
+# Information on the machine running tests
 # -----------------------------------------------------------------------------
+
+use POSIX qw/strftime/;
+use Sys::Hostname;
+
+sub svn_revision {
+	my $rev = `svn info ../..`;
+	if ($rev =~ /Revision:\s*(\d+)/) {
+		return $1;
+	} else {
+		return "???";
+	}
+}
+
+sub print_system_info {
+	print "host: ", getlogin()," @ ",hostname, "\n";
+	print "architecture: ",($is_windows ? "windows" : "not-windows"),"\n";
+	print "date: ", strftime('%Y-%m-%d %H:%m (%z)',localtime), "\n";
+	print "revision: ", svn_revision(), "\n";
+}
+
+print_system_info();
 
 # -----------------------------------------------------------------------------
 # Dummy sets

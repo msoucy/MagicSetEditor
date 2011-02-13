@@ -7,6 +7,7 @@
 use strict;
 use lib "../util/";
 use MseTestUtils;
+use TestFramework;
 use File::Spec;
 use File::Basename;
 
@@ -18,7 +19,8 @@ sub test_stylesheet {
 	my $path = shift;
 	(my $x,my $y,my $package) = File::Spec->splitpath($path);
 	my $basename = basename($package,".mse-style");
-	print "Testing $package\n";
+	
+	test_case("stylesheets/$basename/Blank card",sub{
 	
 	# Determine game for this set
 	my $game;
@@ -57,15 +59,16 @@ sub test_stylesheet {
 	file_set_contents($script, "write_image_file(set.cards[0],file:\"cards-out/blank-$basename.png\");1");
 	
 	# Run!
-	run_script_test($script, $setname);
+	run_script_test($script, "\"$setname\"");
 	
 	# Cleanup
 	remove_dummy_set($setname);
 	unlink($script);
 	unlink("$tempname.out");
-	print "\n";
 	
 	# TODO: Compare the card against the expected output?
+	
+	});
 }
 
 my $package_dir = "../../data";
@@ -74,3 +77,5 @@ my @packages = glob "$package_dir/*.mse-style";
 foreach (@packages) {
 	test_stylesheet($_);
 }
+
+1;
