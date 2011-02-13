@@ -15,7 +15,6 @@ use TestFramework;
 
 test_case("script/Builtin Funcions", sub{
 	run_script_test("test-builtin.mse-script", "");
-	die("asdf");
 });
 
 test_case("script/Magic Funcions", sub{
