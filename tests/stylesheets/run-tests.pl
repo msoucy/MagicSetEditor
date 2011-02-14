@@ -59,7 +59,7 @@ sub test_stylesheet {
 	file_set_contents($script, "write_image_file(set.cards[0],file:\"cards-out/blank-$basename.png\");1");
 	
 	# Run!
-	run_script_test($script, "\"$setname\"");
+	run_script_test($script, set => $setname);
 	
 	# Cleanup
 	remove_dummy_set($setname);

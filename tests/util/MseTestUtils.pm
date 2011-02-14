@@ -31,7 +31,9 @@ if ($is_windows) {
 # Invoke a script
 sub run_script_test {
 	my $script   = shift;
-	my $args     = shift;
+	my %opts     = @_;
+	my $args     = defined($opts{set}) ? "\"$opts{set}\"" : '';
+	my $ignore_locale_errors = $opts{ignore_locale_errors} // 1;
 	my $outfile  = basename($script,".mse-script") . ".out";
 	my $command  = "$MAGICSETEDITOR --cli --quiet --script \"$script\" $args > \"$outfile\"";
 	print "$command\n";
@@ -44,7 +46,7 @@ sub run_script_test {
 		if (/^(WARNING|ERROR)/) {
 			print $_;
 			$in_error = 1;
-			fail_current_test();
+			fail_current_test() unless (/in locale file/ && $ignore_locale_errors);
 		} elsif ($in_error) {
 			if (/^    /) {
 				print $_;

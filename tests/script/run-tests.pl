@@ -13,13 +13,17 @@ use TestFramework;
 # The tests
 # -----------------------------------------------------------------------------
 
+test_case("script/Locale Errors?", sub{
+	run_script_test("test-blank.mse-script", ignore_locale_errors => 0);
+});
+
 test_case("script/Builtin Funcions", sub{
-	run_script_test("test-builtin.mse-script", "");
+	run_script_test("test-builtin.mse-script");
 });
 
 test_case("script/Magic Funcions", sub{
 	write_dummy_set("_dummy-magic-set.mse-set", "game: magic\nstylesheet: new\n");
-	run_script_test("test-magic.mse-script", "_dummy-magic-set.mse-set");
+	run_script_test("test-magic.mse-script", set => "_dummy-magic-set.mse-set");
 	remove_dummy_set("_dummy-magic-set.mse-set");
 });
 
