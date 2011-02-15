@@ -18,3 +18,4 @@ sub test_subdir {
 
 test_subdir('script');
 test_subdir('stylesheets');
+test_subdir('export-templates');
