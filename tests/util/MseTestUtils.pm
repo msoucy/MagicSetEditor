@@ -8,7 +8,7 @@ package MseTestUtils;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(run_script_test file_set_contents write_dummy_set remove_dummy_set); 
+@EXPORT = qw(run_script_test run_export_test file_set_contents write_dummy_set remove_dummy_set); 
 
 use strict;
 use File::Basename;
@@ -34,13 +34,53 @@ sub run_script_test {
 	my %opts     = @_;
 	my $args     = defined($opts{set}) ? "\"$opts{set}\"" : '';
 	my $ignore_locale_errors = $opts{ignore_locale_errors} // 1;
+	my $cleanup  = $opts{cleanup} // 0;
 	my $outfile  = basename($script,".mse-script") . ".out";
-	my $command  = "$MAGICSETEDITOR --cli --quiet --script \"$script\" $args > \"$outfile\"";
+	my $errfile  = basename($script,".mse-script") . ".err";
+	my $command  = "$MAGICSETEDITOR --cli --quiet --script \"$script\" $args > \"$outfile\" 2> \"$errfile\"";
 	print "$command\n";
 	`$command`;
 	
 	# Check for errors / warnings
-	open FILE,"< $outfile";
+	check_for_errors($errfile, $ignore_locale_errors);
+	
+	# TODO: diff against expected output?
+	#my $expected = basename($script,".mse-script") . ".out.expected";
+	
+	if ($cleanup) {
+		unlink($outfile);
+		unlink($errfile);
+	}
+}
+
+# Invoke an export template
+sub run_export_test {
+	my $template = shift;
+	my $set      = shift;
+	my $outfile  = shift;
+	my %opts     = @_;
+	my $ignore_locale_errors = $opts{ignore_locale_errors} // 1;
+	my $cleanup  = $opts{cleanup} // 0;
+	my $errfile  = basename($set,".mse-set") . ".err";
+	my $command  = "$MAGICSETEDITOR --export \"$template\" \"$set\" \"$outfile\" 2> \"$errfile\"";
+	print "$command\n";
+	`$command`;
+	
+	# Check for errors / warnings
+	check_for_errors($errfile, $ignore_locale_errors);
+	
+	# TODO: diff against expected output?
+	#my $expected = basename($script,".mse-script") . ".out.expected";
+	
+	if ($cleanup) {
+		unlink($errfile);
+	}
+}
+
+sub check_for_errors {
+	my $errfile = shift;
+	my $ignore_locale_errors = shift;
+	open FILE,"< $errfile";
 	my $in_error = 0;
 	foreach (<FILE>) {
 		if (/^(WARNING|ERROR)/) {
@@ -56,9 +96,6 @@ sub run_script_test {
 		}
 	}
 	close FILE;
-	
-	# TODO: diff against expected output?
-	#my $expected = basename($script,".mse-script") . ".out.expected";
 }
 
 # -----------------------------------------------------------------------------
@@ -79,7 +116,7 @@ sub svn_revision {
 
 sub print_system_info {
 	print "host: ", getlogin()," @ ",hostname, "\n";
-	print "architecture: ",($is_windows ? "windows" : "not-windows"),"\n";
+	print "platform: ",($is_windows ? "Windows" : "not-windows"),"\n";
 	print "date: ", strftime('%Y-%m-%d %H:%m (%z)',localtime), "\n";
 	print "revision: ", svn_revision(), "\n";
 }

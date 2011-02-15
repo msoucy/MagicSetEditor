@@ -1,8 +1,9 @@
 #!/usr/bin/perl
 
-# For each mse-script file:
-# 1. Invoke magicseteditor
-# 2. Ensure that there are no errors
+# For each stylesheet:
+# 1. Create a dummy set for that stylesheet
+# 2. Invoke magicseteditor with that set
+# 3. Ensure that there are no errors
 
 use strict;
 use lib "../util/";
@@ -36,13 +37,11 @@ sub test_stylesheet {
 	if ($package =~ /$game-(.+).mse-style$/) {
 		$suffix = $1;
 	} else {
-		#die ("Stylesheet filename doesn't match game");
-		print ("  Stylesheet filename doesn't match game ($game)!\n");
-		return;
+		die ("Stylesheet filename doesn't match game ($game)!\n");
 	}
 	
-	print "  game: $game\n";
-	print "  stylesheet: $suffix\n";
+	print "game: $game\n";
+	print "stylesheet: $suffix\n";
 	
 	# Create dummy set
 	my $set;
@@ -59,12 +58,11 @@ sub test_stylesheet {
 	file_set_contents($script, "write_image_file(set.cards[0],file:\"cards-out/blank-$basename.png\");1");
 	
 	# Run!
-	run_script_test($script, set => $setname);
+	run_script_test($script, set => $setname, cleanup => 1);
 	
 	# Cleanup
 	remove_dummy_set($setname);
 	unlink($script);
-	unlink("$tempname.out");
 	
 	# TODO: Compare the card against the expected output?
 	
