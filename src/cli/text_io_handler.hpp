@@ -38,6 +38,7 @@ class TextIOHandler {
 	
 	/// Show an error or warning message
 	void show_message(MessageType type, String const& message);
+	void print_pending_errors();
 	
 	/// Enable raw mode
 	void enableRaw();

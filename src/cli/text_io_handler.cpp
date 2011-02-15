@@ -55,7 +55,7 @@ void TextIOHandler::init() {
 		have_console = false;
 		have_stderr = false;
 		// Use console mode if one of the cli flags is passed
-		static const Char* redirect_flags[] = {_("-?"),_("--help"),_("-v"),_("--version"),_("--cli"),_("-c"),_("--export"),_("--create-installer")};
+		static const Char* redirect_flags[] = {_("-?"),_("--help"),_("-v"),_("--version"),_("--cli"),_("-c"),_("--export"),_("--export-images"),_("--create-installer")};
 		for (int i = 1 ; i < wxTheApp->argc ; ++i) {
 			for (int j = 0 ; j < sizeof(redirect_flags)/sizeof(redirect_flags[0]) ; ++j) {
 				if (String(wxTheApp->argv[i]) == redirect_flags[j]) {
@@ -152,12 +152,12 @@ void TextIOHandler::flushRaw() {
 	if (!buffer.empty()) {
 		#ifdef UNICODE
 			wxCharBuffer buf = buffer.mb_str(wxConvUTF8);
-			fputs(buf,stdout);
+			fputs(buf,stream);
 		#else
-			fputs(buffer.c_str(),stdout);
+			fputs(buffer.c_str(),stream);
 		#endif
 	}
-	fflush(stdout);
+	fflush(stream);
 	// clear
 	buffer.clear();
 	raw_mode_status = 0;
@@ -166,7 +166,8 @@ void TextIOHandler::flushRaw() {
 // ----------------------------------------------------------------------------- : Errors
 
 void TextIOHandler::show_message(MessageType type, String const& message) {
-	stream = stdout;
+	flush();
+	stream = stderr;
 	if (type == MESSAGE_WARNING) {
 		*this << YELLOW << _("WARNING: ") << NORMAL << replace_all(message,_("\n"),_("\n         ")) << ENDL;
 	} else {
@@ -175,4 +176,18 @@ void TextIOHandler::show_message(MessageType type, String const& message) {
 	flush();
 	stream = stdout;
 	if (raw_mode) raw_mode_status = max(raw_mode_status, type == MESSAGE_WARNING ? 1 : 2);
+}
+
+void TextIOHandler::print_pending_errors() {
+	MessageType type;
+	String msg;
+	while (get_queued_message(type,msg)) {
+		if (haveConsole()) {
+			cli.show_message(type,msg);
+			cli.flush();
+		} else {
+			// no console, use a messagebox instead
+			wxMessageBox(msg, wxMessageBoxCaptionStr, type == MESSAGE_INFO ? wxICON_INFORMATION : type == MESSAGE_WARNING ? wxICON_WARNING : wxICON_ERROR);
+		}
+	}
 }
