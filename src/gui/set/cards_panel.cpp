@@ -219,7 +219,13 @@ void CardsPanel::initUI(wxToolBar* tb, wxMenuBar* mb) {
 	#endif
 	// Filter/search textbox
 	tb->AddSeparator();
-	if (!filter) filter = new FilterCtrl(tb, ID_CARD_FILTER, _LABEL_("search cards"));
+	assert(!filter);
+	if (!filter) {
+		filter = new FilterCtrl(tb, ID_CARD_FILTER, _LABEL_("search cards"));
+		// the control should show what the list is still filtered by
+		filter->setFilter(filter_value);
+	}
+	wxLogDebug(L"%p -> %p", filter, tb);
 	tb->AddControl(filter);
 	tb->Realize();
 	// Menus
@@ -236,7 +242,11 @@ void CardsPanel::destroyUI(wxToolBar* tb, wxMenuBar* mb) {
 	tb->DeleteTool(ID_CARD_ADD);
 	tb->DeleteTool(ID_CARD_REMOVE);
 	tb->DeleteTool(ID_CARD_ROTATE);
-	tb->DeleteTool(filter->GetId()); filter = nullptr;
+	// remember the value in the filter control, because the card list remains filtered
+	// the control is destroyed by DeleteTool
+	filter_value = filter->getFilterString();
+	tb->DeleteTool(filter->GetId());
+	filter = nullptr;
 	// HACK: hardcoded size of rest of toolbar
 	tb->DeleteToolByPos(12); // delete separator
 	tb->DeleteToolByPos(12); // delete separator

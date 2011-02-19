@@ -135,7 +135,12 @@ void KeywordsPanel::initUI(wxToolBar* tb, wxMenuBar* mb) {
 	tb->AddTool(ID_KEYWORD_REMOVE,	_(""), load_resource_tool_image(_("keyword_del")),	wxNullBitmap, wxITEM_NORMAL,_TOOLTIP_("remove keyword"),_HELP_("remove keyword"));
 	// Filter/search textbox
 	tb->AddSeparator();
-	if (!filter) filter = new FilterCtrl(tb, ID_KEYWORD_FILTER, _LABEL_("search keywords"));
+	assert(!filter);
+	if (!filter) {
+		filter = new FilterCtrl(tb, ID_KEYWORD_FILTER, _LABEL_("search keywords"));
+		// the control should show what the list is still filtered by
+		filter->setFilter(filter_value);
+	}
 	tb->AddControl(filter);
 	tb->Realize();
 	// Menus
@@ -146,7 +151,11 @@ void KeywordsPanel::destroyUI(wxToolBar* tb, wxMenuBar* mb) {
 	// Toolbar
 	tb->DeleteTool(ID_KEYWORD_ADD);
 	tb->DeleteTool(ID_KEYWORD_REMOVE);
-	tb->DeleteTool(filter->GetId()); filter = nullptr;
+	// remember the value in the filter control, because the card list remains filtered
+	// the control is destroyed by DeleteTool
+	filter_value = filter->getFilterString();
+	tb->DeleteTool(filter->GetId());
+	filter = nullptr;
 	// HACK: hardcoded size of rest of toolbar
 	tb->DeleteToolByPos(12); // delete separator
 	// Menus
