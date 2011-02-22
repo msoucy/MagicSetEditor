@@ -38,6 +38,10 @@ class ExportTemplate : public Packaged {
 	virtual String typeName() const;
 	Version fileVersion() const;
 	virtual void validate(Version = app_version);
+	
+	/// Loads the export template with a particular name
+	static ExportTemplateP byName(const String& name);
+	
   private:
 	DECLARE_REFLECTION();
 };
