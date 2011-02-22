@@ -29,7 +29,7 @@ DECLARE_TYPEOF_COLLECTION(ScriptParseError);
 				wsprintf(buffer, L"Assertion failed: %s, file %s, line %d\n", expr, file, line);
 			}
 			OutputDebugStringW(buffer);
-			DebugBreak();
+			__debugbreak();
 		} else {
 			_wassert(expr, file, line);
 		}

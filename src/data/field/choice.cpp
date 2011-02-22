@@ -270,7 +270,7 @@ template <>           void reflect_content(GetMember& tag, const ChoiceStyle& cs
 }
 
 IMPLEMENT_REFLECTION(ChoiceStyle) {
-	REFLECT_ALIAS(300, "card list colors", "colors card list");
+	REFLECT_ALIAS(300, "card_list_colors", "colors_card_list");
 	REFLECT_BASE(Style);
 	REFLECT(popup_style);
 	REFLECT(render_style);

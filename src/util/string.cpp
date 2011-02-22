@@ -180,7 +180,20 @@ String capitalize_sentence(const String& s) {
 	return ret;
 }
 
+Char canonical_name_form(Char c) {
+	if (c == _(' ')) return _('_');
+	return c;
+}
 String canonical_name_form(const String& str) {
+	String ret;
+	ret.reserve(str.size());
+	FOR_EACH_CONST(c, str) {
+		ret += canonical_name_form((Char)c);
+	}
+	return ret;
+}
+
+String name_to_caption(const String& str) {
 	String ret;
 	ret.reserve(str.size());
 	bool leading = true;
@@ -190,13 +203,11 @@ String canonical_name_form(const String& str) {
 		} else {
 			ret += c;
 			leading = false;
-/*			
-		} else if (isAlnum(c) || c == _('-')) {
-			ret += toLower(c);
-			leading = false;
-		} else {
-			// ignore non alpha numeric*/
 		}
+	}
+	if (!ret.empty()) {
+		// capitalize_sentence
+		ret[0] = toUpper(ret[0]);
 	}
 	return ret;
 }
@@ -406,10 +417,11 @@ bool is_substr_i(const String& str, size_t pos, const String& cmp) {
 	return is_substr_i(str, pos, static_cast<const Char*>(cmp.c_str()));
 }
 
-bool cannocial_name_compare(const String& as, const Char* b) {
+bool canoncial_name_compare(const String& as, const Char* b) {
+	assert(canonical_name_form(b) == b);
 	const Char* a = as.c_str();
 	while (true) {
-		if (*a != *b && !(*a == _(' ') && *b == _('_'))) return false;
+		if (*a != *b && !(*a == _('_') && *b == _(' '))) return false;
 		if (*a == _('\0')) return true;
 		a++; b++;
 	}

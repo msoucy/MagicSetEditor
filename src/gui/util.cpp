@@ -235,11 +235,15 @@ void draw_control_box(Window* win, DC& dc, const wxRect& rect, bool focused, boo
 			r.right = rect.x + rect.width + 1;
 			r.bottom = rect.y + rect.height + 1;
 			if (hTheme) {
-				wxUxThemeEngine::Get()->DrawThemeBackground(
+				int state = !enabled ? ETS_DISABLED : focused ? ETS_NORMAL : ETS_NORMAL;
+				if (themeEngine->IsThemeBackgroundPartiallyTransparent((HTHEME)hTheme, EP_EDITTEXT, state)) {
+					themeEngine->DrawThemeParentBackground((HWND)win->GetHWND(), (HDC)dc.GetHDC(), &r);
+				}
+				themeEngine->DrawThemeBackground(
 					(HTHEME)hTheme,
 					(HDC)dc.GetHDC(),
-					EP_EDITTEXT,
-					!enabled ? ETS_DISABLED : focused ? ETS_NORMAL : ETS_NORMAL,
+					EP_EDITBORDER_NOSCROLL,
+					state,
 					&r,
 					NULL
 				);
@@ -370,6 +374,18 @@ void draw_selection_rectangle(Window* win, DC& dc, const wxRect& rect, bool sele
 			}
 		}
 	#endif
+	// fallback rendering
+	/*
+	Color c = selected ? ( focused
+	                            ? wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHT)
+	                            : lerp(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW),
+	                                   wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT), subcolumnActivity(j))
+	                     )
+	                   : unselected;
+	dc.SetPen(c);
+	dc.SetBrush(lerp(background, c, 0.3));
+	dc.DrawRectangle(rect.x, rect.y, rect.width, rect.height);
+	*/
 }
 
 void enable_themed_selection_rectangle(Window* win) {
