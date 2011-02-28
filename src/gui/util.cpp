@@ -242,7 +242,7 @@ void draw_control_box(Window* win, DC& dc, const wxRect& rect, bool focused, boo
 				themeEngine->DrawThemeBackground(
 					(HTHEME)hTheme,
 					(HDC)dc.GetHDC(),
-					EP_EDITBORDER_NOSCROLL,
+					EP_EDITTEXT, //EP_EDITBORDER_NOSCROLL, //@@ TODO: EP_EDITBORDER_NOSCROLL not supported in earlier API versions
 					state,
 					&r,
 					NULL
