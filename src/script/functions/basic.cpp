@@ -299,25 +299,30 @@ SCRIPT_FUNCTION(pow) {
 // ----------------------------------------------------------------------------- : String stuff
 
 // convert a string to upper case
-SCRIPT_FUNCTION(to_upper) {
+SCRIPT_FUNCTION(to_upper_case) {
 	SCRIPT_PARAM_C(String, input);
 	SCRIPT_RETURN(input.Upper());
 }
 
 // convert a string to lower case
-SCRIPT_FUNCTION(to_lower) {
+SCRIPT_FUNCTION(to_lower_case) {
 	SCRIPT_PARAM_C(String, input);
 	SCRIPT_RETURN(input.Lower());
 }
 
 // convert a string to title case
-SCRIPT_FUNCTION(to_title) {
+SCRIPT_FUNCTION(to_title_case) {
 	SCRIPT_PARAM_C(String, input);
 	SCRIPT_RETURN(capitalize(input.Lower()));
 }
+// convert a string to sentence case
+SCRIPT_FUNCTION(to_sentence_case) {
+	SCRIPT_PARAM_C(String, input);
+	SCRIPT_RETURN(capitalize_sentence(input.Lower()));
+}
 
 // reverse a string
-SCRIPT_FUNCTION(reverse) {
+SCRIPT_FUNCTION(reverse_text) {
 	SCRIPT_PARAM_C(String, input);
 	reverse(input.begin(), input.end());
 	SCRIPT_RETURN(input);
@@ -410,7 +415,7 @@ String replace_tag_contents(String input, const String& tag, const ScriptValueP&
 }
 
 // Replace the contents of a specific tag
-SCRIPT_FUNCTION(tag_contents) {
+SCRIPT_FUNCTION(replace_tag_contents) {
 	SCRIPT_PARAM_C(String, input);
 	SCRIPT_PARAM_C(String, tag);
 	SCRIPT_PARAM_C(ScriptValueP, contents);
@@ -714,10 +719,10 @@ void init_script_basic_functions(Context& ctx) {
 	ctx.setVariable(_("to_date"),              script_to_date);
 	ctx.setVariable(_("to_code"),              script_to_code);
 	// math
-	ctx.setVariable(_("abs"),                  script_abs);
 	ctx.setVariable(_("random_real"),          script_random_real);
 	ctx.setVariable(_("random_int"),           script_random_int);
 	ctx.setVariable(_("random_boolean"),       script_random_boolean);
+	ctx.setVariable(_("abs"),                  script_abs);
 	ctx.setVariable(_("sin"),                  script_sin);
 	ctx.setVariable(_("cos"),                  script_cos);
 	ctx.setVariable(_("tan"),                  script_tan);
@@ -730,29 +735,35 @@ void init_script_basic_functions(Context& ctx) {
 	ctx.setVariable(_("sqrt"),                 script_sqrt);
 	ctx.setVariable(_("pow"),                  script_pow);
 	// string
-	ctx.setVariable(_("to_upper"),             script_to_upper);
-	ctx.setVariable(_("to_lower"),             script_to_lower);
-	ctx.setVariable(_("to_title"),             script_to_title);
-	ctx.setVariable(_("reverse"),              script_reverse);
+	ctx.setVariable(_("to_upper_case"),        script_to_upper_case);
+	ctx.setVariable(_("to_lower_case"),        script_to_lower_case);
+	ctx.setVariable(_("to_title_case"),        script_to_title_case);
+	ctx.setVariable(_("to_sentence_case"),     script_to_sentence_case);
+	ctx.setVariable(_("to_upper"),             script_to_upper_case); // old name
+	ctx.setVariable(_("to_lower"),             script_to_lower_case); // old name
+	ctx.setVariable(_("to_title"),             script_to_title_case); // old name
+	ctx.setVariable(_("reverse"),              script_reverse_text); // old name
+	ctx.setVariable(_("reverse_text"),         script_reverse_text);
 	ctx.setVariable(_("trim"),                 script_trim);
 	ctx.setVariable(_("substring"),            script_substring);
 	ctx.setVariable(_("contains"),             script_contains);
 	ctx.setVariable(_("format"),               script_format);
-	ctx.setVariable(_("format_rule"),          intrusive(new ScriptRule(script_format)));
+	ctx.setVariable(_("format_rule"),          intrusive(new ScriptRule(script_format))); // compatability
 	ctx.setVariable(_("curly_quotes"),         script_curly_quotes);
 	ctx.setVariable(_("regex_escape"),         script_regex_escape);
 	ctx.setVariable(_("sort_text"),            script_sort_text);
-	ctx.setVariable(_("sort_rule"),            intrusive(new ScriptRule(script_sort_text)));
+	ctx.setVariable(_("sort_rule"),            intrusive(new ScriptRule(script_sort_text))); // compatability
 	// tagged string
-	ctx.setVariable(_("tag_contents"),         script_tag_contents);
+	ctx.setVariable(_("tag_contents"),         script_replace_tag_contents); // old name
+	ctx.setVariable(_("replace_tag_contents"), script_replace_tag_contents);
 	ctx.setVariable(_("remove_tag"),           script_remove_tag);
 	ctx.setVariable(_("remove_tags"),          script_remove_tags);
-	ctx.setVariable(_("tag_contents_rule"),    intrusive(new ScriptRule(script_tag_contents)));
-	ctx.setVariable(_("tag_remove_rule"),      intrusive(new ScriptRule(script_remove_tag)));
+	ctx.setVariable(_("tag_contents_rule"),    intrusive(new ScriptRule(script_replace_tag_contents))); // compatability
+	ctx.setVariable(_("tag_remove_rule"),      intrusive(new ScriptRule(script_remove_tag))); // compatability
 	// collection
 	ctx.setVariable(_("position"),             script_position_of);
 	ctx.setVariable(_("length"),               script_length);
-	ctx.setVariable(_("number_of_items"),      script_number_of_items);
+	ctx.setVariable(_("number_of_items"),      script_number_of_items); // deprecated
 	ctx.setVariable(_("filter_list"),          script_filter_list);
 	ctx.setVariable(_("sort_list"),            script_sort_list);
 	ctx.setVariable(_("random_shuffle"),       script_random_shuffle);
@@ -760,6 +771,6 @@ void init_script_basic_functions(Context& ctx) {
 	ctx.setVariable(_("random_select_many"),   script_random_select_many);
 	// keyword
 	ctx.setVariable(_("expand_keywords"),      script_expand_keywords);
-	ctx.setVariable(_("expand_keywords_rule"), intrusive(new ScriptRule(script_expand_keywords)));
+	ctx.setVariable(_("expand_keywords_rule"), intrusive(new ScriptRule(script_expand_keywords))); // compatability
 	ctx.setVariable(_("keyword_usage"),        script_keyword_usage);
 }

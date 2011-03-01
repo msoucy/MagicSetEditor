@@ -252,8 +252,8 @@ void init_script_regex_functions(Context& ctx) {
 	ctx.setVariable(_("split_text"),           script_split_text);
 	ctx.setVariable(_("match"),                script_match_text); // compatability
 	ctx.setVariable(_("match_text"),           script_match_text);
-	ctx.setVariable(_("replace_rule"),         intrusive(new ScriptRule(script_replace_text)));
-	ctx.setVariable(_("filter_rule"),          intrusive(new ScriptRule(script_filter_text)));
-	ctx.setVariable(_("break_rule"),           intrusive(new ScriptRule(script_break_text)));
-	ctx.setVariable(_("match_rule"),           intrusive(new ScriptRule(script_match_text)));
+	ctx.setVariable(_("replace_rule"),         intrusive(new ScriptRule(script_replace_text))); // compatability
+	ctx.setVariable(_("filter_rule"),          intrusive(new ScriptRule(script_filter_text))); // compatability
+	ctx.setVariable(_("break_rule"),           intrusive(new ScriptRule(script_break_text))); // compatability
+	ctx.setVariable(_("match_rule"),           intrusive(new ScriptRule(script_match_text))); // compatability
 }
