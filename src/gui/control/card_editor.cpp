@@ -41,7 +41,8 @@ ValueViewerP DataEditor::makeViewer(const StyleP& style) {
 
 DrawWhat DataEditor::drawWhat(const ValueViewer* viewer) const {
 	int what = DRAW_NORMAL
-	         | DRAW_ACTIVE * viewerIsCurrent(viewer);
+	         | DRAW_ACTIVE * viewerIsCurrent(viewer)
+	         | DRAW_HOVER * (viewer == hovered_viewer);
 	if (nativeLook()) {
 		what |= DRAW_BOXES | DRAW_EDITING | DRAW_NATIVELOOK | DRAW_ERRORS;
 	} else {
@@ -121,13 +122,17 @@ int DataEditor::currentTabPos() const {
 	return -1;
 }
 
-struct CompareTabIndex {
+struct CompareTabOrder {
 	bool operator() (ValueViewer* a, ValueViewer* b) {
 		Style& as = *a->getStyle(), &bs = *b->getStyle();
-		Field& af = *as.fieldP,     &bf = *bs.fieldP;
-		if (af.tab_index < bf.tab_index) return true;
-		if (af.tab_index > bf.tab_index) return false;
-		if (fabs(as.top - bs.top) < 15) {
+		// if tab_index differs, use that
+		if (as.tab_index < as.tab_index) return true;
+		if (as.tab_index > as.tab_index) return false;
+		// otherwise look at the positions
+		double vertical_overlap   = min(bs.bottom - as.top, as.bottom - bs.top);
+		double horizontal_overlap = min(bs.right - as.left, as.right - bs.left);
+		if (vertical_overlap > 0 && vertical_overlap > horizontal_overlap) {
+			// fields overlap (mostly) vertically
 			// the fields are almost on the same 'row'
 			// compare horizontally first
 			if (as.left < bs.left) return true; // horizontal sorting
@@ -150,7 +155,7 @@ void DataEditor::createTabIndex() {
 			by_tab_index.push_back(v.get());
 		}
 	}
-	stable_sort(by_tab_index.begin(), by_tab_index.end(), CompareTabIndex());
+	stable_sort(by_tab_index.begin(), by_tab_index.end(), CompareTabOrder());
 }
 void DataEditor::onInit() {
 	createTabIndex();
@@ -268,6 +273,8 @@ void DataEditor::onMotion(wxMouseEvent& ev) {
 			ValueEditor* e = hovered_viewer->getEditor();
 			RealPoint pos = mousePoint(ev, *hovered_viewer);
 			if (e) e->onMouseLeave(pos, ev);
+			if (hovered_viewer) redraw(*hovered_viewer);
+			if (new_hovered_viewer) redraw(*new_hovered_viewer);
 		}
 		hovered_viewer = new_hovered_viewer;
 		// change cursor and set status text
@@ -293,6 +300,7 @@ void DataEditor::onMouseLeave(wxMouseEvent& ev) {
 	if (hovered_viewer) {
 		ValueEditor* e = hovered_viewer->getEditor();
 		if (e) e->onMouseLeave(mousePoint(ev,*hovered_viewer), ev);
+		if (hovered_viewer) redraw(*hovered_viewer);
 		hovered_viewer = nullptr;
 	}
 	// clear status text

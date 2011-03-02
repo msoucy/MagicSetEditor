@@ -59,7 +59,6 @@ class Field : public IntrusivePtrVirtualBase {
 	String    card_list_name;   ///< Alternate name to use in card list.
 	Alignment card_list_align;  ///< Alignment of the card list colummn.
 	OptionalScript sort_script; ///< The script to use when sorting this, if not the value.
-	int       tab_index;        ///< Tab index in editor
 	Dependencies dependent_scripts; ///< Scripts that depend on values of this field
 	
 	/// Creates a new Value corresponding to this Field
@@ -99,6 +98,7 @@ class Style : public IntrusivePtrVirtualBase {
 	const FieldP       fieldP;          ///< Field this style is for, should have the right type!
 	
 	int                z_index;         ///< Stacking of values of this field, higher = on top
+	int                tab_index;       ///< Tab order in editor
 	Scriptable<double> left,  top;      ///< Position of this field
 	Scriptable<double> width, height;   ///< Position of this field
 	Scriptable<double> right, bottom;   ///< Position of this field
