@@ -30,10 +30,10 @@ IMPLEMENT_REFLECTION(ControlPoint) {
 	REFLECT_N("position",      pos);
 	REFLECT_N("lock",          lock);
 	REFLECT_N("line_after",    segment_after);
-	if (tag.reading() || segment_before == SEGMENT_CURVE) {
+	if (reflector.isReading() || segment_before == SEGMENT_CURVE) {
 		REFLECT_N("handle_before", delta_before);
 	}
-	if (tag.reading() || segment_after  == SEGMENT_CURVE) {
+	if (reflector.isReading() || segment_after  == SEGMENT_CURVE) {
 		REFLECT_N("handle_after",  delta_after);
 	}
 }
@@ -159,8 +159,10 @@ IMPLEMENT_REFLECTION_ENUM(SymbolShapeCombine) {
 }
 
 
-template<typename T> void fix(const T&,SymbolShape&) {}
-void fix(const Reader& reader, SymbolShape& shape) {
+template<typename Reflector>
+void fix(Reflector&,SymbolShape&) {}
+void fix(Reader& reader, SymbolShape& shape) {
+	// compatibility with before the time we included version numbers
 	if (reader.file_app_version != Version()) return;
 	shape.updateBounds();
 	if (shape.bounds.max.x < 100 || shape.bounds.max.y < 100) return;
@@ -183,7 +185,7 @@ IMPLEMENT_REFLECTION(SymbolShape) {
 	REFLECT_IF_READING {
 		// enforce constraints
 		enforceConstraints();
-		fix(tag,*this);
+		fix(reflector,*this);
 	}
 }
 

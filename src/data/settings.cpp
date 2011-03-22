@@ -244,8 +244,6 @@ String Settings::settingsFile() {
 }
 
 IMPLEMENT_REFLECTION_NO_SCRIPT(Settings) {
-	REFLECT_ALIAS(300,         "style_settings",         "stylesheet_settings");
-	REFLECT_ALIAS(300, "default_style_settings", "default_stylesheet_settings");
 	REFLECT(locale);
 	REFLECT(recent_sets);
 	REFLECT(default_set_dir);
@@ -266,7 +264,7 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(Settings) {
 	#if USE_OLD_STYLE_UPDATE_CHECKER
 		REFLECT(updates_url);
 	#else
-		REFLECT_IGNORE(306,"updates url");
+		REFLECT_COMPAT_IGNORE(<306,"updates url",String);
 	#endif
 	REFLECT(package_versions_url);
 	REFLECT(installer_list_url);
@@ -277,6 +275,8 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(Settings) {
 	REFLECT(game_settings);
 	REFLECT(stylesheet_settings);
 	REFLECT(default_stylesheet_settings);
+	REFLECT_COMPAT(<300, "style_settings", stylesheet_settings);
+	REFLECT_COMPAT(<300, "default_style_settings", default_stylesheet_settings);
 	REFLECT(export_options);
 }
 

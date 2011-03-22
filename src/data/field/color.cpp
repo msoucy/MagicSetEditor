@@ -41,12 +41,12 @@ IMPLEMENT_REFLECTION(ColorField) {
 // ----------------------------------------------------------------------------- : ColorField::Choice
 
 IMPLEMENT_REFLECTION(ColorField::Choice) {
-	if (tag.reading() && !tag.isComplex()) {
-		REFLECT_NAMELESS(name);
-		color = parse_color(name);
-	} else {
+	REFLECT_IF_READING_COMPOUND_OR(true) {
 		REFLECT(name);
 		REFLECT(color);
+	} else {
+		REFLECT_NAMELESS(name);
+		color = parse_color(name);
 	}
 }
 
@@ -100,5 +100,5 @@ bool ColorValue::update(Context& ctx) {
 }
 
 IMPLEMENT_REFLECTION_NAMELESS(ColorValue) {
-	if (fieldP->save_value || tag.scripting() || tag.reading()) REFLECT_NAMELESS(value);
+	if (fieldP->save_value || !reflector.isWriting()) REFLECT_NAMELESS(value);
 }

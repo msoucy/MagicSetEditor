@@ -25,7 +25,7 @@
  */
 #define DECLARE_REFLECTION()											\
           protected:													\
-			template<class Tag> void reflect_impl(Tag& tag);			\
+			template<class Reflector> void reflect_impl(Reflector& reflector); \
 			friend class Reader;										\
 			friend class Writer;										\
 			friend class GetDefaultMember;								\
@@ -38,7 +38,7 @@
 /// Declare that a class supports reflection, which can be overridden in derived classes
 #define DECLARE_REFLECTION_VIRTUAL()									\
           protected:													\
-			template<class Tag> void reflect_impl(Tag& tag);			\
+			template<class Reflector> void reflect_impl(Reflector& reflector); \
 			friend class Reader;										\
 			friend class Writer;										\
 			friend class GetDefaultMember;								\
@@ -72,8 +72,8 @@
 			REFLECT_OBJECT_WRITER(Cls)									\
 			REFLECT_OBJECT_GET_DEFAULT_MEMBER_NOT(Cls)					\
 			REFLECT_OBJECT_GET_MEMBER(Cls)								\
-			template <class Tag>										\
-			void Cls::reflect_impl(Tag& tag)
+			template <class Reflector>									\
+			void Cls::reflect_impl(Reflector& reflector)
 
 /// Implement the refelection of a class type Cls that only uses REFLECT_NAMELESS
 #define IMPLEMENT_REFLECTION_NAMELESS(Cls)								\
@@ -81,16 +81,16 @@
 			REFLECT_OBJECT_WRITER(Cls)									\
 			REFLECT_OBJECT_GET_DEFAULT_MEMBER(Cls)						\
 			REFLECT_OBJECT_GET_MEMBER_NOT(Cls)							\
-			template <class Tag>										\
-			void Cls::reflect_impl(Tag& tag)
+			template <class Reflector>									\
+			void Cls::reflect_impl(Reflector& reflector)
 
 /// Implement the refelection of a class type Cls, but only for Reader and Writer,
 /** There is custom code for GetMember and GetDefaultMember */
 #define IMPLEMENT_REFLECTION_NO_GET_MEMBER(Cls)							\
 			REFLECT_OBJECT_READER(Cls)									\
 			REFLECT_OBJECT_WRITER(Cls)									\
-			template <class Tag>										\
-			void Cls::reflect_impl(Tag& tag)
+			template <class Reflector>									\
+			void Cls::reflect_impl(Reflector& reflector)
 
 /// Implement the refelection of a class type Cls, but only for Reader and Writer
 /** There is no code for GetMember and GetDefaultMember */
@@ -99,18 +99,18 @@
 			REFLECT_OBJECT_WRITER(Cls)									\
 			REFLECT_OBJECT_GET_DEFAULT_MEMBER_NOT(Cls)					\
 			REFLECT_OBJECT_GET_MEMBER_NOT(Cls)							\
-			template <class Tag>										\
-			void Cls::reflect_impl(Tag& tag)
+			template <class Reflector>									\
+			void Cls::reflect_impl(Reflector& reflector)
 
 /// Reflect a variable
-#define REFLECT(var)          tag.handle(_(#var), var)
+#define REFLECT(var)          reflector.handle(_(#var), var)
 /// Reflect a variable under the given name
-#define REFLECT_N(name, var)  tag.handle(_(name), var)
+#define REFLECT_N(name, var)  reflector.handle(_(name), var)
 /// Reflect a variable without a name, should be used only once per class
-#define REFLECT_NAMELESS(var) tag.handle(var)
+#define REFLECT_NAMELESS(var) reflector.handle(var)
 
 /// Declare that the variables of a base class should also be reflected
-#define REFLECT_BASE(Base)    Base::reflect_impl(tag)
+#define REFLECT_BASE(Base)    Base::reflect_impl(reflector)
 
 /// Reflect a group of declarations only when reading
 /** Usage:
@@ -120,7 +120,7 @@
  *   }
  *  @endcode
  */
-#define REFLECT_IF_READING    if (tag.reading())
+#define REFLECT_IF_READING    if (reflector.isReading())
 
 /// Reflect a group of declarations only when *not* reading
 /** Usage:
@@ -130,24 +130,29 @@
  *   }
  *  @endcode
  */
-#define REFLECT_IF_NOT_READING  if (!tag.reading())
+#define REFLECT_IF_NOT_READING  if (!reflector.isReading())
 
-/// Add an alias for backwards compatability
-/** If a key 'old' is encountered in the input file, it is interpreted as 'new' for versions < version
+/// Reflect a group of declarations only when either
+///  a. reading a compound value, or
+///  b. not reading, and the condition is true
+#define REFLECT_IF_READING_COMPOUND_OR(cond) if (reflector.isReading() ? reflector.isCompound() : cond)
+
+/// Add an alias for backwards compatibility
+/** If a key 'name' is encountered in the input file, it is interpreted as 'var' for versions < version
  *  Example:
  *  @code
- *   REFLECT_ALIAS(300, "style", "stylesheet") // prior to 0.3.0 style was used instead of stylesheet
+ *   REFLECT_ALIAS(<300, "style", stylesheet) // prior to 0.3.0 style was used instead of stylesheet
  *  @encode
  */
-#define REFLECT_ALIAS(version, old, new) tag.addAlias(version, _(old), _(new))
+#define REFLECT_COMPAT(cond, name, var) if (reflector.formatVersion() cond) REFLECT_N(name,var)
 
-/// Ignore things for backwards compatability for versions < 'version'
-#define REFLECT_IGNORE(version, old) tag.handleIgnore(version, _(old))
+/// Ignore things for backwards compatibility for versions < 'version'
+#define REFLECT_COMPAT_IGNORE(cond, name, Type) if (reflector.formatVersion() cond) {Type ignored; REFLECT_N(name,ignored);}
 
 /// Reflect a variable, ignores the variable for scripting
-#define REFLECT_NO_SCRIPT(var)          tag.handleNoScript(_(#var), var)
+#define REFLECT_NO_SCRIPT(var)          reflector.handleNoScript(_(#var), var)
 /// Reflect a variable under the given name
-#define REFLECT_NO_SCRIPT_N(name, var)  tag.handleNoScript(_(name), var)
+#define REFLECT_NO_SCRIPT_N(name, var)  reflector.handleNoScript(_(name), var)
 
 /// Explicitly instantiate reflection; this is occasionally required.
 #define INSTANTIATE_REFLECTION(Class)								\
@@ -162,7 +167,7 @@
 
 // ----------------------------------------------------------------------------- : Reflecting enums
 
-/// Implement the refelection of a enumeration type Enum
+/// Implement the reflection of an enumeration type Enum
 /** Usage:
  *    @code
  *     IMPLEMENT_REFLECTION_ENUM(MyEnum) {
@@ -178,20 +183,20 @@
  *   - Writer::handle(const Enum&)
  *   - GetDefaultMember::handle(const Enum&)
  */
-#define IMPLEMENT_REFLECTION_ENUM(Enum)									\
-			template <class Tag>										\
-			void reflect_ ## Enum (Enum& enum_, Tag& tag);				\
-			REFLECT_ENUM_READER(Enum)									\
-			REFLECT_ENUM_WRITER(Enum)									\
-			REFLECT_ENUM_GET_MEMBER(Enum)								\
-			template <class Tag>										\
-			void reflect_ ## Enum (Enum& enum_, Tag& tag)
+#define IMPLEMENT_REFLECTION_ENUM(Enum) \
+			template <class ER> \
+			void reflect_ ## Enum (Enum& enum_, ER& enum_reflector); \
+			REFLECT_ENUM_READER(Enum) \
+			REFLECT_ENUM_WRITER(Enum) \
+			REFLECT_ENUM_GET_MEMBER(Enum) \
+			template <class ER> \
+			void reflect_ ## Enum (Enum& enum_, ER& enum_reflector)
 
 /// Declare a possible value of an enum
-#define VALUE(val)			tag.handle(_(#val), val, enum_)
+#define VALUE(val)			enum_reflector.handle(_(#val), val, enum_)
 
 /// Declare a possible value of an enum under the given name
-#define VALUE_N(name, val)	tag.handle(_(name), val, enum_)
+#define VALUE_N(name, val)	enum_reflector.handle(_(name), val, enum_)
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

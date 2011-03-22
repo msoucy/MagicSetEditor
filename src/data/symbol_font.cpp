@@ -50,8 +50,6 @@ SymbolFontP SymbolFont::byName(const String& name) {
 
 IMPLEMENT_REFLECTION(SymbolFont) {
 	REFLECT_BASE(Packaged);
-
-	REFLECT_ALIAS(300, "text_align", "text_alignment");
 	
 	REFLECT_N("image_font_size",  img_size);
 	REFLECT_N("horizontal_space", spacing.width);
@@ -183,6 +181,7 @@ IMPLEMENT_REFLECTION(SymbolInFont) {
 	REFLECT(draw_text);
 	REFLECT(text_font);
 	REFLECT(text_alignment);
+	REFLECT_COMPAT(<300,"text_align",text_alignment);
 	REFLECT(text_margin_left);
 	REFLECT(text_margin_right);
 	REFLECT(text_margin_top);
@@ -533,7 +532,7 @@ IMPLEMENT_REFLECTION_ENUM(MenuItemType) {
 }
 
 IMPLEMENT_REFLECTION_NO_GET_MEMBER(InsertSymbolMenu) {
-	if (!items.empty() || (tag.reading() && tag.isComplex())) {
+	REFLECT_IF_READING_COMPOUND_OR(!items.empty()) {
 		// complex values are groups
 		REFLECT(type);
 		REFLECT(name);

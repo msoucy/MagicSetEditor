@@ -60,12 +60,12 @@ IMPLEMENT_REFLECTION(PackType) {
 }
 
 IMPLEMENT_REFLECTION(PackItem) {
-	if (!tag.isComplex()) {
-		REFLECT_NAMELESS(name);
-	} else {
+	REFLECT_IF_READING_COMPOUND_OR(true) {
 		REFLECT(name);
 		REFLECT(amount);
 		REFLECT(weight);
+	} else {
+		REFLECT_NAMELESS(name);
 	}
 }
 

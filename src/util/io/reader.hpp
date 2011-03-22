@@ -47,15 +47,13 @@ class Reader {
 	~Reader() { showWarnings(); }
 	
 	/// Tell the reflection code we are reading
-	inline bool reading() const { return true; }
-	/// Tell the reflection code we are not related to scripting
-	inline bool scripting() const { return false; }
+	inline bool isReading() const { return true; }
+	/// Tell the reflection code we are not writing
+	inline bool isWriting() const { return false; }
 	/// Is the thing currently being read 'complex', i.e. does it have children
-	inline bool isComplex() const { return indent != expected_indent - 1 || value.empty(); }
-	/// Add a as an alias for b, all keys a will be replaced with b, only if file_app_version < end_version
-	void addAlias(Version end_version, const Char* a, const Char* b);
-	/// Ignore old keys
-	void handleIgnore(int, const Char*);
+	inline bool isCompound() const { return indent != expected_indent - 1 || value.empty(); }
+	/// Get the version of the format we are reading
+	inline Version formatVersion() const { return file_app_version; }
 	
 	/// Read and check the application version
 	void handleAppVersion();
@@ -137,13 +135,6 @@ class Reader {
 		HANDLED,		///< We have handled a value, and moved to the next line, previous_value is the value we just handled
 		UNHANDLED,		///< Something has been 'unhandled()'
 	} state;
-	/// Aliasses for compatability
-	struct Alias {
-		String  new_key;
-		Version end_version;
-	};
-	/// Aliasses for compatability
-	map<String, Alias> aliasses;
 	/// Should all invalid keys be ignored?
 	bool ignore_invalid;
 	

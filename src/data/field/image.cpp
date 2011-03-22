@@ -39,14 +39,14 @@ String ImageValue::toString() const {
 
 // custom reflection: convert to ScriptImageP for scripting
 
-void ImageValue::reflect(Reader& tag) {
-	tag.handle(filename);
+void ImageValue::reflect(Reader& reflector) {
+	reflector.handle(filename);
 }
-void ImageValue::reflect(Writer& tag) {
-	if (fieldP->save_value) tag.handle(filename);
+void ImageValue::reflect(Writer& reflector) {
+	if (fieldP->save_value) reflector.handle(filename);
 }
-void ImageValue::reflect(GetMember& tag) {}
-void ImageValue::reflect(GetDefaultMember& tag) {
+void ImageValue::reflect(GetMember& reflector) {}
+void ImageValue::reflect(GetDefaultMember& reflector) {
 	// convert to ScriptImageP for scripting
-	tag.handle( (ScriptValueP)intrusive(new ImageValueToImage(filename, last_update)) );
+	reflector.handle( (ScriptValueP)intrusive(new ImageValueToImage(filename, last_update)) );
 }

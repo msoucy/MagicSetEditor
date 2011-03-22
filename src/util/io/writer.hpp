@@ -29,11 +29,10 @@ class Writer {
 	Writer(const OutputStreamP& output, Version file_app_version);
 	
 	/// Tell the reflection code we are not reading
-	inline bool reading()   const { return false; }
-	inline bool scripting() const { return false; }
-	inline bool isComplex() const { return true; }
-	inline void addAlias(int, const Char*, const Char*) {}
-	inline void handleIgnore(int, const Char*) {}
+	inline bool isReading() const { return false; }
+	inline bool isWriting() const { return true; }
+	inline bool isCompound() const { return true; }
+	inline Version formatVersion() const { return app_version; }
 	
 	// --------------------------------------------------- : Handling objects
 	/// Handle an object: write it under the given name

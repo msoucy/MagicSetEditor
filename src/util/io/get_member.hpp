@@ -25,18 +25,17 @@ template <typename T> class Scriptable;
 class GetDefaultMember {
   public:
 	/// Tell the reflection code we are not reading
-	inline bool reading()   const { return false; }
-	inline bool scripting() const { return true; }
-	inline bool isComplex() const { return false; }
-	inline void addAlias(int, const Char*, const Char*) {}
-	inline void handleIgnore(int, const Char*) {}
+	inline bool isReading() const { return false; }
+	inline bool isWriting() const { return false; }
+	inline bool isCompound() const { return false; }
+	inline Version formatVersion() const { return app_version; }
 	
 	/// The result, or script_nil if the member was not found
 	inline ScriptValueP result() { return value; } 
 	
 	// --------------------------------------------------- : Handling objects
 	
-	/// Handle an object: we don't match things with a name
+	/// Handle a key/value pair: ignore it.
 	template <typename T>
 	void handle(const Char* name, const T& object) {}
 	/// Don't handle a value
@@ -72,11 +71,10 @@ class GetMember : private GetDefaultMember {
 	GetMember(const String& name);
 	
 	/// Tell the reflection code we are not reading
-	inline bool reading()   const { return false; }
-	inline bool scripting() const { return true; }
-	inline bool isComplex() const { return true; }
-	inline void addAlias(int, const Char*, const Char*) {}
-	inline void handleIgnore(int, const Char*) {}
+	inline bool isReading() const { return false; }
+	inline bool isWriting() const { return false; }
+	inline bool isCompound() const { return true; }
+	inline Version formatVersion() const { return app_version; }
 	
 	/// The result, or script_nil if the member was not found
 	inline ScriptValueP result() { return gdm.result(); } 
@@ -121,17 +119,17 @@ class GetMember : private GetDefaultMember {
 #define REFLECT_OBJECT_GET_DEFAULT_MEMBER_NOT(Cls)	REFLECT_WRITE_NO(Cls,GetDefaultMember)
 #define REFLECT_OBJECT_GET_MEMBER_NOT(Cls)			REFLECT_WRITE_NO(Cls,GetMember)
 
-#define REFLECT_WRITE_YES(Cls, Tag)										\
-	template<> void Tag::handle<Cls>(const Cls& object) {				\
-		const_cast<Cls&>(object).reflect(*this);						\
-	}																	\
-	void Cls::reflect(Tag& tag) {										\
-		reflect_impl(tag);												\
+#define REFLECT_WRITE_YES(Cls, Reflector) \
+	template<> void Reflector::handle<Cls>(const Cls& object) { \
+		const_cast<Cls&>(object).reflect(*this); \
+	} \
+	void Cls::reflect(Reflector& reflector) { \
+		reflect_impl(reflector); \
 	}
 
-#define REFLECT_WRITE_NO(Cls, Tag)										\
-	template<> void Tag::handle<Cls>(const Cls& object) {}				\
-	void Cls::reflect(Tag& tag) {}
+#define REFLECT_WRITE_NO(Cls, Reflector) \
+	template<> void Reflector::handle<Cls>(const Cls& object) {} \
+	void Cls::reflect(Reflector& reflector) {}
 
 // ----------------------------------------------------------------------------- : Reflection for enumerations
 
@@ -142,7 +140,7 @@ class GetMember : private GetDefaultMember {
 		reflect_ ## Enum(const_cast<Enum&>(enum_), egm);				\
 	}
 
-/// 'Tag' to be used when reflecting enumerations for GetMember
+/// 'EnumReflector' to be used when reflecting enumerations for GetMember
 class EnumGetMember {
   public:
 	inline EnumGetMember(GetDefaultMember& gdm)

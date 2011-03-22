@@ -145,7 +145,7 @@ IMPLEMENT_REFLECTION_ENUM(ChoiceChoiceType) {
 }
 
 IMPLEMENT_REFLECTION(ChoiceField::Choice) {
-	if (isGroup() || line_below || enabled.isScripted() || tag.isComplex()) {
+	REFLECT_IF_READING_COMPOUND_OR(isGroup() || line_below || enabled.isScripted()) {
 		// complex values are groups
 		REFLECT(name);
 		REFLECT_N("group_choice", default_name);
@@ -263,14 +263,14 @@ IMPLEMENT_REFLECTION_ENUM(ChoiceRenderStyle) {
 	VALUE_N("both list",		RENDER_BOTH_LIST);
 }
 
-template <typename T> void reflect_content(T& tag,         const ChoiceStyle& cs) {}
-template <>           void reflect_content(GetMember& tag, const ChoiceStyle& cs) {
+template <typename Reflector>
+void reflect_content(Reflector& reflector, const ChoiceStyle& cs) {}
+void reflect_content(GetMember& reflector, const ChoiceStyle& cs) {
 	REFLECT_N("content_width",  cs.content_width);
 	REFLECT_N("content_height", cs.content_height);
 }
 
 IMPLEMENT_REFLECTION(ChoiceStyle) {
-	REFLECT_ALIAS(300, "card_list_colors", "colors_card_list");
 	REFLECT_BASE(Style);
 	REFLECT(popup_style);
 	REFLECT(render_style);
@@ -279,7 +279,7 @@ IMPLEMENT_REFLECTION(ChoiceStyle) {
 	REFLECT(font);
 	REFLECT(image);
 	REFLECT(choice_images);
-	reflect_content(tag, *this);
+	reflect_content(reflector, *this);
 }
 
 // ----------------------------------------------------------------------------- : ChoiceValue
@@ -303,7 +303,7 @@ bool ChoiceValue::update(Context& ctx) {
 }
 
 IMPLEMENT_REFLECTION_NAMELESS(ChoiceValue) {
-	if (fieldP->save_value || tag.scripting() || tag.reading()) REFLECT_NAMELESS(value);
+	if (fieldP->save_value || !reflector.isWriting()) REFLECT_NAMELESS(value);
 }
 
 INSTANTIATE_REFLECTION_NAMELESS(ChoiceValue)

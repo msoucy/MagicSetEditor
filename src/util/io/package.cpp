@@ -478,7 +478,7 @@ DateTime Package::modificationTime(const pair<String, FileInfo>& fi) const {
 // ----------------------------------------------------------------------------- : Packaged
 
 template <> void Reader::handle(PackageDependency& dep) {
-	if (!isComplex()) {
+	if (!isCompound()) {
 		handle(dep.package);
 		size_t pos = dep.package.find_first_of(_(' '));
 		if (pos != String::npos) {
