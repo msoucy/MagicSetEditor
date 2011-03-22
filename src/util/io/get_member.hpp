@@ -93,7 +93,7 @@ class GetMember : private GetDefaultMember {
 	inline void handleNoScript(const Char* name, T& value) {}
 	/// Handle an object: investigate children
 	template <typename T> void handle(const T&);
-	/// Handle an index map: invistigate keys
+	/// Handle an index map: investigate keys
 	template <typename K, typename V> void handle(const IndexMap<K,V>& m) {
 		if (gdm.result()) return;
 		for (typename IndexMap<K,V>::const_iterator it = m.begin() ; it != m.end() ; ++it) {

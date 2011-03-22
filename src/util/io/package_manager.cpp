@@ -339,8 +339,8 @@ void PackageDirectory::loadDatabase() {
 	String filename = databaseFile();
 	if (wxFileExists(filename)) {
 		// packages file not existing is not an error
-		shared_ptr<wxFileInputStream> file = shared(new wxFileInputStream(filename));
-		if (!file->Ok()) return; // failure is not an error
+		wxFileInputStream file(filename);
+		if (!file.Ok()) return; // failure is not an error
 		Reader reader(file, nullptr, filename);
 		reader.handle_greedy(*this);
 		sort(packages.begin(), packages.end(), compare_name);

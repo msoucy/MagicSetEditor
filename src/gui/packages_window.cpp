@@ -82,21 +82,22 @@ bool DownloadableInstallerList::download() {
 wxThread::ExitCode DownloadableInstallerList::Thread::Entry() {
 	// open url
 	wxURL url(settings.installer_list_url);
-	wxInputStream* isP = url.GetInputStream();
-	if (!isP) {
+	InputStreamP stream( url.GetInputStream() );
+	if (!stream) {
 		wxMutexLocker l(downloadable_installers.lock);
 		downloadable_installers.status = DONE;
 		return 0;
 	}
-	InputStreamP is(isP);
 	// Read installer list
-	Reader reader(is, nullptr, _("installers"), true);
+	Reader reader(*stream, nullptr, _("installers"), true);
 	vector<DownloadableInstallerP> installers;
 	reader.handle(_("installers"),installers);
 	// done
-	wxMutexLocker l(downloadable_installers.lock);
-	swap(installers, downloadable_installers.installers);
-	downloadable_installers.status = DONE;
+	{
+		wxMutexLocker l(downloadable_installers.lock);
+		swap(installers, downloadable_installers.installers);
+		downloadable_installers.status = DONE;
+	}
 	return 0;
 }
 

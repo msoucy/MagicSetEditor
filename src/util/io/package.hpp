@@ -294,13 +294,14 @@ intrusive_ptr<T> open_package(const String& filename) {
 
 // This is here because it uses dynamic_cast and must be to a complete type.
 template <typename T>
-inline void Package::readFile(const String& file, T& obj)
+inline void Package::readFile(const String& filename, T& obj)
 {
-	Reader reader(openIn(file), dynamic_cast<Packaged*>(this), absoluteFilename() + _("/") + file);
+	InputStreamP stream = openIn(filename);
+	Reader reader(*stream, dynamic_cast<Packaged*>(this), absoluteFilename() + _("/") + filename);
 	try {
 		reader.handle_greedy(obj);
 	} catch (const ParseError& err) {
-		throw FileParseError(err.what(), absoluteFilename() + _("/") + file); // more detailed message
+		throw FileParseError(err.what(), absoluteFilename() + _("/") + filename); // more detailed message
 	}
 }
 

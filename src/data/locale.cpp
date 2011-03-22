@@ -228,8 +228,11 @@ void Locale::validate(Version ver) {
 	Packaged::validate(ver);
 	// load locale validator
 	LocaleValidator v;
-	Reader r(load_resource_text(_("expected_locale_keys")), nullptr, _("expected_locale_keys"));
-	r.handle_greedy(v);
+	{
+		InputStreamP stream = load_resource_text(_("expected_locale_keys"));
+		Reader reader(*stream, nullptr, _("expected_locale_keys"));
+		reader.handle_greedy(v);
+	}
 	// validate
 	String errors;
 	errors += translations[LOCALE_CAT_MENU   ].validate(_("menu"),    v.sublocales[_("menu")   ]);

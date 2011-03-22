@@ -107,13 +107,12 @@ class CheckUpdateThread : public wxThread {
 				String& the_url = settings.updates_url;
 			#endif
 			wxURL url(the_url);
-			wxInputStream* isP = url.GetInputStream();
-			if (!isP) return; // failed to get data
-			InputStreamP is(isP);
+			InputStreamP stream( url.GetInputStream() );
+			if (!stream) return; // failed to get data
 			// Read version data
 			// ignore errors for forwards compatability
 			VersionDataP version_data;
-			Reader reader(is, nullptr, _("updates"), true);
+			Reader reader(*stream, nullptr, _("updates"), true);
 			reader.handle(version_data);
 			// has the updates url changed?
 			if (!version_data->new_updates_url.empty()) {

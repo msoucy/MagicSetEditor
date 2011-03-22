@@ -27,17 +27,17 @@ String serialize_for_clipboard(Package& package, T& object) {
 	{
 		Writer writer(stream, file_version_clipboard);
 		WITH_DYNAMIC_ARG(clipboard_package, &package);
-			writer.handle(object);
+		writer.handle(object);
 	}
 	return stream.GetString();
 }
 
 template <typename T>
 void deserialize_from_clipboard(T& object, Package& package, const String& data) {
-	shared_ptr<wxStringInputStream> stream( new wxStringInputStream(data) );
+	wxStringInputStream stream(data);
 	Reader reader(stream, nullptr, _("clipboard"));
 	WITH_DYNAMIC_ARG(clipboard_package, &package);
-		reader.handle_greedy(object);
+	reader.handle_greedy(object);
 }
 
 // ----------------------------------------------------------------------------- : CardDataObject

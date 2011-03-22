@@ -32,17 +32,12 @@ typedef shared_ptr<wxInputStream> InputStreamP;
  *  object that was just read.
  */
 class Reader {
-  private:
-	/// Construct a reader that reads a file in a package
-	/** Used for "include file" keys.
-	 *  package can be nullptr
-	 */
-	Reader(Reader* parent, Packaged* package, const String& filename, bool ignore_invalid = false);
   public:
 	/// Construct a reader that reads from the given input stream
-	/** filename is used only for error messages
+	/** filename is used only for error messages.
+	 *  package is used for looking up included files.
 	 */
-	Reader(const InputStreamP& input, Packaged* package = nullptr, const String& filename = wxEmptyString, bool ignore_invalid = false);
+	Reader(InputStream& input, Packaged* package = nullptr, const String& filename = wxEmptyString, bool ignore_invalid = false);
 	
 	~Reader() { showWarnings(); }
 	
@@ -147,7 +142,7 @@ class Reader {
 	/// Line number of the previous_line
 	int previous_line_number;
 	/// Input stream we are reading from
-	InputStreamP input;
+	InputStream& input;
 	/// Accumulated warning messages
 	String warnings;
 	
@@ -173,14 +168,21 @@ class Reader {
 	template <typename T>
 	void unknownKey(T& v) {
 		if (key == _("include_file")) {
-			Reader reader(this, package, value, ignore_invalid);
-			reader.handle_greedy(v);
+			InputStreamP stream = openIncludedFile();
+			Reader sub_reader(*stream, package, value, ignore_invalid);
+			if (sub_reader.file_app_version == 0) {
+				// in an included file, use the app version of the parent if there is none
+				sub_reader.file_app_version = file_app_version;
+			}
+			sub_reader.handle_greedy(v);
 			moveNext();
 		} else {
 			unknownKey();
 		}
 	}
 	void unknownKey();
+	
+	InputStreamP openIncludedFile();
 };
 
 // ----------------------------------------------------------------------------- : Container types
@@ -255,10 +257,10 @@ void Reader::handle(IndexMap<K,V>& m) {
 		reader.errorIfNotDone();								\
 	}
 
-/// 'Tag' to be used when reflecting enumerations for Reader
+/// 'Reflector' to be used when reflecting enumerations for Reader
 class EnumReader {
   public:
-	inline EnumReader(String read)
+	inline EnumReader(String const& read)
 		: read(read), first(nullptr), done(false) {}
 	
 	/// Handle a possible value for the enum, if the name matches the name in the input

@@ -295,9 +295,9 @@ void Settings::read() {
 	String filename = settingsFile();
 	if (wxFileExists(filename)) {
 		// settings file not existing is not an error
-		shared_ptr<wxFileInputStream> file = shared(new wxFileInputStream(filename));
-		if (!file->Ok()) return; // failure is not an error
-		Reader reader(file, nullptr, filename);
+		wxFileInputStream stream(filename);
+		if (!stream.Ok()) return; // failure is not an error
+		Reader reader(stream, nullptr, filename);
 		reader.handle_greedy(*this);
 	}
 }

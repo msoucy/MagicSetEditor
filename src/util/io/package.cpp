@@ -539,7 +539,8 @@ void Packaged::open(const String& package, bool just_header) {
 	PROFILER(just_header ? _("open package header") : _("open package fully"));
 	if (just_header) {
 		// Read just the header (the part common to all Packageds)
-		Reader reader(openIn(typeName()), this, absoluteFilename() + _("/") + typeName(), true);
+		InputStreamP stream = openIn(typeName());
+		Reader reader(*stream, this, absoluteFilename() + _("/") + typeName(), true);
 		try {
 			JustAsPackageProxy proxy(this);
 			reader.handle_greedy(proxy);
@@ -553,7 +554,8 @@ void Packaged::open(const String& package, bool just_header) {
 }
 void Packaged::loadFully() {
 	if (fully_loaded) return;
-	Reader reader(openIn(typeName()), this, absoluteFilename() + _("/") + typeName());
+	InputStreamP stream = openIn(typeName());
+	Reader reader(*stream, this, absoluteFilename() + _("/") + typeName());
 	try {
 		reader.handle_greedy(*this);
 		validate(reader.file_app_version);
