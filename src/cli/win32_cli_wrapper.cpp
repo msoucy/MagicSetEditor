@@ -265,7 +265,6 @@ void InitEscapeTranslation(HANDLE console) {
 
 /// Cleanup for escape translation: put things back to normal
 void FinishEscapeTranslation(HANDLE console) {
-	CONSOLE_SCREEN_BUFFER_INFO screen_buffer;
 	SetConsoleTextAttribute(console, original_attributes);
 }
 
