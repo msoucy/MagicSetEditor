@@ -17,9 +17,9 @@ using boost::tribool;
 
 // ----------------------------------------------------------------------------- : Writer
 
-Writer::Writer(const OutputStreamP& output, Version file_app_version)
+Writer::Writer(wxOutputStream& output, Version file_app_version)
 	: indentation(0)
-	, output(output), stream(*output)
+	, stream(output)
 {
 	stream.WriteString(BYTE_ORDER_MARK);
 	handle(_("mse_version"), file_app_version);

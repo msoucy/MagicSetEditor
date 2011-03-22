@@ -303,6 +303,7 @@ void Settings::read() {
 }
 
 void Settings::write() {
-	Writer writer(shared(new wxFileOutputStream(settingsFile())), app_version);
+	wxFileOutputStream stream(settingsFile());
+	Writer writer(stream, app_version);
 	writer.handle(*this);
 }

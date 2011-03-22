@@ -239,7 +239,8 @@ void SymbolWindow::onFileSaveAs(wxCommandEvent& ev) {
 	String name = wxFileSelector(_("Save symbol"),settings.default_set_dir,_(""),_(""),_("Symbol files (*.mse-symbol)|*.mse-symbol"),wxSAVE, this);
 	if (!name.empty()) {
 		settings.default_set_dir = wxPathOnly(name);
-		Writer writer(shared(new wxFileOutputStream(name)), file_version_symbol);
+		wxFileOutputStream stream(name);
+		Writer writer(stream, file_version_symbol);
 		writer.handle(control->getSymbol());
 	}
 }
@@ -249,7 +250,8 @@ void SymbolWindow::onFileStore(wxCommandEvent& ev) {
 		SymbolValueP value = static_pointer_cast<SymbolValue>(performer->value);
 		Package& package = performer->getLocalPackage();
 		FileName new_filename = package.newFileName(value->field().name,_(".mse-symbol")); // a new unique name in the package
-		Writer writer(package.openOut(new_filename), file_version_symbol);
+		OutputStreamP stream = package.openOut(new_filename);
+		Writer writer(*stream, file_version_symbol);
 		writer.handle(control->getSymbol());
 		performer->addAction(value_action(value, new_filename));
 	}

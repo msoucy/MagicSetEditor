@@ -221,8 +221,11 @@ void Set::reflect_cards<Writer> (Writer& reflector) {
 			// writeFile won't quite work because we'd need
 			// include file: card: filename
 			// to do that
-			Writer writer(openOut(full_name), app_version);
-			writer.handle(_("card"), card);
+			{
+				OutputStreamP stream = openOut(full_name);
+				Writer writer(*stream, app_version);
+				writer.handle(_("card"), card);
+			}
 			referenceFile(full_name);
 			REFLECT_N("include_file", full_name);
 		}

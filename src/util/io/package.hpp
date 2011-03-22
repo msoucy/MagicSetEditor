@@ -26,6 +26,10 @@ DECLARE_DYNAMIC_ARG(Package*, writing_package);
 /// The package that is being put onto/read from the clipboard
 DECLARE_DYNAMIC_ARG(Package*, clipboard_package);
 
+
+typedef shared_ptr<wxOutputStream> OutputStreamP;
+
+
 // ----------------------------------------------------------------------------- : Package
 
 /// A package is a container for files. On disk it is either a directory or a zip file.
@@ -141,7 +145,8 @@ class Package : public IntrusivePtrVirtualBase {
 
 	template <typename T>
 	void writeFile(const String& file, const T& obj, Version file_version) {
-		Writer writer(openOut(file), file_version);
+		OutputStreamP stream = openOut(file);
+		Writer writer(*stream, file_version);
 		writer.handle(obj);
 	}
 

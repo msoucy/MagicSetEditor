@@ -321,7 +321,7 @@ void ApprDistroDatabase::doRead(InputStream& in) {
 	}
 }
 
-void ApprDistroDatabase::doWrite(OutputStream& out) {
+void ApprDistroDatabase::doWrite(wxOutputStream& out) {
 	wxTextOutputStream tout(out, wxEOL_DOS);
 	// write in order
 	FOR_EACH(c, order) {

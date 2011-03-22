@@ -52,8 +52,6 @@ typedef wxDC     DC;
 
 typedef wxDateTime DateTime;
 
-typedef wxOutputStream OutputStream;
-
 // ----------------------------------------------------------------------------- : Compatability fixes
 
 #if wxVERSION_NUMBER < 2805
