@@ -1,0 +1,21 @@
+﻿mse_version: 2.0.0
+card:
+	stylesheet: new-flip
+	has_styling: false
+	notes: 
+	time_created: 2011-03-23 17:34:08
+	time_modified: 2011-03-23 17:34:47
+	name: Other Style
+	casting_cost: 2UU
+	image: 
+	super_type: <word-list-type>Creature</word-list-type>
+	sub_type: <word-list-race>Right</word-list-race> <word-list-class>side</word-list-class> <word-list-class>up</word-list-class><soft> </soft><word-list-class></word-list-class>
+	rule_text: This is a flip card
+	flavor_text: <i-flavor></i-flavor>
+	copyright: (C) 2010 Twan van Laarhoven
+	image_2: 
+	super_type_2: <word-list-type>Creature</word-list-type>
+	sub_type_2: <word-list-race>Flipped</word-list-race><soft> </soft><word-list-class></word-list-class>
+	rule_text_2: Flipped text
+	flavor_text_2: <i-flavor></i-flavor>
+	copyright_2: (C) 2010 Twan van Laarhoven

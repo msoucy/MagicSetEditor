@@ -1,0 +1,37 @@
+﻿mse_version: 0.3.8
+game: magic
+stylesheet: new
+set_info:
+	title: Simple Magic test Set
+	description:
+		This is a longer description,
+		of the set.
+	artist: the Artist
+	copyright: (C) 2010 Twan van Laarhoven
+	symbol: 
+styling:
+	magic-new:
+		text_box_mana_symbols: magic-mana-small.mse-symbol-font
+		overlay: 
+	magic-new-flip:
+		text_box_mana_symbols: magic-mana-small.mse-symbol-font
+		overlay: 
+	magic-new-textless-land: overlay: 
+include_file: card my simple card
+include_file: card issue 59
+include_file: card other style
+keyword:
+	keyword: Käwörd
+	match: Käwörd
+	reminder: Trigger issue #59?
+	rules: 
+	mode: custom
+keyword:
+	keyword: Ploink
+	match: Ploink
+	reminder: {if has_pt() then "This creature" else "it"} can attack tapped or untapped and can only be blocked by creatures in the same state.
+	rules: 
+	mode: custom
+version_control:
+	type: none
+apprentice_code: 

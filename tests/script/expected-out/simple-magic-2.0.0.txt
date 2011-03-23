@@ -1,0 +1,19 @@
+Full Spoiler List for Simple Magic test Set
+Set by 
+This is a longer description,
+of the set.
+
+[b]Issue #59[/b] 
+Card — Type :common:
+Käwörd [i](Trigger issue #59?)[/i]
+
+[b]Other Style[/b] 2UU
+Creature — Right side up  :common:
+This is a flip card
+
+
+[b]My simple card[/b] 2RR
+Creature — Flower  :uncommon:
+T: My simple card deals 1 damage to target player.
+[i]Flavor is italic.[/i]
+

@@ -34,7 +34,7 @@ test_case("script/Magic Funcions", sub{
 test_case("compatability/2.0.0", sub{
 	mkdir("out");
 	run_export_test("magic-forum", "simple-magic-2.0.0.mse-set", "out/simple-magic-2.0.0.txt", cleanup => 1);
-	compare_files("out/compat2.0.0.txt", "expected-out/simple-magic-2.0.0.txt");
+	compare_files("out/simple-magic-2.0.0.txt", "expected-out/simple-magic-2.0.0.txt");
 });
 
 1;

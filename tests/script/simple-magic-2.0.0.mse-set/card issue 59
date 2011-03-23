@@ -1,0 +1,15 @@
+﻿mse_version: 2.0.0
+card:
+	has_styling: false
+	notes: 
+	time_created: 2011-01-10 20:05:21
+	time_modified: 2011-01-10 20:34:52
+	name: Issue #59
+	image: 
+	super_type: <word-list-type>Card</word-list-type>
+	sub_type: Type
+	rule_text: <kw-A><nospellcheck>Käwörd</nospellcheck><atom-reminder-custom> <i-auto>(Trigger issue <error-spelling:en_us:/magic.mse-game/magic-words>#59</error-spelling:en_us:/magic.mse-game/magic-words>?)</i-auto></atom-reminder-custom></kw-A>
+	flavor_text: <i-flavor></i-flavor>
+	copyright: 
+	image_2: 
+	copyright_2: 

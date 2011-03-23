@@ -1,0 +1,17 @@
+﻿mse_version: 2.0.0
+card:
+	has_styling: false
+	notes: 
+	time_created: 2010-10-06 23:15:08
+	time_modified: 2010-10-06 23:18:15
+	name: My simple card
+	casting_cost: 2RR
+	image: image1
+	super_type: <word-list-type>Creature</word-list-type>
+	sub_type: <word-list-race>Flower</word-list-race><soft> </soft><word-list-class></word-list-class>
+	rarity: uncommon
+	rule_text: <sym-auto>T</sym-auto>: <atom-cardname><nospellcheck>My simple card</nospellcheck></atom-cardname> deals 1 damage to target player.
+	flavor_text: <i-flavor>Flavor is italic.</i-flavor>
+	copyright: (C) 2010 Twan van Laarhoven
+	image_2: 
+	copyright_2: 
