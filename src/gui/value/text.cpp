@@ -414,7 +414,11 @@ bool TextValueEditor::onChar(wxKeyEvent& ev) {
 		// forward to drop down list
 		return drop_down->onCharInParent(ev);
 	}
-	if (ev.AltDown()) return false;
+	if (ev.AltDown() && isAlpha((Char)ev.GetKeyCode())) {
+		// this looks like an accelerator
+		ev.Skip();
+		return false;
+	}
 	fixSelection();
 	switch (ev.GetKeyCode()) {
 		case WXK_LEFT:
