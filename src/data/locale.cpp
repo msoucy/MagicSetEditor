@@ -285,7 +285,7 @@ String SubLocale::validate(const String& name, const SubLocaleValidatorP& v) con
 		map<String,KeyValidator>::const_iterator it = v->keys.find(kv.first);
 		if (it == v->keys.end() && !kv.second.empty()) {
 			// allow extra keys with empty values as a kind of documentation
-			// for example in the help stirngs:
+			// for example in the help strings:
 			//   help:
 			//       file:
 			//       new set: blah blah
