@@ -208,8 +208,10 @@ assert( curly_quotes("'this: is a string', —'q'") == "‘this: is a string’,
 assert( curly_quotes("''\"nest\"''") == "‘‘“nest”’’" )
 
 # File IO
-write_text_file(file: "texfile1.out.txt", "this is a test\nUnicode: ☺");
+write_text_file(file: "textfile1.out.txt", "this is a test\nUnicode: ☺");
 
 # Include files (This doesn't work!)
 #include file: test-builtin-included.mse-script
 #assert(i_have_been_included == 1);
+
+1

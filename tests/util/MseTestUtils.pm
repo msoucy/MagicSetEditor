@@ -8,7 +8,7 @@ package MseTestUtils;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT = qw(run_script_test run_export_test file_set_contents write_dummy_set remove_dummy_set); 
+@EXPORT = qw(run_script_test run_export_test file_set_contents write_dummy_set remove_dummy_set compare_files); 
 
 use strict;
 use File::Basename;
@@ -64,7 +64,9 @@ sub run_export_test {
 	my $errfile  = basename($set,".mse-set") . ".err";
 	my $command  = "$MAGICSETEDITOR --export \"$template\" \"$set\" \"$outfile\" 2> \"$errfile\"";
 	print "$command\n";
-	`$command`;
+	if (system($command) != 0) {
+		die("Invoking magic set editor failed\n");
+	}
 	
 	# Check for errors / warnings
 	check_for_errors($errfile, $ignore_locale_errors);
@@ -96,6 +98,24 @@ sub check_for_errors {
 		}
 	}
 	close FILE;
+}
+
+# -----------------------------------------------------------------------------
+# Comparing files
+# -----------------------------------------------------------------------------
+
+sub compare_files {
+	my $out_file = shift;
+	my $expected_file = shift;
+	if (!-f $out_file) {
+		die("Output file missing: $out_file");
+	}
+	if (!-f $expected_file) {
+		die("File with expected output is missing: $expected_file");
+	}
+	if (system("diff -q \"$out_file\" \"$expected_file\"") != 0) {
+		die("Files differ: $out_file $expected_file");
+	}
 }
 
 # -----------------------------------------------------------------------------
