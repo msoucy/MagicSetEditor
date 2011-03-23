@@ -66,11 +66,13 @@ typedef wxDateTime DateTime;
 	#define wxFD_SAVE             wxSAVE
 	#define wxFD_OPEN             wxOPEN
 	#define wxFD_OVERWRITE_PROMPT wxOVERWRITE_PROMPT
-	#define SetDeviceClippingRegion SetClippingRegion
 	typedef wxEvent wxMouseCaptureLostEvent;
 	#define EVT_MOUSE_CAPTURE_LOST(handler) // ignore
 	#define wxEVT_MOUSE_CAPTURE_LOST 12345678 // not an actual event type
 	#define wxAutoBufferedPaintDC wxBufferedPaintDC
+#endif
+#if wxVERSION_NUMBER < 2811
+	#define SetDeviceClippingRegion SetClippingRegion
 #endif
 
 // ----------------------------------------------------------------------------- : Other aliasses
