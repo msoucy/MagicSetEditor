@@ -306,5 +306,23 @@ inline String type_name(const Value&) {
 
 void mark_dependency_member(const IndexMap<FieldP,ValueP>& value, const String& name, const Dependency& dep);
 
+// ----------------------------------------------------------------------------- : Value (new style)
+
+/// A Value object that can hold something of 'any' type
+class AnyValue : public Value {
+  public:
+	inline AnyValue(FieldP const& field, ScriptValueP const& value = script_nil)
+		: Value(field), value(value)
+	{}
+	
+	/// The actual value
+	ScriptValueP value;
+	
+	virtual ValueP clone() const;
+	virtual String toString() const;
+	typedef ScriptValueP ValueType;
+	DECLARE_REFLECTION_VIRTUAL();
+};
+
 // ----------------------------------------------------------------------------- : EOF
 #endif

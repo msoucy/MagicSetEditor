@@ -303,3 +303,70 @@ void mark_dependency_member(const IndexMap<FieldP,ValueP>& value, const String& 
 		(*it)->fieldP->dependent_scripts.add(dep);
 	}
 }
+
+// ----------------------------------------------------------------------------- : AnyValue
+
+ValueP AnyValue::clone() const {
+	return intrusive(new AnyValue(fieldP,value));
+}
+String AnyValue::toString() const {
+	return value->toString();
+}
+
+void AnyValue::reflect(GetDefaultMember& reflector) {
+	reflector.handle(value);
+}
+void AnyValue::reflect(GetMember& reflector) {
+	// nothing
+}
+
+ScriptValueP parse_script_value(String const& str) {
+	// possible values:
+	//  * "quoted string"           # a string
+	//  * 123.456                   # a number
+	//  * fileref("quoted-string")  # reference to a file in the set
+	//  * rgb(123,123,123)          # a color
+	//  * nil                       # nil
+	//  * true/false                # a boolean
+	return script_nil;
+}
+
+void AnyValue::reflect(Reader& reflector) {
+	if (reflector.formatVersion() < 200001) {
+		// in older versions, the format was based on the type of the field
+		Field* field = fieldP.get();
+		if (dynamic_cast<BooleanField*>(field)) {
+			// boolean field: boolean "yes" or "no"
+			bool x;
+			reflector.handle(x);
+			value = to_script(x);
+		} else if (dynamic_cast<TextField*>(field) || dynamic_cast<ChoiceField*>(field)) {
+			// text, choice fields: string
+			String str;
+			reflector.handle(str);
+			value = to_script(str);
+		} else if (dynamic_cast<ColorField*>(field)) {
+			// color field: color
+			Color x;
+			reflector.handle(x);
+			value = to_script(x);
+		} else if (dynamic_cast<ImageField*>(field)) {
+			// image, symbol fields: string that is a filename in the set
+			String str;
+			reflector.handle(str);
+			value = intrusive(new ScriptLocalFileName(str));
+		} else if (dynamic_cast<InfoField*>(field)) {
+			// this should never happen, since info fields were not saved
+		}
+	} else {
+		// in the new system, the type is stored in the file.
+		String str;
+		reflector.handle(str);
+		value = parse_script_value(str);
+	}
+}
+void AnyValue::reflect(Writer& reflector) {
+	if (!fieldP->save_value) return;
+	// TODO
+	reflector.handle(value->toString());
+}
