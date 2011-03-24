@@ -331,6 +331,14 @@ ScriptValueP parse_script_value(String const& str) {
 	return script_nil;
 }
 
+/// A filename in the current set
+/// functions differently wrt. garbage collection
+/*class ScriptLocalFileName : public ScriptString {
+  public:
+	ScriptLocalFileName(String const& filename) : ScriptString(filename) {}
+	// TODO!
+};*/
+
 void AnyValue::reflect(Reader& reflector) {
 	if (reflector.formatVersion() < 200001) {
 		// in older versions, the format was based on the type of the field
@@ -354,7 +362,8 @@ void AnyValue::reflect(Reader& reflector) {
 			// image, symbol fields: string that is a filename in the set
 			String str;
 			reflector.handle(str);
-			value = intrusive(new ScriptLocalFileName(str));
+			//value = intrusive(new ScriptLocalFileName(str));
+			throw "TODO";
 		} else if (dynamic_cast<InfoField*>(field)) {
 			// this should never happen, since info fields were not saved
 		}
