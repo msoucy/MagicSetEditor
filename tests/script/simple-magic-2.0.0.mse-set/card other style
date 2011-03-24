@@ -4,7 +4,8 @@ card:
 	has_styling: false
 	notes: 
 	time_created: 2011-03-23 17:34:08
-	time_modified: 2011-03-23 17:34:47
+	time_modified: 2011-03-23 17:47:32
+	border_color: rgb(200,180,0)
 	name: Other Style
 	casting_cost: 2UU
 	image: 

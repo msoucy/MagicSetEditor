@@ -9,8 +9,10 @@ set_info:
 	artist: the Artist
 	copyright: (C) 2010 Twan van Laarhoven
 	symbol: 
+	mark_errors: no
 styling:
 	magic-new:
+		grey_hybrid_name: no
 		text_box_mana_symbols: magic-mana-small.mse-symbol-font
 		overlay: 
 	magic-new-flip:
