@@ -83,10 +83,10 @@ class ScriptMissingVariable : public ScriptValue {
 	ScriptMissingVariable(const String& name) : name(name) {}
 	virtual ScriptType type() const { return SCRIPT_NIL; }
 	virtual String typeName() const { return _("missing variable '") + name + _("'"); }
-	virtual operator String() const { return wxEmptyString; }
-	virtual operator double() const { return 0.0; }
-	virtual operator int()    const { return 0; }
-	virtual operator bool()   const { return false; }
+	virtual String toString() const { return wxEmptyString; }
+	virtual double toDouble() const { return 0.0; }
+	virtual int    toInt()    const { return 0; }
+	virtual bool   toBool()   const { return false; }
 	virtual ScriptValueP eval(Context&) const { return script_nil; } // nil() == nil
   private:
 	String name; ///< Name of the variable
@@ -227,7 +227,7 @@ ScriptValueP Context::dependencies(const Dependency& dep, const Script& script) 
 				
 				// Get an object member (almost as normal)
 				case I_MEMBER_C: {
-					String name = *script.constants[i.data];
+					String name = script.constants[i.data]->toString();
 					stack.back() = stack.back()->dependencyMember(name, dep); // dependency on member
 					break;
 				}

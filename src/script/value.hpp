@@ -59,28 +59,19 @@ class ScriptValue : public IntrusivePtrBaseWithDelete {
 	virtual CompareWhat compareAs(String& compare_str, void const*& compare_ptr) const;
 
 	/// Convert this value to a string
-	virtual operator String() const;
-	/// Convert this value to a double
-	virtual operator double() const;
-	/// Convert this value to an integer
-	virtual operator int()    const;
-	/// Convert this value to a boolean
-	virtual operator bool()   const;
-	/// Convert this value to a color
-	virtual operator AColor() const;
-	/// Convert this value to a wxDateTime
-	virtual operator wxDateTime() const;
-
+	virtual String toString() const;
 	/// Script code to generate this value
 	virtual String toCode() const;
-
-	/// Explicit overload to convert to a string
-	/** This is sometimes necessary, because wxString has an int constructor,
-	 *  which confuses gcc. */
-	inline String toString() const { return *this; }
-	/// Explicit overload to convert to a wxDateTime
-	/** Overload resolution is sometimes confused by other conversions */
-	inline wxDateTime toDateTime() const { return *this; }
+	/// Convert this value to a double
+	virtual double toDouble() const;
+	/// Convert this value to an integer
+	virtual int toInt() const;
+	/// Convert this value to a boolean
+	virtual bool toBool() const;
+	/// Convert this value to a color
+	virtual AColor toColor() const;
+	/// Convert this value to a wxDateTime
+	virtual wxDateTime toDateTime() const;
 	/// Convert this value to an image
 	virtual GeneratedImageP toImage(const ScriptValueP& thisP) const;
 

@@ -74,11 +74,11 @@ class ScriptDelayedError : public ScriptValue {
 
 	// all of these throw
 	virtual String typeName() const;
-	virtual operator String() const;
-	virtual operator double() const;
-	virtual operator int()    const;
-	virtual operator bool()   const;
-	virtual operator AColor() const;
+	virtual String toString() const;
+	virtual double toDouble() const;
+	virtual int    toInt()    const;
+	virtual bool   toBool()   const;
+	virtual AColor toColor()  const;
 	virtual int itemCount() const;
 	virtual CompareWhat compareAs(String&, void const*&) const;
 	// these can propagate the error
@@ -273,12 +273,12 @@ class ScriptObject : public ScriptValue {
 	inline ScriptObject(const T& v) : value(v) {}
 	virtual ScriptType type() const { ScriptValueP d = getDefault(); return d ? d->type() : SCRIPT_OBJECT; }
 	virtual String typeName() const { return type_name(*value); }
-	virtual operator String() const { ScriptValueP d = getDefault(); return d ? *d : ScriptValue::operator String(); }
-	virtual operator double() const { ScriptValueP d = getDefault(); return d ? *d : ScriptValue::operator double(); }
-	virtual operator int()    const { ScriptValueP d = getDefault(); return d ? *d : ScriptValue::operator int(); }
-	virtual operator bool()   const { ScriptValueP d = getDefault(); return d ? *d : ScriptValue::operator bool(); }
-	virtual operator AColor() const { ScriptValueP d = getDefault(); return d ? *d : ScriptValue::operator AColor(); }
-	virtual String toCode()   const { ScriptValueP d = getDefault(); return d ? d->toCode() : to_code(*value); }
+	virtual String toString() const { ScriptValueP d = getDefault(); return d ? d->toString() : ScriptValue::toString(); }
+	virtual int    toInt()    const { ScriptValueP d = getDefault(); return d ? d->toInt()    : ScriptValue::toInt(); }
+	virtual double toDouble() const { ScriptValueP d = getDefault(); return d ? d->toDouble() : ScriptValue::toDouble(); }
+	virtual bool   toBool()   const { ScriptValueP d = getDefault(); return d ? d->toBool()   : ScriptValue::toBool(); }
+	virtual AColor toColor()  const { ScriptValueP d = getDefault(); return d ? d->toColor()  : ScriptValue::toColor(); }
+	virtual String toCode()   const { ScriptValueP d = getDefault(); return d ? d->toCode()   : to_code(*value); }
 	virtual GeneratedImageP toImage(const ScriptValueP& thisP) const {
 		ScriptValueP d = getDefault(); return d ? d->toImage(d) : ScriptValue::toImage(thisP);
 	}
@@ -422,13 +422,13 @@ template <typename T> inline T  from_script              (const ScriptValueP& va
 	return o->getValue();
 }
 template <> inline ScriptValueP from_script<ScriptValueP>(const ScriptValueP& value) { return value;  }
-template <> inline String       from_script<String>      (const ScriptValueP& value) { return *value; }
-template <> inline int          from_script<int>         (const ScriptValueP& value) { return *value; }
-template <> inline double       from_script<double>      (const ScriptValueP& value) { return *value; }
-template <> inline bool         from_script<bool>        (const ScriptValueP& value) { return *value; }
-template <> inline Color        from_script<Color>       (const ScriptValueP& value) { return (AColor)*value; }
-template <> inline AColor       from_script<AColor>      (const ScriptValueP& value) { return *value; }
-template <> inline wxDateTime   from_script<wxDateTime>  (const ScriptValueP& value) { return *value; }
+template <> inline String       from_script<String>      (const ScriptValueP& value) { return value->toString(); }
+template <> inline int          from_script<int>         (const ScriptValueP& value) { return value->toInt(); }
+template <> inline double       from_script<double>      (const ScriptValueP& value) { return value->toDouble(); }
+template <> inline bool         from_script<bool>        (const ScriptValueP& value) { return value->toBool(); }
+template <> inline Color        from_script<Color>       (const ScriptValueP& value) { return value->toColor(); }
+template <> inline AColor       from_script<AColor>      (const ScriptValueP& value) { return value->toColor(); }
+template <> inline wxDateTime   from_script<wxDateTime>  (const ScriptValueP& value) { return value->toDateTime(); }
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

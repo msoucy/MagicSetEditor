@@ -68,9 +68,9 @@ String format_input(const String& format, const ScriptValue& input) {
 		// determine type expected by format string
 		String fmt = _("%") + replace_all(format, _("%"), _(""));
 		if (format.find_first_of(_("DdIiOoXx")) != String::npos) {
-			return String::Format(fmt, (int)input);
+			return String::Format(fmt, input.toInt());
 		} else if (format.find_first_of(_("EeFfGg")) != String::npos) {
-			return String::Format(fmt, (double)input);
+			return String::Format(fmt, input.toDouble());
 		} else if (format.find_first_of(_("Ss")) != String::npos) {
 			return format_string(fmt, input.toString());
 		} else {
@@ -85,7 +85,7 @@ SCRIPT_FUNCTION(to_string) {
 	try {
 		if (format && format->type() == SCRIPT_STRING) {
 			// format specifier. Be careful, the built in function 'format' has the same name
-			SCRIPT_RETURN(format_input(*format, *input));
+			SCRIPT_RETURN(format_input(format->toString(), *input));
 		} else {
 			// simple conversion
 			SCRIPT_RETURN(input->toString());
@@ -101,9 +101,9 @@ SCRIPT_FUNCTION(to_int) {
 	try {
 		int result;
 		if (t == SCRIPT_BOOL) {
-			result = (bool)*input ? 1 : 0;
+			result = input->toBool() ? 1 : 0;
 		} else if (t == SCRIPT_COLOR) {
-			AColor c = (AColor)*input;
+			AColor c = input->toColor();
 			result = (c.Red() + c.Blue() + c.Green()) / 3;
 		} else if (t == SCRIPT_STRING) {
 			long l;
@@ -116,7 +116,7 @@ SCRIPT_FUNCTION(to_int) {
 				return delay_error(ScriptErrorConversion(str, input->typeName(), _TYPE_("integer")));
 			}
 		} else {
-			result = (int)*input;
+			result = input->toInt();
 		}
 		SCRIPT_RETURN(result);
 	} catch (const ScriptError& e) {
@@ -130,9 +130,9 @@ SCRIPT_FUNCTION(to_real) {
 	try {
 		double result;
 		if (t == SCRIPT_BOOL) {
-			result = (bool)*input ? 1.0 : 0.0;
+			result = input->toBool() ? 1.0 : 0.0;
 		} else if (t == SCRIPT_COLOR) {
-			AColor c = (AColor)*input;
+			AColor c = input->toColor();
 			result = (c.Red() + c.Blue() + c.Green()) / 3.0;
 		} else if (t == SCRIPT_STRING) {
 			String str = input->toString();
@@ -142,7 +142,7 @@ SCRIPT_FUNCTION(to_real) {
 				return delay_error(ScriptErrorConversion(str, input->typeName(), _TYPE_("double")));
 			}
 		} else {
-			result = (double)*input;
+			result = input->toDouble();
 		}
 		SCRIPT_RETURN(result);
 	} catch (const ScriptError& e) {
@@ -155,12 +155,12 @@ SCRIPT_FUNCTION(to_number) {
 	ScriptType t = input->type();
 	try {
 		if (t == SCRIPT_BOOL) {
-			SCRIPT_RETURN((bool)*input ? 1 : 0);
+			SCRIPT_RETURN(input->toBool() ? 1 : 0);
 		} else if (t == SCRIPT_COLOR) {
-			AColor c = (AColor)*input;
+			AColor c = input->toColor();
 			SCRIPT_RETURN( (c.Red() + c.Blue() + c.Green()) / 3 );
-		} else if (t == SCRIPT_DOUBLE) {
-			SCRIPT_RETURN((double)*input);
+		} else if (t == SCRIPT_DOUBLE || t == SCRIPT_INT) {
+			return input;
 		} else if (t == SCRIPT_NIL) {
 			SCRIPT_RETURN(0);
 		} else {
@@ -187,9 +187,9 @@ SCRIPT_FUNCTION(to_boolean) {
 		ScriptType t = input->type();
 		bool result;
 		if (t == SCRIPT_INT) {
-			result = (int)*input != 0;
+			result = input->toInt() != 0;
 		} else {
-			result = (bool)*input;
+			result = input->toBool();
 		}
 		SCRIPT_RETURN(result);
 	} catch (const ScriptError& e) {
@@ -226,9 +226,9 @@ SCRIPT_FUNCTION(abs) {
 	ScriptValueP input = ctx.getVariable(SCRIPT_VAR_input);
 	ScriptType t = input->type();
 	if (t == SCRIPT_DOUBLE) {
-		SCRIPT_RETURN(fabs((double)*input));
+		SCRIPT_RETURN(fabs(input->toDouble()));
 	} else {
-		SCRIPT_RETURN(abs((int)*input));
+		SCRIPT_RETURN(abs(input->toInt()));
 	}
 }
 
@@ -566,7 +566,7 @@ SCRIPT_FUNCTION(filter_list) {
 	ScriptValueP it = input->makeIterator(input);
 	while (ScriptValueP v = it->next()) {
 		ctx.setVariable(SCRIPT_VAR_input, v);
-		if (*filter->eval(ctx)) {
+		if (filter->eval(ctx)->toBool()) {
 			ret->value.push_back(v);
 		}
 	}
@@ -609,7 +609,7 @@ SCRIPT_FUNCTION(random_select_many) {
 	SCRIPT_PARAM_C(ScriptValueP, input);
 	SCRIPT_PARAM(int, count) ;
 	SCRIPT_OPTIONAL_PARAM_C_(ScriptValueP, replace);
-	bool with_replace = replace && replace->type() != SCRIPT_FUNCTION && (bool)*replace;
+	bool with_replace = replace && replace->type() != SCRIPT_FUNCTION && replace->toBool();
 	// pick many
 	ScriptCustomCollectionP ret(new ScriptCustomCollection);
 	int itemCount = input->itemCount();

@@ -83,7 +83,7 @@ ScriptValueP export_set(SetP const& set, vector<CardP> const& cards, ExportTempl
 		// write as string
 		wxFileOutputStream file(outname);
 		wxTextOutputStream stream(file);
-		stream.WriteString(*result);
+		stream.WriteString(result->toString());
 	}
 	return result;
 }

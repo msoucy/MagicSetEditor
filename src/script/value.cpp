@@ -19,18 +19,18 @@ DECLARE_TYPEOF_COLLECTION(pair<Variable COMMA ScriptValueP>);
 // ----------------------------------------------------------------------------- : ScriptValue
 // Base cases
 
-ScriptValue::operator String()                              const { throw ScriptErrorConversion(typeName(), _TYPE_("string" )); }
-ScriptValue::operator int()                                 const { throw ScriptErrorConversion(typeName(), _TYPE_("integer" )); }
-ScriptValue::operator bool()                                const { throw ScriptErrorConversion(typeName(), _TYPE_("boolean" )); }
-ScriptValue::operator double()                              const { throw ScriptErrorConversion(typeName(), _TYPE_("double"  )); }
-ScriptValue::operator AColor()                              const { throw ScriptErrorConversion(typeName(), _TYPE_("color"   )); }
-ScriptValue::operator wxDateTime()                          const { throw ScriptErrorConversion(typeName(), _TYPE_("date"    )); }
+String       ScriptValue::toString()                        const { throw ScriptErrorConversion(typeName(), _TYPE_("string" )); }
+int          ScriptValue::toInt()                           const { throw ScriptErrorConversion(typeName(), _TYPE_("integer" )); }
+bool         ScriptValue::toBool()                          const { throw ScriptErrorConversion(typeName(), _TYPE_("boolean" )); }
+double       ScriptValue::toDouble()                        const { throw ScriptErrorConversion(typeName(), _TYPE_("double"  )); }
+AColor       ScriptValue::toColor()                         const { throw ScriptErrorConversion(typeName(), _TYPE_("color"   )); }
+wxDateTime   ScriptValue::toDateTime()                      const { throw ScriptErrorConversion(typeName(), _TYPE_("date"    )); }
+GeneratedImageP ScriptValue::toImage(const ScriptValueP&)   const { throw ScriptErrorConversion(typeName(), _TYPE_("image"   )); }
+String       ScriptValue::toCode()                          const { return toString(); }
 ScriptValueP ScriptValue::do_eval(Context&, bool)           const { return delay_error(ScriptErrorConversion(typeName(), _TYPE_("function"))); }
 ScriptValueP ScriptValue::next(ScriptValueP* key_out)             { throw InternalError(_("Can't convert from ")+typeName()+_(" to iterator")); }
 ScriptValueP ScriptValue::makeIterator(const ScriptValueP&) const { return delay_error(ScriptErrorConversion(typeName(), _TYPE_("collection"))); }
 int          ScriptValue::itemCount()                       const { throw ScriptErrorConversion(typeName(), _TYPE_("collection")); }
-GeneratedImageP ScriptValue::toImage(const ScriptValueP&)   const { throw ScriptErrorConversion(typeName(), _TYPE_("image"   )); }
-String       ScriptValue::toCode()                          const { return *this; }
 CompareWhat  ScriptValue::compareAs(String& compare_str, void const*& compare_ptr) const {
 	compare_str = toCode();
 	return COMPARE_AS_STRING;
@@ -66,12 +66,12 @@ bool equal(const ScriptValueP& a, const ScriptValueP& b) {
 	if (a == b) return true;
 	ScriptType at = a->type(), bt = b->type();
 	if (at == bt && at == SCRIPT_INT) {
-		return (int)*a == (int)*b;
+		return a->toInt() == b->toInt();
 	} else if (at == bt && at == SCRIPT_BOOL) {
-		return (bool)*a == (bool)*b;
+		return a->toBool() == b->toBool();
 	} else if ((at == SCRIPT_INT || at == SCRIPT_DOUBLE) &&
 	           (bt == SCRIPT_INT || bt == SCRIPT_DOUBLE)) {
-		return approx_equal( (double)*a, (double)*b);
+		return approx_equal( a->toDouble(), b->toDouble());
 	} else if (at == SCRIPT_COLLECTION && bt == SCRIPT_COLLECTION) {
 		// compare each element
 		if (a->itemCount() != b->itemCount()) return false;
@@ -103,13 +103,13 @@ bool equal(const ScriptValueP& a, const ScriptValueP& b) {
 
 ScriptType ScriptDelayedError::type() const { return SCRIPT_ERROR; }
 
-String ScriptDelayedError::typeName() const            { throw error; }
-ScriptDelayedError::operator String() const            { throw error; }
-ScriptDelayedError::operator double() const            { throw error; }
-ScriptDelayedError::operator int()    const            { throw error; }
-ScriptDelayedError::operator bool()   const            { throw error; }
-ScriptDelayedError::operator AColor() const            { throw error; }
-int ScriptDelayedError::itemCount() const              { throw error; }
+String ScriptDelayedError::typeName()  const            { throw error; }
+String ScriptDelayedError::toString()  const            { throw error; }
+double ScriptDelayedError::toDouble()  const            { throw error; }
+int    ScriptDelayedError::toInt()     const            { throw error; }
+bool   ScriptDelayedError::toBool()    const            { throw error; }
+AColor ScriptDelayedError::toColor()   const            { throw error; }
+int    ScriptDelayedError::itemCount() const            { throw error; }
 CompareWhat ScriptDelayedError::compareAs(String&, void const*&) const { throw error; }
 ScriptValueP ScriptDelayedError::getMember(const String&) const                           { return intrusive(new ScriptDelayedError(error)); }
 ScriptValueP ScriptDelayedError::dependencyMember(const String&, const Dependency&) const { return intrusive(new ScriptDelayedError(error)); }
@@ -157,9 +157,9 @@ class ScriptInt : public ScriptValue {
 	ScriptInt(int v) : value(v) {}
 	virtual ScriptType type() const { return SCRIPT_INT; }
 	virtual String typeName() const { return _TYPE_("integer"); }
-	virtual operator String() const { return String() << value; }
-	virtual operator double() const { return value; }
-	virtual operator int()    const { return value; }
+	virtual String toString() const { return String() << value; }
+	virtual double toDouble() const { return value; }
+	virtual int    toInt()    const { return value; }
   protected:
 #ifdef USE_POOL_ALLOCATOR
 	virtual void destroy() {
@@ -202,9 +202,9 @@ class ScriptBool : public ScriptValue {
 	ScriptBool(bool v) : value(v) {}
 	virtual ScriptType type() const { return SCRIPT_BOOL; }
 	virtual String typeName() const { return _TYPE_("boolean"); }
-	virtual operator String() const { return value ? _("true") : _("false"); }
+	virtual String toString() const { return value ? _("true") : _("false"); }
 	// bools don't autoconvert to int
-	virtual operator bool()   const { return value; }
+	virtual bool   toBool()   const { return value; }
   private:
 	bool value;
 };
@@ -225,9 +225,9 @@ class ScriptDouble : public ScriptValue {
 	ScriptDouble(double v) : value(v) {}
 	virtual ScriptType type() const { return SCRIPT_DOUBLE; }
 	virtual String typeName() const { return _TYPE_("double"); }
-	virtual operator String() const { return String() << value; }
-	virtual operator double() const { return value; }
-	virtual operator int()    const { return (int)value; }
+	virtual String toString() const { return String() << value; }
+	virtual double toDouble() const { return value; }
+	virtual int    toInt()    const { return (int)value; } // TODO: do we want this automatic conversion?
   private:
 	double value;
 };
@@ -244,8 +244,8 @@ class ScriptString : public ScriptValue {
 	ScriptString(const String& v) : value(v) {}
 	virtual ScriptType type() const { return SCRIPT_STRING; }
 	virtual String typeName() const { return _TYPE_("string") + _(" (\"") + (value.size() < 30 ? value : value.substr(0,30) + _("...")) + _("\")"); }
-	virtual operator String() const { return value; }
-	virtual operator double() const {
+	virtual String toString() const { return value; }
+	virtual double toDouble() const {
 		double d;
 		if (value.ToDouble(&d)) {
 			return d;
@@ -253,7 +253,7 @@ class ScriptString : public ScriptValue {
 			throw ScriptErrorConversion(value, typeName(), _TYPE_("double"));
 		}
 	}
-	virtual operator int()    const {
+	virtual int toInt() const {
 		long l;
 		if (value.ToLong(&l)) {
 			return l;
@@ -261,7 +261,7 @@ class ScriptString : public ScriptValue {
 			throw ScriptErrorConversion(value, typeName(), _TYPE_("integer"));
 		}
 	}
-	virtual operator bool()   const {
+	virtual bool toBool() const {
 		if (value == _("yes") || value == _("true")) {
 			return true;
 		} else if (value == _("no") || value == _("false") || value.empty()) {
@@ -270,14 +270,14 @@ class ScriptString : public ScriptValue {
 			throw ScriptErrorConversion(value, typeName(), _TYPE_("boolean"));
 		}
 	}
-	virtual operator AColor() const {
+	virtual AColor toColor() const {
 		AColor c = parse_acolor(value);
 		if (!c.Ok()) {
 			throw ScriptErrorConversion(value, typeName(), _TYPE_("color"));
 		}
 		return c;
 	}
-	virtual operator wxDateTime() const {
+	virtual wxDateTime toDateTime() const {
 		wxDateTime date;
 		if (!date.ParseDateTime(value.c_str())) {
 			throw ScriptErrorConversion(value, typeName(), _TYPE_("date"));
@@ -318,9 +318,9 @@ class ScriptAColor : public ScriptValue {
 	ScriptAColor(const AColor& v) : value(v) {}
 	virtual ScriptType type() const { return SCRIPT_COLOR; }
 	virtual String typeName() const { return _TYPE_("color"); }
-	virtual operator AColor() const { return value; }
+	virtual AColor toColor() const { return value; }
 	// colors don't auto convert to int, use to_int to force
-	virtual operator String() const {
+	virtual String toString() const {
 		return format_acolor(value);
 	}
   private:
@@ -343,8 +343,8 @@ class ScriptDateTime : public ScriptValue {
 	ScriptDateTime(const wxDateTime& v) : value(v) {}
 	virtual ScriptType type() const { return SCRIPT_DATETIME; }
 	virtual String typeName() const { return _TYPE_("date"); }
-	virtual operator wxDateTime() const { return value; }
-	virtual operator String() const {
+	virtual wxDateTime toDateTime() const { return value; }
+	virtual String toString() const {
 		return value.Format(_("%Y-%m-%d %H:%M:%S"));
 	}
   private:
@@ -363,10 +363,10 @@ class ScriptNil : public ScriptValue {
   public:
 	virtual ScriptType type() const { return SCRIPT_NIL; }
 	virtual String typeName() const { return _TYPE_("nil"); }
-	virtual operator String() const { return wxEmptyString; }
-	virtual operator double() const { return 0.0; }
-	virtual operator int()    const { return 0; }
-	virtual operator bool()   const { return false; }
+	virtual String toString() const { return wxEmptyString; }
+	virtual double toDouble() const { return 0.0; }
+	virtual int    toInt()    const { return 0; }
+	virtual bool   toBool()   const { return false; }
 	virtual GeneratedImageP toImage(const ScriptValueP&) const {
 		return intrusive(new BlankImage());
 	}
