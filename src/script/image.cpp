@@ -19,7 +19,7 @@
 
 // convert any script value to a GeneratedImageP
 GeneratedImageP image_from_script(const ScriptValueP& value) {
-	return value->toImage(value);
+	return value->toImage();
 }
 
 // ----------------------------------------------------------------------------- : ScriptableImage

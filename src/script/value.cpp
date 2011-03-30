@@ -25,11 +25,11 @@ bool         ScriptValue::toBool()                          const { throw Script
 double       ScriptValue::toDouble()                        const { throw ScriptErrorConversion(typeName(), _TYPE_("double"  )); }
 AColor       ScriptValue::toColor()                         const { throw ScriptErrorConversion(typeName(), _TYPE_("color"   )); }
 wxDateTime   ScriptValue::toDateTime()                      const { throw ScriptErrorConversion(typeName(), _TYPE_("date"    )); }
-GeneratedImageP ScriptValue::toImage(const ScriptValueP&)   const { throw ScriptErrorConversion(typeName(), _TYPE_("image"   )); }
+GeneratedImageP ScriptValue::toImage()                      const { throw ScriptErrorConversion(typeName(), _TYPE_("image"   )); }
 String       ScriptValue::toCode()                          const { return toString(); }
 ScriptValueP ScriptValue::do_eval(Context&, bool)           const { return delay_error(ScriptErrorConversion(typeName(), _TYPE_("function"))); }
 ScriptValueP ScriptValue::next(ScriptValueP* key_out)             { throw InternalError(_("Can't convert from ")+typeName()+_(" to iterator")); }
-ScriptValueP ScriptValue::makeIterator(const ScriptValueP&) const { return delay_error(ScriptErrorConversion(typeName(), _TYPE_("collection"))); }
+ScriptValueP ScriptValue::makeIterator()                    const { return delay_error(ScriptErrorConversion(typeName(), _TYPE_("collection"))); }
 int          ScriptValue::itemCount()                       const { throw ScriptErrorConversion(typeName(), _TYPE_("collection")); }
 CompareWhat  ScriptValue::compareAs(String& compare_str, void const*& compare_ptr) const {
 	compare_str = toCode();
@@ -75,8 +75,8 @@ bool equal(const ScriptValueP& a, const ScriptValueP& b) {
 	} else if (at == SCRIPT_COLLECTION && bt == SCRIPT_COLLECTION) {
 		// compare each element
 		if (a->itemCount() != b->itemCount()) return false;
-		ScriptValueP a_it = a->makeIterator(a);
-		ScriptValueP b_it = b->makeIterator(b);
+		ScriptValueP a_it = a->makeIterator();
+		ScriptValueP b_it = b->makeIterator();
 		while (true) {
 			ScriptValueP a_v = a_it->next();
 			ScriptValueP b_v = b_it->next();
@@ -111,11 +111,11 @@ bool   ScriptDelayedError::toBool()    const            { throw error; }
 AColor ScriptDelayedError::toColor()   const            { throw error; }
 int    ScriptDelayedError::itemCount() const            { throw error; }
 CompareWhat ScriptDelayedError::compareAs(String&, void const*&) const { throw error; }
-ScriptValueP ScriptDelayedError::getMember(const String&) const                           { return intrusive(new ScriptDelayedError(error)); }
-ScriptValueP ScriptDelayedError::dependencyMember(const String&, const Dependency&) const { return intrusive(new ScriptDelayedError(error)); }
-ScriptValueP ScriptDelayedError::do_eval(Context&, bool) const                            { return intrusive(new ScriptDelayedError(error)); }
-ScriptValueP ScriptDelayedError::dependencies(Context&, const Dependency&) const          { return intrusive(new ScriptDelayedError(error)); }
-ScriptValueP ScriptDelayedError::makeIterator(const ScriptValueP& thisP) const            { return thisP; }
+ScriptValueP ScriptDelayedError::getMember(const String&) const                           { return intrusive_from_existing(const_cast<ScriptDelayedError*>(this)); }
+ScriptValueP ScriptDelayedError::dependencyMember(const String&, const Dependency&) const { return intrusive_from_existing(const_cast<ScriptDelayedError*>(this)); }
+ScriptValueP ScriptDelayedError::do_eval(Context&, bool) const                            { return intrusive_from_existing(const_cast<ScriptDelayedError*>(this)); }
+ScriptValueP ScriptDelayedError::dependencies(Context&, const Dependency&) const          { return intrusive_from_existing(const_cast<ScriptDelayedError*>(this)); }
+ScriptValueP ScriptDelayedError::makeIterator() const                                     { return intrusive_from_existing(const_cast<ScriptDelayedError*>(this)); }
 
 
 // ----------------------------------------------------------------------------- : Iterators
@@ -123,7 +123,7 @@ ScriptValueP ScriptDelayedError::makeIterator(const ScriptValueP& thisP) const  
 ScriptType ScriptIterator::type() const { return SCRIPT_ITERATOR; }
 String ScriptIterator::typeName() const { return _("iterator"); }
 CompareWhat ScriptIterator::compareAs(String&, void const*&) const { return COMPARE_NO; }
-ScriptValueP ScriptIterator::makeIterator(const ScriptValueP& thisP) const { return thisP; }
+ScriptValueP ScriptIterator::makeIterator() const { return intrusive_from_existing(const_cast<ScriptIterator*>(this)); }
 
 // Iterator over a range of integers
 class ScriptRangeIterator : public ScriptIterator {
@@ -170,25 +170,11 @@ class ScriptInt : public ScriptValue {
 	int value;
 };
 
-#if defined(USE_POOL_ALLOCATOR) && !defined(USE_INTRUSIVE_PTR)
-	// deallocation function for pool allocated integers
-	void destroy_value(ScriptInt* v) {
-		boost::singleton_pool<ScriptValue, sizeof(ScriptInt)>::free(v);
-	}
-#endif
-
 ScriptValueP to_script(int v) {
 #ifdef USE_POOL_ALLOCATOR
-	#ifdef USE_INTRUSIVE_PTR
-		return ScriptValueP(
-				new(boost::singleton_pool<ScriptValue, sizeof(ScriptInt)>::malloc())
-					ScriptInt(v));
-	#else
-		return ScriptValueP(
-				new(boost::singleton_pool<ScriptValue, sizeof(ScriptInt)>::malloc())
-					ScriptInt(v),
-				destroy_value); // deallocation function
-	#endif
+	return intrusive(
+			new(boost::singleton_pool<ScriptValue, sizeof(ScriptInt)>::malloc())
+				ScriptInt(v));
 #else
 	return intrusive(new ScriptInt(v));
 #endif
@@ -284,7 +270,7 @@ class ScriptString : public ScriptValue {
 		}
 		return date;
 	}
-	virtual GeneratedImageP toImage(const ScriptValueP&) const {
+	virtual GeneratedImageP toImage() const {
 		if (value.empty()) {
 			return intrusive(new BlankImage());
 		} else {
@@ -367,7 +353,7 @@ class ScriptNil : public ScriptValue {
 	virtual double toDouble() const { return 0.0; }
 	virtual int    toInt()    const { return 0; }
 	virtual bool   toBool()   const { return false; }
-	virtual GeneratedImageP toImage(const ScriptValueP&) const {
+	virtual GeneratedImageP toImage() const {
 		return intrusive(new BlankImage());
 	}
 
@@ -386,13 +372,7 @@ ScriptValueP script_nil(new ScriptNil);
 String ScriptCollectionBase::toCode() const {
 	String ret = _("[");
 	bool first = true;
-	#ifdef USE_INTRUSIVE_PTR
-		// we can just turn this into a ScriptValueP
-		// TODO: remove thisP alltogether
-		ScriptValueP it = makeIterator(ScriptValueP(const_cast<ScriptValue*>(static_cast<const ScriptValue*>(this))));
-	#else
-		#error "makeIterator needs a ScriptValueP :("
-	#endif
+	ScriptValueP it = makeIterator();
 	while (ScriptValueP v = it->next()) {
 		if (!first) ret += _(",");
 		first = false;
@@ -442,9 +422,9 @@ ScriptValueP ScriptCustomCollection::getIndex(int index) const {
 		return ScriptValue::getIndex(index);
 	}
 }
-ScriptValueP ScriptCustomCollection::makeIterator(const ScriptValueP& thisP) const {
+ScriptValueP ScriptCustomCollection::makeIterator() const {
 	return intrusive(new ScriptCustomCollectionIterator(
-	           static_pointer_cast<ScriptCustomCollection>(thisP)
+	           intrusive_from_existing(const_cast<ScriptCustomCollection*>(this))
 	       ));
 }
 
@@ -488,8 +468,8 @@ ScriptValueP ScriptConcatCollection::getIndex(int index) const {
 		return b->getIndex(index - itemsInA);
 	}
 }
-ScriptValueP ScriptConcatCollection::makeIterator(const ScriptValueP& thisP) const {
-	return intrusive(new ScriptConcatCollectionIterator(a->makeIterator(a), b->makeIterator(b)));
+ScriptValueP ScriptConcatCollection::makeIterator() const {
+	return intrusive(new ScriptConcatCollectionIterator(a->makeIterator(), b->makeIterator()));
 }
 
 // ----------------------------------------------------------------------------- : Default arguments / closure

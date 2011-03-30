@@ -62,7 +62,7 @@ class GeneratedImage : public ScriptValue {
 	
 	virtual ScriptType type() const;
 	virtual String typeName() const;
-	virtual GeneratedImageP toImage(const ScriptValueP& thisP) const;
+	virtual GeneratedImageP toImage() const;
 };
 
 /// Resize an image to conform to the options

@@ -85,7 +85,7 @@ class ScriptDelayedError : public ScriptValue {
 	virtual ScriptValueP getMember(const String& name) const;
 	virtual ScriptValueP dependencyMember(const String& name, const Dependency&) const;
 	virtual ScriptValueP dependencies(Context&, const Dependency&) const;
-	virtual ScriptValueP makeIterator(const ScriptValueP& thisP) const;
+	virtual ScriptValueP makeIterator() const;
 
   protected:
 	virtual ScriptValueP do_eval(Context&, bool openScope) const;
@@ -111,7 +111,7 @@ struct ScriptIterator : public ScriptValue {
 
 	/// Return the next item for this iterator, or ScriptValueP() if there is no such item
 	virtual ScriptValueP next(ScriptValueP* key_out = nullptr) = 0;
-	virtual ScriptValueP makeIterator(const ScriptValueP& thisP) const;
+	virtual ScriptValueP makeIterator() const;
 };
 
 // make an iterator over a range
@@ -159,7 +159,7 @@ class ScriptCollection : public ScriptCollectionBase {
 			return ScriptValue::getIndex(index);
 		}
 	}
-	virtual ScriptValueP makeIterator(const ScriptValueP& thisP) const {
+	virtual ScriptValueP makeIterator() const {
 		return intrusive(new ScriptCollectionIterator<Collection>(value));
 	}
 	virtual int itemCount() const { return (int)value->size(); }
@@ -227,7 +227,7 @@ class ScriptCustomCollection : public ScriptCollectionBase {
   public:
 	virtual ScriptValueP getMember(const String& name) const;
 	virtual ScriptValueP getIndex(int index) const;
-	virtual ScriptValueP makeIterator(const ScriptValueP& thisP) const;
+	virtual ScriptValueP makeIterator() const;
 	virtual int itemCount() const { return (int)value.size(); }
 	/// Collections can be compared by comparing pointers
 	virtual CompareWhat compareAs(String&, void const*& compare_ptr) const {
@@ -251,7 +251,7 @@ class ScriptConcatCollection : public ScriptCollectionBase {
 	inline ScriptConcatCollection(ScriptValueP a, ScriptValueP b) : a(a), b(b) {}
 	virtual ScriptValueP getMember(const String& name) const;
 	virtual ScriptValueP getIndex(int index) const;
-	virtual ScriptValueP makeIterator(const ScriptValueP& thisP) const;
+	virtual ScriptValueP makeIterator() const;
 	virtual int itemCount() const { return a->itemCount() + b->itemCount(); }
 	/// Collections can be compared by comparing pointers
 	virtual CompareWhat compareAs(String&, void const*& compare_ptr) const {
@@ -279,8 +279,8 @@ class ScriptObject : public ScriptValue {
 	virtual bool   toBool()   const { ScriptValueP d = getDefault(); return d ? d->toBool()   : ScriptValue::toBool(); }
 	virtual AColor toColor()  const { ScriptValueP d = getDefault(); return d ? d->toColor()  : ScriptValue::toColor(); }
 	virtual String toCode()   const { ScriptValueP d = getDefault(); return d ? d->toCode()   : to_code(*value); }
-	virtual GeneratedImageP toImage(const ScriptValueP& thisP) const {
-		ScriptValueP d = getDefault(); return d ? d->toImage(d) : ScriptValue::toImage(thisP);
+	virtual GeneratedImageP toImage() const {
+		ScriptValueP d = getDefault(); return d ? d->toImage() : ScriptValue::toImage();
 	}
 	virtual ScriptValueP getMember(const String& name) const {
 		#if USE_SCRIPT_PROFILING
@@ -308,12 +308,12 @@ class ScriptObject : public ScriptValue {
 	virtual void dependencyThis(const Dependency& dep) {
 		mark_dependency_value(*value, dep);
 	}
-	virtual ScriptValueP makeIterator(const ScriptValueP& thisP) const {
+	virtual ScriptValueP makeIterator() const {
 		ScriptValueP it = make_iterator(*value);
 		if (it) return it;
 		ScriptValueP d = getDefault();
-		if (d) return d->makeIterator(d);
-		return ScriptValue::makeIterator(thisP);
+		if (d) return d->makeIterator();
+		return ScriptValue::makeIterator();
 	}
 	virtual int itemCount() const {
 		int i = item_count(*value);

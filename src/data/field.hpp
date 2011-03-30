@@ -62,11 +62,9 @@ class Field : public IntrusivePtrVirtualBase {
 	Dependencies dependent_scripts; ///< Scripts that depend on values of this field
 	
 	/// Creates a new Value corresponding to this Field
-	/** thisP is a smart pointer to this */
-	virtual ValueP newValue(const FieldP& thisP) const = 0;
+	virtual ValueP newValue() = 0;
 	/// Creates a new Style corresponding to this Field
-	/** thisP is a smart pointer to this */
-	virtual StyleP newStyle(const FieldP& thisP) const = 0;
+	virtual StyleP newStyle() = 0;
 	/// Type of this field
 	virtual String typeName() const = 0;
 	
@@ -129,11 +127,9 @@ class Style : public IntrusivePtrVirtualBase {
 	virtual StyleP clone() const = 0;
 	
 	/// Make a viewer object for values using this style
-	/** thisP is a smart pointer to this */
-	virtual ValueViewerP makeViewer(DataViewer& parent, const StyleP& thisP) = 0;
+	virtual ValueViewerP makeViewer(DataViewer& parent) = 0;
 	/// Make an editor object for values using this style
-	/** thisP is a smart pointer to this */
-	virtual ValueViewerP makeEditor(DataEditor& parent, const StyleP& thisP) = 0;
+	virtual ValueViewerP makeEditor(DataEditor& parent) = 0;
 	
 	/// Update scripted values of this style, return nonzero if anything has changed.
 	/** The caller should tellListeners()
@@ -258,22 +254,20 @@ inline String type_name(const Value&) {
 
 // ----------------------------------------------------------------------------- : Utilities
 
-#define DECLARE_FIELD_TYPE(Type)														\
-	DECLARE_REFLECTION(); public:														\
-	virtual ValueP newValue(const FieldP& thisP) const;									\
-	virtual StyleP newStyle(const FieldP& thisP) const;									\
+#define DECLARE_FIELD_TYPE(Type) \
+	DECLARE_REFLECTION(); public: \
+	virtual ValueP newValue(); \
+	virtual StyleP newStyle(); \
 	virtual String typeName() const
 
 // implement newStyle and newValue
-#define IMPLEMENT_FIELD_TYPE(Type, NAME)												\
-	StyleP Type ## Field::newStyle(const FieldP& thisP) const {							\
-		assert(thisP.get() == this);													\
-		return intrusive(new Type ## Style(static_pointer_cast<Type ## Field>(thisP)));	\
-	}																					\
-	ValueP Type ## Field::newValue(const FieldP& thisP) const {							\
-		assert(thisP.get() == this);													\
-		return intrusive(new Type ## Value(static_pointer_cast<Type ## Field>(thisP)));	\
-	}																					\
+#define IMPLEMENT_FIELD_TYPE(Type, NAME) \
+	StyleP Type ## Field::newStyle() { \
+		return intrusive(new Type ## Style(intrusive_from_existing(this))); \
+	} \
+	ValueP Type ## Field::newValue() { \
+		return intrusive(new Type ## Value(intrusive_from_existing(this))); \
+	} \
 	StyleP Type ## Style::clone() const {												\
 		return intrusive(new Type ## Style(*this));										\
 	}																					\
@@ -284,12 +278,12 @@ inline String type_name(const Value&) {
 		return _(NAME);																	\
 	}
 
-#define DECLARE_STYLE_TYPE(Type)														\
-	DECLARE_REFLECTION(); public:														\
-	DECLARE_HAS_FIELD(Type)																\
-	virtual StyleP clone() const;														\
-	virtual ValueViewerP makeViewer(DataViewer& parent, const StyleP& thisP);			\
-	virtual ValueViewerP makeEditor(DataEditor& parent, const StyleP& thisP)
+#define DECLARE_STYLE_TYPE(Type) \
+	DECLARE_REFLECTION(); public: \
+	DECLARE_HAS_FIELD(Type) \
+	virtual StyleP clone() const; \
+	virtual ValueViewerP makeViewer(DataViewer& parent); \
+	virtual ValueViewerP makeEditor(DataEditor& parent)
 
 #define DECLARE_VALUE_TYPE(Type,ValueType_)												\
 	DECLARE_REFLECTION(); public:														\

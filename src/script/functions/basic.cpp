@@ -455,7 +455,7 @@ int position_in_vector(const ScriptValueP& of, const ScriptValueP& in, const Scr
 		}
 	} else {
 		// unordered position
-		ScriptValueP it = in->makeIterator(in);
+		ScriptValueP it = in->makeIterator();
 		int i = 0;
 		while (ScriptValueP v = it->next()) {
 			if (equal(of, v)) return i;
@@ -488,7 +488,7 @@ ScriptValueP sort_script(Context& ctx, const ScriptValueP& list, ScriptValue& or
 		ScriptObject<Set*>* set = dynamic_cast<ScriptObject<Set*>*>(list.get());
 		// sort a collection
 		vector<pair<String,ScriptValueP> > values;
-		ScriptValueP it = list->makeIterator(list);
+		ScriptValueP it = list->makeIterator();
 		while (ScriptValueP v = it->next()) {
 			ctx.setVariable(set ? _("card") : _("input"), v);
 			values.push_back(make_pair(order_by.eval(ctx)->toString(), v));
@@ -563,7 +563,7 @@ SCRIPT_FUNCTION(filter_list) {
 	SCRIPT_PARAM_C(ScriptValueP, filter);
 	// filter a collection
 	ScriptCustomCollectionP ret(new ScriptCustomCollection());
-	ScriptValueP it = input->makeIterator(input);
+	ScriptValueP it = input->makeIterator();
 	while (ScriptValueP v = it->next()) {
 		ctx.setVariable(SCRIPT_VAR_input, v);
 		if (filter->eval(ctx)->toBool()) {
@@ -586,7 +586,7 @@ SCRIPT_FUNCTION(random_shuffle) {
 	SCRIPT_PARAM_C(ScriptValueP, input);
 	// convert to CustomCollection
 	ScriptCustomCollectionP ret(new ScriptCustomCollection());
-	ScriptValueP it = input->makeIterator(input);
+	ScriptValueP it = input->makeIterator();
 	while (ScriptValueP v = it->next()) {
 		ret->value.push_back(v);
 	}
@@ -625,7 +625,7 @@ SCRIPT_FUNCTION(random_select_many) {
 			throw ScriptError(String::Format(_("Can not select %d items from a collection conaining only %d items"), count, input->itemCount()));
 		}
 		// transfer all to ret and shuffle
-		ScriptValueP it = input->makeIterator(input);
+		ScriptValueP it = input->makeIterator();
 		while (ScriptValueP v = it->next()) {
 			ret->value.push_back(v);
 		}

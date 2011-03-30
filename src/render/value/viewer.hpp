@@ -113,10 +113,9 @@ class ValueViewer : public StyleListener {
   public:                                                                                                       \
     Type##ValueViewer(DataViewer& parent, const Type ## StyleP& style)
 
-#define IMPLEMENT_VALUE_VIEWER(Type)																			\
-	ValueViewerP Type##Style::makeViewer(DataViewer& parent, const StyleP& thisP) {								\
-		assert(thisP.get() == this);																			\
-		return ValueViewerP(new Type##ValueViewer(parent, static_pointer_cast<Type##Style>(thisP)));			\
+#define IMPLEMENT_VALUE_VIEWER(Type) \
+	ValueViewerP Type##Style::makeViewer(DataViewer& parent) { \
+		return intrusive(new Type##ValueViewer(parent, intrusive_from_existing(this))); \
 	}
 
 
