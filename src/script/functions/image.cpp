@@ -25,10 +25,6 @@ void parse_enum(const String&, ImageCombine& out);
 
 // ----------------------------------------------------------------------------- : Utility
 
-template <> inline GeneratedImageP from_script<GeneratedImageP>(const ScriptValueP& value) {
-	return image_from_script(value);
-}
-
 SCRIPT_FUNCTION(to_image) {
 	SCRIPT_PARAM_C(GeneratedImageP, input);
 	return input;
@@ -156,7 +152,7 @@ SCRIPT_FUNCTION(symbol_variation) {
 	} else if (valueO) {
 		throw ScriptErrorConversion(valueO->typeName(), _TYPE_("symbol" ));
 	} else {
-		filename = from_script<String>(symbol);
+		filename = symbol->toString();
 	}
 	// known variation?
 	SCRIPT_OPTIONAL_PARAM_(String, variation)

@@ -429,6 +429,7 @@ template <> inline bool         from_script<bool>        (const ScriptValueP& va
 template <> inline Color        from_script<Color>       (const ScriptValueP& value) { return value->toColor(); }
 template <> inline AColor       from_script<AColor>      (const ScriptValueP& value) { return value->toColor(); }
 template <> inline wxDateTime   from_script<wxDateTime>  (const ScriptValueP& value) { return value->toDateTime(); }
+template <> inline GeneratedImageP from_script<GeneratedImageP>(const ScriptValueP& value) { return value->toImage(); }
 
 // ----------------------------------------------------------------------------- : EOF
 #endif
