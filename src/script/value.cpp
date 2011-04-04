@@ -350,11 +350,18 @@ class ScriptNil : public ScriptValue {
 	virtual ScriptType type() const { return SCRIPT_NIL; }
 	virtual String typeName() const { return _TYPE_("nil"); }
 	virtual String toString() const { return wxEmptyString; }
+	virtual String toCode()   const { return _("nil"); }
 	virtual double toDouble() const { return 0.0; }
 	virtual int    toInt()    const { return 0; }
 	virtual bool   toBool()   const { return false; }
+	virtual AColor toColor()  const { return AColor(0,0,0,0); }
 	virtual GeneratedImageP toImage() const {
 		return intrusive(new BlankImage());
+	}
+	virtual CompareWhat compareAs(String& compare_str, void const*&) const {
+		// TODO: do we want both nil=="" and nil==0? Then we would get non-transitive equality
+		compare_str.clear();
+		return COMPARE_AS_STRING;
 	}
 
   protected:
