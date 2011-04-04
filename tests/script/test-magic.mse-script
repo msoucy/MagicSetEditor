@@ -16,3 +16,22 @@ assert(cmc("2X")      == 2)
 assert(cmc("22")      == 22)
 assert(cmc("20WUBRG") == 25)
 
+# card_color related functions
+assert(mana_to_color(colors:"W",hybrid:"",type:"") == "white")
+assert(mana_to_color(colors:"U",hybrid:"",type:"") == "blue")
+assert(mana_to_color(colors:"B",hybrid:"",type:"") == "black")
+assert(mana_to_color(colors:"R",hybrid:"",type:"") == "red")
+assert(mana_to_color(colors:"G",hybrid:"",type:"") == "green")
+assert(mana_to_color(colors:"2",hybrid:"",type:"") == "")
+assert(mana_to_color(colors:"WUBRG",hybrid:"",type:"") == "multicolor")
+
+assert(text_to_color(card_name:"Apple", type:"",land:"", "Boring card text.") == "")
+assert(text_to_color(card_name:"Apple", type:"",land:"", "Apple is red.") == "red")
+assert(text_to_color(card_name:"Apple", type:"",land:"", "Apple is red and green.") == "red, green, multicolor")
+assert(text_to_color(card_name:"Apple", type:"",land:"", "Banana is red.") == "")
+assert(text_to_color(card_name:"Rainbow", type:"",land:"", "Rainbow is all colors.") == "multicolor")
+
+# Utility functions
+assert(is_spell("Creature - Platypus") == false)
+assert(is_spell("Instant") == true)
+assert(is_spell("Sorcery") == true)
