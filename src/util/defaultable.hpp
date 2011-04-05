@@ -15,8 +15,6 @@
 // ----------------------------------------------------------------------------- : Defaultable
 
 /// A value that can also be in a 'default' state.
-/** TODO: Defaultable is automatically also Aged
- */
 template <typename T>
 class Defaultable {
   public:
