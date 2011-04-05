@@ -33,6 +33,7 @@ void store(const ScriptValueP& val, Defaultable<Color>&  var) { var.assign(val->
 void store(const ScriptValueP& val, Defaultable<AColor>& var) { var.assign(val->toColor()); }
 void store(const ScriptValueP& val, Alignment& var)           { var = from_string(val->toString()); }
 void store(const ScriptValueP& val, Direction& var)           { parse_enum(val->toString(),var); }
+void store(const ScriptValueP& val, ScriptValueP& var)        { var = val; }
 
 // ----------------------------------------------------------------------------- : OptionalScript
 
