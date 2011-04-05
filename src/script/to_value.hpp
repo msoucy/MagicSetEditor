@@ -400,6 +400,7 @@ inline ScriptValueP to_script(long          v) { return to_script((int) v); }
        ScriptValueP to_script(AColor        v);
        ScriptValueP to_script(wxDateTime    v);
 inline ScriptValueP to_script(bool          v) { return v ? script_true : script_false; }
+inline ScriptValueP to_script(ScriptValueP const& v) { return v; }
 template <typename T>
 inline ScriptValueP to_script(const vector<T>*     v) { return intrusive(new ScriptCollection<vector<T> >(v)); }
 template <typename K, typename V>

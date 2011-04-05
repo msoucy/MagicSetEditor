@@ -224,6 +224,22 @@ ScriptValueP to_script(double v) {
 
 // ----------------------------------------------------------------------------- : String type
 
+String quote_string(String const& str) {
+	String out;
+	out.reserve(str.size() + 2);
+	out += _('"');
+	FOR_EACH_CONST(c, str) {
+		if      (c == _('"') || c == _('\\')) { out += _('\\'); out += c; }
+		else if (c == _('\1')) out += _("\\<");
+		else if (c == _('\n')) out += _("\\n");
+		else if (c == _('\r')) out += _("\\r");
+		else if (c == _('\t')) out += _("\\t");
+		else out += c;
+	}
+	out += _('"');
+	return out;
+}
+
 // String values
 class ScriptString : public ScriptValue {
   public:
@@ -231,6 +247,9 @@ class ScriptString : public ScriptValue {
 	virtual ScriptType type() const { return SCRIPT_STRING; }
 	virtual String typeName() const { return _TYPE_("string") + _(" (\"") + (value.size() < 30 ? value : value.substr(0,30) + _("...")) + _("\")"); }
 	virtual String toString() const { return value; }
+	virtual String toCode() const {
+		return quote_string(value);
+	}
 	virtual double toDouble() const {
 		double d;
 		if (value.ToDouble(&d)) {
@@ -357,11 +376,6 @@ class ScriptNil : public ScriptValue {
 	virtual AColor toColor()  const { return AColor(0,0,0,0); }
 	virtual GeneratedImageP toImage() const {
 		return intrusive(new BlankImage());
-	}
-	virtual CompareWhat compareAs(String& compare_str, void const*&) const {
-		// TODO: do we want both nil=="" and nil==0? Then we would get non-transitive equality
-		compare_str.clear();
-		return COMPARE_AS_STRING;
 	}
 
   protected:
