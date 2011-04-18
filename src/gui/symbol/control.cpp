@@ -23,7 +23,7 @@
 // ----------------------------------------------------------------------------- : SymbolControl
 
 SymbolControl::SymbolControl(SymbolWindow* parent, int id, const SymbolP& symbol)
-	: wxControl(parent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME)
+	: wxControl(parent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME_FIX(wxBORDER_THEME))
 	, SymbolViewer(symbol, true)
 	, parent(parent)
 {

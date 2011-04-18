@@ -121,7 +121,7 @@ class PackageInfoPanel : public wxPanel {
 };
 
 PackageInfoPanel::PackageInfoPanel(Window* parent)
-	: wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME)
+	: wxPanel(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME_FIX(wxBORDER_THEME))
 {}
 
 void PackageInfoPanel::setPackage(const InstallablePackageP& package) {

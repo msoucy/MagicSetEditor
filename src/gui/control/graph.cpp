@@ -1029,7 +1029,7 @@ void GraphContainer::add(const GraphP& graph) {
 // ----------------------------------------------------------------------------- : GraphControl
 
 GraphControl::GraphControl(Window* parent, int id)
-	: wxControl(parent, id, wxDefaultPosition, wxDefaultSize, wxWANTS_CHARS | wxBORDER_THEME)
+	: wxControl(parent, id, wxDefaultPosition, wxDefaultSize, wxWANTS_CHARS | wxBORDER_THEME_FIX(wxBORDER_THEME))
 	, layout(GRAPH_TYPE_BAR)
 {}
 

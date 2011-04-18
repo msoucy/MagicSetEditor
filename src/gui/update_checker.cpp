@@ -167,8 +167,8 @@ void show_update_dialog(Window* parent) {
 
 // A HTML control that opens all pages in an actual browser
 struct HtmlWindowToBrowser : public wxHtmlWindow {
-	HtmlWindowToBrowser(Window* parent, int id, const wxPoint& pos, const wxSize& size, long flags)
-		: wxHtmlWindow(parent, id, pos, size, flags)
+	HtmlWindowToBrowser(Window* parent, int id, const wxPoint& pos, const wxSize& size, long style)
+		: wxHtmlWindow(parent, id, pos, size, style | wxBORDER_THEME_FIX(wxBORDER_THEME))
 	{}
 		
 	virtual void OnLinkClicked(const wxHtmlLinkInfo& info) {
@@ -181,7 +181,7 @@ void show_update_dialog(Window* parent) {
 	// Show update dialog
 	wxDialog* dlg = new wxDialog(parent, wxID_ANY, _TITLE_("updates available"), wxDefaultPosition);
 	// controls
-	wxHtmlWindow* html = new HtmlWindowToBrowser(dlg, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO | wxBORDER_THEME);
+	wxHtmlWindow* html = new HtmlWindowToBrowser(dlg, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxHW_SCROLLBAR_AUTO);
 	html->SetPage(update_version_data->description);
 	wxButton* close = new wxButton(dlg, wxID_OK, _BUTTON_("close"));
 	close->SetDefault();

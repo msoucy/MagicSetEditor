@@ -57,6 +57,12 @@ typedef wxDateTime DateTime;
 #if wxVERSION_NUMBER < 2805
 	#define wxBORDER_THEME wxSUNKEN_BORDER
 #endif
+#if wxVERSION_NUMBER < 2900 && defined(__WXMSW__)
+	// see http://docs.wxwidgets.org/2.8.11/wx_wxmswport.html
+	#define wxBORDER_THEME_FIX(x) (x&wxBORDER_THEME ? (x&~wxBORDER_THEME)|wxWindow::GetThemedBorderStyle() : x)
+#else
+	#define wxBORDER_THEME_FIX(x) x
+#endif
 #if wxVERSION_NUMBER < 2900
 	// wx >= 2.9 requires the use of HandleWindowEvent on windows, instead of ProcessEvent
 	#define HandleWindowEvent ProcessEvent

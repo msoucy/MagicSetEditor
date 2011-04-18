@@ -123,8 +123,8 @@ size_t TreeList::findParent(size_t start) const {
 
 // ----------------------------------------------------------------------------- : TreeList : UI
 
-TreeList::TreeList(Window* parent, int id, long style)
-	: wxPanel(parent, id, wxDefaultPosition, wxDefaultSize, style | wxWANTS_CHARS | wxVSCROLL)
+TreeList::TreeList(Window* parent, int id)
+	: wxPanel(parent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME_FIX(wxBORDER_THEME) | wxWANTS_CHARS | wxVSCROLL)
 	, selection(NOTHING)
 	, total_lines(0)
 	, first_line(0)

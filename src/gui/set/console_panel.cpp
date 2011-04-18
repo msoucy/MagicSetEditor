@@ -46,7 +46,7 @@ class ConsoleMessage : public IntrusivePtrBase<ConsoleMessage> {
 class MessageCtrl : public wxScrolledWindow {
   public:
 	MessageCtrl(wxWindow* parent, int id)
-		: wxScrolledWindow(parent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME)
+		: wxScrolledWindow(parent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME_FIX(wxBORDER_THEME))
 	{
 		SetBackgroundStyle(wxBG_STYLE_CUSTOM);
 		SetScrollRate(0, 1);

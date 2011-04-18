@@ -29,7 +29,7 @@ DEFINE_EVENT_TYPE(EVENT_PART_ACTIVATE);
 
 
 SymbolPartList::SymbolPartList(Window* parent, int id, SymbolPartsSelection& selection, SymbolP symbol)
-	: wxScrolledWindow(parent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME | wxVSCROLL)
+	: wxScrolledWindow(parent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME_FIX(wxBORDER_THEME) | wxVSCROLL)
 	, selection(selection)
 	, state_icons(9,8)
 {

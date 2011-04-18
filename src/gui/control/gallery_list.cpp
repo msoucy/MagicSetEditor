@@ -22,7 +22,7 @@ DEFINE_EVENT_TYPE(EVENT_GALLERY_ACTIVATE);
 // ----------------------------------------------------------------------------- : GalleryList
 
 GalleryList::GalleryList(Window* parent, int id, int direction, bool always_focused)
-	: wxPanel(parent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME | wxWANTS_CHARS | (direction == wxHORIZONTAL ? wxHSCROLL : wxVSCROLL) )
+	: wxPanel(parent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME_FIX(wxBORDER_THEME) | wxWANTS_CHARS | (direction == wxHORIZONTAL ? wxHSCROLL : wxVSCROLL) )
 	, active_subcolumn(0)
 	, direction(direction)
 	, column_count(1)
