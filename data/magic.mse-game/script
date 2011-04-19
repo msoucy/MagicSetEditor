@@ -517,13 +517,15 @@ sub_type_filter := {
 	input := remove_tag(tag: "<soft")
 	lang  := language()
 	# What word list to use?
-	list_type_rest := if      lang.is_creature(type)    then "class"
-	                  else if lang.is_land(type)        then "land"
-	                  else if lang.is_artifact(type)    then "artifact"
-	                  else if lang.is_enchantment(type) then "enchantment"
-	                  else if lang.is_spell(type)       then "spell"
-	                  else if lang.is_planeswalker(type)       then "planeswalker"
-	if list_type_rest != "" then (
+	list_type_rest :=
+		if      lang.is_creature(type)     then "class"
+		else if lang.is_land(type)         then "land"
+		else if lang.is_artifact(type)     then "artifact"
+		else if lang.is_enchantment(type)  then "enchantment"
+		else if lang.is_spell(type)        then "spell"
+		else if lang.is_planeswalker(type) then "planeswalker"
+		else nil
+	if list_type_rest != nil then (
 		if lang.is_creature(type) or lang.is_tribal(type) then (
 			list_type_first := "race"
 		) else (
