@@ -74,14 +74,14 @@ mana_to_color := {
 		else                     "multicolor"
 	else if contains(type, match:"Artifact") then
 		# hybrid, but artifact
-		if count == 0 then "artifact"
-		else if count == 1 then color_names_1() + ", artifact"
+		if      count == 0 then  "artifact"
+		else if count == 1 then  color_names_1() + ", artifact"
 		else if count == 2 then  color_names_2() + ", artifact"
 		else                     "artifact, multicolor"
 	else
 		# hybrid, not artifact
-		if count == 0 then "colorless"
-		else if count == 1 then color_names_1()
+		if      count == 0 then  "colorless"
+		else if count == 1 then  color_names_1()
 		else if count == 2 then  color_names_2() + ", hybrid"
 		else                     "multicolor"
 }
@@ -118,24 +118,24 @@ land_to_color := {
 text_to_color := {
 	# Note: running filter_text is quite slow, do a quick 'contains' check first
 	if contains(match: card_name) then (
-	  text := filter_text(match: "is (colorless|all colors|((blue|white|green|red|black)((,|,? and) (blue|white|green|red|black))*))", in_context: regex_escape(card_name)+"(</[-a-z]+>)* <match>\\.")
-	  if text != "" then (
-	    if contains(text, match: "all colors") then (
-		colors := "WUBRG"
-		if land = "land" then land_multicolor()
-		else mana_to_color(hybrid: "")
-	    ) else (
-		colors := ""
-		if contains(text, match: "white") then colors := colors + "W"
-		if contains(text, match: "blue")  then colors := colors + "U"
-		if contains(text, match: "black") then colors := colors + "B"
-		if contains(text, match: "red")   then colors := colors + "R"
-		if contains(text, match: "green") then colors := colors + "G"
-		if land = "land" then land_multicolor()
-		else mana_to_color(hybrid: "")
-	    )
-	  )
-	)
+		text := filter_text(match: "is (colorless|all colors|((blue|white|green|red|black)((,|,? and) (blue|white|green|red|black))*))", in_context: regex_escape(card_name)+"(</[-a-z]+>)* <match>\\.")
+		if text != "" then (
+			if contains(text, match: "all colors") then (
+				colors := "WUBRG"
+				if land = "land" then land_multicolor()
+				else mana_to_color(hybrid: "")
+			) else (
+				colors := ""
+				if contains(text, match: "white") then colors := colors + "W"
+				if contains(text, match: "blue")  then colors := colors + "U"
+				if contains(text, match: "black") then colors := colors + "B"
+				if contains(text, match: "red")   then colors := colors + "R"
+				if contains(text, match: "green") then colors := colors + "G"
+				if land = "land" then land_multicolor()
+				else mana_to_color(hybrid: "")
+			)
+		)
+	) else nil
 }
 
 # The color of a card
@@ -148,7 +148,7 @@ is_spell       := match@(match: "(?i)Instant|Sorcery")
 card_color := {
 	# usually the color of mana
 	text_color := text_to_color(rules_text, land: is_land(type));
-	if text_color == "" then (
+	if text_color == nil then (
 		mana_color := mana_to_color(colors: color_filter(casting_cost), hybrid: color_filterH(casting_cost))
 		if      mana_color == "colorless" and is_land    (type)  then land_to_color(watermark)
 		else if mana_color == "colorless" and is_artifact(type)  then "artifact"
