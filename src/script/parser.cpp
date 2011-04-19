@@ -410,16 +410,16 @@ ScriptP parse(const String& s, Packaged* package, bool string_mode, vector<Scrip
 	// parse
 	TokenIterator input(s, package, string_mode, errors_out);
 	ScriptP script(new Script);
-	parseOper(input, *script, PREC_ALL);
+	ExprType type = parseOper(input, *script, PREC_ALL);
 	Token eof = input.read();
 	if (eof != TOK_EOF) {
 		input.expected(_("end of input"));
 	}
-	// were there errors?
-	if (errors_out.empty()) {
-		return script;
-	} else {
+	// were there fatal errors?
+	if (type == EXPR_FAILED) {
 		return ScriptP();
+	} else {
+		return script;
 	}
 }
 
@@ -504,14 +504,15 @@ ExprType parseExpr(TokenIterator& input, Script& script, Precedence minPrec) {
 			unsigned jmpEnd = script.addInstruction(I_JUMP);			//		jump lbl_end
 			script.comeFrom(jmpElse);									//		lbl_else:
 			bool has_else = input.peek() == _("else");					//else
+			ExprType type = EXPR_STATEMENT;
 			if (has_else) {
 				input.read();
-				parseOper(input, script, PREC_SET);						// CCC
+				type = parseOper(input, script, PREC_SET);				// CCC
 			} else {
 				script.addInstruction(I_PUSH_CONST, script_nil);
 			}
 			script.comeFrom(jmpEnd);									//		lbl_end:
-			return has_else ? EXPR_OTHER : EXPR_STATEMENT;
+			return type == EXPR_STATEMENT ? EXPR_STATEMENT : EXPR_OTHER;
 		} else if (token == _("for")) {
 			// the loop body should have a net stack effect of 0, but the entire expression of +1
 			// solution: add all results from the body, start with nil
@@ -526,6 +527,7 @@ ExprType parseExpr(TokenIterator& input, Script& script, Precedence minPrec) {
 			Token name = input.read();								// AAA
 			if (name != TOK_NAME) {
 				input.expected(_("name"));
+				return EXPR_FAILED;
 			}
 			Variable var = string_to_variable(name.value);
 			// key:value?
@@ -536,6 +538,7 @@ ExprType parseExpr(TokenIterator& input, Script& script, Precedence minPrec) {
 				name = input.read();								// BBB
 				if (name != TOK_NAME) {
 					input.expected(_("name"));
+					return EXPR_FAILED;
 				}
 				key = string_to_variable(name.value);
 				swap(var,key);
@@ -684,9 +687,13 @@ ExprType parseOper(TokenIterator& input, Script& script, Precedence minPrec, Ins
 			Instruction& instr = script.getInstructions().back();
 			if (type != EXPR_VAR || instr.instr != I_GET_VAR) {
 				input.add_error(_("Can only assign to variables"));
+				return EXPR_FAILED;
 			}
 			script.getInstructions().pop_back();
-			parseOper(input, script, PREC_SET,  I_SET_VAR, instr.data);
+			type = parseOper(input, script, PREC_SET,  I_SET_VAR, instr.data);
+			if (type == EXPR_STATEMENT) {
+				input.add_error(_("Warning: the right hand side of an assignment should always yield a value."));
+			}
 		}
 		else if (minPrec <= PREC_AND    && token==_("orelse"))parseOper(input, script, PREC_ADD,   I_BINARY, I_OR_ELSE);
 		else if (minPrec <= PREC_AND    && token==_("and")) {
