@@ -13,12 +13,18 @@
 
 template <> void Reader::handle(Color& col) {
 	col = parse_color(getValue());
-	if (!col.Ok()) col = *wxBLACK;
+	if (!col.Ok()) {
+		col = *wxBLACK;
+		warning(_("Not a valid color value"));
+	}
 }
 
 template <> void Reader::handle(AColor& col) {
 	col = parse_acolor(getValue());
-	if (!col.Ok()) col = AColor(0,0,0,0);
+	if (!col.Ok()) {
+		col = AColor(0,0,0,0);
+		warning(_("Not a valid color value"));
+	}
 }
 template <> void Writer::handle(const AColor& col) {
 	handle(format_acolor(col));
