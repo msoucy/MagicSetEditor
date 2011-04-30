@@ -1366,11 +1366,12 @@ void TextValueEditor::findWordLists() {
 				break;
 			}
 		}
-		if (!word_list) {
-			throw Error(_ERROR_1_("word list type not found", name));
-		}
 		// add to word_lists
-		word_lists.push_back(intrusive(new WordListPos(pos, end, word_list)));
+		if (word_list) {
+			word_lists.push_back(intrusive(new WordListPos(pos, end, word_list)));
+		} else {
+			queue_message(MESSAGE_WARNING, _ERROR_1_("word list type not found", name));
+		}
 		// next
 		pos = str.find(_("<word-list-"), end);
 	}
