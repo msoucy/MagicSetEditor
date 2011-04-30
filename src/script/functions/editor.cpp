@@ -390,6 +390,18 @@ SCRIPT_FUNCTION(count_chosen) {
 	}
 }
 
+// ----------------------------------------------------------------------------- : Default values
+
+// is the given choice active?
+SCRIPT_FUNCTION(mark_default) {
+	SCRIPT_PARAM_C(ScriptValueP,input);
+	return intrusive(new ScriptDefault(input));
+}
+SCRIPT_FUNCTION(is_default) {
+	SCRIPT_PARAM_C(ScriptValueP,input);
+	return intrusive(new ScriptDefault(input));
+}
+
 // ----------------------------------------------------------------------------- : Init
 
 void init_script_editor_functions(Context& ctx) {
@@ -402,4 +414,6 @@ void init_script_editor_functions(Context& ctx) {
 	ctx.setVariable(_("exclusive_choice"),         script_exclusive_choice);
 	ctx.setVariable(_("require_exclusive_choice"), script_require_exclusive_choice);
 	ctx.setVariable(_("remove_choice"),            script_remove_choice);
+	ctx.setVariable(_("is_default"),               script_is_default);
+	ctx.setVariable(_("mark_default"),             script_mark_default);
 }

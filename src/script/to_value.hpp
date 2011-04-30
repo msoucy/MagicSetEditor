@@ -101,6 +101,53 @@ inline ScriptValueP delay_error(const ScriptError& error) {
 	return intrusive(new ScriptDelayedError(error));
 }
 
+// ----------------------------------------------------------------------------- : Marked ('default') values
+
+/// A script value that is in a specially marked 'default' state.
+class ScriptDefault : public ScriptValue {
+  public:
+	inline ScriptDefault(ScriptValueP const& value) : value(value) {}
+	
+	virtual ScriptType type() const { return value->type(); }
+	virtual String typeName() const { return value->typeName(); }
+	virtual String toString() const { return value->toString(); }
+	virtual String toCode()   const { return _("mark_default(") + value->toCode() + _(")"); }
+	virtual double toDouble() const { return value->toDouble(); }
+	virtual int    toInt()    const { return value->toInt(); }
+	virtual bool   toBool()   const { return value->toBool(); }
+	virtual AColor toColor()  const { return value->toColor(); }
+	virtual GeneratedImageP toImage() const { return value->toImage(); }
+	
+	/// The actual value
+	ScriptValueP value;
+};
+inline ScriptDefault const* is_default(ScriptValue const* x) {
+	return dynamic_cast<ScriptDefault const*>(x);
+}
+inline ScriptDefault const* is_default(ScriptValueP const& x) {
+	return is_default(x.get());
+}
+
+// ----------------------------------------------------------------------------- : File names
+
+class Packaged;
+
+/// A filename internal to a package (usually the set)
+/// Filenames are essentially arbitrary, they just give a unique id for a file
+class ScriptLocalFileName : public ScriptValue {
+  public:
+	enum Type { IMAGE, SYMBOL };
+	inline ScriptLocalFileName(Packaged* package, String const& fn, Type file_type = IMAGE) : package(package), fn(fn), file_type(file_type) {}
+	
+	virtual ScriptType type() const { return SCRIPT_FILENAME; }
+	virtual String typeName() const { return _("filename"); }
+	// TODO: need to add a "to_image" function
+	
+	Packaged* package; //< Package the file is in
+	String    fn; //< The filename
+	Type      file_type;
+};
+
 // ----------------------------------------------------------------------------- : Iterators
 
 // Iterator over a collection
