@@ -58,14 +58,14 @@ class GetDefaultMember {
 	void handle(const ScriptValueP&);
 	void handle(const ScriptP&);
   private:
-	ScriptValueP  value;		///< The value we found (if any)
+	ScriptValueP  value; ///< The value we found (if any)
 };
 
 // ----------------------------------------------------------------------------- : GetMember
 
 /// Find a member with a specific name using reflection
 /** The member is wrapped in a ScriptValue */
-class GetMember : private GetDefaultMember {
+class GetMember {
   public:
 	/// Construct a member getter that looks for the given name
 	GetMember(const String& name);
@@ -105,7 +105,7 @@ class GetMember : private GetDefaultMember {
 	}
 	template <typename K, typename V> void handle(const DelayedIndexMaps<K,V>&);
 	template <typename K, typename V> void handle(const DelayedIndexMapsData<K,V>&);
-		
+	
   private:
 	const String& target_name;	///< The name we are looking for
 	GetDefaultMember gdm;		///< Object to store and retrieve the value
