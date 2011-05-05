@@ -153,9 +153,11 @@ String capitalize(const String&);
 String capitalize_sentence(const String&);
 
 /// Convert a field name to canonical form
-/** - currently only use '_' instead of ' '.
+/** - currently only convert ' ' to '_'.
  */
 String canonical_name_form(const String&);
+/// Undo canonical_name_form, this used to be the canonical name form until 2.0.1
+String uncanonical_name_form(const String&);
 
 /// Convert a field name to a string that can be shown to the user
 String name_to_caption(const String&);
@@ -204,8 +206,8 @@ bool is_substr_i(const String& str, size_t pos, const String& cmp);
 size_t find_i(const String& heystack, const String& needle);
 
 /// Compare two strings for equality, b may contain ' ' where a contains '_'
-/** canoncial_name_compare(a,b) == (cannocial_name_form(a) == b) 
- *  b should already be in cannonical name form
+/** canoncial_name_compare(a,b) == (canocial_name_form(a) == b) 
+ *  b should already be in canonical name form, i.e. use _ to separate words.
  */
 bool canoncial_name_compare(const String& a, const Char* b);
 

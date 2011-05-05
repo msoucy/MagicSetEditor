@@ -192,7 +192,8 @@ void ChoiceStyle::initImage() {
 	//      OR_ELSE
 	ScriptCustomCollectionP lookup(new ScriptCustomCollection());
 	FOR_EACH(ci, choice_images) {
-		lookup->key_value[ci.first] = ci.second.getValidScriptP();
+		lookup->key_value[uncanonical_name_form(ci.first)] = 
+			lookup->key_value[ci.first] = ci.second.getValidScriptP();
 	}
 	Script& script = image.getMutableScript();
 	script.addInstruction(I_PUSH_CONST, lookup);

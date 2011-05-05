@@ -193,6 +193,19 @@ String canonical_name_form(const String& str) {
 	return ret;
 }
 
+Char uncanonical_name_form(Char c) {
+	if (c == _('_')) return _(' ');
+	return c;
+}
+String uncanonical_name_form(const String& str) {
+	String ret;
+	ret.reserve(str.size());
+	FOR_EACH_CONST(c, str) {
+		ret += uncanonical_name_form((Char)c);
+	}
+	return ret;
+}
+
 String name_to_caption(const String& str) {
 	String ret;
 	ret.reserve(str.size());
