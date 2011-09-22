@@ -398,6 +398,7 @@ word list:
 		script: all_sub_types(match: "Enchantment")
 		line below: true
 	word: Aura
+	word: Curse
 	word: Shrine
 
 word list:

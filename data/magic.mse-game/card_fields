@@ -138,6 +138,12 @@ card field:
 	choice: sorcery
 	choice: none
 	description: The card type symbol for this card
+card field:
+	type: choice
+	name: transformation
+	choice: day
+	choice: night
+	description: On transforming cards, is this the day or the night side?
 
 ############################# Image
 card field:
@@ -188,7 +194,7 @@ card field:
 	choice: rare
 	choice: mythic rare
 	choice: special
-	initial: common
+	default: set.default_rarity
 	card list visible: true
 	card list column: 6
 	description: The rarity of the card, to edit the symbol switch to the 'set info' tab
@@ -199,6 +205,16 @@ card field:
 		mythic rare: rgb(202, 49, 35)
 		rare:       rgb(255,207,52)
 		special:    rgb(190,0,255)
+card field:
+	type: choice
+	name: identity
+	script: card.card_color
+	editable: false
+card field:
+	type: choice
+	name: idframe
+	choice: frame
+	editable: false
 
 ############################# Text box
 card field:
@@ -324,6 +340,19 @@ card field:
 	card list alignment: right
 	editable: false
 	show statistics: false
+card field:
+	type: text
+	name: card number a or b
+	save value: false
+	script:      card_number() + ( if is_day() then "a" else "b") + "/" + card_count()
+	sort script: rarity_sort() + card.card_number
+	card list visible: true
+	card list column: 10
+	card list width: 50
+	card list name: #
+	card list alignment: right
+	editable: false
+	show statistics: false
 
 ############################# Copyright stuff
 card field:
@@ -422,6 +451,12 @@ card field:
 	show statistics: false
 	description: The card symbol of the card (Tombstone)
 card field:
+	type: choice
+	name: transformation 2
+	choice: day
+	choice: night
+	description: On transforming cards, is this the day or the night side?
+card field:
 	type: image
 	name: image 2
 	show statistics: false
@@ -467,6 +502,16 @@ card field:
 	script: card.rarity
 	editable: false
 	show statistics: false
+card field:
+	type: choice
+	name: identity 2
+	script: card.card_color_2
+	editable: false
+card field:
+	type: choice
+	name: idframe 2
+	choice: frame
+	editable: false
 card field:
 	type: text
 	name: rule text 2

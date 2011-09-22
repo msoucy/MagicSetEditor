@@ -1,5 +1,5 @@
 ﻿mse version: 0.3.8
-version: 2009-08-10
+version: 2011-04-11
 # Symbol font in the 'popup' style, used for casting costs on modern cards
 short name: popup style
 installer group: magic/Mana symbols/popup style
@@ -164,6 +164,30 @@ symbol:
 	code: G/U
 	image: mana_gu.png
 	image font size: 145
+symbol:
+	code: ;W
+	image: mana_phyw.png
+	image font size: 117
+symbol:
+	code: ;U
+	image: mana_phyu.png
+	image font size: 117
+symbol:
+	code: ;B
+	image: mana_phyb.png
+	image font size: 117
+symbol:
+	code: ;R
+	image: mana_phyr.png
+	image font size: 117
+symbol:
+	code: ;G
+	image: mana_phyg.png
+	image font size: 117
+symbol:
+	code: ;1
+	image: mana_phyc.png
+	image font size: 117
 symbol:
 	code: 1/2
 	image: mana_1_half.png
@@ -337,6 +361,14 @@ insert symbol menu:
 	item: S
 	item:
 		type: line
+	item:
+		name: phyrexian
+		item: ;W
+		item: ;U
+		item: ;B
+		item: ;R
+		item: ;G
+		item: ;1
 	item:
 		name: half
 		item: 1/2

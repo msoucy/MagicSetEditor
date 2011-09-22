@@ -355,7 +355,7 @@ keyword:
 	keyword: Soulshift
 	match: Soulshift <atom-param>number</atom-param>
 	mode: expert
-	reminder: When this is put into a graveyard from the battlefield, you may return target Spirit card with converted mana cost {param1} or less from your graveyard to your hand.
+	reminder: When this dies, you may return target Spirit card with converted mana cost {param1} or less from your graveyard to your hand.
 keyword:
 	keyword: Enchant
 	match: Enchant <atom-param>name</atom-param>
@@ -420,7 +420,7 @@ keyword:
 	keyword: Haunt
 	match: Haunt
 	mode: expert
-	reminder: When this { if contains(card.type,match:"Instant") or contains(card.type,match:"Sorcery") then "spell card is put into a graveyard after resolving," else "card is put into a graveyard from the battlefield," } exile it haunting target creature.
+	reminder: When this { if contains(card.type,match:"Instant") or contains(card.type,match:"Sorcery") then "spell card is put into a graveyard after resolving," else "card dies," } exile it haunting target creature.
 keyword:
 	keyword: Bloodthirst
 	match: Bloodthirst <atom-param>number</atom-param>
@@ -594,7 +594,7 @@ keyword:
 	keyword: Persist
 	match: Persist
 	mode: expert
-	reminder: When this creature is put into a graveyard from the battlefield, if it had no -1/-1 counters on it, return it to the battlefield under its owner’s control with a -1/-1 counter on it.
+	reminder: When this creature dies, if it had no -1/-1 counters on it, return it to the battlefield under its owner’s control with a -1/-1 counter on it.
 keyword:
 	keyword: Wither
 	match: Wither
@@ -700,3 +700,23 @@ keyword:
 	match: Living weapon
 	mode: expert
 	reminder: When this Equipment enters the battlefield, put a 0/0 black Germ creature token onto the battlefield, then attach this to it.
+keyword:
+	keyword: Join forces
+	match: Join forces
+	mode: pseudo
+	rules: Join forces — Starting with you, each player may [effect].
+keyword:
+	keyword: Morbid
+	match: Morbid
+	mode: pseudo
+	rules: Morbid — If a creature died this turn, [effect].
+keyword:
+	keyword: Hexproof
+	match: Hexproof
+	mode: core
+	reminder: This creature can't be the target of spells or abilities your opponents control.
+keyword:
+	keyword: Fight
+	match: fight
+	mode: action
+	reminder: Each deals damage equal to its power to the other.

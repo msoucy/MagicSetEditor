@@ -72,6 +72,17 @@ set field:
 	initial: after other cards
 set field:
 	type: choice
+	name: default rarity
+	description: Sets a default rarity for all the cards in the set.
+	choice: basic land
+	choice: common
+	choice: uncommon
+	choice: rare
+	choice: mythic rare
+	choice: special
+	initial: common
+set field:
+	type: choice
 	name: card language
 	description: Language for the cards
 	choice: English
@@ -162,3 +173,12 @@ default set style:
 		choice images:
 			English:  /magic.mse-game/icons/language-en.png
 			Français: /magic.mse-game/icons/language-fr.png
+	default rarity:
+		render style: both
+		choice images:
+			basic land: /magic.mse-game/icons/common.png
+			common: /magic.mse-game/icons/common.png
+			uncommon: /magic.mse-game/icons/uncommon.png
+			rare: /magic.mse-game/icons/rare.png
+			mythic rare: /magic.mse-game/icons/mythicrare.png
+			special: /magic.mse-game/icons/special.png
