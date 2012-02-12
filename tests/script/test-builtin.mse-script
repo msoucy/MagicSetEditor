@@ -163,6 +163,25 @@ assert( to_number("1")   == 1 )
 assert( to_number("1.5") == 1.5 )
 assert( to_number("bla") or else "FAIL" == "FAIL" )
 
+# nil
+assert(to_string(nil)=="")
+assert(to_code(nil)=="nil")
+assert(to_color(nil)==rgba(0,0,0,0))
+assert(to_int(nil)==0)
+assert(to_boolean(nil)==false)
+# conversion doesn't happen automatically when comparing for equality
+assert(nil != "")
+assert(nil != rgba(0,0,0,0))
+assert(nil != false)
+assert(nil != 0)
+
+# to_code
+assert(to_code("abc") == "\"abc\"")
+assert(to_code("\\\<\n\r\t") == "\"\\\\\\<\\n\\r\\t\"")
+assert(to_code(1) == "1")
+assert(to_code([1,2,3]) == "[1,2,3]")
+assert(to_code([x:"y"]) == "[x:\"y\"]")
+
 # count_chosen
 assert( count_chosen("")                                 ==  0 )
 assert( count_chosen("red")                              ==  1 )
