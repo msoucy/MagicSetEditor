@@ -57,7 +57,6 @@ bool MultipleChoiceValue::update(Context& ctx, const Action* act) {
 	if (const MultipleChoiceValueAction* mvca = dynamic_cast<const MultipleChoiceValueAction*>(act)) {
 		ctx.setVariable(_("last_change"), to_script(mvca->changed_choice));
 	}
-//	ctx.setVariable(_("last_change"), to_script(last_change));
 	ChoiceValue::update(ctx,act);
 	normalForm();
 	return value() != old_value;

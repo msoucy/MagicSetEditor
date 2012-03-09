@@ -52,10 +52,6 @@ inline void swap_value(ImageValue&          a, ImageValue         ::ValueType& b
 inline void swap_value(SymbolValue&         a, SymbolValue        ::ValueType& b) { swap(a.filename, b); a.last_update.update(); }
 inline void swap_value(TextValue&           a, TextValue          ::ValueType& b) { swap(a.value,    b); a.last_update.update(); }
 inline void swap_value(PackageChoiceValue&  a, PackageChoiceValue ::ValueType& b) { swap(a.package_name, b); }
-inline void swap_value(MultipleChoiceValue& a, MultipleChoiceValue::ValueType& b) {
-	swap(a.value,       b.value);
-	swap(a.last_change, b.last_change);
-}
 
 /// A ValueAction that swaps between old and new values
 template <typename T, bool ALLOW_MERGE>

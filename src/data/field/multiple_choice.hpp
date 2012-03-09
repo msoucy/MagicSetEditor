@@ -54,14 +54,6 @@ class MultipleChoiceValue : public ChoiceValue {
 	DECLARE_HAS_FIELD(MultipleChoice);
 	virtual ValueP clone() const;
 	
-	String last_change; ///< Which of the choices was selected/deselected last?
-	
-	// for SimpleValueAction
-	struct ValueType {
-		ChoiceValue::ValueType value;
-		String                 last_change;
-	};
-	
 	/// Splits the value, stores the selected choices in the out parameter
 	void get(vector<String>& out) const;
 	
