@@ -12,7 +12,7 @@
 #if USE_SCRIPT_PROFILING
 
 // don't use script profiling in final build
-#ifndef UNICODE
+#if !defined(UNICODE) && !defined(_DEBUG)
 	#error "It looks like you are building the final release; disable USE_SCRIPT_PROFILING!"
 #endif
 
