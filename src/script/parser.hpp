@@ -36,5 +36,17 @@ ScriptP parse(const String& s, Packaged* package, bool string_mode, vector<Scrip
  */
 ScriptP parse(const String& s, Packaged* package = nullptr, bool string_mode = false);
 
+
+/// Parse a String to a ScriptValue
+/** Can return nullptr in case of parse errors
+ */
+ScriptValueP parse_value(const String& s, Packaged* package, vector<ScriptParseError>& errors_out);
+
+/// Parse a String to a ScriptValue
+/** Throws an exception in case of parse errors
+ */
+ScriptValueP parse_value(const String& s, Packaged* package = nullptr);
+
+
 // ----------------------------------------------------------------------------- : EOF
 #endif
