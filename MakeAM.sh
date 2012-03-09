@@ -13,7 +13,7 @@ AUTOMAKE_OPTIONS = subdir-objects
 
 bin_PROGRAMS = magicseteditor
 AM_CXXFLAGS = @WX_CXXFLAGS@ $(BOOST_CXXFLAGS) -I. -Wall
-AM_LDFLAGS  = @WX_LIBS@ $(BOOST_LDFLAGS)
+AM_LDFLAGS  = $(BOOST_LDFLAGS)
 
 .hpp.gch:
 	target=`echo $@ | sed "s|.gch$$|.hpp|"`;\
@@ -24,7 +24,7 @@ AM_LDFLAGS  = @WX_LIBS@ $(BOOST_LDFLAGS)
 .gch.o:
 	gcc -x c - -c -o $@ <<<""
 
-magicseteditor_LDADD = $(BOOST_REGEX_LIB)
+magicseteditor_LDADD = @WX_LIBS@ $(BOOST_REGEX_LIB)
 magicseteditor_CXXFLAGS = $(AM_CXXFLAGS)
 magicseteditor_SOURCES = 
 
