@@ -81,8 +81,10 @@ class SetScriptManager : public SetScriptContext, public ActionListener {
 	/// Update a map of styles
 	void updateStyles(Context& ctx, const IndexMap<FieldP,StyleP>& styles, bool only_content_dependent);
 	/// Updates scripts, starting at some value
-	/** if the value changes any dependend values are updated as well */
-	void updateValue(Value& value, const CardP& card);
+	/** if the value changes any dependend values are updated as well
+	 *  optionally: action that causes this update
+	 */
+	void updateValue(Value& value, const CardP& card, const Action* action);
 	// Update all values with a specific dependency
 	void updateAllDependend(const vector<Dependency>& dependent_scripts, const CardP& card = CardP());
 	

@@ -34,6 +34,11 @@ DECLARE_POINTER_TYPE(ValueEditor);
 // Value for which script updates are being run
 DECLARE_DYNAMIC_ARG(Value*, value_being_updated);
 
+// experimental: use ScriptValue to store any kind of value
+#define USE_SCRIPT_VALUE_VALUE 0
+#define USE_SCRIPT_VALUE_COLOR 0
+#define USE_SCRIPT_VALUE_CHOICE 0
+
 // ----------------------------------------------------------------------------- : Field
 
 /// Information on how to store a value
@@ -217,7 +222,9 @@ class Value : public IntrusivePtrVirtualBase {
 	/// Convert this value to a string for use in tables
 	virtual String toString() const = 0;
 	/// Apply scripts to this value, return true if the value has changed
-	virtual bool update(Context& ctx);
+	/** Optionally, the action that causes the update is also passed.
+	 */
+	virtual bool update(Context& ctx, const Action* = nullptr);
 	/// This value has been updated by an action
 	/** Does nothing for most Values, only FakeValues can update underlying data */
 	virtual void onAction(Action& a, bool undone) {}
@@ -300,23 +307,43 @@ inline String type_name(const Value&) {
 
 void mark_dependency_member(const IndexMap<FieldP,ValueP>& value, const String& name, const Dependency& dep);
 
+#if USE_SCRIPT_VALUE_VALUE
 // ----------------------------------------------------------------------------- : Value (new style)
+
+/// Base class for fields whos values can be scripted
+class AnyField : public Field {
+  public:
+	AnyField();
+	
+	OptionalScript script;			///< Script to apply to all values
+	OptionalScript default_script;	///< Script that generates the default value
+	ScriptValueP   initial;			///< Initial choice of a new value, if not set the first choice is used
+	
+	virtual void initDependencies(Context&, const Dependency&) const;
+	DECLARE_REFLECTION_VIRTUAL();
+};
+DECLARE_POINTER_TYPE(AnyField)
 
 /// A Value object that can hold something of 'any' type
 class AnyValue : public Value {
   public:
-	inline AnyValue(FieldP const& field, ScriptValueP const& value = script_nil)
-		: Value(field), value(value)
-	{}
+	AnyValue(AnyFieldP const& field);
+	AnyValue(AnyFieldP const& field, ScriptValueP const& value);
 	
 	/// The actual value
+	typedef ScriptValueP ValueType;
 	ScriptValueP value;
 	
 	virtual ValueP clone() const;
 	virtual String toString() const;
-	typedef ScriptValueP ValueType;
+	virtual bool update(Context& ctx, const Action* = nullptr);
+	
+	DECLARE_HAS_FIELD(Any)
 	DECLARE_REFLECTION_VIRTUAL();
 };
+DECLARE_POINTER_TYPE(AnyValue)
+
+#endif
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

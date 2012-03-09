@@ -19,23 +19,31 @@ DECLARE_TYPEOF(map<String COMMA ScriptableImage>);
 
 ChoiceField::ChoiceField()
 	: choices((Choice*)new Choice)
+#if !USE_SCRIPT_VALUE_CHOICE
 	, default_name(_("Default"))
+#endif
 {}
 
 IMPLEMENT_FIELD_TYPE(Choice, "choice");
 
+#if !USE_SCRIPT_VALUE_CHOICE
 void ChoiceField::initDependencies(Context& ctx, const Dependency& dep) const {
 	Field        ::initDependencies(ctx, dep);
 	script        .initDependencies(ctx, dep);
 	default_script.initDependencies(ctx, dep);
 }
+#endif
 
 IMPLEMENT_REFLECTION(ChoiceField) {
+#if USE_SCRIPT_VALUE_CHOICE
+	REFLECT_BASE(AnyField);
+#else
 	REFLECT_BASE(Field);
-	REFLECT_N("choices", choices->choices);
 	REFLECT(script);
 	REFLECT_N("default", default_script);
 	REFLECT(initial);
+#endif
+	REFLECT_N("choices", choices->choices);
 	REFLECT(default_name);
 	REFLECT_IF_READING {
 		choices->initIds();
@@ -283,6 +291,7 @@ IMPLEMENT_REFLECTION(ChoiceStyle) {
 	reflect_content(reflector, *this);
 }
 
+#if !USE_SCRIPT_VALUE_CHOICE
 // ----------------------------------------------------------------------------- : ChoiceValue
 
 ChoiceValue::ChoiceValue(const ChoiceFieldP& field, bool initial_first_choice)
@@ -296,7 +305,7 @@ ChoiceValue::ChoiceValue(const ChoiceFieldP& field, bool initial_first_choice)
 String ChoiceValue::toString() const {
 	return value();
 }
-bool ChoiceValue::update(Context& ctx) {
+bool ChoiceValue::update(Context& ctx, const Action*) {
 	bool change = field().default_script.invokeOnDefault(ctx, value)
 	            | field().        script.invokeOn(ctx, value);
 	Value::update(ctx);
@@ -308,3 +317,4 @@ IMPLEMENT_REFLECTION_NAMELESS(ChoiceValue) {
 }
 
 INSTANTIATE_REFLECTION_NAMELESS(ChoiceValue)
+#endif USE_SCRIPT_VALUE_CHOICE

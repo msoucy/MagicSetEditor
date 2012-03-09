@@ -22,10 +22,16 @@
 
 DECLARE_POINTER_TYPE(ChoiceField);
 DECLARE_POINTER_TYPE(ChoiceStyle);
+#if !USE_SCRIPT_VALUE_CHOICE
 DECLARE_POINTER_TYPE(ChoiceValue);
+#endif
 
 /// A field that contains a list of choices
+#if USE_SCRIPT_VALUE_CHOICE
+class ChoiceField : public AnyField {
+#else
 class ChoiceField : public Field {
+#endif
   public:
 	ChoiceField();
 	DECLARE_FIELD_TYPE(Choice);
@@ -34,14 +40,16 @@ class ChoiceField : public Field {
 	typedef intrusive_ptr<Choice> ChoiceP;
 	
 	ChoiceP choices;				///< A choice group of possible choices
-	OptionalScript script;			///< Script to apply to all values
-	OptionalScript default_script;	///< Script that generates the default value
-	String initial;					///< Initial choice of a new value, or ""
 	String default_name;			///< Name of "default" value
 	map<String,Color> choice_colors;			///< Colors for the various choices (when color_cardlist)
 	map<String,Color> choice_colors_cardlist;	///< Colors for the various choices, for in the card list
 	
+#if !USE_SCRIPT_VALUE_CHOICE
 	virtual void initDependencies(Context&, const Dependency&) const;
+	OptionalScript script;			///< Script to apply to all values
+	OptionalScript default_script;	///< Script that generates the default value
+	String initial;					///< Initial choice of a new value, or ""
+#endif
 };
 
 
@@ -164,6 +172,10 @@ class ChoiceStyle : public Style {
 
 // ----------------------------------------------------------------------------- : ChoiceValue
 
+#if USE_SCRIPT_VALUE_CHOICE
+typedef AnyValue ChoiceValue;
+typedef AnyValueP ChoiceValueP;
+#else
 /// The Value in a ChoiceField
 class ChoiceValue : public Value {
   public:
@@ -176,8 +188,9 @@ class ChoiceValue : public Value {
 	
 	ValueType value;	/// The name of the selected choice
 	
-	virtual bool update(Context&);
+	virtual bool update(Context&, const Action* = nullptr);
 };
+#endif
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

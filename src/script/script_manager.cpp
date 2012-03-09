@@ -155,7 +155,7 @@ void SetScriptManager::onAction(const Action& action, bool undone) {
 	TYPE_CASE(action, ValueAction) {
 		if (action.card) {
 			// we can just turn the Card* into a CardP
-			updateValue(*action.valueP, intrusive_from_existing(const_cast<Card*>(action.card)));
+			updateValue(*action.valueP, intrusive_from_existing(const_cast<Card*>(action.card)), &action);
 			return;
 		} else {
 			// is it a keyword's fake value?
@@ -173,7 +173,7 @@ void SetScriptManager::onAction(const Action& action, bool undone) {
 				return;
 			}
 			// a set or styling value
-			updateValue(*action.valueP, CardP());
+			updateValue(*action.valueP, CardP(), &action);
 		}
 	}
 	TYPE_CASE_(action, ScriptValueEvent) {
@@ -186,7 +186,7 @@ void SetScriptManager::onAction(const Action& action, bool undone) {
 				const CardP& card = step.item;
 				Context& ctx = getContext(card);
 				FOR_EACH(v, card->data) {
-					v->update(ctx);
+					v->update(ctx,&action);
 				}
 			}
 		}
@@ -259,11 +259,11 @@ void SetScriptManager::updateDelayed() {
 	delay = 0;
 }
 
-void SetScriptManager::updateValue(Value& value, const CardP& card) {
+void SetScriptManager::updateValue(Value& value, const CardP& card, Action const* action) {
 	Age starting_age; // the start of the update process
 	deque<ToUpdate> to_update;
 	// execute script for initial changed value
-	value.update(getContext(card));
+	value.update(getContext(card), action);
 	#ifdef LOG_UPDATES
 		wxLogDebug(_("Start:     %s"), value.fieldP->name);
 	#endif

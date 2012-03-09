@@ -275,7 +275,7 @@ bool Value::equals(const Value* that) {
 	return this == that;
 }
 
-bool Value::update(Context& ctx) {
+bool Value::update(Context& ctx, const Action*) {
 	updateAge();
 	updateSortValue(ctx);
 	return false;
@@ -304,23 +304,15 @@ void mark_dependency_member(const IndexMap<FieldP,ValueP>& value, const String& 
 	}
 }
 
-// ----------------------------------------------------------------------------- : AnyValue
 
-ValueP AnyValue::clone() const {
-	return intrusive(new AnyValue(fieldP,value));
-}
-String AnyValue::toString() const {
-	return value->toString();
-}
 
-void AnyValue::reflect(GetDefaultMember& reflector) {
-	reflector.handle(value);
-}
-void AnyValue::reflect(GetMember& reflector) {
-	// nothing
-}
+// ----------------------------------------------------------------------------- : AnyValue : reflecting ScriptValues
+// TODO: move this to a more sensible location
 
-ScriptValueP parse_script_value(String const& str) {
+DECLARE_DYNAMIC_ARG(Field const*, field_for_reading);
+IMPLEMENT_DYNAMIC_ARG(Field const*, field_for_reading, nullptr);
+
+ScriptValueP parse_script_value(String::const_iterator& it, String::const_iterator const& end) {
 	// possible values:
 	//  * "quoted string"           # a string
 	//  * 123.456                   # a number
@@ -328,54 +320,138 @@ ScriptValueP parse_script_value(String const& str) {
 	//  * rgb(123,123,123)          # a color
 	//  * nil                       # nil
 	//  * true/false                # a boolean
-	return script_nil;
+	//  * mark_default(value)       # a value marked as being default
+	throw "TODO";
+	// reader.warning();
 }
+ScriptValueP parse_script_value(String const& str) {
+	String::const_iterator it = str.begin();
+	ScriptValueP val = parse_script_value(it, str.end());
+	// stuff after the value
+	while (it != str.end()) {
+		if (*it == _('#')) {
+			// comment until end of line
+			while (it != str.end() && *it != _('\n')) ++it;
+		} else if (isSpace(*it)) {
+			// ignore whitespace
+			++it;
+		} else {
+			//reader.warning(_(""));
+			break;
+		}
+	}
+	return val;
+}
+void parse_errors_to_reader_warnings(Reader& reader, vector<ScriptParseError> const& errors);
 
-/// A filename in the current set
-/// functions differently wrt. garbage collection
-/*class ScriptLocalFileName : public ScriptString {
-  public:
-	ScriptLocalFileName(String const& filename) : ScriptString(filename) {}
-	// TODO!
-};*/
-
-void AnyValue::reflect(Reader& reflector) {
-	if (reflector.formatVersion() < 200001) {
+void Reader::handle(ScriptValueP& value) {
+	Field const* field = field_for_reading();
+	if (formatVersion() < 20001 && field) {
 		// in older versions, the format was based on the type of the field
-		Field* field = fieldP.get();
-		if (dynamic_cast<BooleanField*>(field)) {
+		if (dynamic_cast<BooleanField const*>(field)) {
 			// boolean field: boolean "yes" or "no"
 			bool x;
-			reflector.handle(x);
+			handle(x);
 			value = to_script(x);
-		} else if (dynamic_cast<TextField*>(field) || dynamic_cast<ChoiceField*>(field)) {
+		} else if (dynamic_cast<TextField const*>(field) || dynamic_cast<ChoiceField const*>(field)) {
 			// text, choice fields: string
 			String str;
-			reflector.handle(str);
+			handle(str);
 			value = to_script(str);
-		} else if (dynamic_cast<ColorField*>(field)) {
+		} else if (dynamic_cast<ColorField const*>(field)) {
 			// color field: color
 			Color x;
-			reflector.handle(x);
+			handle(x);
 			value = to_script(x);
-		} else if (dynamic_cast<ImageField*>(field)) {
+		} else if (dynamic_cast<ImageField const*>(field)) {
 			// image, symbol fields: string that is a filename in the set
 			String str;
-			reflector.handle(str);
-			//value = intrusive(new ScriptLocalFileName(str));
+			handle(str);
+			//Packaged* package = package_for_reading();
+			Packaged* package = nullptr; // TODO
+			value = intrusive(new ScriptLocalFileName(package,str));
 			throw "TODO";
-		} else if (dynamic_cast<InfoField*>(field)) {
+		} else if (dynamic_cast<InfoField const*>(field)) {
 			// this should never happen, since info fields were not saved
+			String str;
+			handle(str);
 		}
 	} else {
 		// in the new system, the type is stored in the file.
-		String str;
-		reflector.handle(str);
-		value = parse_script_value(str);
+		String unparsed;
+		vector<ScriptParseError> errors;
+		handle(unparsed);
+		value = parse_value(unparsed, this->getPackage(), errors);
+		if (!value) {
+			value = script_nil;
+		}
+		parse_errors_to_reader_warnings(*this, errors);
 	}
 }
-void AnyValue::reflect(Writer& reflector) {
-	if (!fieldP->save_value) return;
-	// TODO
-	reflector.handle(value->toString());
+void Writer::handle(ScriptValueP const& value) {
+	// TODO: Make a distinction in which values can be saved?
+	handle(value->toCode());
 }
+
+// ----------------------------------------------------------------------------- : AnyField
+#if USE_SCRIPT_VALUE_VALUE
+
+ScriptValueP script_default_nil() { static ScriptValueP x(new ScriptDefault(script_nil)); return x; }
+
+AnyField::AnyField() : initial(script_default_nil()) {}
+
+void AnyField::initDependencies(Context& ctx, const Dependency& dep) const {
+	Field        ::initDependencies(ctx, dep);
+	script        .initDependencies(ctx, dep);
+	default_script.initDependencies(ctx, dep);
+}
+
+IMPLEMENT_REFLECTION(AnyField) {
+	REFLECT_BASE(Field);
+	REFLECT(script);
+	REFLECT_N("default", default_script);
+	WITH_DYNAMIC_ARG(field_for_reading, this);
+	REFLECT(initial);
+}
+
+// ----------------------------------------------------------------------------- : AnyValue
+
+AnyValue::AnyValue(AnyFieldP const& field)
+	: Value(field), value(field->initial)
+{}
+
+AnyValue::AnyValue(AnyFieldP const& field, ScriptValueP const& value)
+	: Value(field), value(value)
+{}
+
+/*// TODO: conflict with ColorValue::clone, from IMPLEMENT_FIELD
+ValueP AnyValue::clone() const {
+	return intrusive(new AnyValue(*this));
+}*/
+String AnyValue::toString() const {
+	return value->toString();
+}
+
+bool AnyValue::update(Context& ctx, const Action* act) {
+	bool change = false;
+	if (ScriptDefault const* dv = dynamic_cast<ScriptDefault*>(value.get())) {
+		ScriptValueP dvv = dv->value;
+		change = field().default_script.invokeOn(ctx, dvv);
+		change |= field().script.invokeOn(ctx, dvv);
+		if (change) value = intrusive(new ScriptDefault(dvv));
+	} else {
+		change = field().script.invokeOn(ctx, value);
+	}
+	change |= Value::update(ctx, act);
+	return change;
+}
+
+
+IMPLEMENT_REFLECTION_NAMELESS(AnyValue) {
+	if (reflector.isWriting() && !fieldP->save_value) return;
+	if (reflector.isWriting() && is_default(value)) return;
+	WITH_DYNAMIC_ARG(field_for_reading, fieldP.get());
+	REFLECT_NAMELESS(value);
+}
+
+#endif

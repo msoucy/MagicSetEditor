@@ -63,7 +63,7 @@ class PackageChoiceValue : public Value {
 	/// Get the package (if it is set)
 	PackagedP getPackage() const;
 	
-	virtual bool update(Context&);
+	virtual bool update(Context&, const Action* = nullptr);
 };
 
 // ----------------------------------------------------------------------------- : EOF

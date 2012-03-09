@@ -52,9 +52,7 @@ ScriptValueP OptionalScript::invoke(Context& ctx, bool open_scope) const {
 	}
 }
 
-void OptionalScript::parse(Reader& reader, bool string_mode) {
-	vector<ScriptParseError> errors;
-	script = ::parse(unparsed, reader.getPackage(), string_mode, errors);
+void parse_errors_to_reader_warnings(Reader& reader, vector<ScriptParseError> const& errors) {
 	// show parse errors as warnings
 	String include_warnings;
 	for (size_t i = 0 ; i < errors.size() ; ++i) {
@@ -71,6 +69,12 @@ void OptionalScript::parse(Reader& reader, bool string_mode) {
 			reader.warning(e.ParseError::what(), e.line - 1);
 		}
 	}
+}
+
+void OptionalScript::parse(Reader& reader, bool string_mode) {
+	vector<ScriptParseError> errors;
+	script = ::parse(unparsed, reader.getPackage(), string_mode, errors);
+	parse_errors_to_reader_warnings(reader,errors);
 }
 
 void OptionalScript::initDependencies(Context& ctx, const Dependency& dep) const {

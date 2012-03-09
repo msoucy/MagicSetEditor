@@ -16,6 +16,7 @@ template <typename T> class Defaultable;
 template <typename T> class Scriptable;
 DECLARE_POINTER_TYPE(Game);
 DECLARE_POINTER_TYPE(StyleSheet);
+DECLARE_POINTER_TYPE(ScriptValue);
 class Packaged;
 
 // ----------------------------------------------------------------------------- : Reader
@@ -95,11 +96,10 @@ class Reader {
 	template <typename K, typename V> void handle(IndexMap<K,V>&);
 	template <typename K, typename V> void handle(DelayedIndexMaps<K,V>&);
 	template <typename K, typename V> void handle(DelayedIndexMapsData<K,V>&);
-	/// Reads a Defaultable from the input stream
 	template <typename T> void handle(Defaultable<T>&);
-	/// Reads a Scriptable from the input stream
 	template <typename T> void handle(Scriptable<T>&);
-	// special behaviour
+	void handle(ScriptValueP&);
+	// special behaviour: only write the name of the package
 	void handle(GameP&);
 	void handle(StyleSheetP&);
 	

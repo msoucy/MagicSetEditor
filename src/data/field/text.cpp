@@ -135,7 +135,7 @@ IMPLEMENT_REFLECTION(TextStyle) {
 String TextValue::toString() const {
 	return untag_hide_sep(value());
 }
-bool TextValue::update(Context& ctx) {
+bool TextValue::update(Context& ctx, const Action*) {
 	updateAge();
 	WITH_DYNAMIC_ARG(last_update_age,     last_update.get());
 	WITH_DYNAMIC_ARG(value_being_updated, this);

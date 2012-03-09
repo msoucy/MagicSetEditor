@@ -81,14 +81,16 @@ const Char* version_suffix = _(" (ascii build)");
  *             - store time created,modified for cards -> changes set and clipboard format
  *     0.3.9 : bugfix release mostly, a few new script functions
  *     2.0.0 : bugfix release mostly, added error console
+ *     2.0.1 : values are stored as ScriptValues, i.e. as parsable code.
+ *             previously they were stored as unescaped strings, where the field type determined how the value would be parsed.
  */
 const Version file_version_locale          = 20000; // 2.0.0
-const Version file_version_set             =   308; // 0.3.8
-const Version file_version_game            =   308; // 0.3.8
-const Version file_version_stylesheet      =   308; // 0.3.8
-const Version file_version_symbol_font     =   306; // 0.3.6
+const Version file_version_set             = 20001; // 2.0.1
+const Version file_version_game            = 20001; // 2.0.1
+const Version file_version_stylesheet      = 20001; // 2.0.1
+const Version file_version_symbol_font     = 20001; // 2.0.1
 const Version file_version_export_template =   307; // 0.3.7
 const Version file_version_installer       =   307; // 0.3.7
 const Version file_version_symbol          =   305; // 0.3.5
 const Version file_version_clipboard       =   308; // 0.3.8
-const Version file_version_script          =   307; // 0.3.7
+const Version file_version_script          = 20001; // 2.0.1

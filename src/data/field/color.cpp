@@ -21,18 +21,23 @@ ColorField::ColorField()
 
 IMPLEMENT_FIELD_TYPE(Color, "color");
 
+#if !USE_SCRIPT_VALUE_COLOR
 void ColorField::initDependencies(Context& ctx, const Dependency& dep) const {
 	Field        ::initDependencies(ctx, dep);
 	script        .initDependencies(ctx, dep);
 	default_script.initDependencies(ctx, dep);
 }
-
+#endif
 
 IMPLEMENT_REFLECTION(ColorField) {
+#if USE_SCRIPT_VALUE_COLOR
+	REFLECT_BASE(AnyField);
+#else
 	REFLECT_BASE(Field);
 	REFLECT(script);
 	REFLECT_N("default", default_script);
 	REFLECT(initial);
+#endif
 	REFLECT(default_name);
 	REFLECT(allow_custom);
 	REFLECT(choices);
@@ -76,6 +81,8 @@ int ColorStyle::update(Context& ctx) {
 
 // ----------------------------------------------------------------------------- : ColorValue
 
+#if !USE_SCRIPT_VALUE_COLOR
+
 ColorValue::ColorValue(const ColorFieldP& field)
 	: Value(field)
 	, value( !field->initial.isDefault() ? field->initial()
@@ -92,7 +99,7 @@ String ColorValue::toString() const {
 	}
 	return _("<color>");
 }
-bool ColorValue::update(Context& ctx) {
+bool ColorValue::update(Context& ctx, const Action*) {
 	bool change = field().default_script.invokeOnDefault(ctx, value)
 	            | field().        script.invokeOn(ctx, value);
 	Value::update(ctx);
@@ -102,3 +109,6 @@ bool ColorValue::update(Context& ctx) {
 IMPLEMENT_REFLECTION_NAMELESS(ColorValue) {
 	if (fieldP->save_value || !reflector.isWriting()) REFLECT_NAMELESS(value);
 }
+
+#endif
+

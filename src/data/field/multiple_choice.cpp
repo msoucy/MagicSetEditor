@@ -8,6 +8,7 @@
 
 #include <util/prec.hpp>
 #include <data/field/multiple_choice.hpp>
+#include <data/action/value.hpp>
 
 // ----------------------------------------------------------------------------- : MultipleChoiceField
 
@@ -51,10 +52,13 @@ IMPLEMENT_REFLECTION_NAMELESS(MultipleChoiceValue) {
 	REFLECT_BASE(ChoiceValue);
 }
 
-bool MultipleChoiceValue::update(Context& ctx) {
+bool MultipleChoiceValue::update(Context& ctx, const Action* act) {
 	String old_value = value();
-	ctx.setVariable(_("last_change"), to_script(last_change));
-	ChoiceValue::update(ctx);
+	if (const MultipleChoiceValueAction* mvca = dynamic_cast<const MultipleChoiceValueAction*>(act)) {
+		ctx.setVariable(_("last_change"), to_script(mvca->changed_choice));
+	}
+//	ctx.setVariable(_("last_change"), to_script(last_change));
+	ChoiceValue::update(ctx,act);
 	normalForm();
 	return value() != old_value;
 }

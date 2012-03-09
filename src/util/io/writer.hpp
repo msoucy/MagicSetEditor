@@ -61,10 +61,9 @@ class Writer {
 	template <typename K, typename V> void handle(const IndexMap<K,V>&);
 	template <typename K, typename V> void handle(const DelayedIndexMaps<K,V>&);
 	template <typename K, typename V> void handle(const DelayedIndexMapsData<K,V>&);
-	/// Write an object of type Defaultable<T> to the output stream
 	template <typename T> void handle(const Defaultable<T>&);
-	/// Write an object of type Scriptable<T> to the output stream
 	template <typename T> void handle(const Scriptable<T>&);
+	void handle(const ScriptValueP&);
 	// special behaviour
 	void handle(const GameP&);
 	void handle(const StyleSheetP&);

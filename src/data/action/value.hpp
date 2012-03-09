@@ -24,12 +24,17 @@ DECLARE_POINTER_TYPE(Set);
 DECLARE_POINTER_TYPE(Value);
 DECLARE_POINTER_TYPE(Style);
 DECLARE_POINTER_TYPE(TextValue);
+#if !USE_SCRIPT_VALUE_CHOICE
 DECLARE_POINTER_TYPE(ChoiceValue);
+#endif
 DECLARE_POINTER_TYPE(MultipleChoiceValue);
+#if !USE_SCRIPT_VALUE_COLOR
 DECLARE_POINTER_TYPE(ColorValue);
+#endif
 DECLARE_POINTER_TYPE(ImageValue);
 DECLARE_POINTER_TYPE(SymbolValue);
 DECLARE_POINTER_TYPE(PackageChoiceValue);
+DECLARE_POINTER_TYPE(AnyValue);
 
 // ----------------------------------------------------------------------------- : ValueAction (based class)
 
@@ -55,12 +60,34 @@ class ValueAction : public Action {
 // ----------------------------------------------------------------------------- : Simple
 
 /// Action that updates a Value to a new value
+#if !USE_SCRIPT_VALUE_CHOICE
 ValueAction* value_action(const ChoiceValueP&         value, const Defaultable<String>& new_value);
-ValueAction* value_action(const MultipleChoiceValueP& value, const Defaultable<String>& new_value, const String& last_change);
+#endif
+#if !USE_SCRIPT_VALUE_COLOR
 ValueAction* value_action(const ColorValueP&          value, const Defaultable<Color>&  new_value);
+#endif
 ValueAction* value_action(const ImageValueP&          value, const FileName&            new_value);
 ValueAction* value_action(const SymbolValueP&         value, const FileName&            new_value);
 ValueAction* value_action(const PackageChoiceValueP&  value, const String&              new_value);
+#if USE_SCRIPT_VALUE_VALUE
+ValueAction* value_action(const AnyValueP&            value, const ScriptValueP&        new_value);
+#endif
+ValueAction* value_action(const MultipleChoiceValueP& value, const Defaultable<String>& new_value, const String& last_change);
+
+// ----------------------------------------------------------------------------- : MultipleChoice
+
+class MultipleChoiceValueAction : public ValueAction {
+  public:
+	inline MultipleChoiceValueAction(const ValueP& value, const Defaultable<String>& new_value, const String& changed_choice)
+		: ValueAction(value), new_value(new_value), changed_choice(changed_choice)
+	{}
+	
+	virtual void perform(bool to_undo);
+	
+	const String changed_choice; ///< What choice was toggled by this action (if any)
+  private:
+	Defaultable<String> new_value;
+};
 
 // ----------------------------------------------------------------------------- : Text
 

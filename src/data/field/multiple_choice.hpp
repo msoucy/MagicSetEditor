@@ -65,7 +65,7 @@ class MultipleChoiceValue : public ChoiceValue {
 	/// Splits the value, stores the selected choices in the out parameter
 	void get(vector<String>& out) const;
 	
-	virtual bool update(Context&);
+	virtual bool update(Context&, const Action* = nullptr);
 	
   private:
 	DECLARE_REFLECTION();

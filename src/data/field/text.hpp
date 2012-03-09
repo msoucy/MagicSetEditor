@@ -92,7 +92,7 @@ class TextValue : public Value {
 	ValueType value;                ///< The text of this value
 	Age       last_update;          ///< When was the text last changed?
 	
-	virtual bool update(Context&);
+	virtual bool update(Context&, const Action* = nullptr);
 };
 
 // ----------------------------------------------------------------------------- : TextValue

@@ -62,7 +62,7 @@ class InfoValue : public Value {
 	
 	ValueType value;
 	
-	virtual bool update(Context&);
+	virtual bool update(Context&, const Action* = nullptr);
 };
 
 // ----------------------------------------------------------------------------- : EOF

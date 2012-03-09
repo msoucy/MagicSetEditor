@@ -61,9 +61,9 @@ PackagedP PackageChoiceValue::getPackage() const {
 	else return package_manager.openAny(package_name, true);
 }
 
-bool PackageChoiceValue::update(Context& ctx) {
+bool PackageChoiceValue::update(Context& ctx, const Action* act) {
 	bool change = field().script.invokeOn(ctx, package_name);
-	Value::update(ctx);
+	Value::update(ctx,act);
 	return change;
 }
 

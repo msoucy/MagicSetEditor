@@ -62,7 +62,7 @@ IMPLEMENT_REFLECTION(InfoStyle) {
 String InfoValue::toString() const {
 	return value;
 }
-bool InfoValue::update(Context& ctx) {
+bool InfoValue::update(Context& ctx, const Action*) {
 	if (value.empty()) value = field().caption;
 	bool change = field().script.invokeOn(ctx, value);
 	Value::update(ctx);
