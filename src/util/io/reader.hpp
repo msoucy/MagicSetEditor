@@ -24,6 +24,9 @@ class Packaged;
 typedef wxInputStream  InputStream;
 typedef shared_ptr<wxInputStream> InputStreamP;
 
+// Overload to perform extra stuff after reading
+template <typename T> inline void after_reading(T&, Version) {}
+
 /// The Reader can be used for reading (deserializing) objects
 /** This class makes use of the reflection functionality, in effect
  *  an object tells the Reader what fields it would like to read.
@@ -68,6 +71,7 @@ class Reader {
 			if (state != HANDLED) unknownKey(object);
 			state = OUTSIDE;
 		} while (indent >= expected_indent);
+		after_reading(object, file_app_version);
 	}
 	
 	/// Handle an object: read it if it's name matches
@@ -194,6 +198,11 @@ class Reader {
 template <typename T>
 intrusive_ptr<T> read_new(Reader& reader) {
 	return intrusive(new T());
+}
+
+template <typename T>
+inline void after_reading(intrusive_ptr<T>& x, Version ver) {
+	after_reading(*x,ver);
 }
 
 /// Update the 'index' member of a value for use by IndexMap

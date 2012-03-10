@@ -22,7 +22,7 @@ DECLARE_POINTER_TYPE(MultipleChoiceValue);
 class MultipleChoiceField : public ChoiceField {
   public:
 	MultipleChoiceField();
-	DECLARE_FIELD_TYPE(MultipleChoiceField);
+	DECLARE_FIELD_TYPE();
 	
 	UInt minimum_selection, maximum_selection; ///< How many choices can be selected simultaniously?
 	String empty_choice; ///< Name to use when nothing is selected
@@ -50,7 +50,11 @@ class MultipleChoiceStyle : public ChoiceStyle {
  */
 class MultipleChoiceValue : public ChoiceValue {
   public:
+#if USE_SCRIPT_VALUE_CHOICE
+	inline MultipleChoiceValue(const MultipleChoiceFieldP& field) : ChoiceValue(field) {}
+#else
 	inline MultipleChoiceValue(const MultipleChoiceFieldP& field) : ChoiceValue(field, false) {}
+#endif
 	DECLARE_HAS_FIELD(MultipleChoice);
 	virtual ValueP clone() const;
 	

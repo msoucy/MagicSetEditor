@@ -82,12 +82,11 @@ SCRIPT_FUNCTION_WITH_DEP(combined_editor) {
 	// update the values if our input value is newer?
 	Age new_value_update = last_update_age();
 	FOR_EACH_2(v, values, nv, value_parts) {
-		//if (v->value() != nv.first && v->last_update < new_value_update) {
-		if (v->last_update < new_value_update) {
+		if (v->last_modified < new_value_update) {
 			bool changed = v->value() != nv.first;
 			v->value.assign(nv.first);
+			v->last_modified = new_value_update;
 			changed |= v->update(ctx);
-			v->last_update = new_value_update;
 			if (changed) { // notify of change
 				SCRIPT_OPTIONAL_PARAM_(CardP, card);
 				SCRIPT_PARAM(Set*, set);
@@ -204,10 +203,14 @@ SCRIPT_FUNCTION(primary_choice) {
 	if (!value) {
 		throw ScriptError(_("Argument to 'primary_choice' should be a choice value")); 
 	}
+	ChoiceFieldP field = dynamic_pointer_cast<ChoiceField>(value->fieldP);
+	if (!field) {
+		throw ScriptError(_("Argument to 'primary_choice' should be a choice value")); 
+	}
 	// determine choice
-	int id = value->field().choices->choiceId(value->value);
+	int id = field->choices->choiceId(value->toString());
 	// find the last group that still contains id
-	const vector<ChoiceField::ChoiceP>& choices = value->field().choices->choices;
+	const vector<ChoiceField::ChoiceP>& choices = field->choices->choices;
 	FOR_EACH_CONST_REVERSE(c, choices) {
 		if (id >= c->first_id) {
 			SCRIPT_RETURN(c->name);

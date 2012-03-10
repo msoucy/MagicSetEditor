@@ -18,13 +18,19 @@
 
 DECLARE_POINTER_TYPE(ImageField);
 DECLARE_POINTER_TYPE(ImageStyle);
+#if !USE_SCRIPT_VALUE_IMAGE
 DECLARE_POINTER_TYPE(ImageValue);
+#endif
 
 /// A field for image values
+#if USE_SCRIPT_VALUE_IMAGE
+class ImageField : public AnyField {
+#else
 class ImageField : public Field {
+#endif
   public:
 	// no extra data
-	DECLARE_FIELD_TYPE(Image);
+	DECLARE_FIELD_TYPE();
 };
 
 // ----------------------------------------------------------------------------- : ImageStyle
@@ -42,6 +48,10 @@ class ImageStyle : public Style {
 
 // ----------------------------------------------------------------------------- : ImageValue
 
+#if USE_SCRIPT_VALUE_IMAGE
+typedef AnyValue ImageValue;
+typedef AnyValueP ImageValueP;
+#else
 /// The Value in a ImageField, i.e. an image
 class ImageValue : public Value {
   public:
@@ -49,8 +59,8 @@ class ImageValue : public Value {
 	DECLARE_VALUE_TYPE(Image, FileName);
 	
 	ValueType filename;    ///< Filename of the image (in the current package), or ""
-	Age       last_update; ///< When was the image last changed?
 };
+#endif
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

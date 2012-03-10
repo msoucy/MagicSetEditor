@@ -49,7 +49,6 @@ IMPLEMENT_REFLECTION(Field) {
 		REFLECT(type);
 	}
 	REFLECT(name);
-	REFLECT_IF_READING name = canonical_name_form(name);
 	REFLECT(caption);
 	REFLECT(description);
 	REFLECT_N("icon", icon_filename);
@@ -65,8 +64,12 @@ IMPLEMENT_REFLECTION(Field) {
 	REFLECT(card_list_name);
 	REFLECT(sort_script);
 	REFLECT_N("card_list_alignment", card_list_align);
-	REFLECT_IF_READING if(caption.empty()) caption = name_to_caption(name);
-	REFLECT_IF_READING if(card_list_name.empty()) card_list_name = capitalize(caption);
+}
+
+void Field::after_reading(Version ver) {
+	name = canonical_name_form(name);
+	if(caption.empty()) caption = name_to_caption(name);
+	if(card_list_name.empty()) card_list_name = capitalize(caption);
 }
 
 template <>
@@ -276,12 +279,8 @@ bool Value::equals(const Value* that) {
 }
 
 bool Value::update(Context& ctx, const Action*) {
-	updateAge();
 	updateSortValue(ctx);
 	return false;
-}
-void Value::updateAge() {
-	last_script_update.update();
 }
 void Value::updateSortValue(Context& ctx) {
 	sort_value = fieldP->sort_script.invoke(ctx)->toString();
@@ -312,7 +311,6 @@ void mark_dependency_member(const IndexMap<FieldP,ValueP>& value, const String& 
 DECLARE_DYNAMIC_ARG(Field const*, field_for_reading);
 IMPLEMENT_DYNAMIC_ARG(Field const*, field_for_reading, nullptr);
 
-ScriptValueP parse_script_value(String::const_iterator& it, String::const_iterator const& end) {
 	// possible values:
 	//  * "quoted string"           # a string
 	//  * 123.456                   # a number
@@ -321,27 +319,7 @@ ScriptValueP parse_script_value(String::const_iterator& it, String::const_iterat
 	//  * nil                       # nil
 	//  * true/false                # a boolean
 	//  * mark_default(value)       # a value marked as being default
-	throw "TODO";
-	// reader.warning();
-}
-ScriptValueP parse_script_value(String const& str) {
-	String::const_iterator it = str.begin();
-	ScriptValueP val = parse_script_value(it, str.end());
-	// stuff after the value
-	while (it != str.end()) {
-		if (*it == _('#')) {
-			// comment until end of line
-			while (it != str.end() && *it != _('\n')) ++it;
-		} else if (isSpace(*it)) {
-			// ignore whitespace
-			++it;
-		} else {
-			//reader.warning(_(""));
-			break;
-		}
-	}
-	return val;
-}
+
 void parse_errors_to_reader_warnings(Reader& reader, vector<ScriptParseError> const& errors);
 
 void Reader::handle(ScriptValueP& value) {
@@ -383,7 +361,7 @@ void Reader::handle(ScriptValueP& value) {
 		handle(unparsed);
 		value = parse_value(unparsed, this->getPackage(), errors);
 		if (!value) {
-			value = script_nil;
+			value = script_default_nil;
 		}
 		parse_errors_to_reader_warnings(*this, errors);
 	}
@@ -396,9 +374,10 @@ void Writer::handle(ScriptValueP const& value) {
 // ----------------------------------------------------------------------------- : AnyField
 #if USE_SCRIPT_VALUE_VALUE
 
-ScriptValueP script_default_nil() { static ScriptValueP x(new ScriptDefault(script_nil)); return x; }
-
-AnyField::AnyField() : initial(script_default_nil()) {}
+AnyField::AnyField()
+	: default_name(_("Default"))
+	, initial(script_default_nil)
+{}
 
 void AnyField::initDependencies(Context& ctx, const Dependency& dep) const {
 	Field        ::initDependencies(ctx, dep);
@@ -410,6 +389,7 @@ IMPLEMENT_REFLECTION(AnyField) {
 	REFLECT_BASE(Field);
 	REFLECT(script);
 	REFLECT_N("default", default_script);
+	REFLECT(default_name);
 	WITH_DYNAMIC_ARG(field_for_reading, this);
 	REFLECT(initial);
 }
@@ -418,16 +398,19 @@ IMPLEMENT_REFLECTION(AnyField) {
 
 AnyValue::AnyValue(AnyFieldP const& field)
 	: Value(field), value(field->initial)
-{}
+{
+	assert(value);
+}
 
 AnyValue::AnyValue(AnyFieldP const& field, ScriptValueP const& value)
 	: Value(field), value(value)
-{}
+{
+	assert(value);
+}
 
-/*// TODO: conflict with ColorValue::clone, from IMPLEMENT_FIELD
 ValueP AnyValue::clone() const {
 	return intrusive(new AnyValue(*this));
-}*/
+}
 String AnyValue::toString() const {
 	return value->toString();
 }
@@ -435,10 +418,10 @@ String AnyValue::toString() const {
 bool AnyValue::update(Context& ctx, const Action* act) {
 	bool change = false;
 	if (ScriptDefault const* dv = dynamic_cast<ScriptDefault*>(value.get())) {
-		ScriptValueP dvv = dv->value;
+		ScriptValueP dvv = dv->un_default;
 		change = field().default_script.invokeOn(ctx, dvv);
 		change |= field().script.invokeOn(ctx, dvv);
-		if (change) value = intrusive(new ScriptDefault(dvv));
+		if (change) value = make_default(dvv);
 	} else {
 		change = field().script.invokeOn(ctx, value);
 	}

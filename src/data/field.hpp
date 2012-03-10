@@ -35,9 +35,16 @@ DECLARE_POINTER_TYPE(ValueEditor);
 DECLARE_DYNAMIC_ARG(Value*, value_being_updated);
 
 // experimental: use ScriptValue to store any kind of value
-#define USE_SCRIPT_VALUE_VALUE 0
-#define USE_SCRIPT_VALUE_COLOR 0
-#define USE_SCRIPT_VALUE_CHOICE 0
+// TODO: get rid of the conditional stuff
+// TODO2: mergre Any{Field,Value} into {Field,Value}
+#define USE_SCRIPT_VALUE_VALUE   0
+#define USE_SCRIPT_VALUE_COLOR   0
+#define USE_SCRIPT_VALUE_CHOICE  0
+#define USE_SCRIPT_VALUE_INFO    0
+#define USE_SCRIPT_VALUE_TEXT    0
+#define USE_SCRIPT_VALUE_SYMBOL  0
+#define USE_SCRIPT_VALUE_IMAGE   0
+#define USE_SCRIPT_VALUE_PACKAGE 0
 
 // ----------------------------------------------------------------------------- : Field
 
@@ -76,6 +83,7 @@ class Field : public IntrusivePtrVirtualBase {
 	/// Add the given dependency to the dependet_scripts list for the variables this field depends on
 	virtual void initDependencies(Context& ctx, const Dependency& dep) const;
 	
+	virtual void after_reading(Version ver);
   private:
 	DECLARE_REFLECTION_VIRTUAL();
 };
@@ -84,6 +92,10 @@ template <>
 intrusive_ptr<Field> read_new<Field>(Reader& reader);
 inline void update_index(FieldP& f, size_t index) {
 	f->index = index;
+}
+
+inline void after_reading(Field& f, Version ver) {
+	f.after_reading(ver);
 }
 
 inline String type_name(const Field&) {
@@ -213,7 +225,8 @@ class Value : public IntrusivePtrVirtualBase {
 	virtual ~Value();
 	
 	const FieldP fieldP;				///< Field this value is for, should have the right type!
-	Age          last_script_update;	///< When where the scripts last updated? (by calling update)
+	Age          last_modified;			///< When was the value last modified? Note: this also goes up on undo.
+	                                    ///< This variable is used by ScriptManager. It will be incremented by each round of script updates.
 	String       sort_value;			///< How this should be sorted.
 	
 	/// Get a copy of this value
@@ -243,7 +256,6 @@ class Value : public IntrusivePtrVirtualBase {
   protected:
 	/// update() split into two functions;.
 	/** Derived classes should put their stuff in between if they need the age in scripts */
-	void updateAge();
 	void updateSortValue(Context& ctx);
 	
   private:
@@ -261,7 +273,7 @@ inline String type_name(const Value&) {
 
 // ----------------------------------------------------------------------------- : Utilities
 
-#define DECLARE_FIELD_TYPE(Type) \
+#define DECLARE_FIELD_TYPE() \
 	DECLARE_REFLECTION(); public: \
 	virtual ValueP newValue(); \
 	virtual StyleP newStyle(); \
@@ -275,14 +287,15 @@ inline String type_name(const Value&) {
 	ValueP Type ## Field::newValue() { \
 		return intrusive(new Type ## Value(intrusive_from_existing(this))); \
 	} \
-	StyleP Type ## Style::clone() const {												\
-		return intrusive(new Type ## Style(*this));										\
-	}																					\
-	ValueP Type ## Value::clone() const {												\
-		return intrusive(new Type ## Value(*this));										\
-	}																					\
-	String Type ## Field::typeName() const {											\
-		return _(NAME);																	\
+	StyleP Type ## Style::clone() const { \
+		return intrusive(new Type ## Style(*this)); \
+	} \
+	String Type ## Field::typeName() const { \
+		return _(NAME); \
+	}
+#define IMPLEMENT_VALUE_CLONE(Type) \
+	ValueP Type ## Value::clone() const { \
+		return intrusive(new Type ## Value(*this)); \
 	}
 
 #define DECLARE_STYLE_TYPE(Type) \
@@ -316,11 +329,12 @@ class AnyField : public Field {
 	AnyField();
 	
 	OptionalScript script;			///< Script to apply to all values
-	OptionalScript default_script;	///< Script that generates the default value
+	OptionalScript default_script;	///< Script that generates the default value, can be empty if there is no default
+	String         default_name;    ///< Name of the 'default' choice
 	ScriptValueP   initial;			///< Initial choice of a new value, if not set the first choice is used
 	
-	virtual void initDependencies(Context&, const Dependency&) const;
 	DECLARE_REFLECTION_VIRTUAL();
+	virtual void initDependencies(Context&, const Dependency&) const;
 };
 DECLARE_POINTER_TYPE(AnyField)
 

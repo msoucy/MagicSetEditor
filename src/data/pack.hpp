@@ -57,6 +57,7 @@ class PackType : public IntrusivePtrBase<PackType> {
   private:
 	DECLARE_REFLECTION();
 };
+void after_reading(PackType&, Version);
 
 /// An item in a PackType
 class PackItem : public IntrusivePtrBase<PackItem> {

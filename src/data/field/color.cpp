@@ -16,7 +16,9 @@ DECLARE_TYPEOF_COLLECTION(ColorField::ChoiceP);
 
 ColorField::ColorField()
 	: allow_custom(true)
+#if !USE_SCRIPT_VALUE_COLOR
 	, default_name(_("Default"))
+#endif
 {}
 
 IMPLEMENT_FIELD_TYPE(Color, "color");
@@ -36,9 +38,9 @@ IMPLEMENT_REFLECTION(ColorField) {
 	REFLECT_BASE(Field);
 	REFLECT(script);
 	REFLECT_N("default", default_script);
+	REFLECT(default_name);
 	REFLECT(initial);
 #endif
-	REFLECT(default_name);
 	REFLECT(allow_custom);
 	REFLECT(choices);
 }
@@ -82,6 +84,8 @@ int ColorStyle::update(Context& ctx) {
 // ----------------------------------------------------------------------------- : ColorValue
 
 #if !USE_SCRIPT_VALUE_COLOR
+
+IMPLEMENT_VALUE_CLONE(Color);
 
 ColorValue::ColorValue(const ColorFieldP& field)
 	: Value(field)

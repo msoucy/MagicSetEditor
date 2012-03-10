@@ -15,15 +15,22 @@ BooleanField::BooleanField() {
 	choices->choices.push_back(intrusive(new Choice(_("yes"))));
 	choices->choices.push_back(intrusive(new Choice(_("no"))));
 	choices->initIds();
+#if USE_SCRIPT_VALUE_CHOICE
+	initial = script_true;
+#endif
 }
 
 IMPLEMENT_FIELD_TYPE(Boolean, "boolean");
 
 IMPLEMENT_REFLECTION(BooleanField) {
+#if USE_SCRIPT_VALUE_CHOICE
+	REFLECT_BASE(AnyField); // NOTE: don't reflect as a ChoiceField, TODO: why was that?
+#else
 	REFLECT_BASE(Field); // NOTE: don't reflect as a ChoiceField
 	REFLECT(script);
 	REFLECT_N("default", default_script);
 	REFLECT(initial);
+#endif
 }
 
 // ----------------------------------------------------------------------------- : BooleanStyle
@@ -40,10 +47,4 @@ BooleanStyle::BooleanStyle(const ChoiceFieldP& field)
 
 IMPLEMENT_REFLECTION(BooleanStyle) {
 	REFLECT_BASE(ChoiceStyle);
-}
-
-// ----------------------------------------------------------------------------- : BooleanValue
-
-IMPLEMENT_REFLECTION_NAMELESS(BooleanValue) {
-	REFLECT_BASE(ChoiceValue);
 }

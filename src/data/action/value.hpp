@@ -17,13 +17,19 @@
 #include <util/prec.hpp>
 #include <util/action_stack.hpp>
 #include <util/defaultable.hpp>
+#include <data/field.hpp>
 
 class Card;
 class StyleSheet;
 DECLARE_POINTER_TYPE(Set);
 DECLARE_POINTER_TYPE(Value);
 DECLARE_POINTER_TYPE(Style);
+#if !USE_SCRIPT_VALUE_TEXT
 DECLARE_POINTER_TYPE(TextValue);
+#else
+typedef AnyValue TextValue;
+typedef AnyValueP TextValueP;
+#endif
 #if !USE_SCRIPT_VALUE_CHOICE
 DECLARE_POINTER_TYPE(ChoiceValue);
 #endif
@@ -31,9 +37,15 @@ DECLARE_POINTER_TYPE(MultipleChoiceValue);
 #if !USE_SCRIPT_VALUE_COLOR
 DECLARE_POINTER_TYPE(ColorValue);
 #endif
+#if !USE_SCRIPT_VALUE_IMAGE
 DECLARE_POINTER_TYPE(ImageValue);
+#endif
+#if !USE_SCRIPT_VALUE_SYMBOL
 DECLARE_POINTER_TYPE(SymbolValue);
+#endif
+#if !USE_SCRIPT_VALUE_PACKAGE
 DECLARE_POINTER_TYPE(PackageChoiceValue);
+#endif
 DECLARE_POINTER_TYPE(AnyValue);
 
 // ----------------------------------------------------------------------------- : ValueAction (based class)
@@ -62,6 +74,9 @@ class ValueAction : public Action {
 /// Action that updates a Value to a new value
 #if !USE_SCRIPT_VALUE_CHOICE
 ValueAction* value_action(const ChoiceValueP&         value, const Defaultable<String>& new_value);
+ValueAction* value_action(const MultipleChoiceValueP& value, const Defaultable<String>& new_value, const String& last_change);
+#else
+ValueAction* value_action(const MultipleChoiceValueP& value, const ScriptValueP& new_value, const String& last_change);
 #endif
 #if !USE_SCRIPT_VALUE_COLOR
 ValueAction* value_action(const ColorValueP&          value, const Defaultable<Color>&  new_value);
@@ -72,13 +87,16 @@ ValueAction* value_action(const PackageChoiceValueP&  value, const String&      
 #if USE_SCRIPT_VALUE_VALUE
 ValueAction* value_action(const AnyValueP&            value, const ScriptValueP&        new_value);
 #endif
-ValueAction* value_action(const MultipleChoiceValueP& value, const Defaultable<String>& new_value, const String& last_change);
 
 // ----------------------------------------------------------------------------- : MultipleChoice
 
 class MultipleChoiceValueAction : public ValueAction {
   public:
+#if USE_SCRIPT_VALUE_CHOICE
+	inline MultipleChoiceValueAction(const ValueP& value, const ScriptValueP& new_value, const String& changed_choice)
+#else
 	inline MultipleChoiceValueAction(const ValueP& value, const Defaultable<String>& new_value, const String& changed_choice)
+#endif
 		: ValueAction(value), new_value(new_value), changed_choice(changed_choice)
 	{}
 	
@@ -86,7 +104,11 @@ class MultipleChoiceValueAction : public ValueAction {
 	
 	const String changed_choice; ///< What choice was toggled by this action (if any)
   private:
+#if USE_SCRIPT_VALUE_CHOICE
+	ScriptValueP new_value;
+#else
 	Defaultable<String> new_value;
+#endif
 };
 
 // ----------------------------------------------------------------------------- : Text

@@ -166,7 +166,7 @@ SCRIPT_FUNCTION(symbol_variation) {
 		FOR_EACH(v, style->variations) {
 			if (v->name == variation) {
 				// found it
-				return intrusive(new SymbolToImage(value, filename, value->last_update, v));
+				return intrusive(new SymbolToImage(value, filename, value->last_modified, v));
 			}
 		}
 		throw ScriptError(_("Variation of symbol not found ('") + variation + _("')"));
@@ -200,7 +200,7 @@ SCRIPT_FUNCTION(symbol_variation) {
 		} else {
 			throw ScriptError(_("Unknown fill type for symbol_variation: ") + fill_type);
 		}
-		return intrusive(new SymbolToImage(value, filename, value ? value->last_update : Age(0), var));
+		return intrusive(new SymbolToImage(value, filename, value ? value->last_modified : Age(), var));
 	}
 }
 

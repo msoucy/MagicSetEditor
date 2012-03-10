@@ -8,6 +8,7 @@
 
 #include <util/prec.hpp>
 #include <data/field/choice.hpp>
+#include <data/field/multiple_choice.hpp>
 #include <util/io/package.hpp>
 #include <util/defaultable.hpp>
 #include <wx/imaglist.h>
@@ -41,15 +42,26 @@ IMPLEMENT_REFLECTION(ChoiceField) {
 	REFLECT_BASE(Field);
 	REFLECT(script);
 	REFLECT_N("default", default_script);
+	REFLECT(default_name);
 	REFLECT(initial);
 #endif
 	REFLECT_N("choices", choices->choices);
-	REFLECT(default_name);
 	REFLECT_IF_READING {
-		choices->initIds();
 	}
 	REFLECT(choice_colors);
 	REFLECT(choice_colors_cardlist);
+}
+void ChoiceField::after_reading(Version ver) {
+#if USE_SCRIPT_VALUE_CHOICE
+	AnyField::after_reading(ver);
+	choices->initIds();
+	if(initial == script_default_nil && !dynamic_cast<MultipleChoiceField*>(this)) {
+		initial = make_default(to_script(choices->choiceName(0)));
+	}
+#else
+	Field::after_reading(ver);
+	choices->initIds();
+#endif
 }
 
 // ----------------------------------------------------------------------------- : ChoiceField::Choice
@@ -293,6 +305,8 @@ IMPLEMENT_REFLECTION(ChoiceStyle) {
 
 #if !USE_SCRIPT_VALUE_CHOICE
 // ----------------------------------------------------------------------------- : ChoiceValue
+
+IMPLEMENT_VALUE_CLONE(Choice);
 
 ChoiceValue::ChoiceValue(const ChoiceFieldP& field, bool initial_first_choice)
 	: Value(field)

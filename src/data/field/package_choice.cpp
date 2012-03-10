@@ -50,6 +50,8 @@ IMPLEMENT_REFLECTION(PackageChoiceStyle) {
 
 // ----------------------------------------------------------------------------- : PackageChoiceValue
 
+IMPLEMENT_VALUE_CLONE(PackageChoice);
+
 String PackageChoiceValue::toString() const {
 	PackagedP pack = getPackage();
 	if (pack.get()) return pack->short_name;

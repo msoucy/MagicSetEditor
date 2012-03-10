@@ -20,12 +20,18 @@ DECLARE_POINTER_TYPE(SymbolVariation);
 
 DECLARE_POINTER_TYPE(SymbolField);
 DECLARE_POINTER_TYPE(SymbolStyle);
+#if !USE_SCRIPT_VALUE_SYMBOL
 DECLARE_POINTER_TYPE(SymbolValue);
+#endif
 
 /// A field for image values
+#if USE_SCRIPT_VALUE_SYMBOL
+class SymbolField : public AnyField {
+#else
 class SymbolField : public Field {
+#endif
   public:
-	DECLARE_FIELD_TYPE(Symbol);
+	DECLARE_FIELD_TYPE();
 	
 	// no extra data
 };
@@ -62,6 +68,10 @@ class SymbolVariation : public IntrusivePtrBase<SymbolVariation> {
 
 // ----------------------------------------------------------------------------- : SymbolValue
 
+#if USE_SCRIPT_VALUE_SYMBOL
+typedef AnyValue SymbolValue;
+typedef AnyValueP SymbolValueP;
+#else
 /// The Value in a SymbolField, i.e. a symbol
 class SymbolValue : public Value {
   public:
@@ -69,8 +79,8 @@ class SymbolValue : public Value {
 	DECLARE_VALUE_TYPE(Symbol, FileName);
 	
 	ValueType filename;    ///< Filename of the symbol (in the current package)
-	Age       last_update; ///< When was the symbol last changed?
 };
+#endif
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

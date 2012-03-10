@@ -33,6 +33,8 @@ int ImageStyle::update(Context& ctx) {
 
 // ----------------------------------------------------------------------------- : ImageValue
 
+IMPLEMENT_VALUE_CLONE(Image);
+
 String ImageValue::toString() const {
 	return filename.empty() ? wxEmptyString : _("<image>");
 }
@@ -48,5 +50,5 @@ void ImageValue::reflect(Writer& reflector) {
 void ImageValue::reflect(GetMember& reflector) {}
 void ImageValue::reflect(GetDefaultMember& reflector) {
 	// convert to ScriptImageP for scripting
-	reflector.handle( (ScriptValueP)intrusive(new ImageValueToImage(filename, last_update)) );
+	reflector.handle( (ScriptValueP)intrusive(new ImageValueToImage(filename)) );
 }

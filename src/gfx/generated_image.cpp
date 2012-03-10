@@ -484,8 +484,8 @@ bool SymbolToImage::operator == (const GeneratedImage& that) const {
 
 // ----------------------------------------------------------------------------- : ImageValueToImage
 
-ImageValueToImage::ImageValueToImage(const String& filename, Age age)
-	: filename(filename), age(age)
+ImageValueToImage::ImageValueToImage(const String& filename)
+	: filename(filename)
 {}
 ImageValueToImage::~ImageValueToImage() {}
 
@@ -504,6 +504,5 @@ Image ImageValueToImage::generate(const Options& opt) const {
 }
 bool ImageValueToImage::operator == (const GeneratedImage& that) const {
 	const ImageValueToImage* that2 = dynamic_cast<const ImageValueToImage*>(&that);
-	return that2 && filename == that2->filename
-	             && age      == that2->age;
+	return that2 && filename == that2->filename;
 }

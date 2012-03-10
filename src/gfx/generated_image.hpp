@@ -375,7 +375,7 @@ class SymbolToImage : public GeneratedImage {
 /// Use an image from an ImageValue as an image
 class ImageValueToImage : public GeneratedImage {
   public:
-	ImageValueToImage(const String& filename, Age age);
+	ImageValueToImage(const String& filename);
 	~ImageValueToImage();
 	virtual Image generate(const Options& opt) const;
 	virtual bool operator == (const GeneratedImage& that) const;
@@ -383,7 +383,6 @@ class ImageValueToImage : public GeneratedImage {
   private:
 	ImageValueToImage(const ImageValueToImage&); // copy ctor
 	String filename;
-	Age    age; ///< Age the symbol was last updated
 };
 
 // ----------------------------------------------------------------------------- : EOF

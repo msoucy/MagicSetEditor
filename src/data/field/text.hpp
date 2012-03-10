@@ -24,23 +24,30 @@
 
 DECLARE_POINTER_TYPE(TextField);
 DECLARE_POINTER_TYPE(TextStyle);
+#if !USE_SCRIPT_VALUE_TEXT
 DECLARE_POINTER_TYPE(TextValue);
-DECLARE_POINTER_TYPE(TextBackground);
+#endif
 
 /// A field for values containing tagged text
+#if USE_SCRIPT_VALUE_TEXT
+class TextField : public AnyField {
+#else
 class TextField : public Field {
+#endif
   public:
 	TextField();
-	DECLARE_FIELD_TYPE(Text);
+	DECLARE_FIELD_TYPE();
 	
+	bool multi_line;				///< Are newlines allowed in the text?
+#if !USE_SCRIPT_VALUE_TEXT
 	OptionalScript script;			///< Script to apply to all values
 	OptionalScript default_script;	///< Script that generates the default value
 	//%OptionalScript view_script;		///< Script to apply before viewing
 	//%OptionalScript unview_script;	///< Script to apply after changes to the view
-	bool multi_line;				///< Are newlines allowed in the text?
 	String default_name;			///< Name of "default" value
 	
 	virtual void initDependencies(Context&, const Dependency&) const;
+#endif
 };
 
 // ----------------------------------------------------------------------------- : TextStyle
@@ -83,17 +90,21 @@ class TextStyle : public Style {
 
 // ----------------------------------------------------------------------------- : TextValue
 
+#if USE_SCRIPT_VALUE_TEXT
+typedef AnyValue TextValue;
+typedef AnyValueP TextValueP;
+#else
 /// The Value in a TextField
 class TextValue : public Value {
   public:
-	inline TextValue(const TextFieldP& field) : Value(field), last_update(1) {}
+	inline TextValue(const TextFieldP& field) : Value(field) {}
 	DECLARE_VALUE_TYPE(Text, Defaultable<String>);
 	
 	ValueType value;                ///< The text of this value
-	Age       last_update;          ///< When was the text last changed?
 	
 	virtual bool update(Context&, const Action* = nullptr);
 };
+#endif
 
 // ----------------------------------------------------------------------------- : TextValue
 

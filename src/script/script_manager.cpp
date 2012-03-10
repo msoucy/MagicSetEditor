@@ -260,9 +260,10 @@ void SetScriptManager::updateDelayed() {
 }
 
 void SetScriptManager::updateValue(Value& value, const CardP& card, Action const* action) {
-	Age starting_age; // the start of the update process
+	Age starting_age = Age::next(); // the start of the update process, use next(), so the modified value also gets a chance to be updated
 	deque<ToUpdate> to_update;
 	// execute script for initial changed value
+	value.last_modified = starting_age;
 	value.update(getContext(card), action);
 	#ifdef LOG_UPDATES
 		wxLogDebug(_("Start:     %s"), value.fieldP->name);
@@ -314,7 +315,7 @@ void SetScriptManager::updateAll() {
 
 void SetScriptManager::updateAllDependend(const vector<Dependency>& dependent_scripts, const CardP& card) {
 	deque<ToUpdate> to_update;
-	Age starting_age;
+	Age starting_age = Age::next();
 	alsoUpdate(to_update, dependent_scripts, card);
 	updateRecursive(to_update, starting_age);
 }
@@ -329,8 +330,9 @@ void SetScriptManager::updateRecursive(deque<ToUpdate>& to_update, Age starting_
 }
 
 void SetScriptManager::updateToUpdate(const ToUpdate& u, deque<ToUpdate>& to_update, Age starting_age) {
-	Age age = u.value->last_script_update;
+	Age& age = u.value->last_modified;
 	if (starting_age < age)  return; // this value was already updated
+	age = starting_age; // mark as updated
 	Context& ctx = getContext(u.card);
 	bool changes = false;
 	try {

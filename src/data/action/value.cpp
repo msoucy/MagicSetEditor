@@ -48,9 +48,9 @@ inline void swap_value(ColorValue&          a, ColorValue         ::ValueType& b
 #if USE_SCRIPT_VALUE_VALUE
 inline void swap_value(AnyValue&            a, AnyValue           ::ValueType& b) { swap(a.value,    b); }
 #endif
-inline void swap_value(ImageValue&          a, ImageValue         ::ValueType& b) { swap(a.filename, b); a.last_update.update(); }
-inline void swap_value(SymbolValue&         a, SymbolValue        ::ValueType& b) { swap(a.filename, b); a.last_update.update(); }
-inline void swap_value(TextValue&           a, TextValue          ::ValueType& b) { swap(a.value,    b); a.last_update.update(); }
+inline void swap_value(ImageValue&          a, ImageValue         ::ValueType& b) { swap(a.filename, b); }
+inline void swap_value(SymbolValue&         a, SymbolValue        ::ValueType& b) { swap(a.filename, b); }
+inline void swap_value(TextValue&           a, TextValue          ::ValueType& b) { swap(a.value,    b); }
 inline void swap_value(PackageChoiceValue&  a, PackageChoiceValue ::ValueType& b) { swap(a.package_name, b); }
 
 /// A ValueAction that swaps between old and new values
@@ -99,13 +99,11 @@ ValueAction* value_action(const PackageChoiceValueP&  value, const String&      
 
 // ----------------------------------------------------------------------------- : MultipleChoice
 
-/*
+#if USE_SCRIPT_VALUE_CHOICE
+ValueAction* value_action(const MultipleChoiceValueP& value, const ScriptValueP& new_value, const String& last_change) {
+#else
 ValueAction* value_action(const MultipleChoiceValueP& value, const Defaultable<String>& new_value, const String& last_change) {
-	MultipleChoiceValue::ValueType v = { new_value, last_change };
-	return new SimpleValueAction<MultipleChoiceValue, false>(value, v);
-}
-*/
-ValueAction* value_action(const MultipleChoiceValueP& value, const Defaultable<String>& new_value, const String& last_change) {
+#endif
 	return new MultipleChoiceValueAction(value,new_value,last_change);
 }
 
@@ -243,7 +241,6 @@ void TextToggleReminderAction::perform(bool to_undo) {
 	if (end != String::npos && end + 5 < val.size()) {
 		val[end + 5] = c; // </kw-c>
 	}
-	value.last_update.update();
 	value.onAction(*this, to_undo); // notify value
 }
 

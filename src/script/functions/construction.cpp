@@ -39,8 +39,10 @@ SCRIPT_FUNCTION(new_card) {
 		// set the value
 		if (TextValue* tvalue = dynamic_cast<TextValue*>(value)) {
 			tvalue->value = v->toString();
+#if !USE_SCRIPT_VALUE_CHOICE
 		} else if (ChoiceValue* cvalue = dynamic_cast<ChoiceValue*>(value)) {
 			cvalue->value = v->toString();
+#endif
 		} else if (PackageChoiceValue* pvalue = dynamic_cast<PackageChoiceValue*>(value)) {
 			pvalue->package_name = v->toString();
 #if !USE_SCRIPT_VALUE_COLOR

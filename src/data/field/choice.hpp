@@ -34,13 +34,12 @@ class ChoiceField : public Field {
 #endif
   public:
 	ChoiceField();
-	DECLARE_FIELD_TYPE(Choice);
+	DECLARE_FIELD_TYPE();
 	
 	class Choice;
 	typedef intrusive_ptr<Choice> ChoiceP;
 	
 	ChoiceP choices;				///< A choice group of possible choices
-	String default_name;			///< Name of "default" value
 	map<String,Color> choice_colors;			///< Colors for the various choices (when color_cardlist)
 	map<String,Color> choice_colors_cardlist;	///< Colors for the various choices, for in the card list
 	
@@ -48,8 +47,11 @@ class ChoiceField : public Field {
 	virtual void initDependencies(Context&, const Dependency&) const;
 	OptionalScript script;			///< Script to apply to all values
 	OptionalScript default_script;	///< Script that generates the default value
+	String default_name;			///< Name of "default" value
 	String initial;					///< Initial choice of a new value, or ""
 #endif
+	
+	virtual void after_reading(Version ver);
 };
 
 

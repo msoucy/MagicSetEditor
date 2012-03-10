@@ -261,14 +261,19 @@ class Packaged : public Package {
 	virtual void validate(Version file_app_version);
 	/// What file version should be used for writing files?
 	virtual Version fileVersion() const = 0;
-
+	
 	DECLARE_REFLECTION_VIRTUAL();
-
+	friend void after_reading(Packaged& p, Version file_app_version);
+	
   private:
 	bool   fully_loaded;	///< Is the package fully loaded?
 	friend struct JustAsPackageProxy;
 	friend class Installer;
 };
+
+inline void after_reading(Packaged& p, Version file_app_version) {
+	p.validate(file_app_version);
+}
 
 // ----------------------------------------------------------------------------- : IncludePackage
 

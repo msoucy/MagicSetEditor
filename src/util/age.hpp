@@ -19,20 +19,17 @@
 /** Age is counted using a global variable */
 class Age {
   public:
-	/// Construct a new age value
-	Age() {
-		update();
-	}
-	/// Create a special age
-	/** 0: dummy value, used for other purposes
-	 *  1: before 'beginning of time', the age conceptually just before program start
-	 *  2..: normal ages
-	 */
-	Age(AtomicIntEquiv age) : age(age) {}
+	/// Default constructor: gives 'start of time'
+	Age() : age(0) {}
+	Age(AtomicIntEquiv a) : age(a) {}
 	
-	/// Update the age to become the newest one
-	inline void update() {
-		age = ++new_age;
+	/// Get the next age, larger than all previous ages
+	inline static Age next() {
+		return Age(++new_age);
+	}
+	/// Get the current age, without incrementing the global age counter
+	inline static Age current() {
+		return Age(new_age);
 	}
 	
 	/// Compare two ages, smaller means earlier
@@ -52,12 +49,7 @@ class Age {
 
 
 /// Age the object currently being processed was last updated
-/** NOTE:
- *  image generating functions have two modes
- *  if last_update_age >  0 they return whether the image is still up to date
- *  if last_update_age == 0 they generate the image
- */
-DECLARE_DYNAMIC_ARG  (AtomicIntEquiv, last_update_age);
+DECLARE_DYNAMIC_ARG(AtomicIntEquiv, last_update_age);
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

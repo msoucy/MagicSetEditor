@@ -47,6 +47,8 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(SymbolVariation) {
 
 // ----------------------------------------------------------------------------- : SymbolValue
 
+IMPLEMENT_VALUE_CLONE(Symbol);
+
 String SymbolValue::toString() const {
 	return filename.empty() ? wxEmptyString : _("<symbol>");
 }

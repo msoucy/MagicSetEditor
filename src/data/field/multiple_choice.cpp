@@ -48,25 +48,28 @@ int MultipleChoiceStyle::update(Context& ctx) {
 
 // ----------------------------------------------------------------------------- : MultipleChoiceValue
 
+IMPLEMENT_VALUE_CLONE(MultipleChoice);
+
 IMPLEMENT_REFLECTION_NAMELESS(MultipleChoiceValue) {
 	REFLECT_BASE(ChoiceValue);
 }
 
 bool MultipleChoiceValue::update(Context& ctx, const Action* act) {
-	String old_value = value();
+	String old_value = toString();
 	if (const MultipleChoiceValueAction* mvca = dynamic_cast<const MultipleChoiceValueAction*>(act)) {
 		ctx.setVariable(_("last_change"), to_script(mvca->changed_choice));
 	}
 	ChoiceValue::update(ctx,act);
 	normalForm();
-	return value() != old_value;
+	return toString() != old_value;
 }
 
 void MultipleChoiceValue::get(vector<String>& out) const {
 	// split the value
 	out.clear();
 	bool is_new = true;
-	FOR_EACH_CONST(c, value()) {
+	String val = toString();
+	FOR_EACH_CONST(c, val) {
 		if (c == _(',')) {
 			is_new = true;
 		} else if (is_new) {
@@ -82,7 +85,7 @@ void MultipleChoiceValue::get(vector<String>& out) const {
 }
 
 void MultipleChoiceValue::normalForm() {
-	String& val = value.mutateDontChangeDefault();
+	String val = toString();
 	// which choices are active?
 	vector<bool> seen(field().choices->lastId());
 	for (size_t pos = 0 ; pos < val.size() ; ) {
@@ -114,4 +117,10 @@ void MultipleChoiceValue::normalForm() {
 	if (val.empty()) {
 		val = field().empty_choice;
 	}
+	// store
+#if USE_SCRIPT_VALUE_CHOICE
+	value = with_defaultness_of(value, to_script(val));
+#else
+	value.assignDontChangeDefault(val);
+#endif
 }
