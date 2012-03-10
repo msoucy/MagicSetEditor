@@ -851,11 +851,11 @@ void parseCallArguments(TokenIterator& input, Script& script, vector<Variable>& 
 
 // ----------------------------------------------------------------------------- : Parsing values
 
-ScriptValueP parse_value(TokenIterator& input) {
+ScriptValueP parse_value(TokenIterator& input, Packaged* package) {
 	Token token = input.read();
 	if (token == _("(")) {
 		// Parentheses = grouping, i.e. ignore it
-		ScriptValueP a = parse_value(input);
+		ScriptValueP a = parse_value(input, package);
 		expectToken(input, _(")"), &token);
 		return a;
 	} else if (token == _("[")) {
@@ -868,11 +868,11 @@ ScriptValueP parse_value(TokenIterator& input) {
 				String key = t.value;
 				input.read(); // skip the name
 				input.read(); // and the :
-				ScriptValueP v = parse_value(input);
+				ScriptValueP v = parse_value(input, package);
 				if (v) col->key_value[key] = v;
 			} else {
 				// implicit numbered element
-				ScriptValueP v = parse_value(input);
+				ScriptValueP v = parse_value(input, package);
 				if (v) col->value.push_back(v);
 			}
 			t = input.peek();
@@ -897,40 +897,39 @@ ScriptValueP parse_value(TokenIterator& input) {
 		} else if (token == _("rgb")) {
 			// rgb(r, g, b)
 			expectToken(input, _("("));
-			ScriptValueP r = parse_value(input);
+			ScriptValueP r = parse_value(input, package);
 			expectToken(input, _(","));
-			ScriptValueP g = parse_value(input);
+			ScriptValueP g = parse_value(input, package);
 			expectToken(input, _(","));
-			ScriptValueP b = parse_value(input);
+			ScriptValueP b = parse_value(input, package);
 			expectToken(input, _(")"));
 			if (!r || !g || !b) return ScriptValueP();
 			return to_script(wxColour(r->toInt(),g->toInt(),b->toInt()));
 		} else if (token == _("rgba")) {
 			// rgba(r, g, b, a)
 			expectToken(input, _("("));
-			ScriptValueP r = parse_value(input);
+			ScriptValueP r = parse_value(input, package);
 			expectToken(input, _(","));
-			ScriptValueP g = parse_value(input);
+			ScriptValueP g = parse_value(input, package);
 			expectToken(input, _(","));
-			ScriptValueP b = parse_value(input);
+			ScriptValueP b = parse_value(input, package);
 			expectToken(input, _(","));
-			ScriptValueP a = parse_value(input);
+			ScriptValueP a = parse_value(input, package);
 			expectToken(input, _(")"));
 			if (!r || !g || !b) return ScriptValueP();
 			return to_script(AColor(r->toInt(),g->toInt(),b->toInt(),a->toInt()));
 		} else if (token == _("mark_default")) {
 			expectToken(input, _("("));
-			ScriptValueP a = parse_value(input);
+			ScriptValueP a = parse_value(input, package);
 			expectToken(input, _(")"));
 			if (!a) return ScriptValueP();
 			return intrusive(new ScriptDefault(a));
 		} else if (token == _("local_filename")) {
 			expectToken(input, _("("));
-			ScriptValueP a = parse_value(input);
+			ScriptValueP a = parse_value(input, package);
 			expectToken(input, _(")"));
 			if (!a) return ScriptValueP();
-			//return intrusive(new ScriptLocalFileName(input.package,a->toString()));
-			return intrusive(new ScriptLocalFileName(nullptr,a->toString()));
+			return intrusive(new ScriptLocalFileName(package,a->toString()));
 		}
 	} else if (token == TOK_INT) {
 		long l = 0;
@@ -944,7 +943,7 @@ ScriptValueP parse_value(TokenIterator& input) {
 		return to_script(token.value);
 	}
 	// parse error
-	input.expected(_("expression"));
+	input.expected(_("value (string/number/boolean/color/list)"));
 	return ScriptValueP();
 }
 
@@ -952,7 +951,7 @@ ScriptValueP parse_value(const String& s, Packaged* package, vector<ScriptParseE
 	errors_out.clear();
 	// parse
 	TokenIterator input(s, package, false, errors_out);
-	ScriptValueP value = parse_value(input);
+	ScriptValueP value = parse_value(input, package);
 	if (input.read() != TOK_EOF) {
 		input.expected(_("end of input"));
 	}
