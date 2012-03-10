@@ -50,7 +50,7 @@ template <> void GetDefaultMember::handle(const Version& v) {
 // ----------------------------------------------------------------------------- : Versions
 
 // NOTE: Don't use leading zeroes, they mean octal
-const Version app_version  = 20000; // 2.0.0
+const Version app_version  = 20001; // 2.0.1
 #ifdef UNICODE
 const Char* version_suffix = _("");
 #else
