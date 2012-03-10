@@ -388,6 +388,9 @@ class ScriptNil : public ScriptValue {
 /// The preallocated nil value
 ScriptValueP script_nil(new ScriptNil);
 
+/// Preallocated nil value marked as default
+ScriptValueP script_default_nil(new ScriptDefault(script_nil));
+
 // ----------------------------------------------------------------------------- : Collection base
 
 String ScriptCollectionBase::toCode() const {

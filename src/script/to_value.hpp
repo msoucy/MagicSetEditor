@@ -106,20 +106,22 @@ inline ScriptValueP delay_error(const ScriptError& error) {
 /// A script value that is in a specially marked 'default' state.
 class ScriptDefault : public ScriptValue {
   public:
-	inline ScriptDefault(ScriptValueP const& value) : value(value) {}
+	inline ScriptDefault(ScriptValueP const& un_default) : un_default(un_default) {}
 	
-	virtual ScriptType type() const { return value->type(); }
-	virtual String typeName() const { return value->typeName(); }
-	virtual String toString() const { return value->toString(); }
-	virtual String toCode()   const { return _("mark_default(") + value->toCode() + _(")"); }
-	virtual double toDouble() const { return value->toDouble(); }
-	virtual int    toInt()    const { return value->toInt(); }
-	virtual bool   toBool()   const { return value->toBool(); }
-	virtual AColor toColor()  const { return value->toColor(); }
-	virtual GeneratedImageP toImage() const { return value->toImage(); }
+	virtual ScriptType type() const { return un_default->type(); }
+	virtual String typeName() const { return un_default->typeName(); }
+	virtual String toString() const { return un_default->toString(); }
+	virtual String toCode()   const { return _("mark_default(") + un_default->toCode() + _(")"); }
+	virtual double toDouble() const { return un_default->toDouble(); }
+	virtual int    toInt()    const { return un_default->toInt(); }
+	virtual bool   toBool()   const { return un_default->toBool(); }
+	virtual AColor toColor()  const { return un_default->toColor(); }
+	virtual GeneratedImageP toImage() const { return un_default->toImage(); }
+	// ignore defaultness for comparison
+	virtual CompareWhat compareAs(String& compare_str, void const*& compare_ptr) const { return un_default->compareAs(compare_str, compare_ptr); }
 	
 	/// The actual value
-	ScriptValueP value;
+	ScriptValueP un_default;
 };
 inline ScriptDefault const* is_default(ScriptValue const* x) {
 	return dynamic_cast<ScriptDefault const*>(x);
@@ -127,6 +129,13 @@ inline ScriptDefault const* is_default(ScriptValue const* x) {
 inline ScriptDefault const* is_default(ScriptValueP const& x) {
 	return is_default(x.get());
 }
+inline ScriptValueP make_default(ScriptValueP const& x) {
+	return intrusive(new ScriptDefault(x));
+}
+inline ScriptValueP with_defaultness_of(ScriptValueP const& of, ScriptValueP const& x) {
+	return is_default(of) ? make_default(x) : x;
+}
+extern ScriptValueP script_default_nil;
 
 // ----------------------------------------------------------------------------- : File names
 
