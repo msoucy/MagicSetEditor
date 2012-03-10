@@ -2309,6 +2309,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\util\reflect.hpp"
+					>
+				</File>
+				<File
 					RelativePath=".\util\io\writer.cpp"
 					>
 					<FileConfiguration
@@ -2506,10 +2510,6 @@
 				</File>
 				<File
 					RelativePath=".\util\prec.hpp"
-					>
-				</File>
-				<File
-					RelativePath=".\util\reflect.hpp"
 					>
 				</File>
 				<File
