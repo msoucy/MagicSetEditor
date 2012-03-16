@@ -135,7 +135,7 @@ text_to_color := {
 		else mana_to_color(hybrid: "")
 	    )
 	  )
-	)
+	) else "";
 }
 
 # The color of a card
@@ -524,7 +524,7 @@ sub_type_filter := {
 	                  else if lang.is_artifact(type)    then "artifact"
 	                  else if lang.is_enchantment(type) then "enchantment"
 	                  else if lang.is_spell(type)       then "spell"
-	                  else if lang.is_planeswalker(type)       then "planeswalker"
+	                  else if lang.is_planeswalker(type) then "planeswalker"
 	if list_type_rest != "" then (
 		if lang.is_creature(type) or lang.is_tribal(type) then (
 			list_type_first := "race"
