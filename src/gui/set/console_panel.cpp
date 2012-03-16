@@ -388,13 +388,11 @@ void ConsolePanel::exec(String const& command) {
 		// parse command
 		vector<ScriptParseError> errors;
 		ScriptP script = parse(command,nullptr,false,errors);
-		if (!errors.empty()) {
-			FOR_EACH(error,errors) {
-				// TODO: also squiglify the input?
-				messages->add_message(MESSAGE_ERROR,error.what());
-			}
-			return;
+		FOR_EACH(error,errors) {
+			// TODO: also squiglify the input?
+			messages->add_message(script ? MESSAGE_WARNING : MESSAGE_ERROR,error.what());
 		}
+		if (!script) return;
 		// execute command
 		//WITH_DYNAMIC_ARG(export_info, &ei); // TODO: allow image export
 		Context& ctx = set->getContext();
