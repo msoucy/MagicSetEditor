@@ -134,8 +134,8 @@ text_to_color := {
 		if land = "land" then land_multicolor()
 		else mana_to_color(hybrid: "")
 	    )
-	  )
-	) else "";
+	  ) else ""
+	) else ""
 }
 
 # The color of a card
