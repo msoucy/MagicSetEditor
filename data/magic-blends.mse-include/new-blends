@@ -216,6 +216,205 @@ card_hybrid := [
 
 
 ########################################################################
+# Identity
+########################################################################
+
+identity_hybrid_2 := {
+	linear_blend(
+		image1: template(colors[0])
+		image2: template(colors[1])
+		x1: 0.49,  y1: 0
+		x2: 0.5,  y2: 0
+	)
+}
+
+identity_overlay_hybrid := [
+	1: { template(colors[0]) }
+	2: { combine_blend(
+		image1: template(colors[0]),
+		image2: template(colors[1]),
+		combine: "symmetric overlay"
+	   )}
+]
+
+# vertical version of a horizontal hybrid
+identity_vertical_hybrid := {
+	do_linear_blend := linear_blend
+	linear_blend := { do_linear_blend(x1: 0, x2: 0, y1: x1, y2: x2) }
+	card_hybrid.identity_horizontal[color_count]()
+}
+
+identity_horizontal_hybrid := [
+	1: { template(colors[0]) }
+	2: card_hybrid_2
+	3: {linear_blend(
+		image1: template(colors[0])
+		x1: 0.33,  y1: 0
+		x2: 0.34,   y2: 0
+		image2: linear_blend(
+		  image1: template(colors[1])
+		  x1: 0.66,   y1: 0
+		  x2: 0.67,  y2: 0
+		  image2: template(colors[2])
+	   ))}
+	4: {linear_blend(
+		# blend = 0.16
+		image1: template(colors[0])
+		x1: 0.24,  y1: 0
+		x2: 0.25,  y2: 0
+		image2: linear_blend(
+		  image1: template(colors[1])
+		  x1: 0.49,  y1: 0
+		  x2: 0.50,  y2: 0
+		  image2: linear_blend(
+		    image1: template(colors[2])
+		    x1: 0.74, y1: 0
+		    x2: 0.75, y2: 0
+		    image2: template(colors[3])
+	   )))}
+	5: {linear_blend(
+		image1: template(colors[0])
+		x1: 2.0 / 15,  y1: 0
+		x2: 4.0 / 15,  y2: 0
+		image2: linear_blend(
+		  image1: template(colors[1])
+		  x1: 5.0 / 15,  y1: 0
+		  x2: 7.0 / 15,  y2: 0
+		  image2: linear_blend(
+		    image1: template(colors[2])
+		    x1:  8.0 / 15,  y1: 0
+		    x2: 10.0 / 15,  y2: 0
+		    image2: linear_blend(
+		      image1: template(colors[3])
+		      x1: 11.0 / 15,  y1: 0
+		      x2: 13.0 / 15,  y2: 0
+		      image2: template(colors[4])
+	   ))))}
+	6: {linear_blend(
+		image1: template(colors[0])
+		x1: 1.5 / 15,  y1: 0
+		x2: 3.1 / 15,  y2: 0
+		image2: linear_blend(
+		  image1: template(colors[1])
+		  x1: 4.1 / 15,  y1: 0
+		  x2: 5.7 / 15,  y2: 0
+		  image2: linear_blend(
+		    image1: template(colors[2])
+		    x1: 6.7 / 15,  y1: 0
+		    x2: 8.3 / 15,  y2: 0
+		    image2: linear_blend(
+		      image1: template(colors[3])
+		      x1: 9.3 / 15,  y1: 0
+		      x2: 10.9 / 15,  y2: 0
+		      image2: linear_blend(
+		        image1: template(colors[4])
+		        x1: 11.9 / 15, y1: 0
+		        x2: 13.5 / 15, y2: 0
+		        image2: template(colors[5])
+	   )))))}
+	7: {linear_blend(
+		image1: template(colors[0])
+		x1: 1.3 / 15,  y1: 0
+		x2: 2.7 / 15,  y2: 0
+		image2: linear_blend(
+		  image1: template(colors[1])
+		  x1: 3.5 / 15,  y1: 0
+		  x2: 4.9 / 15,  y2: 0
+		  image2: linear_blend(
+		    image1: template(colors[2])
+		    x1: 5.7 / 15,  y1: 0
+		    x2: 7.1 / 15,  y2: 0
+		    image2: linear_blend(
+		      image1: template(colors[3])
+		      x1: 7.9 / 15,  y1: 0
+		      x2: 9.3 / 15,  y2: 0
+		      image2: linear_blend(
+		        image1: template(colors[4])
+		        x1: 10.1 / 15, y1: 0
+		        x2: 11.5 / 15, y2: 0
+		        image2: linear_blend(
+		          image1: template(colors[5])
+		          x1: 12.3 / 15, y1: 0
+		          x2: 13.7 / 15, y2: 0
+		          image2: template(colors[6])
+	   ))))))}
+]
+
+identity_hybrid := [
+	radial: [
+		0: { template("c") }
+		1: { template(colors[0]) }
+		2: identity_hybrid_2
+		3: {linear_blend(
+			image1: identity_hybrid_2(colors: colors[0] + colors[1]),
+			image2: template(colors[2]),
+			x1: 0,  y1: 0.66
+			x2: 0,  y2: 0.67
+		   )}
+		4: {linear_blend(
+			image1: identity_hybrid_2(colors: colors[0] + colors[1])
+			image2: identity_hybrid_2(colors: colors[3] + colors[2])
+			x1: 0,  y1: 0.49
+			x2: 0,  y2: 0.5
+		   )}
+		5: {linear_blend(
+			image1: linear_blend(
+				image1: identity_hybrid_2(colors: colors[0] + colors[1]),
+				image2: identity_hybrid_2(colors: colors[4] + colors[2]),
+				x1: 0,  y1: 0.24
+				x2: 0,  y2: 0.25
+			),
+			image2: template(colors[3]),
+			x1: 0,  y1: 0.84
+			x2: 0,  y2: 0.85
+		   )}
+		6: {linear_blend(
+			image1: linear_blend(
+				image1: identity_hybrid_2(colors: colors[0] + colors[1]),
+				image2: identity_hybrid_2(colors: colors[5] + colors[2]),
+				x1: 0,  y1: 0.26
+				x2: 0,  y2: 0.27
+			),
+			image2: identity_hybrid_2(colors: colors[4] + colors[3]),
+			x1: 0,  y1: 0.857
+			x2: 0,  y2: 0.867
+		   )}
+		7: {linear_blend(
+			image1: linear_blend(
+				image1: linear_blend(
+					image1: identity_hybrid_2(colors: colors[0] + colors[1]),
+					image2: identity_hybrid_2(colors: colors[6] + colors[3]),
+					x1: 0,  y1: 0.41
+					x2: 0,  y2: 0.42
+				),
+				image2: identity_hybrid_2(colors: colors[5] + colors[3]),
+				x1: 0,  y1: 0.897
+				x2: 0,  y2: 0.907
+			),
+			image2: template(colors[4]),
+			x1: 0,  y1: 1.220
+			x2: 0,  y2: 1.230
+		   )}
+	]
+	horizontal: identity_horizontal_hybrid
+	vertical: [
+		1: { template(colors[0]) }
+		2: { linear_blend(
+			image1: template(colors[0])
+			image2: template(colors[1])
+			x1: 0,  y1: 0.49
+			x2: 0,  y2: 0.5
+		   )}
+		3: identity_vertical_hybrid
+		4: identity_vertical_hybrid
+		5: identity_vertical_hybrid
+		6: identity_vertical_hybrid
+		7: identity_vertical_hybrid
+	]
+	overlay: identity_overlay_hybrid
+]
+
+########################################################################
 # P/T box
 ########################################################################
 # These are easier
@@ -672,15 +871,16 @@ color_combination := {
 # Specific types
 ########################################################################
 
-card_background := { color_background(type:"card",     base_hybrid:card_hybrid) }
-card_ptbox      := { color_background(type:"pt",       base_hybrid:pt_hybrid) }
-flip_ptbox      := { color_background(type:"pt",       base_hybrid:flip_pt_hybrid) }
-flip_ptbox2     := { color_background(type:"pt2",      base_hybrid:flip_pt_hybrid2) }
-leveler_ptbox   := { color_background(type:"pt",       base_hybrid:leveler_pt_hybrid) }
-leveler_ptbox2  := { color_background(type:"pt",       base_hybrid:leveler_pt_hybrid2) }
-leveler_ptbox3  := { color_background(type:"pt",       base_hybrid:leveler_pt_hybrid3) }
-card_textbox    := { color_background(type:"textbox",  base_hybrid:textbox_hybrid) }
-card_typeline   := { color_background(type:"typeline", base_hybrid:typeline_hybrid) }
+card_background := { color_background(type:"card",      base_hybrid:card_hybrid) }
+card_identity   := { color_background(type:"identity",  base_hybrid:identity_hybrid) }
+card_ptbox      := { color_background(type:"pt",        base_hybrid:pt_hybrid) }
+flip_ptbox      := { color_background(type:"pt",        base_hybrid:flip_pt_hybrid) }
+flip_ptbox2     := { color_background(type:"pt2",       base_hybrid:flip_pt_hybrid2) }
+leveler_ptbox   := { color_background(type:"pt",        base_hybrid:leveler_pt_hybrid) }
+leveler_ptbox2  := { color_background(type:"pt",        base_hybrid:leveler_pt_hybrid2) }
+leveler_ptbox3  := { color_background(type:"pt",        base_hybrid:leveler_pt_hybrid3) }
+card_textbox    := { color_background(type:"textbox",   base_hybrid:textbox_hybrid) }
+card_typeline   := { color_background(type:"typeline",  base_hybrid:typeline_hybrid) }
 
 flip_background := {
 	linear_blend(
