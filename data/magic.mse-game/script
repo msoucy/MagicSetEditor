@@ -525,6 +525,7 @@ sub_type_filter := {
 	                  else if lang.is_enchantment(type) then "enchantment"
 	                  else if lang.is_spell(type)       then "spell"
 	                  else if lang.is_planeswalker(type) then "planeswalker"
+	                  else ""
 	if list_type_rest != "" then (
 		if lang.is_creature(type) or lang.is_tribal(type) then (
 			list_type_first := "race"
