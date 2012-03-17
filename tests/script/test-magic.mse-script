@@ -31,6 +31,10 @@ assert(text_to_color(card_name:"Apple", type:"",land:"", "Apple is red and green
 assert(text_to_color(card_name:"Apple", type:"",land:"", "Banana is red.") == "")
 assert(text_to_color(card_name:"Rainbow", type:"",land:"", "Rainbow is all colors.") == "multicolor")
 
+assert(card_color(casting_cost: "R", rules_text: "", type: "", watermark: "", card_name: "", default: "colorless") == "red")
+assert(text_to_color("",is_land:false,card_name:"some card") == "")
+assert(text_to_color("",is_land:false,card_name:"") == "")
+
 # Utility functions
 assert(is_spell("Creature - Platypus") == false)
 assert(is_spell("Instant") == true)
