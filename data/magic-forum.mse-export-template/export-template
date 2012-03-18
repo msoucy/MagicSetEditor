@@ -91,6 +91,7 @@ script:
 	rarity_color := {
 		if options.forum == "mse" then rarity_color_mse()
 		else if options.forum == "mtgsalvation" then rarity_color_mtgs()
+		else warning("unknown options.forum")
 	}
 	# Colored rarity markers for MTGS forum.
 	rarity_color_mtgs := {
