@@ -64,7 +64,7 @@ void KeywordReminderTextValue::store() {
 		return;
 	}
 	// new value
-	String new_value = untag(value);
+	String new_value = untag(value->toString());
 	// Try to parse the script
 	vector<ScriptParseError> parse_errors;
 	ScriptP new_script = parse(new_value, nullptr, true, parse_errors);
@@ -173,7 +173,7 @@ void KeywordReminderTextValue::highlight(const String& code, const vector<Script
 		}
 	}
 	// set
-	value = new_value;
+	value = to_script(new_value);
 }
 
 bool KeywordReminderTextValue::checkScript(const ScriptP& script) {

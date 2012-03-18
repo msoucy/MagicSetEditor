@@ -14,16 +14,22 @@
 
 IMPLEMENT_FIELD_TYPE(PackageChoice, "package choice");
 
+#if !USE_SCRIPT_VALUE_PACKAGE
 void PackageChoiceField::initDependencies(Context& ctx, const Dependency& dep) const {
 	Field ::initDependencies(ctx, dep);
 	script. initDependencies(ctx, dep);
 }
+#endif
 
 IMPLEMENT_REFLECTION(PackageChoiceField) {
+#if USE_SCRIPT_VALUE_CHOICE
+	REFLECT_BASE(AnyField);
+#else
 	REFLECT_BASE(Field);
 	REFLECT(script);
-	REFLECT(match);
 	REFLECT(initial);
+#endif
+	REFLECT(match);
 	REFLECT(required);
 	REFLECT(empty_name);
 }
@@ -49,13 +55,14 @@ IMPLEMENT_REFLECTION(PackageChoiceStyle) {
 }
 
 // ----------------------------------------------------------------------------- : PackageChoiceValue
+#if !USE_SCRIPT_VALUE_PACKAGE
 
 IMPLEMENT_VALUE_CLONE(PackageChoice);
 
-String PackageChoiceValue::toString() const {
+String PackageChoiceValue::toFriendlyString() const {
 	PackagedP pack = getPackage();
 	if (pack.get()) return pack->short_name;
-	else      return _("");
+	else return _("");
 }
 
 PackagedP PackageChoiceValue::getPackage() const {
@@ -87,3 +94,4 @@ void PackageChoiceValue::reflect(GetDefaultMember& reflector) {
 	}
 }
 void PackageChoiceValue::reflect(GetMember& reflector) {}
+#endif

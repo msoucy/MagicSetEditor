@@ -28,8 +28,22 @@ void ImageValueViewer::draw(RotatedDC& dc) {
 	if (!bitmap.Ok()) {
 		angle = a;
 		is_default = false;
+		// load/generate image
+		GeneratedImage::Options opts;
+		opts.package         = &getStylePackage();
+		opts.local_package   = &getLocalPackage();
+		opts.angle           = a;
+		opts.width           = (int)dc.trX(style().width);
+		opts.height          = (int)dc.trY(style().height);
+		opts.preserve_aspect = ASPECT_STRETCH;
+		// TODO: use CachecScriptableImage
 		Image image;
-		// load from file
+		try {
+			if (!value().value->isNil()) {
+				image = value().value->toImage()->generate(opts);
+			}
+		} CATCH_ALL_ERRORS(false);
+		/*
 		if (!value().filename.empty()) {
 			try {
 				InputStreamP image_file = getLocalPackage().openIn(value().filename);
@@ -37,7 +51,7 @@ void ImageValueViewer::draw(RotatedDC& dc) {
 					image.Rescale(w, h);
 				}
 			} CATCH_ALL_ERRORS(false);
-		}
+		}*/
 		// nice placeholder
 		if (!image.Ok() && style().default_image.isReady()) {
 			image = style().default_image.generate(GeneratedImage::Options(w, h, &getStylePackage(), &getLocalPackage()));

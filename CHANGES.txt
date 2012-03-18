@@ -6,8 +6,16 @@
 -- trunk: new items added as changes are made
 ------------------------------------------------------------------------------
 
+Program:
+ * Changed the way values are saved to files.
+   Instead of the representation depending on the type, all values now use script syntax, e.g. "strings" in quotes.
+   Older files can still be opened, but sets saved with 2.0.1 can not be opened with older versions of mse.
+
+Templates:
+ * many changes
+
 ------------------------------------------------------------------------------
--- 2.0.0
+-- 2.0.0, 2011-??-??
 ------------------------------------------------------------------------------
 
 Program:

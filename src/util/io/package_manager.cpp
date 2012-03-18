@@ -56,6 +56,9 @@ PackagedP PackageManager::openAny(const String& name_, bool just_header) {
 			// global data dir
 			filename = normalize_filename(global.name(name));
 		}
+		if (!wxFileExists(filename) && !wxDirExists(filename)) {
+			throw PackageNotFoundError(_("Package not found: '") + name + _("'"));
+		}
 	} else { // Absolute filename
 		filename = normalize_filename(name);
 	}

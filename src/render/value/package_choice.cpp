@@ -47,15 +47,16 @@ void PackageChoiceValueViewer::initItems() {
 void PackageChoiceValueViewer::draw(RotatedDC& dc) {
 	drawFieldBorder(dc);
 	// find item
-	String text = value().package_name;
+	String text = value().value->toString();
 	Bitmap image;
-	if (value().package_name.empty()) {
+	if (text.empty()) {
 		text = field().empty_name;
 	} else {
 		FOR_EACH(i, items) {
-			if (i.package_name == value().package_name) {
+			if (i.package_name == text) {
 				text = i.name;
 				image = i.image;
+				break;
 			}
 		}
 	}

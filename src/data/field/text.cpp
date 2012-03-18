@@ -15,24 +15,32 @@
 
 TextField::TextField()
 	: multi_line(false)
+#if !USE_SCRIPT_VALUE_TEXT
 	, default_name(_("Default"))
+#endif
 {}
 
 IMPLEMENT_FIELD_TYPE(Text, "text");
 
+#if !USE_SCRIPT_VALUE_TEXT
 void TextField::initDependencies(Context& ctx, const Dependency& dep) const {
 	Field        ::initDependencies(ctx, dep);
 	script        .initDependencies(ctx, dep);
 	default_script.initDependencies(ctx, dep);
 }
+#endif
 
 
 IMPLEMENT_REFLECTION(TextField) {
+#if USE_SCRIPT_VALUE_TEXT
+	REFLECT_BASE(AnyField);
+#else
 	REFLECT_BASE(Field);
-	REFLECT(multi_line);
 	REFLECT(script);
 	REFLECT_N("default", default_script);
 	REFLECT(default_name);
+#endif
+	REFLECT(multi_line);
 }
 
 // ----------------------------------------------------------------------------- : TextStyle
@@ -132,9 +140,11 @@ IMPLEMENT_REFLECTION(TextStyle) {
 
 // ----------------------------------------------------------------------------- : TextValue
 
+#if !USE_SCRIPT_VALUE_TEXT
+
 IMPLEMENT_VALUE_CLONE(Text);
 
-String TextValue::toString() const {
+String TextValue::toFriendlyString() const {
 	return untag_hide_sep(value());
 }
 bool TextValue::update(Context& ctx, const Action*) {
@@ -150,6 +160,8 @@ IMPLEMENT_REFLECTION_NAMELESS(TextValue) {
 	if (fieldP->save_value || !reflector.isWriting()) REFLECT_NAMELESS(value);
 }
 
+#endif
+
 // ----------------------------------------------------------------------------- : FakeTextValue
 
 FakeTextValue::FakeTextValue(const TextFieldP& field, String* underlying, bool editable, bool untagged)
@@ -160,7 +172,7 @@ FakeTextValue::FakeTextValue(const TextFieldP& field, String* underlying, bool e
 void FakeTextValue::store() {
 	if (underlying) {
 		if (editable) {
-			*underlying = untagged ? untag(value) : value();
+			*underlying = untagged ? untag(value->toString()) : value->toString();
 		} else {
 			retrieve();
 		}
@@ -168,9 +180,9 @@ void FakeTextValue::store() {
 }
 void FakeTextValue::retrieve() {
 	if (underlying) {
-		value.assign(untagged ? escape(*underlying) : *underlying);
+		value = to_script(untagged ? escape(*underlying) : *underlying);
 	} else {
-		value.assign(wxEmptyString);
+		value = script_default_nil;
 	}
 }
 

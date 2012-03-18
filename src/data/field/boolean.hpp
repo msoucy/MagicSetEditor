@@ -39,6 +39,7 @@ class BooleanStyle : public ChoiceStyle {
 	
   private:
 	DECLARE_REFLECTION();
+	virtual void after_reading(Version ver);
 };
 
 // ----------------------------------------------------------------------------- : BooleanValue

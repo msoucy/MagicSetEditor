@@ -10,10 +10,10 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/prec.hpp>
+#include <data/field/text.hpp>
 #include <wx/fdrepdlg.h>
 
 DECLARE_POINTER_TYPE(Card);
-DECLARE_POINTER_TYPE(TextValue);
 
 // ----------------------------------------------------------------------------- : Search/replace
 

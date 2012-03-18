@@ -448,8 +448,9 @@ ExprType parseExpr(TokenIterator& input, Script& script, Precedence minPrec) {
 	Token token = input.read();
 	if (token == _("(")) {
 		// Parentheses = grouping for precedence of expressions
-		parseOper(input, script, PREC_ALL);
+		ExprType type = parseOper(input, script, PREC_ALL);
 		expectToken(input, _(")"), &token);
+		return type;
 	} else if (token == _("{")) {
 		// {} = function block. Parse a new Script
 		intrusive_ptr<Script> subScript(new Script);
@@ -500,19 +501,19 @@ ExprType parseExpr(TokenIterator& input, Script& script, Precedence minPrec) {
 			parseOper(input, script, PREC_AND);							// AAA
 			unsigned jmpElse = script.addInstruction(I_JUMP_IF_NOT);	//		jnz lbl_else
 			expectToken(input, _("then"));								// then
-			parseOper(input, script, PREC_SET);							// BBB
+			ExprType type1 = parseOper(input, script, PREC_SET);		// BBB
 			unsigned jmpEnd = script.addInstruction(I_JUMP);			//		jump lbl_end
 			script.comeFrom(jmpElse);									//		lbl_else:
 			bool has_else = input.peek() == _("else");					//else
-			ExprType type = EXPR_STATEMENT;
+			ExprType type2 = EXPR_STATEMENT;
 			if (has_else) {
 				input.read();
-				type = parseOper(input, script, PREC_SET);				// CCC
+				type2 = parseOper(input, script, PREC_SET);				// CCC
 			} else {
 				script.addInstruction(I_PUSH_CONST, script_nil);
 			}
 			script.comeFrom(jmpEnd);									//		lbl_end:
-			return type == EXPR_STATEMENT ? EXPR_STATEMENT : EXPR_OTHER;
+			return type1 == EXPR_STATEMENT || type2 == EXPR_STATEMENT ? EXPR_STATEMENT : EXPR_OTHER;
 		} else if (token == _("for")) {
 			// the loop body should have a net stack effect of 0, but the entire expression of +1
 			// solution: add all results from the body, start with nil
@@ -724,7 +725,7 @@ ExprType parseOper(TokenIterator& input, Script& script, Precedence minPrec, Ins
 		else if (minPrec <= PREC_AND    && token==_("xor"))   parseOper(input, script, PREC_CMP,   I_BINARY, I_XOR);
 		else if (minPrec <= PREC_CMP    && token==_("=")) {
 			if (minPrec <= PREC_SET) {
-				input.add_error(_("Use of '=', did you mean ':=' or '=='?"));
+				input.add_error(_("Use of '=', did you mean ':=' or '=='? I will assume '=='"));
 			}
 			parseOper(input, script, PREC_ADD,   I_BINARY, I_EQ);
 		}
@@ -851,6 +852,9 @@ void parseCallArguments(TokenIterator& input, Script& script, vector<Variable>& 
 
 // ----------------------------------------------------------------------------- : Parsing values
 
+ScriptValueP script_local_image_file(LocalFileName const& filename);
+ScriptValueP script_local_symbol_file(LocalFileName const& filename);
+
 ScriptValueP parse_value(TokenIterator& input, Packaged* package) {
 	Token token = input.read();
 	if (token == _("(")) {
@@ -884,9 +888,6 @@ ScriptValueP parse_value(TokenIterator& input, Packaged* package) {
 		}
 		expectToken(input, _("]"), &token);
 		return col;
-	} else if (token == _("-")) {
-		// TODO?
-		throw "TODO";
 	} else if (token == TOK_NAME) {
 		if (token == _("true")) {
 			return script_true;
@@ -920,16 +921,22 @@ ScriptValueP parse_value(TokenIterator& input, Packaged* package) {
 			return to_script(AColor(r->toInt(),g->toInt(),b->toInt(),a->toInt()));
 		} else if (token == _("mark_default")) {
 			expectToken(input, _("("));
-			ScriptValueP a = parse_value(input, package);
+			ScriptValueP x = parse_value(input, package);
 			expectToken(input, _(")"));
-			if (!a) return ScriptValueP();
-			return intrusive(new ScriptDefault(a));
-		} else if (token == _("local_filename")) {
+			if (!x) return ScriptValueP();
+			return intrusive(new ScriptDefault(x));
+		} else if (token == _("local_image_file")) {
 			expectToken(input, _("("));
-			ScriptValueP a = parse_value(input, package);
+			ScriptValueP x = parse_value(input, package);
 			expectToken(input, _(")"));
-			if (!a) return ScriptValueP();
-			return intrusive(new ScriptLocalFileName(package,a->toString()));
+			if (!x) return ScriptValueP();
+			return script_local_image_file(LocalFileName::fromReadString(x->toString()));
+		} else if (token == _("local_symbol_file")) {
+			expectToken(input, _("("));
+			ScriptValueP x = parse_value(input, package);
+			expectToken(input, _(")"));
+			if (!x) return ScriptValueP();
+			return script_local_symbol_file(LocalFileName::fromReadString(x->toString()));
 		}
 	} else if (token == TOK_INT) {
 		long l = 0;
@@ -941,6 +948,9 @@ ScriptValueP parse_value(TokenIterator& input, Packaged* package) {
 		return to_script(d);
 	} else if (token == TOK_STRING) {
 		return to_script(token.value);
+	/*} else if (token == _("-")) {
+		// TODO?
+		throw InternalError("TODO");*/
 	}
 	// parse error
 	input.expected(_("value (string/number/boolean/color/list)"));

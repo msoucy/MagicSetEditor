@@ -16,13 +16,13 @@ IMPLEMENT_VALUE_VIEWER(Text);
 
 bool TextValueViewer::prepare(RotatedDC& dc) {
 	getMask(dc); // ensure alpha/contour mask is loaded
-	return v.prepare(dc, value().value(), style(), viewer.getContext());
+	return v.prepare(dc, value().value->toString(), style(), viewer.getContext());
 }
 
 void TextValueViewer::draw(RotatedDC& dc) {
 	drawFieldBorder(dc);
 	if (!v.prepared()) {
-		v.prepare(dc, value().value(), style(), viewer.getContext());
+		v.prepare(dc, value().value->toString(), style(), viewer.getContext());
 		dc.setStretch(getStretch());
 	}
 	DrawWhat what = viewer.drawWhat(this);

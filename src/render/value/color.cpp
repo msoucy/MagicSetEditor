@@ -19,16 +19,16 @@ IMPLEMENT_VALUE_VIEWER(Color);
 void ColorValueViewer::draw(RotatedDC& dc) {
 	// draw in the value color
 	dc.SetPen(*wxTRANSPARENT_PEN);
-	dc.SetBrush(value().value());
+	dc.SetBrush(value().value->toColor());
 	if (nativeLook()) {
 		// native look
 		// find name of color
 		String color_name = _("Custom");
-		if (field().default_script && value().value.isDefault()) {
+		if (field().default_script && is_default(value().value)) {
 			color_name = field().default_name;
 		} else {
 			FOR_EACH_CONST(c, field().choices) {
-				if (value().value() == c->color) {
+				if (value().value->toColor() == c->color) {
 					color_name = capitalize(c->name);
 					break;
 				}
@@ -45,7 +45,7 @@ void ColorValueViewer::draw(RotatedDC& dc) {
 		// is there a mask?
 		const AlphaMask& alpha_mask = getMask(dc);
 		if (alpha_mask.isLoaded()) {
-			dc.DrawImage(alpha_mask.colorImage(value().value()), RealPoint(0,0), style().combine);
+			dc.DrawImage(alpha_mask.colorImage(value().value->toColor()), RealPoint(0,0), style().combine);
 		} else {
 			// do we need clipping?
 			bool clip = style().left_width < style().width  && style().right_width  < style().width &&

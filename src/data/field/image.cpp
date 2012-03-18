@@ -33,9 +33,11 @@ int ImageStyle::update(Context& ctx) {
 
 // ----------------------------------------------------------------------------- : ImageValue
 
+#if !USE_SCRIPT_VALUE_IMAGE
+
 IMPLEMENT_VALUE_CLONE(Image);
 
-String ImageValue::toString() const {
+String ImageValue::toFriendlyString() const {
 	return filename.empty() ? wxEmptyString : _("<image>");
 }
 
@@ -52,3 +54,4 @@ void ImageValue::reflect(GetDefaultMember& reflector) {
 	// convert to ScriptImageP for scripting
 	reflector.handle( (ScriptValueP)intrusive(new ImageValueToImage(filename)) );
 }
+#endif

@@ -70,8 +70,8 @@ ChoiceField::Choice::Choice()
 	: line_below(false), enabled(true), type(CHOICE_TYPE_CHECK)
 	, first_id(0)
 {}
-ChoiceField::Choice::Choice(const String& name)
-	: name(name)
+ChoiceField::Choice::Choice(const String& name, const String& caption)
+	: name(name), caption(caption)
 	, line_below(false), enabled(true), type(CHOICE_TYPE_CHECK)
 	, first_id(0)
 {}
@@ -316,7 +316,7 @@ ChoiceValue::ChoiceValue(const ChoiceFieldP& field, bool initial_first_choice)
 	       , true)
 {}
 
-String ChoiceValue::toString() const {
+String ChoiceValue::toFriendlyString() const {
 	return value();
 }
 bool ChoiceValue::update(Context& ctx, const Action*) {

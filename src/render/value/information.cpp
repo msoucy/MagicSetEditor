@@ -35,6 +35,7 @@ void InfoValueViewer::draw(RotatedDC& dc) {
 		-style().padding_left - style().padding_right,
 		-style().padding_top  - style().padding_bottom
 	);
-	RealSize size = dc.GetTextExtent(value().value);
-	dc.DrawText(value().value, align_in_rect(style().alignment, size, rect));
+	String val = value().value->toString();
+	RealSize size = dc.GetTextExtent(val);
+	dc.DrawText(val, align_in_rect(style().alignment, size, rect));
 }

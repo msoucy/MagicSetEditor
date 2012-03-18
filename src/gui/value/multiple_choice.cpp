@@ -56,7 +56,7 @@ void DropDownMultipleChoiceList::drawIcon(DC& dc, int x, int y, size_t item, boo
 		active = dynamic_cast<MultipleChoiceValueEditor&>(cve).active[choice->first_id];
 		radio  = choice->type == CHOICE_TYPE_RADIO;
 	} else {
-		active = dynamic_cast<MultipleChoiceValueEditor&>(cve).value().value.isDefault();
+		active = is_default(dynamic_cast<MultipleChoiceValueEditor&>(cve).value().value);
 	}
 	// draw checkbox
 	dc.SetPen(*wxTRANSPARENT_PEN);
@@ -177,9 +177,13 @@ void MultipleChoiceValueEditor::toggle(int id) {
 		if (i == id) toggled_choice = choice;
 	}
 	// store value
-	addAction(value_action(valueP(), new_value, toggled_choice));
+	addAction(value_action(valueP(), to_script(new_value), toggled_choice));
 }
 
 void MultipleChoiceValueEditor::toggleDefault() {
-	addAction(value_action(valueP(), Defaultable<String>(value().value(), !value().value.isDefault()), _("")));
+	if (ScriptDefault const* dv = is_default(value().value)) {
+		addAction(value_action(valueP(), dv->un_default));
+	} else {
+		addAction(value_action(valueP(), make_default(value().value)));
+	}
 }

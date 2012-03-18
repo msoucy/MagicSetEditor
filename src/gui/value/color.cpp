@@ -80,7 +80,7 @@ void DropDownColorList::drawIcon(DC& dc, int x, int y, size_t item, bool selecte
 	if (isDefault(item)) {
 		col = default_color;
 	} else if (isCustom(item)) {
-		col = cve.value().value();
+		col = cve.value().value->toColor();
 	} else {
 		col = field().choices[item - hasDefault()]->color;
 	}
@@ -96,16 +96,16 @@ size_t DropDownColorList::selection() const {
 	size_t selection = hasCustom() ? itemCount() - 1 : NO_SELECTION;
 	size_t i = 0;
 	FOR_EACH_CONST(c, field().choices) {
-		if (c->color == cve.value().value()) {
+		if (c->color == cve.value().value->toColor()) {
 			selection = i + hasDefault();
 			break;
 		}
 		i++;
 	}
 	// has default item?
-	if (hasDefault() && cve.value().value.isDefault()) {
+	if (hasDefault() && is_default(cve.value().value)) {
 		// default is selected
-		default_color = cve.value().value();
+		default_color = cve.value().value->toColor();
 		return 0;
 	} else if (hasDefault()) {
 		// evaluate script to find default color
@@ -115,7 +115,7 @@ size_t DropDownColorList::selection() const {
 }
 void DropDownColorList::select(size_t item) {
 	if (isDefault(item)) {
-		cve.change( Defaultable<Color>());
+		cve.change(script_default_nil);
 	} else if (isCustom(item)) {
 		cve.changeCustom();
 	} else {
@@ -149,10 +149,13 @@ void ColorValueEditor::determineSize(bool) {
 	style().height = 20;
 }
 
-void ColorValueEditor::change(const Defaultable<Color>& c) {
+void ColorValueEditor::change(Color c) {
+	change(to_script(c));
+}
+void ColorValueEditor::change(ScriptValueP const& c) {
 	addAction(value_action(valueP(), c));
 }
 void ColorValueEditor::changeCustom() {
-	Color c = wxGetColourFromUser(0, value().value());
+	Color c = wxGetColourFromUser(0, value().value->toColor());
 	if (c.Ok()) change(c);
 }

@@ -133,18 +133,6 @@ template <> void Writer::handle(const Color& col) {
 	handle(String::Format(_("rgb(%u,%u,%u)"), col.Red(), col.Green(), col.Blue()));
 }
 
-template <> void Writer::handle(const FileName& value) {
-	if (clipboard_package() && !value.empty()) {
-		// use absolute names on clipboard
-		try {
-			handle(clipboard_package()->absoluteName(value));
-		} catch (const Error&) {
-			// ignore errors
-		}
-	} else {
-		handle(static_cast<const String&>(value));
-		if (writing_package()) {
-			writing_package()->referenceFile(value);
-		}
-	}
+template <> void Writer::handle(const LocalFileName& value) {
+	handle(value.toStringForWriting());
 }

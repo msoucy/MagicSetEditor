@@ -59,7 +59,9 @@ intrusive_ptr<SymbolFilter> read_new<SymbolFilter>(Reader& reader);
 /// Symbol filter that returns solid colors
 class SolidFillSymbolFilter : public SymbolFilter {
   public:
-	inline SolidFillSymbolFilter() {}
+	inline SolidFillSymbolFilter()
+		: fill_color(AColor(0,0,0,255)), border_color(AColor(255,255,255,255))
+	{}
 	inline SolidFillSymbolFilter(const AColor& fill_color, const AColor& border_color)
 		: fill_color(fill_color), border_color(border_color)
 	{}

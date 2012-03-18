@@ -21,6 +21,7 @@
 
 class Card;
 class StyleSheet;
+class LocalFileName;
 DECLARE_POINTER_TYPE(Set);
 DECLARE_POINTER_TYPE(Value);
 DECLARE_POINTER_TYPE(Style);
@@ -81,9 +82,15 @@ ValueAction* value_action(const MultipleChoiceValueP& value, const ScriptValueP&
 #if !USE_SCRIPT_VALUE_COLOR
 ValueAction* value_action(const ColorValueP&          value, const Defaultable<Color>&  new_value);
 #endif
-ValueAction* value_action(const ImageValueP&          value, const FileName&            new_value);
-ValueAction* value_action(const SymbolValueP&         value, const FileName&            new_value);
+#if !USE_SCRIPT_VALUE_IMAGE
+ValueAction* value_action(const ImageValueP&          value, const LocalFileName&       new_value);
+#endif
+#if !USE_SCRIPT_VALUE_SYMBOL
+ValueAction* value_action(const SymbolValueP&         value, const LocalFileName&       new_value);
+#endif
+#if !USE_SCRIPT_VALUE_PACKAGE
 ValueAction* value_action(const PackageChoiceValueP&  value, const String&              new_value);
+#endif
 #if USE_SCRIPT_VALUE_VALUE
 ValueAction* value_action(const AnyValueP&            value, const ScriptValueP&        new_value);
 #endif
@@ -116,13 +123,21 @@ class MultipleChoiceValueAction : public ValueAction {
 /// An action that changes a TextValue
 class TextValueAction : public ValueAction {
   public:
+#if USE_SCRIPT_VALUE_TEXT
+	TextValueAction(const TextValueP& value, size_t start, size_t end, size_t new_end, const ScriptValueP& new_value, const String& name);
+#else
 	TextValueAction(const TextValueP& value, size_t start, size_t end, size_t new_end, const Defaultable<String>& new_value, const String& name);
+#endif
 	
 	virtual String getName(bool to_undo) const;
 	virtual void perform(bool to_undo);
 	virtual bool merge(const Action& action);
 	
+#if USE_SCRIPT_VALUE_TEXT
+	inline String newValue() const { return new_value->toString(); }
+#else
 	inline const String& newValue() const { return new_value(); }
+#endif
 	
 	/// The modified selection
 	size_t selection_start, selection_end;
@@ -130,7 +145,11 @@ class TextValueAction : public ValueAction {
 	inline TextValue& value() const;
 	
 	size_t new_selection_end;
+#if USE_SCRIPT_VALUE_TEXT
+	ScriptValueP new_value;
+#else
 	Defaultable<String> new_value;
+#endif
 	String name;
 };
 

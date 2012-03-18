@@ -31,6 +31,7 @@ class InfoField : public AnyField {
   public:
 	InfoField() { editable = false; }
 	DECLARE_FIELD_TYPE();
+	virtual void after_reading(Version ver);
 };
 #else
 class InfoField : public Field {

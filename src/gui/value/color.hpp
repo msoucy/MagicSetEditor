@@ -34,7 +34,8 @@ class ColorValueEditor : public ColorValueViewer, public ValueEditor {
 	DropDownListP drop_down;
 	friend class DropDownColorList;
 	/// Change the color
-	void change(const Defaultable<Color>& c);
+	void change(const ScriptValueP& c);
+	void change(Color c);
 	/// Change to a custom color
 	void changeCustom();
 };

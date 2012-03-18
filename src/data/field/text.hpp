@@ -42,8 +42,6 @@ class TextField : public Field {
 #if !USE_SCRIPT_VALUE_TEXT
 	OptionalScript script;			///< Script to apply to all values
 	OptionalScript default_script;	///< Script that generates the default value
-	//%OptionalScript view_script;		///< Script to apply before viewing
-	//%OptionalScript unview_script;	///< Script to apply after changes to the view
 	String default_name;			///< Name of "default" value
 	
 	virtual void initDependencies(Context&, const Dependency&) const;

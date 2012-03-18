@@ -111,13 +111,13 @@ String Set::identification() const {
 	// an identifying field
 	FOR_EACH_CONST(v, data) {
 		if (v->fieldP->identifying) {
-			return v->toString();
+			return v->toFriendlyString();
 		}
 	}
 	// otherwise the first non-information field
 	FOR_EACH_CONST(v, data) {
 		if (!dynamic_pointer_cast<InfoValue>(v)) {
-			return v->toString();
+			return v->toFriendlyString();
 		}
 	}
 	return wxEmptyString;
@@ -126,16 +126,6 @@ String Set::identification() const {
 
 String Set::typeName() const { return _("set"); }
 Version Set::fileVersion() const { return file_version_set; }
-
-// fix values for versions < 0.2.7
-void fix_value_207(const ValueP& value) {
-	if (TextValue* v = dynamic_cast<TextValue*>(value.get())) {
-		// text value -> fix it
-		v->value.assignDontChangeDefault(	// don't change defaultness
-			fix_old_tags(v->value()) // remove tags
-		);
-	}
-}
 
 void Set::validate(Version file_app_version) {
 	Packaged::validate(file_app_version);
@@ -150,19 +140,7 @@ void Set::validate(Version file_app_version) {
 	if (stylesheet->game != game) {
 		throw Error(_ERROR_("stylesheet and set refer to different game"));
 	}
-
-	// This is our chance to fix version incompatabilities
-	if (file_app_version < 207) {
-		// Since 0.2.7 we use </tag> style close tags, in older versions it was </>
-		// Walk over all fields and fix...
-		FOR_EACH(c, cards) {
-			FOR_EACH(v, c->data) fix_value_207(v);
-		}
-		FOR_EACH(v, data) fix_value_207(v);
-/*		FOR_EACH(s, styleData) {
-			FOR_EACH(v, s.second->data) fix_value_207(v);
-		}
-*/	}
+	
 	// we want at least one card
 	if (cards.empty()) cards.push_back(intrusive(new Card(*game)));
 	// update scripts

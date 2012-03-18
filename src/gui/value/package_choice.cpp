@@ -75,8 +75,9 @@ void DropDownPackageChoiceList::select(size_t item) {
 
 size_t DropDownPackageChoiceList::selection() const {
 	size_t n = 0;
+	String package_name = editor.value().value->toString();
 	FOR_EACH(i, editor.items) {
-		if (editor.value().package_name == i.package_name) {
+		if (package_name == i.package_name) {
 			return n + !editor.field().required;
 		}
 		++n;
@@ -111,7 +112,7 @@ void PackageChoiceValueEditor::determineSize(bool) {
 }
 
 void PackageChoiceValueEditor::change(const String& c) {
-	addAction(value_action(valueP(), c));
+	addAction(value_action(valueP(), to_script(c)));
 }
 
 void PackageChoiceValueEditor::initDropDown() {

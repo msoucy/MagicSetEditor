@@ -17,12 +17,12 @@ IMPLEMENT_VALUE_VIEWER(Choice);
 void get_options(Rotation& rot, ValueViewer& viewer, const ChoiceStyle& style, GeneratedImage::Options& opts);
 
 bool ChoiceValueViewer::prepare(RotatedDC& dc) {
-	return prepare_choice_viewer(dc, *this, style(), value().value());
+	return prepare_choice_viewer(dc, *this, style(), value().value->toString());
 }
 void ChoiceValueViewer::draw(RotatedDC& dc) {
 	drawFieldBorder(dc);
 	if (style().render_style & RENDER_HIDDEN) return;
-	draw_choice_viewer(dc, *this, style(), value().value());
+	draw_choice_viewer(dc, *this, style(), value().value->toString());
 }
 
 void ChoiceValueViewer::onStyleChange(int changes) {

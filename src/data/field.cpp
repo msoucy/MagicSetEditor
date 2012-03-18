@@ -321,6 +321,8 @@ IMPLEMENT_DYNAMIC_ARG(Field const*, field_for_reading, nullptr);
 	//  * mark_default(value)       # a value marked as being default
 
 void parse_errors_to_reader_warnings(Reader& reader, vector<ScriptParseError> const& errors);
+ScriptValueP script_local_image_file(LocalFileName const& filename);
+ScriptValueP script_local_symbol_file(LocalFileName const& filename);
 
 void Reader::handle(ScriptValueP& value) {
 	Field const* field = field_for_reading();
@@ -331,7 +333,7 @@ void Reader::handle(ScriptValueP& value) {
 			bool x;
 			handle(x);
 			value = to_script(x);
-		} else if (dynamic_cast<TextField const*>(field) || dynamic_cast<ChoiceField const*>(field)) {
+		} else if (dynamic_cast<TextField const*>(field) || dynamic_cast<ChoiceField const*>(field) || dynamic_cast<PackageChoiceField const*>(field)) {
 			// text, choice fields: string
 			String str;
 			handle(str);
@@ -345,25 +347,33 @@ void Reader::handle(ScriptValueP& value) {
 			// image, symbol fields: string that is a filename in the set
 			String str;
 			handle(str);
-			//Packaged* package = package_for_reading();
-			Packaged* package = nullptr; // TODO
-			value = intrusive(new ScriptLocalFileName(package,str));
-			throw "TODO";
+			value = script_local_image_file(LocalFileName::fromReadString(str));
+		} else if (dynamic_cast<SymbolField const*>(field)) {
+			// image, symbol fields: string that is a filename in the set
+			String str;
+			handle(str);
+			value = script_local_symbol_file(LocalFileName::fromReadString(str));
 		} else if (dynamic_cast<InfoField const*>(field)) {
 			// this should never happen, since info fields were not saved
 			String str;
 			handle(str);
+		} else {
+			throw InternalError(_("Reader::handle(ScriptValueP)"));
 		}
 	} else {
 		// in the new system, the type is stored in the file.
 		String unparsed;
-		vector<ScriptParseError> errors;
 		handle(unparsed);
-		value = parse_value(unparsed, this->getPackage(), errors);
-		if (!value) {
+		if (unparsed.empty()) {
 			value = script_default_nil;
+		} else {
+			vector<ScriptParseError> errors;
+			value = parse_value(unparsed, this->getPackage(), errors);
+			if (!value) {
+				value = script_default_nil;
+			}
+			parse_errors_to_reader_warnings(*this, errors);
 		}
-		parse_errors_to_reader_warnings(*this, errors);
 	}
 }
 void Writer::handle(ScriptValueP const& value) {
@@ -411,11 +421,17 @@ AnyValue::AnyValue(AnyFieldP const& field, ScriptValueP const& value)
 ValueP AnyValue::clone() const {
 	return intrusive(new AnyValue(*this));
 }
-String AnyValue::toString() const {
-	return value->toString();
+String AnyValue::toFriendlyString() const {
+	try {
+		return value->toFriendlyString();
+	} catch (...) {
+		return _("<") + value->typeName() + _(">");
+	}
 }
 
 bool AnyValue::update(Context& ctx, const Action* act) {
+	WITH_DYNAMIC_ARG(last_update_age,     last_modified.get()); // TODO: this is redundant, since it can be got from value_being_updated
+	WITH_DYNAMIC_ARG(value_being_updated, this);
 	bool change = false;
 	if (ScriptDefault const* dv = dynamic_cast<ScriptDefault*>(value.get())) {
 		ScriptValueP dvv = dv->un_default;

@@ -360,6 +360,9 @@ void ApprDistro::writeD(wxTextOutputStream& tout, const String& name, int c, int
 String untag_appr(const String& s) {
 	return replace_all(untag(curly_quotes(s,false)), _("\n"), _("\r\n"));
 }
+inline String untag_appr(const ScriptValueP& str) {
+	return untag_appr(str->toString());
+}
 
 DECLARE_POINTER_TYPE(ApprCardRecord);
 DECLARE_TYPEOF_COLLECTION(ApprCardRecordP);
@@ -422,10 +425,10 @@ class ApprCardRecord : public IntrusivePtrBase<ApprCardRecord> {
 // conversion from MSE2 card
 ApprCardRecord::ApprCardRecord(const Card& card, const String& sets_) {
 	name   = untag_appr(card.value<TextValue>(_("name")).value);
-	sets   = sets_ + _("-") + card_rarity_code(card.value<ChoiceValue>(_("rarity")).value);
+	sets   = sets_ + _("-") + card_rarity_code(card.value<ChoiceValue>(_("rarity")).value->toString());
 	cc     = untag_appr(card.value<TextValue>(_("casting_cost")).value);
 	type   = untag_appr(card.value<TextValue>(_("super_type")).value);
-	String subType = untag(card.value<TextValue>(_("sub_type")).value);
+	String subType = untag_appr(card.value<TextValue>(_("sub_type")).value);
 	if (!subType.empty())  type += _(" - ") + subType;
 	text   = untag_appr(card.value<TextValue>(_("rule_text")).value);
 	flavor = untag_appr(card.value<TextValue>(_("flavor_text")).value);
@@ -725,7 +728,7 @@ bool ApprenticeExportWindow::exportSet() {
 		if (res == wxNO) return false; // abort export
 	}
 	// add our set
-	expan.expansions[set->apprentice_code] = set->value<TextValue>(_("title")).value;
+	expan.expansions[set->apprentice_code] = set->value<TextValue>(_("title")).value->toString();
 	expan.write();
 	
 	// Format database

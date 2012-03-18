@@ -37,7 +37,8 @@ class ChoiceValueEditor : public ChoiceValueViewer, public ValueEditor {
 	DropDownListP drop_down;
 	friend class DropDownChoiceList;
 	/// Change the choice
-	void change(const Defaultable<String>& c);
+	void change(const ScriptValueP& c);
+	void change(const String& c);
 };
 
 // ----------------------------------------------------------------------------- : DropDownChoiceList

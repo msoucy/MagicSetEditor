@@ -312,7 +312,7 @@ String CardListBase::OnGetItemText(long pos, long col) const {
 		return wxEmptyString;
 	}
 	ValueP val = getCard(pos)->data[column_fields[col]];
-	if (val) return val->toString();
+	if (val) return val->toFriendlyString();
 	else     return wxEmptyString;
 }
 

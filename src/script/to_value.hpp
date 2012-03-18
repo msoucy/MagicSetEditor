@@ -111,6 +111,7 @@ class ScriptDefault : public ScriptValue {
 	virtual ScriptType type() const { return un_default->type(); }
 	virtual String typeName() const { return un_default->typeName(); }
 	virtual String toString() const { return un_default->toString(); }
+	virtual String toFriendlyString() const { return un_default->toFriendlyString(); }
 	virtual String toCode()   const { return _("mark_default(") + un_default->toCode() + _(")"); }
 	virtual double toDouble() const { return un_default->toDouble(); }
 	virtual int    toInt()    const { return un_default->toInt(); }
@@ -130,13 +131,14 @@ inline ScriptDefault const* is_default(ScriptValueP const& x) {
 	return is_default(x.get());
 }
 inline ScriptValueP make_default(ScriptValueP const& x) {
-	return intrusive(new ScriptDefault(x));
+	return is_default(x) ? x : intrusive(new ScriptDefault(x));
 }
 inline ScriptValueP with_defaultness_of(ScriptValueP const& of, ScriptValueP const& x) {
 	return is_default(of) ? make_default(x) : x;
 }
 extern ScriptValueP script_default_nil;
 
+/*
 // ----------------------------------------------------------------------------- : File names
 
 class Packaged;
@@ -156,6 +158,7 @@ class ScriptLocalFileName : public ScriptValue {
 	String    fn; //< The filename
 	Type      file_type;
 };
+*/
 
 // ----------------------------------------------------------------------------- : Iterators
 

@@ -20,7 +20,9 @@ DECLARE_POINTER_TYPE(SymbolVariation);
 
 DECLARE_POINTER_TYPE(SymbolField);
 DECLARE_POINTER_TYPE(SymbolStyle);
-#if !USE_SCRIPT_VALUE_SYMBOL
+#if USE_SCRIPT_VALUE_SYMBOL
+DECLARE_POINTER_TYPE(LocalSymbolFile);
+#else
 DECLARE_POINTER_TYPE(SymbolValue);
 #endif
 
@@ -71,6 +73,21 @@ class SymbolVariation : public IntrusivePtrBase<SymbolVariation> {
 #if USE_SCRIPT_VALUE_SYMBOL
 typedef AnyValue SymbolValue;
 typedef AnyValueP SymbolValueP;
+
+// A file that refers to a symbol
+class LocalSymbolFile : public ScriptValue {
+  public:
+	LocalSymbolFile(LocalFileName const& filename) : filename(filename) {}
+	
+	virtual String toCode() const;
+	virtual String typeName() const;
+	virtual ScriptType type() const { return SCRIPT_FILENAME; }
+	virtual GeneratedImageP toImage() const;
+	virtual String toFriendlyString() const;
+	
+	LocalFileName filename; // not empty
+};
+
 #else
 /// The Value in a SymbolField, i.e. a symbol
 class SymbolValue : public Value {

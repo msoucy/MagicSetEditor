@@ -12,6 +12,7 @@
 #include <script/context.hpp>
 #include <gfx/generated_image.hpp>
 #include <util/error.hpp>
+#include <util/tagged_string.hpp>
 #include <boost/pool/singleton_pool.hpp>
 
 DECLARE_TYPEOF_COLLECTION(pair<Variable COMMA ScriptValueP>);
@@ -27,6 +28,7 @@ AColor       ScriptValue::toColor()                         const { throw Script
 wxDateTime   ScriptValue::toDateTime()                      const { throw ScriptErrorConversion(typeName(), _TYPE_("date"    )); }
 GeneratedImageP ScriptValue::toImage()                      const { throw ScriptErrorConversion(typeName(), _TYPE_("image"   )); }
 String       ScriptValue::toCode()                          const { return toString(); }
+String       ScriptValue::toFriendlyString()                const { return toString(); }
 ScriptValueP ScriptValue::do_eval(Context&, bool)           const { return delay_error(ScriptErrorConversion(typeName(), _TYPE_("function"))); }
 ScriptValueP ScriptValue::next(ScriptValueP* key_out)             { throw InternalError(_("Can't convert from ")+typeName()+_(" to iterator")); }
 ScriptValueP ScriptValue::makeIterator()                    const { return delay_error(ScriptErrorConversion(typeName(), _TYPE_("collection"))); }
@@ -249,6 +251,11 @@ class ScriptString : public ScriptValue {
 	virtual String toString() const { return value; }
 	virtual String toCode() const {
 		return quote_string(value);
+	}
+	virtual String toFriendlyString() const {
+		// assume that the string can contain tags
+		// TODO: distinguish between strings with tags and strings without
+		return untag(value);
 	}
 	virtual double toDouble() const {
 		double d;

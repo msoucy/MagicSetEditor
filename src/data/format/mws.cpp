@@ -26,6 +26,9 @@ String untag_mws(const String& str) {
 	// TODO : em dashes?
 	return replace_all(untag(curly_quotes(str,false)), _("\n"), _("\n\t\t") );
 }
+inline String untag_mws(const ScriptValueP& str) {
+	return untag_mws(str->toString());
+}
 //String untag_mws(const Defaultable<String>& str) {
 //	str.
 //}
@@ -72,7 +75,7 @@ void export_mws(Window* parent, const SetP& set) {
 	wxTextOutputStream file(f, wxEOL_DOS);
 	
 	// Write header
-	file.WriteString(set->value<TextValue>(_("title")).value + _(" Spoiler List\n"));
+	file.WriteString(set->value<TextValue>(_("title")).value->toString() + _(" Spoiler List\n"));
 	file.WriteString(_("Set exported using Magic Set Editor 2, version ") + app_version.toString() + _("\n\n"));
 	wxDateTime now = wxDateTime::Now();
 	file.WriteString(_("Spoiler List created on ") + now.FormatISODate() + _(" ") + now.FormatISOTime());
@@ -83,7 +86,7 @@ void export_mws(Window* parent, const SetP& set) {
 		file.WriteString(_("Card Name:\t"));
 		file.WriteString(untag_mws(card->value<TextValue>(_("name")).value));
 		file.WriteString(_("\nCard Color:\t"));
-		file.WriteString(card_color_mws(card->value<ChoiceValue>(_("card color")).value));
+		file.WriteString(card_color_mws(card->value<ChoiceValue>(_("card color")).value->toString()));
 		file.WriteString(_("\nMana Cost:\t"));
 		file.WriteString(untag_mws(card->value<TextValue>(_("casting cost")).value));
 		file.WriteString(_("\nType & Class:\t"));
@@ -103,7 +106,7 @@ void export_mws(Window* parent, const SetP& set) {
 		file.WriteString(_("\nArtist:\t\t"));
 		file.WriteString(untag_mws(card->value<TextValue>(_("illustrator")).value));
 		file.WriteString(_("\nRarity:\t\t"));
-		file.WriteString(card_rarity_code(card->value<ChoiceValue>(_("rarity")).value));
+		file.WriteString(card_rarity_code(card->value<ChoiceValue>(_("rarity")).value->toString()));
 		file.WriteString(_("\nCard #:\t\t"));
 		file.WriteString(untag_mws(card->value<TextValue>(_("card number")).value));
 		file.WriteString(_("\n\n"));

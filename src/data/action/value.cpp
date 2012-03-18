@@ -48,10 +48,18 @@ inline void swap_value(ColorValue&          a, ColorValue         ::ValueType& b
 #if USE_SCRIPT_VALUE_VALUE
 inline void swap_value(AnyValue&            a, AnyValue           ::ValueType& b) { swap(a.value,    b); }
 #endif
+#if !USE_SCRIPT_VALUE_IMAGE
 inline void swap_value(ImageValue&          a, ImageValue         ::ValueType& b) { swap(a.filename, b); }
+#endif
+#if !USE_SCRIPT_VALUE_SYMBOL
 inline void swap_value(SymbolValue&         a, SymbolValue        ::ValueType& b) { swap(a.filename, b); }
+#endif
+#if !USE_SCRIPT_VALUE_TEXT
 inline void swap_value(TextValue&           a, TextValue          ::ValueType& b) { swap(a.value,    b); }
+#endif
+#if !USE_SCRIPT_VALUE_PACKAGE
 inline void swap_value(PackageChoiceValue&  a, PackageChoiceValue ::ValueType& b) { swap(a.package_name, b); }
+#endif
 
 /// A ValueAction that swaps between old and new values
 template <typename T, bool ALLOW_MERGE>
@@ -92,9 +100,15 @@ ValueAction* value_action(const ColorValueP&          value, const Defaultable<C
 #if USE_SCRIPT_VALUE_VALUE
 ValueAction* value_action(const AnyValueP&            value, const ScriptValueP&        new_value) { return new SimpleValueAction<AnyValue,            false>(value, new_value); }
 #endif
+#if !USE_SCRIPT_VALUE_IMAGE
 ValueAction* value_action(const ImageValueP&          value, const FileName&            new_value) { return new SimpleValueAction<ImageValue,          false>(value, new_value); }
+#endif
+#if !USE_SCRIPT_VALUE_SYMBOL
 ValueAction* value_action(const SymbolValueP&         value, const FileName&            new_value) { return new SimpleValueAction<SymbolValue,         false>(value, new_value); }
+#endif
+#if !USE_SCRIPT_VALUE_PACKAGE
 ValueAction* value_action(const PackageChoiceValueP&  value, const String&              new_value) { return new SimpleValueAction<PackageChoiceValue,  false>(value, new_value); }
+#endif
 
 
 // ----------------------------------------------------------------------------- : MultipleChoice
@@ -119,7 +133,11 @@ void MultipleChoiceValueAction::perform(bool to_undo) {
 
 // ----------------------------------------------------------------------------- : Text
 
+#if USE_SCRIPT_VALUE_TEXT
+TextValueAction::TextValueAction(const TextValueP& value, size_t start, size_t end, size_t new_end, const ScriptValueP& new_value, const String& name)
+#else
 TextValueAction::TextValueAction(const TextValueP& value, size_t start, size_t end, size_t new_end, const Defaultable<String>& new_value, const String& name)
+#endif
 	: ValueAction(value)
 	, selection_start(start), selection_end(end), new_selection_end(new_end)
 	, new_value(new_value)
@@ -164,22 +182,22 @@ TextValueAction* toggle_format_action(const TextValueP& value, const String& tag
 		swap(start_i, end_i);
 	}
 	String new_value;
-	const String& str = value->value();
+	String old_value = value->value->toString();
 	// Are we inside the tag we are toggling?
-	if (!is_in_tag(str, _("<") + tag, start_i, end_i)) {
+	if (!is_in_tag(old_value, _("<") + tag, start_i, end_i)) {
 		// we are not inside this tag, add it
-		new_value =  str.substr(0, start_i);
+		new_value =  old_value.substr(0, start_i);
 		new_value += _("<") + tag + _(">");
-		new_value += str.substr(start_i, end_i - start_i);
+		new_value += old_value.substr(start_i, end_i - start_i);
 		new_value += _("</") + tag + _(">");
-		new_value += str.substr(end_i);
+		new_value += old_value.substr(end_i);
 	} else {
 		// we are inside this tag, 'remove' it
-		new_value =  str.substr(0, start_i);
+		new_value =  old_value.substr(0, start_i);
 		new_value += _("</") + tag + _(">");
-		new_value += str.substr(start_i, end_i - start_i);
+		new_value += old_value.substr(start_i, end_i - start_i);
 		new_value += _("<") + tag + _(">");
-		new_value += str.substr(end_i);
+		new_value += old_value.substr(end_i);
 	}
 	// Build action
 	if (start != end) {
@@ -187,10 +205,10 @@ TextValueAction* toggle_format_action(const TextValueP& value, const String& tag
 		// user to press Ctrl+B and start typing bold text
 		new_value = simplify_tagged(new_value);
 	}
-	if (value->value() == new_value) {
+	if (new_value == old_value) {
 		return nullptr; // no changes
 	} else {
-		return new TextValueAction(value, start, end, end, new_value, action_name);
+		return new TextValueAction(value, start, end, end, to_script(new_value), action_name);
 	}
 }
 
@@ -200,15 +218,16 @@ TextValueAction* typing_action(const TextValueP& value, size_t start_i, size_t e
 		swap(start, end);
 		swap(start_i, end_i);
 	}
-	String new_value = tagged_substr_replace(value->value(), start_i, end_i, replacement);
-	if (value->value() == new_value) {
+	String old_value = value->value->toString();
+	String new_value = tagged_substr_replace(old_value, start_i, end_i, replacement);
+	if (new_value == old_value) {
 		// no change
 		return nullptr;
 	} else {
 		if (reverse) {
-			return new TextValueAction(value, end, start, start+untag(replacement).size(), new_value, action_name);
+			return new TextValueAction(value, end, start, start+untag(replacement).size(), to_script(new_value), action_name);
 		} else {
-			return new TextValueAction(value, start, end, start+untag(replacement).size(), new_value, action_name);
+			return new TextValueAction(value, start, end, start+untag(replacement).size(), to_script(new_value), action_name);
 		}
 	}
 }
@@ -218,11 +237,12 @@ TextValueAction* typing_action(const TextValueP& value, size_t start_i, size_t e
 TextToggleReminderAction::TextToggleReminderAction(const TextValueP& value, size_t pos_in)
 	: ValueAction(value)
 {
-	pos = in_tag(value->value(), _("<kw-"), pos_in, pos_in);
+	String old_value = value->value->toString();
+	pos = in_tag(old_value, _("<kw-"), pos_in, pos_in);
 	if (pos == String::npos) {
 		throw InternalError(_("TextToggleReminderAction: not in <kw- tag"));
 	}
-	Char c = value->value().GetChar(pos + 4);
+	Char c = old_value.GetChar(pos + 4);
 	enable = !(c == _('1') || c == _('A')); // if it was not enabled, then enable it
 	old = enable ? _('1') : _('0');
 }
@@ -233,7 +253,7 @@ String TextToggleReminderAction::getName(bool to_undo) const {
 void TextToggleReminderAction::perform(bool to_undo) {
 	ValueAction::perform(to_undo);
 	TextValue& value = static_cast<TextValue&>(*valueP);
-	String& val = value.value.mutate();
+	String val = value.value->toString();
 	assert(pos + 4 < val.size());
 	size_t end = match_close_tag(val, pos);
 	Char& c = val[pos + 4];
@@ -241,6 +261,7 @@ void TextToggleReminderAction::perform(bool to_undo) {
 	if (end != String::npos && end + 5 < val.size()) {
 		val[end + 5] = c; // </kw-c>
 	}
+	value.value = to_script(val);
 	value.onAction(*this, to_undo); // notify value
 }
 

@@ -21,14 +21,50 @@ class wxZipInputStream;
 class wxZipEntry;
 DECLARE_POINTER_TYPE(PackageDependency);
 
-/// The package that is currently being written to
+/// The package that is currently being written to.
+/// When writing a filename, the writing_package should be notified that this file is still in use.
 DECLARE_DYNAMIC_ARG(Package*, writing_package);
-/// The package that is being put onto/read from the clipboard
+/// The package that contains the thing being written to the clipboard, or the package that will contain the thing being read from the clipboard.
+/// When writing a filename, it should be converted to a global name referencing clipboard_package.
+/// When reading a global name, the file should be copied into the clipboard_package.
 DECLARE_DYNAMIC_ARG(Package*, clipboard_package);
 
 
 typedef shared_ptr<wxOutputStream> OutputStreamP;
 
+
+// ----------------------------------------------------------------------------- : FileName
+
+/// A string standing for a filename, has different behaviour when reading/writing
+/// Behaviour is controled by dynamic args:
+///   * clipboard_package
+///   * writing_package
+class LocalFileName {
+  public:
+	LocalFileName() {}
+	// Convert to a string that can be written to a package.
+	// notifies the package that the underlying file is in use.
+	// when writing to the clipboard, instead returns a global file reference.
+	String toStringForWriting() const;
+	// Construct a LocalFileName based on a string read from a package.
+	// when reading from the clipboard, this will instead be a global file reference, and it is converted at this point.
+	static LocalFileName fromReadString(const String&, const String& prefix = _("image"), String const& suffix = _(""));
+	
+	inline bool empty() const {
+		return fn.empty();
+	}
+	inline bool operator == (LocalFileName const& that) const {
+		return this->fn == that.fn;
+	}
+	
+  private:
+	LocalFileName(const wxString& fn) : fn(fn) {}
+	String fn;
+	friend class Package;
+};
+
+// TODO: rename to LocalFileName
+typedef LocalFileName FileName;
 
 // ----------------------------------------------------------------------------- : Package
 
@@ -105,14 +141,23 @@ class Package : public IntrusivePtrVirtualBase {
 
 	/// Open an input stream for a file in the package.
 	InputStreamP openIn(const String& file);
+	inline InputStreamP openIn(const LocalFileName& file) {
+		return openIn(file.fn);
+	}
 
 	/// Open an output stream for a file in the package.
 	/// (changes are only committed with save())
 	OutputStreamP openOut(const String& file);
+	inline OutputStreamP openOut(const LocalFileName& file) {
+		return openOut(file.fn);
+	}
 
 	/// Get a filename that can be written to to modfify a file in the package
 	/// (changes are only committed with save())
 	String nameOut(const String& file);
+	inline String nameOut(const LocalFileName& file) {
+		return nameOut(file.fn);
+	}
 
 	/// Creates a new, unique, filename with the specified prefix and suffix
 	/// for example newFileName("image/",".jpg") -> "image/1.jpg"
@@ -123,13 +168,6 @@ class Package : public IntrusivePtrVirtualBase {
 	/// Must be called for files not opened using openOut/nameOut
 	/// If they are to be kept in the package.
 	void referenceFile(const String& file);
-
-	/// Get an 'absolute filename' for a file in the package.
-	/// This file can later be opened from anywhere (other process) using openAbsoluteFile()
-	String absoluteName(const String& file);
-
-	/// Open a file given an absolute filename
-	static InputStreamP openAbsoluteFile(const String& name);
 
 	// --------------------------------------------------- : Managing the inside of the package : Reader/writer
 
@@ -142,12 +180,20 @@ class Package : public IntrusivePtrVirtualBase {
 		readFile(file, obj);
 		return obj;
 	}
+	template <typename T>
+	inline T readFile(const LocalFileName& file) {
+		return readFile<T>(file.fn);
+	}
 
 	template <typename T>
 	void writeFile(const String& file, const T& obj, Version file_version) {
 		OutputStreamP stream = openOut(file);
 		Writer writer(*stream, file_version);
 		writer.handle(obj);
+	}
+	template <typename T>
+	inline void writeFile(const LocalFileName& file, const T& obj, Version file_version) {
+		return readFile(file.fn, obj, file_version);
 	}
 
   protected:
@@ -202,6 +248,13 @@ class Package : public IntrusivePtrVirtualBase {
 	void saveToZipfile(const String&,   bool remove_unused, bool is_copy);
 	void saveToDirectory(const String&, bool remove_unused, bool is_copy);
 	FileInfos::iterator addFile(const String& file);
+	
+	/// Get an 'absolute filename' for a file in the package.
+	/// This file can later be opened from anywhere (other process) using openAbsoluteFile()
+	String absoluteName(const String& file);
+	/// Open a file given an absolute filename
+	static InputStreamP openAbsoluteFile(const String& name);
+	friend class LocalFileName;
 };
 
 // ----------------------------------------------------------------------------- : Packaged

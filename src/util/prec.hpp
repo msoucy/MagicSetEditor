@@ -89,13 +89,6 @@ typedef unsigned int  UInt;
 /// Null pointer
 #define nullptr 0
 
-/// A string standing for a filename, has different behaviour when reading/writing
-class FileName : public wxString {
-  public:
-	FileName()                                {}
-	FileName(const wxString& s) : wxString(s) {}
-};
-
 // ----------------------------------------------------------------------------- : MSE Headers
 
 // MSE utility headers (ones unlikely to change and used everywhere)

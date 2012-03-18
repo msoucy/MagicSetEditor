@@ -17,7 +17,11 @@ IMPLEMENT_FIELD_TYPE(Info, "info");
 #if USE_SCRIPT_VALUE_INFO
 IMPLEMENT_REFLECTION(InfoField) {
 	REFLECT_BASE(AnyField);
-	REFLECT_IF_READING if(initial == script_default_nil) initial = to_script(caption);
+}
+void InfoField::after_reading(Version ver) {
+	AnyField::after_reading(ver);
+	if (initial == script_default_nil) initial = to_script(caption);
+	initial = make_default(initial);
 }
 #else
 void InfoField::initDependencies(Context& ctx, const Dependency& dep) const {
@@ -69,7 +73,7 @@ IMPLEMENT_REFLECTION(InfoStyle) {
 
 IMPLEMENT_VALUE_CLONE(Info);
 
-String InfoValue::toString() const {
+String InfoValue::toFriendlyString() const {
 	return value;
 }
 bool InfoValue::update(Context& ctx, const Action*) {

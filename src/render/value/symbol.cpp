@@ -26,10 +26,11 @@ void SymbolValueViewer::draw(RotatedDC& dc) {
 	draw_checker(dc, style().getInternalRect());
 	double wh = min(dc.getWidth(), dc.getHeight());
 	// try to load symbol
-	if (symbols.empty() && !value().filename.empty()) {
+	LocalSymbolFileP symbol_file = dynamic_pointer_cast<LocalSymbolFile>(value().value);
+	if (symbols.empty() && symbol_file) {
 		try {
 			// load symbol
-			SymbolP symbol = getLocalPackage().readFile<SymbolP>(value().filename);
+			SymbolP symbol = getLocalPackage().readFile<SymbolP>(symbol_file->filename);
 			// aspect ratio
 			double ar = symbol->aspectRatio();
 			ar = min(style().max_aspect_ratio, max(style().min_aspect_ratio, ar));

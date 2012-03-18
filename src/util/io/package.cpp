@@ -259,7 +259,7 @@ String Package::nameOut(const String& file) {
 	}
 }
 
-FileName Package::newFileName(const String& prefix, const String& suffix) {
+LocalFileName Package::newFileName(const String& prefix, const String& suffix) {
 	assert(wxThread::IsMain()); // Writing should only be done from the main thread
 	String name;
 	UInt infix = 0;
@@ -287,6 +287,8 @@ void Package::referenceFile(const String& file) {
 	it->second.keep = true;
 }
 
+// ----------------------------------------------------------------------------- : LocalFileNames and absolute file references
+
 String Package::absoluteName(const String& file) {
 	assert(wxThread::IsMain());
 	FileInfos::iterator it = files.find(normalize_internal_filename(file));
@@ -301,9 +303,10 @@ String Package::absoluteName(const String& file) {
 		return filename+_("/")+file;
 	} else {
 		// assume zip package
-		return filename+_("\1")+file;
+		return filename + _("\1") + file;
 	}
 }
+
 // Open a file that is in some package
 InputStreamP Package::openAbsoluteFile(const String& name) {
 	size_t pos = name.find_first_of(_('\1'));
@@ -319,6 +322,42 @@ InputStreamP Package::openAbsoluteFile(const String& name) {
 		return p.openIn( name.substr(pos + 1));
 	}
 }
+
+String LocalFileName::toStringForWriting() const {
+	if (!fn.empty() && clipboard_package()) {
+		// use absolute names on clipboard
+		try {
+			return clipboard_package()->absoluteName(fn);
+		} catch (const Error&) {
+			// ignore errors
+			return _("");
+		}
+	} else if (!fn.empty() && writing_package()) {
+		writing_package()->referenceFile(fn);
+		return fn;
+	} else {
+		return fn;
+	}
+}
+
+LocalFileName LocalFileName::fromReadString(String const& fn, String const& prefix, String const& suffix) {
+	if (!fn.empty() && clipboard_package()) {
+		// copy file into current package
+		try {
+			LocalFileName local_name = clipboard_package()->newFileName(prefix,_("")); // a new unique name in the package, assume it's an image
+			OutputStreamP out = clipboard_package()->openOut(local_name);
+			InputStreamP in = Package::openAbsoluteFile(fn);
+			out->Write(*in); // copy
+			return local_name;
+		} catch (Error) {
+			// ignore errors
+			return _("");
+		}
+	} else {
+		return LocalFileName(fn);
+	}
+}
+
 
 // ----------------------------------------------------------------------------- : Package : private
 

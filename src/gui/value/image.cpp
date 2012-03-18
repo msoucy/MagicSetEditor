@@ -13,6 +13,8 @@
 #include <data/action/value.hpp>
 #include <wx/clipbrd.h>
 
+ScriptValueP script_local_image_file(LocalFileName const& filename);
+
 // ----------------------------------------------------------------------------- : ImageValueEditor
 
 IMPLEMENT_VALUE_EDITOR(Image) {}
@@ -39,17 +41,17 @@ void ImageValueEditor::sliceImage(const Image& image) {
 	// clicked ok?
 	if (s.ShowModal() == wxID_OK) {
 		// store the image into the set
-		FileName new_image_file = getLocalPackage().newFileName(field().name,_("")); // a new unique name in the package
+		LocalFileName new_image_file = getLocalPackage().newFileName(field().name,_("")); // a new unique name in the package
 		Image img = s.getImage();
 		img.SaveFile(getLocalPackage().nameOut(new_image_file), wxBITMAP_TYPE_PNG); // always use PNG images, see #69. Disk space is cheap anyway.
-		addAction(value_action(valueP(), new_image_file));
+		addAction(value_action(valueP(), script_local_image_file(new_image_file)));
 	}
 }
 
 // ----------------------------------------------------------------------------- : Clipboard
 
 bool ImageValueEditor::canCopy() const {
-	return !value().filename.empty();
+	return !value().value->isNil();
 }
 
 bool ImageValueEditor::canPaste() const {
@@ -58,10 +60,12 @@ bool ImageValueEditor::canPaste() const {
 }
 
 bool ImageValueEditor::doCopy() {
-	// load image
-	InputStreamP image_file = getLocalPackage().openIn(value().filename);
-	Image image;
-	if (!image.LoadFile(*image_file)) return false;
+	// load/generate image
+	GeneratedImage::Options opts;
+	opts.package         = &getStylePackage();
+	opts.local_package   = &getLocalPackage();
+	Image image = value().value->toImage()->generate(opts);
+	if (!image.Ok()) return false;
 	// set data
 	if (!wxTheClipboard->Open()) return false;
 	bool ok = wxTheClipboard->SetData(new wxBitmapDataObject(image));
@@ -82,7 +86,7 @@ bool ImageValueEditor::doPaste() {
 }
 
 bool ImageValueEditor::doDelete() {
-	addAction(value_action(valueP(), FileName()));
+	addAction(value_action(valueP(), script_nil));
 	return true;
 }
 

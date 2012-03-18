@@ -11,6 +11,7 @@
 
 #include <util/prec.hpp>
 #include <util/age.hpp>
+#include <util/io/package.hpp>
 #include <gfx/gfx.hpp>
 #include <script/value.hpp>
 
@@ -63,6 +64,7 @@ class GeneratedImage : public ScriptValue {
 	virtual ScriptType type() const;
 	virtual String typeName() const;
 	virtual GeneratedImageP toImage() const;
+	virtual String toFriendlyString() const;
 };
 
 /// Resize an image to conform to the options
@@ -353,7 +355,8 @@ class BuiltInImage : public GeneratedImage {
 /// Use a symbol as an image
 class SymbolToImage : public GeneratedImage {
   public:
-	SymbolToImage(bool is_local, const String& filename, Age age, const SymbolVariationP& variation);
+	SymbolToImage(const SymbolToImage& symbol, const SymbolVariationP& variation);
+	SymbolToImage(bool is_local, const LocalFileName& filename, const SymbolVariationP& variation = SymbolVariationP());
 	~SymbolToImage();
 	virtual Image generate(const Options& opt) const;
 	virtual bool operator == (const GeneratedImage& that) const;
@@ -365,24 +368,28 @@ class SymbolToImage : public GeneratedImage {
   private:
 	SymbolToImage(const SymbolToImage&); // copy ctor
 	bool             is_local; ///< Use local package?
-	String           filename;
-	Age              age;      ///< Age the symbol was last updated
+	LocalFileName    filename;
 	SymbolVariationP variation;
 };
 
 // ----------------------------------------------------------------------------- : ImageValueToImage
 
 /// Use an image from an ImageValue as an image
+
+// Also used as representation for script_local_image_file
+// TODO: rename this
 class ImageValueToImage : public GeneratedImage {
   public:
-	ImageValueToImage(const String& filename);
+	ImageValueToImage(const LocalFileName& filename);
 	~ImageValueToImage();
 	virtual Image generate(const Options& opt) const;
 	virtual bool operator == (const GeneratedImage& that) const;
 	virtual bool local() const { return true; }
+	
+	virtual String toCode() const;
   private:
 	ImageValueToImage(const ImageValueToImage&); // copy ctor
-	String filename;
+	LocalFileName filename;
 };
 
 // ----------------------------------------------------------------------------- : EOF

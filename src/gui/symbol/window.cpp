@@ -48,11 +48,12 @@ SymbolWindow::SymbolWindow(Window* parent, ValueActionPerformer* performer)
 	// attempt to load symbol
 	SymbolP symbol;
 	SymbolValueP value = static_pointer_cast<SymbolValue>(performer->value);
-	if (!value->filename.empty()) {
+	LocalSymbolFileP symbol_file = dynamic_pointer_cast<LocalSymbolFile>(value->value);
+	if (symbol_file) {
 		try {
 			// load symbol
 			Package& package = performer->getLocalPackage();
-			symbol = package.readFile<SymbolP>(value->filename);
+			symbol = package.readFile<SymbolP>(symbol_file->filename);
 		} catch (const Error& e) {
 			handle_error(e);
 		}
@@ -251,11 +252,11 @@ void SymbolWindow::onFileStore(wxCommandEvent& ev) {
 	if (performer) {
 		SymbolValueP value = static_pointer_cast<SymbolValue>(performer->value);
 		Package& package = performer->getLocalPackage();
-		FileName new_filename = package.newFileName(value->field().name,_(".mse-symbol")); // a new unique name in the package
+		LocalFileName new_filename = package.newFileName(value->field().name,_(".mse-symbol")); // a new unique name in the package
 		OutputStreamP stream = package.openOut(new_filename);
 		Writer writer(*stream, file_version_symbol);
 		writer.handle(control->getSymbol());
-		performer->addAction(value_action(value, new_filename));
+		performer->addAction(value_action(value, intrusive(new LocalSymbolFile(new_filename))));
 	}
 }
 

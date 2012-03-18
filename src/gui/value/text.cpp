@@ -257,7 +257,7 @@ DropDownList* DropDownWordList::submenu(size_t item) const {
 
 size_t DropDownWordList::selection() const {
 	// current selection
-	String current = untag(tve.value().value().substr(pos->start, pos->end - pos->start));
+	String current = untag(tve.value().value->toString().substr(pos->start, pos->end - pos->start));
 	// find selection
 	size_t selected = NO_SELECTION;
 	bool prefix_selected = true;
@@ -456,7 +456,7 @@ bool TextValueEditor::onChar(wxKeyEvent& ev) {
 		case WXK_END:
 			// move to end of line / all (if control)
 			if (ev.ControlDown()) {
-				moveSelection(TYPE_INDEX, value().value().size(),     !ev.ShiftDown(), MOVE_RIGHT_OPT);
+				moveSelection(TYPE_INDEX, value().value->toString().size(), !ev.ShiftDown(), MOVE_RIGHT_OPT);
 			} else {
 				moveSelection(TYPE_INDEX, v.lineEnd(selection_end_i), !ev.ShiftDown(), MOVE_RIGHT_OPT);
 			}
@@ -565,20 +565,21 @@ void TextValueEditor::onLoseFocus() {
 
 bool TextValueEditor::onContextMenu(IconMenu& m, wxContextMenuEvent& ev) {
 	// in a keword? => "reminder text" option
-	size_t kwpos = in_tag(value().value(), _("<kw-"), selection_start_i, selection_start_i);
+	String val = value().value->toString();
+	size_t kwpos = in_tag(val, _("<kw-"), selection_start_i, selection_start_i);
 	if (kwpos != String::npos) {
 		m.InsertSeparator(0);
 		m.Insert(0,ID_FORMAT_REMINDER,	_("reminder"),		_MENU_("reminder text"),	_HELP_("reminder text"),	wxITEM_CHECK);
 	}
 	// in a spelling error? => show suggestions and "add to dictionary"
-	size_t error_pos = in_tag(value().value(), _("<error-spelling"), selection_start_i, selection_start_i);
+	size_t error_pos = in_tag(val, _("<error-spelling"), selection_start_i, selection_start_i);
 	if (error_pos != String::npos) {
 		// TODO: "add to dictionary"
 		//%m.InsertSeparator(0);
 		//%m.Insert(0,ID_SPELLING_ADD_TO_DICT, _MENU_("add to dictionary"),	_HELP_("add to dictionary"));
 		// suggestions
 		vector<String> suggestions;
-		get_spelling_suggestions(value().value(), error_pos, suggestions);
+		get_spelling_suggestions(val, error_pos, suggestions);
 		// add suggestions to menu
 		m.InsertSeparator(0);
 		if (suggestions.empty()) {
@@ -609,14 +610,15 @@ bool TextValueEditor::onCommand(int id) {
 	} else if (id == ID_SPELLING_ADD_TO_DICT) {
 		// TODO
 	} else if (id >= ID_SPELLING_SUGGEST && id <= ID_SPELLING_SUGGEST_MAX) {
-		size_t error_pos = in_tag(value().value(), _("<error-spelling"), selection_start_i, selection_start_i);
+		String val = value().value->toString();
+		size_t error_pos = in_tag(val, _("<error-spelling"), selection_start_i, selection_start_i);
 		if (error_pos == String::npos) throw InternalError(_("Unexpected spelling suggestion")); // wrong
 		// find the suggestions to pick from
 		vector<String> suggestions;
-		get_spelling_suggestions(value().value(), error_pos, suggestions);
+		get_spelling_suggestions(val, error_pos, suggestions);
 		// select the error
 		selection_start_i = error_pos;
-		selection_end_i   = match_close_tag(value().value(), error_pos);
+		selection_end_i   = match_close_tag(val, error_pos);
 		fixSelection(TYPE_INDEX);
 		// replace it
 		replaceSelection(suggestions.at(id - ID_SPELLING_SUGGEST), _ACTION_("correct"));
@@ -789,11 +791,12 @@ bool TextValueEditor::doPaste() {
 
 bool TextValueEditor::doCopy() {
 	// determine string to store
-	if (selection_start_i > value().value().size()) selection_start_i = value().value().size();
-	if (selection_end_i   > value().value().size()) selection_end_i   = value().value().size();
+	String val = value().value->toString();
+	if (selection_start_i > val.size()) selection_start_i = val.size();
+	if (selection_end_i   > val.size()) selection_end_i   = val.size();
 	size_t start = min(selection_start_i, selection_end_i);
 	size_t end   = max(selection_start_i, selection_end_i);
-	String str = untag(value().value().substr(start, end - start));
+	String str = untag(val.substr(start, end - start));
 	if (str.empty()) return false; // no data to copy
 	// set data
 	if (!wxTheClipboard->Open()) return false;
@@ -810,6 +813,7 @@ bool TextValueEditor::doDelete() {
 // ----------------------------------------------------------------------------- : Formatting
 
 bool TextValueEditor::canFormat(int type) const {
+	const String& val = value().value->toString();
 	switch (type) {
 		case ID_FORMAT_BOLD: case ID_FORMAT_ITALIC:
 			return !style().always_symbol && style().allow_formating;
@@ -817,25 +821,25 @@ bool TextValueEditor::canFormat(int type) const {
 			return !style().always_symbol && style().allow_formating && style().symbol_font.valid();
 		case ID_FORMAT_REMINDER:
 			return !style().always_symbol && style().allow_formating &&
-			       is_in_tag(value().value(), _("<kw"), selection_start_i, selection_start_i);
+			       is_in_tag(val, _("<kw"), selection_start_i, selection_start_i);
 		default:
 			return false;
 	}
 }
 
 bool TextValueEditor::hasFormat(int type) const {
+	const String& val = value().value->toString();
 	switch (type) {
 		case ID_FORMAT_BOLD:
-			return is_in_tag(value().value(), _("<b"),   selection_start_i, selection_end_i);
+			return is_in_tag(val, _("<b"),   selection_start_i, selection_end_i);
 		case ID_FORMAT_ITALIC:
-			return is_in_tag(value().value(), _("<i"),   selection_start_i, selection_end_i);
+			return is_in_tag(val, _("<i"),   selection_start_i, selection_end_i);
 		case ID_FORMAT_SYMBOL:
-			return is_in_tag(value().value(), _("<sym"), selection_start_i, selection_end_i);
+			return is_in_tag(val, _("<sym"), selection_start_i, selection_end_i);
 		case ID_FORMAT_REMINDER: {
-			const String& v = value().value();
-			size_t tag = in_tag(v, _("<kw"),  selection_start_i, selection_start_i);
-			if (tag != String::npos && tag + 4 < v.size()) {
-				Char c = v.GetChar(tag + 4);
+			size_t tag = in_tag(val, _("<kw"),  selection_start_i, selection_start_i);
+			if (tag != String::npos && tag + 4 < val.size()) {
+				Char c = val.GetChar(tag + 4);
 				return c == _('1') || c == _('A');
 			}
 			return false;
@@ -1001,7 +1005,7 @@ void TextValueEditor::replaceSelection(const String& replacement, const String& 
 	addAction(action);
 	// move cursor
 	{
-		String real_value = untag_for_cursor(value().value());
+		String real_value = untag_for_cursor(value().value->toString());
 		// where real and expected value are the same, nothing has happend, so don't look there
 		size_t start, end_min;
 		for (start = 0 ; start < min(real_value.size(), expected_value.size()) ; ++start) {
@@ -1046,10 +1050,11 @@ void TextValueEditor::tryAutoReplace() {
 	size_t end = selection_start_i;
 	GameSettings& gs = settings.gameSettingsFor(viewer.getGame());
 	if (!gs.use_auto_replace) return;
+	String val = value().value->toString();
 	FOR_EACH(ar, gs.auto_replaces) {
 		if (ar->enabled && ar->match.size() <= end) {
 			size_t start = end - ar->match.size();
-			if (is_substr(value().value(), start, ar->match) &&
+			if (is_substr(val, start, ar->match) &&
 			    (!ar->whole_word || (isWordBoundary(start) && isWordBoundary(end)))
 			   ) {
 				// replace
@@ -1088,11 +1093,11 @@ Movement direction_of(size_t a, size_t b) {
 }
 
 void TextValueEditor::fixSelection(IndexType t, Movement dir) {
-	const String& val = value().value();
+	const String& val = value().value->toString();
 	// Which type takes precedent?
 	if (t == TYPE_INDEX) {
-		selection_start = index_to_cursor(value().value(), selection_start_i, dir);
-		selection_end   = index_to_cursor(value().value(), selection_end_i,   dir);
+		selection_start = index_to_cursor(val, selection_start_i, dir);
+		selection_end   = index_to_cursor(val, selection_end_i,   dir);
 	}
 	// make sure the selection is at a valid position inside the text
 	// prepare to move 'inward' (i.e. from start in the direction of end and vice versa)
@@ -1121,7 +1126,7 @@ size_t TextValueEditor::prevCharBoundary(size_t pos) const {
 	return max(0, (int)pos - 1);
 }
 size_t TextValueEditor::nextCharBoundary(size_t pos) const {
-	return min(index_to_cursor(value().value(), String::npos), pos + 1);
+	return min(index_to_cursor(value().value->toString(), String::npos), pos + 1);
 }
 
 static const Char word_bound_chars[] = _(" ,.:;()\n");
@@ -1131,7 +1136,7 @@ bool isWordBoundaryChar(Char c) {
 }
 
 size_t TextValueEditor::prevWordBoundary(size_t pos_i) const {
-	const String& val = value().value();
+	const String& val = value().value->toString();
 	size_t p = val.find_last_not_of(word_bound_chars, max(0, (int)pos_i - 1));
 	if (p == String::npos) return 0;
 	p = val.find_last_of(word_bound_chars, p);
@@ -1139,7 +1144,7 @@ size_t TextValueEditor::prevWordBoundary(size_t pos_i) const {
 	return p + 1;
 }
 size_t TextValueEditor::nextWordBoundary(size_t pos_i) const {
-	const String& val = value().value();
+	const String& val = value().value->toString();
 	size_t p = val.find_first_of(word_bound_chars, pos_i);
 	if (p == String::npos) return val.size();
 	p = val.find_first_not_of(word_bound_chars, p);
@@ -1147,7 +1152,7 @@ size_t TextValueEditor::nextWordBoundary(size_t pos_i) const {
 	return p;
 }
 bool TextValueEditor::isWordBoundary(size_t pos_i) const {
-	const String& val = value().value();
+	const String& val = value().value->toString();
 	// boundary after?
 	size_t pos = pos_i;
 	while (true) {
@@ -1214,8 +1219,9 @@ bool TextValueEditor::matchSubstr(const String& s, size_t pos, FindInfo& find) {
 		editor().select(this);
 		editor().SetFocus();
 		size_t old_sel_start = selection_start, old_sel_end = selection_end;
-		selection_start_i = untagged_to_index(value().value(), pos,                            true);
-		selection_end_i   = untagged_to_index(value().value(), pos + find.findString().size(), true);
+		String val = value().value->toString();
+		selection_start_i = untagged_to_index(val, pos,                            true);
+		selection_end_i   = untagged_to_index(val, pos + find.findString().size(), true);
 		fixSelection(TYPE_INDEX);
 		was_selection = old_sel_start == selection_start && old_sel_end == selection_end;
 	}
@@ -1228,10 +1234,11 @@ bool TextValueEditor::matchSubstr(const String& s, size_t pos, FindInfo& find) {
 }
 
 bool TextValueEditor::search(FindInfo& find, bool from_start) {
-	String v = untag(value().value());
+	String val = value().value->toString();
+	String v = untag(val);
 	if (!find.caseSensitive()) v.LowerCase();
-	size_t selection_min = index_to_untagged(value().value(), min(selection_start_i, selection_end_i));
-	size_t selection_max = index_to_untagged(value().value(), max(selection_start_i, selection_end_i));
+	size_t selection_min = index_to_untagged(val, min(selection_start_i, selection_end_i));
+	size_t selection_max = index_to_untagged(val, max(selection_start_i, selection_end_i));
 	if (find.forward()) {
 		size_t start = min(v.size(), find.searchSelection() ? selection_min : selection_max);
 		for (size_t i = start ; i + find.findString().size() <= v.size() ; ++i) {
@@ -1331,7 +1338,7 @@ void TextValueEditor::prepareDrawScrollbar(RotatedDC& dc) {
 		style().width.mutate() -= scrollbar_width;
 		// prepare text, and remember scroll position
 		double scroll_pos = v.getExactScrollPosition();
-		v.prepare(dc, value().value(), style(), viewer.getContext());
+		v.prepare(dc, value().value->toString(), style(), viewer.getContext());
 		v.setExactScrollPosition(scroll_pos);
 		// scroll to the same place, but always show the caret
 		ensureCaretVisible();
@@ -1351,7 +1358,7 @@ void TextValueEditor::findWordLists() {
 	word_lists.clear();
 	hovered_words = nullptr;
 	// for each word list...
-	const String& str = value().value();
+	String str = value().value->toString();
 	size_t pos = str.find(_("<word-list-"));
 	while (pos != String::npos) {
 		size_t type_end = str.find_first_of(_('>'), pos);

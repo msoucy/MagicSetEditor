@@ -12,6 +12,8 @@
 #include <data/field/image.hpp>
 #include <data/game.hpp>
 #include <data/card.hpp>
+#include <script/image.hpp>
+#include <gfx/generated_image.hpp>
 #include <gfx/gfx.hpp>
 #include <wx/imaglist.h>
 
@@ -51,24 +53,23 @@ ImageFieldP ImageCardList::findImageField() {
 /// A request for a thumbnail of a card image
 class CardThumbnailRequest : public ThumbnailRequest {
   public:
-	CardThumbnailRequest(ImageCardList* parent, const String& filename)
+	CardThumbnailRequest(ImageCardList* parent, const String& key, const GeneratedImageP& imgen)
 		: ThumbnailRequest(
 			parent,
-			_("card") + parent->set->absoluteFilename() + _("-") + filename,
+			_("card") + parent->set->absoluteFilename() + _("-") + key,
 			wxDateTime::Now())	// TODO: Find mofication time of card image
-		, filename(filename)
+		, key(key)
+		, imgen(imgen)
 	{}
 	virtual Image generate() {
 		try {
 			ImageCardList* parent = (ImageCardList*)owner;
-			Image image;
-			if (image.LoadFile(*parent->set->openIn(filename))) {
-				// two step anti aliased resampling
-				image.Rescale(36, 28); // step 1: no anti aliassing
-				return resample(image, 18, 14); // step 2: with anti aliassing
-			} else {
-				return Image();
-			}
+			GeneratedImage::Options opts;
+			opts.local_package = parent->set.get();
+			Image image = imgen->generate(opts);
+			// two step anti aliased resampling
+			image.Rescale(36, 28); // step 1: no anti aliassing
+			return resample(image, 18, 14); // step 2: with anti aliassing
 		} catch (...) {
 			return Image();
 		}
@@ -79,28 +80,36 @@ class CardThumbnailRequest : public ThumbnailRequest {
 		if (img.Ok()) {
 			wxImageList* il = parent->GetImageList(wxIMAGE_LIST_SMALL);
 			int id = il->Add(wxBitmap(img));
-			parent->thumbnails.insert(make_pair(filename, id));
+			parent->thumbnails.insert(make_pair(key, id));
 			parent->Refresh(false);
 		}
 	}
 
 	virtual bool threadSafe() const {return true;}
   private:
-	String filename;
+	String key;
+	GeneratedImageP imgen;
 };
 
 int ImageCardList::OnGetItemImage(long pos) const {
 	if (image_field) {
 		// Image = thumbnail of first image field of card
-		ImageValue& val = static_cast<ImageValue&>(*getCard(pos)->data[image_field]);
-		if (!val.filename) return -1; // no image
+		const ImageValue& val = static_cast<const ImageValue&>(*getCard(pos)->data[image_field]);
+		if (val.value->isNil()) return -1;
+		GeneratedImageP image = val.value->toImage();
 		// is there already a thumbnail?
-		map<String,int>::const_iterator it = thumbnails.find(val.filename);
+		String key;
+		try {
+			key = image->toCode();
+		} catch (...) {
+			return -1; // nothing that can be used as a key
+		}
+		map<String,int>::const_iterator it = thumbnails.find(key);
 		if (it != thumbnails.end()) {
 			return it->second;
 		} else {
 			// request a thumbnail
-			thumbnail_thread.request(intrusive(new CardThumbnailRequest(const_cast<ImageCardList*>(this), val.filename)));
+			thumbnail_thread.request(intrusive(new CardThumbnailRequest(const_cast<ImageCardList*>(this), key, image)));
 		}
 	}
 	return -1;

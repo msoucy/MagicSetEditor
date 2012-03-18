@@ -64,9 +64,10 @@ enum ChoiceChoiceType {
 class ChoiceField::Choice : public IntrusivePtrBase<ChoiceField::Choice> {
   public:
 	Choice();
-	Choice(const String& name);
+	Choice(const String& name, const String& caption);
 	
 	String           name;			///< Name/value of the item
+	String           caption;		///< Caption that is shown in menus etc.
 	String           default_name;	///< A default item, if this is a group and default_name.empty() there is no default
 	vector<ChoiceP>  choices;		///< Choices and sub groups in this group
 	bool             line_below;	///< Show a line after this item?

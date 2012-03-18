@@ -47,12 +47,39 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(SymbolVariation) {
 
 // ----------------------------------------------------------------------------- : SymbolValue
 
+#if USE_SCRIPT_VALUE_SYMBOL
+
+ScriptValueP script_local_symbol_file(LocalFileName const& filename) {
+	return intrusive(new LocalSymbolFile(filename));
+}
+
+String quote_string(String const& str);
+String LocalSymbolFile::toCode() const {
+	return _("local_symbol_file(") + quote_string(filename.toStringForWriting()) + _(")");
+}
+String LocalSymbolFile::typeName() const {
+	return _("symbol");
+}
+GeneratedImageP LocalSymbolFile::toImage() const {
+	SymbolVariationP variation(new SymbolVariation);
+	variation->filter = intrusive(new SolidFillSymbolFilter);
+	return intrusive(new SymbolToImage(true, filename, variation));
+}
+String LocalSymbolFile::toFriendlyString() const {
+	return _("<") + _TYPE_("symbol") + _(">");
+}
+
+#else
+
 IMPLEMENT_VALUE_CLONE(Symbol);
 
-String SymbolValue::toString() const {
+String SymbolValue::toFriendlyString() const {
 	return filename.empty() ? wxEmptyString : _("<symbol>");
 }
 
-IMPLEMENT_REFLECTION_NAMELESS(SymbolValue) {
+IMPLEMENT_REFLECTION_NO_GET_MEMBER(SymbolValue) {
 	if (fieldP->save_value || !reflector.isWriting()) REFLECT_NAMELESS(filename);
 }
+void SymbolValue::reflect(GetMember&) {}
+void SymbolValue::reflect(GetDefaultMember&) {}
+#endif

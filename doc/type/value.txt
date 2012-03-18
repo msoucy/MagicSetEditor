@@ -25,7 +25,21 @@ The type of a value depends on the corresponding field:
 | @"color"@		opaque [[type:color]]		A color.
 | @"info"@		[[type:string]]			A label for the information box.
 
---Example--
+--File syntax--
+
+DOC_MSE_VERSION: since 2.0.1
+
+Values are stored using script syntax. This makes means that a value can be parsed without knowing the field type.
+Here are some examples
+>some_text_value: "This is a string\nNext line."
+>some_choice_value: "uncommon"
+>some_image_value: local_image_file("image1.png")
+>some_symbol_value: local_symbol_file("symbol1.mse-symbol")
+
+--Example (old syntax)--
+
+DOC_MSE_VERSION: before 2.0.1
+
 For the field:
 >field:
 >	type: choice

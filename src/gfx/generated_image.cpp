@@ -19,6 +19,7 @@
 
 ScriptType GeneratedImage::type() const { return SCRIPT_IMAGE; }
 String GeneratedImage::typeName() const { return _TYPE_("image"); }
+String GeneratedImage::toFriendlyString() const { return _("<") + _TYPE_("image") + _(">"); }
 GeneratedImageP GeneratedImage::toImage() const {
 	return intrusive_from_existing(const_cast<GeneratedImage*>(this));
 }
@@ -448,9 +449,12 @@ bool BuiltInImage::operator == (const GeneratedImage& that) const {
 
 // ----------------------------------------------------------------------------- : SymbolToImage
 
-SymbolToImage::SymbolToImage(bool is_local, const String& filename, Age age, const SymbolVariationP& variation)
-	: is_local(is_local), filename(filename), age(age), variation(variation)
-{}
+SymbolToImage::SymbolToImage(bool is_local, const LocalFileName& filename, const SymbolVariationP& variation)
+	: is_local(is_local), filename(filename), variation(variation)
+{
+	assert(variation);
+	assert(variation->filter);
+}
 SymbolToImage::~SymbolToImage() {}
 
 Image SymbolToImage::generate(const Options& opt) const {
@@ -464,27 +468,32 @@ Image SymbolToImage::generate(const Options& opt) const {
 		the_symbol = package->readFile<SymbolP>(filename);
 	}
 	int size = max(100, 3*max(opt.width,opt.height));
+	int width  = size * opt.width  / max(opt.width,opt.height);
+	int height = size * opt.height / max(opt.width,opt.height);
+	bool allow_smaller = true;
 	if (opt.width <= 1 || opt.height <= 1) {
-		return render_symbol(the_symbol, *variation->filter, variation->border_radius, size, size);
-	} else {
-		int width  = size * opt.width  / max(opt.width,opt.height);
-		int height = size * opt.height / max(opt.width,opt.height);
-		return render_symbol(the_symbol, *variation->filter, variation->border_radius, width, height, false, true);
+		allow_smaller = false;
+		width = height = size;
 	}
+	return render_symbol(the_symbol, *variation->filter, variation->border_radius, width, height, false, allow_smaller);
 }
 bool SymbolToImage::operator == (const GeneratedImage& that) const {
 	const SymbolToImage* that2 = dynamic_cast<const SymbolToImage*>(&that);
 	return that2 && is_local  == that2->is_local
 	             && filename  == that2->filename
-	             && age       == that2->age
 	             && (variation == that2->variation ||
 	                 *variation == *that2->variation // custom variation
 	                );
 }
 
+
 // ----------------------------------------------------------------------------- : ImageValueToImage
 
-ImageValueToImage::ImageValueToImage(const String& filename)
+ScriptValueP script_local_image_file(LocalFileName const& filename) {
+	return intrusive(new ImageValueToImage(filename));
+}
+
+ImageValueToImage::ImageValueToImage(const LocalFileName& filename)
 	: filename(filename)
 {}
 ImageValueToImage::~ImageValueToImage() {}
@@ -505,4 +514,9 @@ Image ImageValueToImage::generate(const Options& opt) const {
 bool ImageValueToImage::operator == (const GeneratedImage& that) const {
 	const ImageValueToImage* that2 = dynamic_cast<const ImageValueToImage*>(&that);
 	return that2 && filename == that2->filename;
+}
+
+String quote_string(String const& str);
+String ImageValueToImage::toCode() const {
+	return _("local_image_file(") + quote_string(filename.toStringForWriting()) + _(")");
 }

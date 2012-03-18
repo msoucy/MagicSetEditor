@@ -20,7 +20,7 @@ IMPLEMENT_VALUE_VIEWER(MultipleChoice);
 
 bool MultipleChoiceValueViewer::prepare(RotatedDC& dc) {
 	if (style().render_style & (RENDER_CHECKLIST | RENDER_LIST)) return false;
-	return prepare_choice_viewer(dc, *this, style(), value().value());
+	return prepare_choice_viewer(dc, *this, style(), value().value->toString());
 }
 
 void MultipleChoiceValueViewer::draw(RotatedDC& dc) {
@@ -46,7 +46,7 @@ void MultipleChoiceValueViewer::draw(RotatedDC& dc) {
 			drawChoice(dc, pos, choice);
 		}
 	} else {
-		draw_choice_viewer(dc, *this, style(), value().value());
+		draw_choice_viewer(dc, *this, style(), value().value->toString());
 	}
 }
 

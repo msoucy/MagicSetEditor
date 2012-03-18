@@ -55,20 +55,20 @@ IMPLEMENT_REFLECTION_NAMELESS(MultipleChoiceValue) {
 }
 
 bool MultipleChoiceValue::update(Context& ctx, const Action* act) {
-	String old_value = toString();
+	String old_value = value->toString();
 	if (const MultipleChoiceValueAction* mvca = dynamic_cast<const MultipleChoiceValueAction*>(act)) {
 		ctx.setVariable(_("last_change"), to_script(mvca->changed_choice));
 	}
 	ChoiceValue::update(ctx,act);
 	normalForm();
-	return toString() != old_value;
+	return value->toString() != old_value;
 }
 
 void MultipleChoiceValue::get(vector<String>& out) const {
 	// split the value
 	out.clear();
 	bool is_new = true;
-	String val = toString();
+	String val = value->toString();
 	FOR_EACH_CONST(c, val) {
 		if (c == _(',')) {
 			is_new = true;
@@ -85,7 +85,7 @@ void MultipleChoiceValue::get(vector<String>& out) const {
 }
 
 void MultipleChoiceValue::normalForm() {
-	String val = toString();
+	String val = value->toString();
 	// which choices are active?
 	vector<bool> seen(field().choices->lastId());
 	for (size_t pos = 0 ; pos < val.size() ; ) {

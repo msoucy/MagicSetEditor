@@ -83,8 +83,8 @@ SCRIPT_FUNCTION_WITH_DEP(combined_editor) {
 	Age new_value_update = last_update_age();
 	FOR_EACH_2(v, values, nv, value_parts) {
 		if (v->last_modified < new_value_update) {
-			bool changed = v->value() != nv.first;
-			v->value.assign(nv.first);
+			bool changed = v->value->toString() != nv.first;
+			if (changed) v->value = to_script(nv.first);
 			v->last_modified = new_value_update;
 			changed |= v->update(ctx);
 			if (changed) { // notify of change
@@ -94,7 +94,7 @@ SCRIPT_FUNCTION_WITH_DEP(combined_editor) {
 				set->actions.tellListeners(change, false);
 			}
 		}
-		nv.first = v->value();
+		nv.first = v->value->toString();
 		nv.second = index_to_untagged(nv.first, nv.first.size()) == 0;
 	}
 	// options
@@ -208,7 +208,7 @@ SCRIPT_FUNCTION(primary_choice) {
 		throw ScriptError(_("Argument to 'primary_choice' should be a choice value")); 
 	}
 	// determine choice
-	int id = field->choices->choiceId(value->toString());
+	int id = field->choices->choiceId(value->value->toString());
 	// find the last group that still contains id
 	const vector<ChoiceField::ChoiceP>& choices = field->choices->choices;
 	FOR_EACH_CONST_REVERSE(c, choices) {

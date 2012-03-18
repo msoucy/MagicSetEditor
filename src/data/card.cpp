@@ -44,12 +44,12 @@ String Card::identification() const {
 	// an identifying field
 	FOR_EACH_CONST(v, data) {
 		if (v->fieldP->identifying) {
-			return v->toString();
+			return v->toFriendlyString();
 		}
 	}
 	// otherwise the first field
 	if (!data.empty()) {
-		return data.at(0)->toString();
+		return data.at(0)->toFriendlyString();
 	} else {
 		return wxEmptyString;
 	}
@@ -57,7 +57,7 @@ String Card::identification() const {
 
 bool Card::contains(String const& query) const {
 	FOR_EACH_CONST(v, data) {
-		if (find_i(v->toString(),query) != String::npos) return true;
+		if (find_i(v->toFriendlyString(),query) != String::npos) return true;
 	}
 	if (find_i(notes,query) != String::npos) return true;
 	return false;

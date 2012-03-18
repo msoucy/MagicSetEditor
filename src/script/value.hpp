@@ -63,6 +63,8 @@ class ScriptValue : public IntrusivePtrBaseWithDelete {
 	virtual String toString() const;
 	/// Script code to generate this value
 	virtual String toCode() const;
+	/// A string that can be shown to a user (i.e. not a template developer), should not contains tags
+	virtual String toFriendlyString() const;
 	/// Convert this value to a double
 	virtual double toDouble() const;
 	/// Convert this value to an integer
@@ -75,7 +77,9 @@ class ScriptValue : public IntrusivePtrBaseWithDelete {
 	virtual wxDateTime toDateTime() const;
 	/// Convert this value to an image
 	virtual GeneratedImageP toImage() const;
-
+	/// Is the value equal to script_nil?
+	inline bool isNil() const { return type() == SCRIPT_NIL; }
+	
 	/// Get a member variable from this value
 	virtual ScriptValueP getMember(const String& name) const;
 

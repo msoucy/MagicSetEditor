@@ -236,7 +236,7 @@ void DropDownChoiceList::onShow() {
 
 void DropDownChoiceList::select(size_t item) {
 	if (isFieldDefault(item)) {
-		dynamic_cast<ChoiceValueEditor&>(cve).change( Defaultable<String>() );
+		dynamic_cast<ChoiceValueEditor&>(cve).change( script_default_nil );
 	} else {
 		ChoiceField::ChoiceP choice = getChoice(item);
 		dynamic_cast<ChoiceValueEditor&>(cve).change( field().choices->choiceName(choice->first_id) );
@@ -245,11 +245,11 @@ void DropDownChoiceList::select(size_t item) {
 
 size_t DropDownChoiceList::selection() const {
 	// selected item
-	const Defaultable<String>& value = dynamic_cast<ChoiceValueEditor&>(cve).value().value();
-	int id = field().choices->choiceId(value);
+	ScriptValueP value = dynamic_cast<ChoiceValueEditor&>(cve).value().value;
+	int id = field().choices->choiceId(value->toString());
 	// id of default item
 	if (hasFieldDefault()) {
-		if (value.isDefault()) {
+		if (is_default(value)) {
 			// default is selected
 			default_id = id;
 			return 0;
@@ -304,6 +304,9 @@ void ChoiceValueEditor::determineSize(bool) {
 	style().height = max(style().height(), 16.);
 }
 
-void ChoiceValueEditor::change(const Defaultable<String>& c) {
-	addAction(value_action(valueP(), c));
+void ChoiceValueEditor::change(ScriptValueP const& v) {
+	addAction(value_action(valueP(), v));
+}
+void ChoiceValueEditor::change(const String& c) {
+	change(to_script(c));
 }

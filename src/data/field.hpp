@@ -37,14 +37,14 @@ DECLARE_DYNAMIC_ARG(Value*, value_being_updated);
 // experimental: use ScriptValue to store any kind of value
 // TODO: get rid of the conditional stuff
 // TODO2: mergre Any{Field,Value} into {Field,Value}
-#define USE_SCRIPT_VALUE_VALUE   0
-#define USE_SCRIPT_VALUE_COLOR   0
-#define USE_SCRIPT_VALUE_CHOICE  0
-#define USE_SCRIPT_VALUE_INFO    0
-#define USE_SCRIPT_VALUE_TEXT    0
-#define USE_SCRIPT_VALUE_SYMBOL  0
-#define USE_SCRIPT_VALUE_IMAGE   0
-#define USE_SCRIPT_VALUE_PACKAGE 0
+#define USE_SCRIPT_VALUE_VALUE   1
+#define USE_SCRIPT_VALUE_COLOR   1
+#define USE_SCRIPT_VALUE_CHOICE  1
+#define USE_SCRIPT_VALUE_INFO    1
+#define USE_SCRIPT_VALUE_TEXT    1
+#define USE_SCRIPT_VALUE_SYMBOL  1
+#define USE_SCRIPT_VALUE_IMAGE   1
+#define USE_SCRIPT_VALUE_PACKAGE 1
 
 // ----------------------------------------------------------------------------- : Field
 
@@ -83,9 +83,10 @@ class Field : public IntrusivePtrVirtualBase {
 	/// Add the given dependency to the dependet_scripts list for the variables this field depends on
 	virtual void initDependencies(Context& ctx, const Dependency& dep) const;
 	
-	virtual void after_reading(Version ver);
   private:
 	DECLARE_REFLECTION_VIRTUAL();
+	virtual void after_reading(Version ver);
+	friend void after_reading(Field& s, Version ver);
 };
 
 template <>
@@ -176,6 +177,8 @@ class Style : public IntrusivePtrVirtualBase {
 	
   private:
 	DECLARE_REFLECTION_VIRTUAL();
+	virtual void after_reading(Version ver) {}
+	friend void after_reading(Style& s, Version ver);
 	/// Things that are listening to changes in this style
 	vector<StyleListener*> listeners;
 };
@@ -197,6 +200,10 @@ template <> StyleP read_new<Style>(Reader&);
 
 inline String type_name(const Style&) {
 	return _TYPE_("style");
+}
+
+inline void after_reading(Style& s, Version ver) {
+	s.after_reading(ver);
 }
 
 void mark_dependency_member(const Style& style, const String& name, const Dependency& dep);
@@ -232,8 +239,8 @@ class Value : public IntrusivePtrVirtualBase {
 	/// Get a copy of this value
 	virtual ValueP clone() const = 0;
 	
-	/// Convert this value to a string for use in tables
-	virtual String toString() const = 0;
+	/// Convert this value to a string, should be human readable, so no <tags>
+	virtual String toFriendlyString() const = 0;
 	/// Apply scripts to this value, return true if the value has changed
 	/** Optionally, the action that causes the update is also passed.
 	 */
@@ -250,7 +257,7 @@ class Value : public IntrusivePtrVirtualBase {
 
 	/// Get the key to use for sorting this value
 	inline String getSortKey() const {
-		return fieldP->sort_script ? sort_value : toString();
+		return fieldP->sort_script ? sort_value : toFriendlyString();
 	}
 	
   protected:
@@ -309,7 +316,7 @@ inline String type_name(const Value&) {
 	DECLARE_REFLECTION(); public:														\
 	DECLARE_HAS_FIELD(Type)																\
 	virtual ValueP clone() const;														\
-	virtual String toString() const;													\
+	virtual String toFriendlyString() const;											\
 	typedef ValueType_ ValueType
 
 // implement field() which returns a field with the right (derived) type
@@ -346,11 +353,16 @@ class AnyValue : public Value {
 	
 	/// The actual value
 	typedef ScriptValueP ValueType;
-	ScriptValueP value;
+	ScriptValueP value; // never null
 	
 	virtual ValueP clone() const;
-	virtual String toString() const;
+	virtual String toFriendlyString() const;
 	virtual bool update(Context& ctx, const Action* = nullptr);
+	
+	// Convenience functions
+	inline void operator = (ScriptValueP const& value) {
+		this->value = value;
+	}
 	
 	DECLARE_HAS_FIELD(Any)
 	DECLARE_REFLECTION_VIRTUAL();

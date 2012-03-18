@@ -95,7 +95,7 @@ ColorValue::ColorValue(const ColorFieldP& field)
 	       , true)
 {}
 	
-String ColorValue::toString() const {
+String ColorValue::toFriendlyString() const {
 	if (value.isDefault()) return field().default_name;
 	// is this a named color?
 	FOR_EACH(c, field().choices) {
