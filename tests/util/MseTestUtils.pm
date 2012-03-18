@@ -39,7 +39,12 @@ sub run_script_test {
 	my $errfile  = basename($script,".mse-script") . ".err";
 	my $command  = "$MAGICSETEDITOR --cli --quiet --script \"$script\" $args > \"$outfile\" 2> \"$errfile\"";
 	print "$command\n";
-	`$command`;
+	#`$command`;
+	my $errcode = system($command);
+	if ($errcode != 0) {
+		print "Invoking Magic Set Editor failed\n";
+		fail_current_test();
+	}
 	
 	# Check for errors / warnings
 	check_for_errors($errfile, $ignore_locale_errors);
@@ -64,13 +69,15 @@ sub run_export_test {
 	my $errfile  = basename($set,".mse-set") . ".err";
 	my $command  = "$MAGICSETEDITOR --export \"$template\" \"$set\" \"$outfile\" 2> \"$errfile\"";
 	print "$command\n";
-	if (system($command) != 0) {
-		die("Invoking magic set editor failed\n");
+	my $errcode = system($command);
+	if ($errcode != 0) {
+		print "Invoking Magic Set Editor failed\n";
+		fail_current_test();
 	}
 	
 	# Check for errors / warnings
 	check_for_errors($errfile, $ignore_locale_errors);
-	
+
 	# TODO: diff against expected output?
 	#my $expected = basename($script,".mse-script") . ".out.expected";
 	
