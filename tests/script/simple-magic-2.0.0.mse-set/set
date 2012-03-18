@@ -8,7 +8,7 @@ set_info:
 		of the set.
 	artist: the Artist
 	copyright: (C) 2010 Twan van Laarhoven
-	symbol: 
+	symbol: symbol1.mse-symbol
 	mark_errors: no
 styling:
 	magic-new:
