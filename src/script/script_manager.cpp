@@ -331,7 +331,7 @@ void SetScriptManager::updateRecursive(deque<ToUpdate>& to_update, Age starting_
 
 void SetScriptManager::updateToUpdate(const ToUpdate& u, deque<ToUpdate>& to_update, Age starting_age) {
 	Age& age = u.value->last_modified;
-	if (starting_age < age)  return; // this value was already updated
+	if (starting_age <= age)  return; // this value was already updated
 	age = starting_age; // mark as updated
 	Context& ctx = getContext(u.card);
 	bool changes = false;
