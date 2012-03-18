@@ -39,3 +39,6 @@ assert(text_to_color("",is_land:false,card_name:"") == "")
 assert(is_spell("Creature - Platypus") == false)
 assert(is_spell("Instant") == true)
 assert(is_spell("Sorcery") == true)
+
+"ok"
+
