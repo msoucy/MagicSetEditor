@@ -10,4 +10,8 @@ Output a message for debugging purposes, for example to investigate what is goin
 | @input@	[[type:string]]		Message
 
 --Examples--
-> trace("message") == "message"   # the message is reported in a message box
+> trace("message") == "message"   # the message is shown in the console panel
+
+--See also--
+| [[fun:warning]]		Output a warning message.
+| [[fun:error]]		Output an error message.

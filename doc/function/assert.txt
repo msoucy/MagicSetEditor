@@ -16,3 +16,7 @@ Note: @assert@ is a special built-in keyword, so that the error message can incl
 --Examples--
 > assert(1 + 1 == 2)   # nothing happens
 > assert(1 * 1 == 2)   # An error message is shown
+
+--See also--
+| [[fun:warning]]		Output a warning message.
+| [[fun:error]]		Output an error message.
