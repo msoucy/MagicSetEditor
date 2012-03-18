@@ -140,7 +140,7 @@ sub svn_revision {
 sub print_system_info {
 	print "host: ", getlogin()," @ ",hostname, "\n";
 	print "platform: ",($is_windows ? "Windows" : "not-windows"),"\n";
-	print "date: ", strftime('%Y-%m-%d %H:%m (%z)',localtime), "\n";
+	print "date: ", strftime('%Y-%m-%d %H:%M:%S (%z)',localtime), "\n";
 	print "revision: ", svn_revision(), "\n";
 }
 
