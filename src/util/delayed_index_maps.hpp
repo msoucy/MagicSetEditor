@@ -67,6 +67,9 @@ void Writer::handle(const DelayedIndexMapsData<Key,Value>& d) {
 			handle(d.unread_data); // TODO: how to handle filenames
 		}
 	} else {
+		// also write the app version, because a separate Reader is used to read it.
+		// the unread_data can therefore have a different version number
+		handle(_("mse_version"), app_version);
 		handle(d.read_data);
 	}
 }
