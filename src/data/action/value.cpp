@@ -39,27 +39,7 @@ void ValueAction::isOnCard(Card* card) {
 // ----------------------------------------------------------------------------- : Simple
 
 /// Swap the value in a Value object with a new one
-#if !USE_SCRIPT_VALUE_CHOICE
-inline void swap_value(ChoiceValue&         a, ChoiceValue        ::ValueType& b) { swap(a.value,    b); }
-#endif
-#if !USE_SCRIPT_VALUE_COLOR
-inline void swap_value(ColorValue&          a, ColorValue         ::ValueType& b) { swap(a.value,    b); }
-#endif
-#if USE_SCRIPT_VALUE_VALUE
 inline void swap_value(AnyValue&            a, AnyValue           ::ValueType& b) { swap(a.value,    b); }
-#endif
-#if !USE_SCRIPT_VALUE_IMAGE
-inline void swap_value(ImageValue&          a, ImageValue         ::ValueType& b) { swap(a.filename, b); }
-#endif
-#if !USE_SCRIPT_VALUE_SYMBOL
-inline void swap_value(SymbolValue&         a, SymbolValue        ::ValueType& b) { swap(a.filename, b); }
-#endif
-#if !USE_SCRIPT_VALUE_TEXT
-inline void swap_value(TextValue&           a, TextValue          ::ValueType& b) { swap(a.value,    b); }
-#endif
-#if !USE_SCRIPT_VALUE_PACKAGE
-inline void swap_value(PackageChoiceValue&  a, PackageChoiceValue ::ValueType& b) { swap(a.package_name, b); }
-#endif
 
 /// A ValueAction that swaps between old and new values
 template <typename T, bool ALLOW_MERGE>
@@ -91,33 +71,11 @@ class SimpleValueAction : public ValueAction {
 	typename T::ValueType new_value;
 };
 
-#if !USE_SCRIPT_VALUE_CHOICE
-ValueAction* value_action(const ChoiceValueP&         value, const Defaultable<String>& new_value) { return new SimpleValueAction<ChoiceValue,         true> (value, new_value); }
-#endif
-#if !USE_SCRIPT_VALUE_COLOR
-ValueAction* value_action(const ColorValueP&          value, const Defaultable<Color>&  new_value) { return new SimpleValueAction<ColorValue,          true> (value, new_value); }
-#endif
-#if USE_SCRIPT_VALUE_VALUE
 ValueAction* value_action(const AnyValueP&            value, const ScriptValueP&        new_value) { return new SimpleValueAction<AnyValue,            false>(value, new_value); }
-#endif
-#if !USE_SCRIPT_VALUE_IMAGE
-ValueAction* value_action(const ImageValueP&          value, const FileName&            new_value) { return new SimpleValueAction<ImageValue,          false>(value, new_value); }
-#endif
-#if !USE_SCRIPT_VALUE_SYMBOL
-ValueAction* value_action(const SymbolValueP&         value, const FileName&            new_value) { return new SimpleValueAction<SymbolValue,         false>(value, new_value); }
-#endif
-#if !USE_SCRIPT_VALUE_PACKAGE
-ValueAction* value_action(const PackageChoiceValueP&  value, const String&              new_value) { return new SimpleValueAction<PackageChoiceValue,  false>(value, new_value); }
-#endif
-
 
 // ----------------------------------------------------------------------------- : MultipleChoice
 
-#if USE_SCRIPT_VALUE_CHOICE
 ValueAction* value_action(const MultipleChoiceValueP& value, const ScriptValueP& new_value, const String& last_change) {
-#else
-ValueAction* value_action(const MultipleChoiceValueP& value, const Defaultable<String>& new_value, const String& last_change) {
-#endif
 	return new MultipleChoiceValueAction(value,new_value,last_change);
 }
 
@@ -133,11 +91,7 @@ void MultipleChoiceValueAction::perform(bool to_undo) {
 
 // ----------------------------------------------------------------------------- : Text
 
-#if USE_SCRIPT_VALUE_TEXT
 TextValueAction::TextValueAction(const TextValueP& value, size_t start, size_t end, size_t new_end, const ScriptValueP& new_value, const String& name)
-#else
-TextValueAction::TextValueAction(const TextValueP& value, size_t start, size_t end, size_t new_end, const Defaultable<String>& new_value, const String& name)
-#endif
 	: ValueAction(value)
 	, selection_start(start), selection_end(end), new_selection_end(new_end)
 	, new_value(new_value)

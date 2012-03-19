@@ -20,31 +20,12 @@ DECLARE_TYPEOF(map<String COMMA ScriptableImage>);
 
 ChoiceField::ChoiceField()
 	: choices((Choice*)new Choice)
-#if !USE_SCRIPT_VALUE_CHOICE
-	, default_name(_("Default"))
-#endif
 {}
 
 IMPLEMENT_FIELD_TYPE(Choice, "choice");
 
-#if !USE_SCRIPT_VALUE_CHOICE
-void ChoiceField::initDependencies(Context& ctx, const Dependency& dep) const {
-	Field        ::initDependencies(ctx, dep);
-	script        .initDependencies(ctx, dep);
-	default_script.initDependencies(ctx, dep);
-}
-#endif
-
 IMPLEMENT_REFLECTION(ChoiceField) {
-#if USE_SCRIPT_VALUE_CHOICE
 	REFLECT_BASE(AnyField);
-#else
-	REFLECT_BASE(Field);
-	REFLECT(script);
-	REFLECT_N("default", default_script);
-	REFLECT(default_name);
-	REFLECT(initial);
-#endif
 	REFLECT_N("choices", choices->choices);
 	REFLECT_IF_READING {
 	}
@@ -52,16 +33,11 @@ IMPLEMENT_REFLECTION(ChoiceField) {
 	REFLECT(choice_colors_cardlist);
 }
 void ChoiceField::after_reading(Version ver) {
-#if USE_SCRIPT_VALUE_CHOICE
 	AnyField::after_reading(ver);
 	choices->initIds();
 	if(initial == script_default_nil && !dynamic_cast<MultipleChoiceField*>(this)) {
 		initial = make_default(to_script(choices->choiceName(0)));
 	}
-#else
-	Field::after_reading(ver);
-	choices->initIds();
-#endif
 }
 
 // ----------------------------------------------------------------------------- : ChoiceField::Choice
@@ -302,33 +278,3 @@ IMPLEMENT_REFLECTION(ChoiceStyle) {
 	REFLECT(choice_images);
 	reflect_content(reflector, *this);
 }
-
-#if !USE_SCRIPT_VALUE_CHOICE
-// ----------------------------------------------------------------------------- : ChoiceValue
-
-IMPLEMENT_VALUE_CLONE(Choice);
-
-ChoiceValue::ChoiceValue(const ChoiceFieldP& field, bool initial_first_choice)
-	: Value(field)
-	, value( !field->initial.empty() ? field->initial
-	       : initial_first_choice    ? field->choices->choiceName(0)
-	       :                           _("")
-	       , true)
-{}
-
-String ChoiceValue::toFriendlyString() const {
-	return value();
-}
-bool ChoiceValue::update(Context& ctx, const Action*) {
-	bool change = field().default_script.invokeOnDefault(ctx, value)
-	            | field().        script.invokeOn(ctx, value);
-	Value::update(ctx);
-	return change;
-}
-
-IMPLEMENT_REFLECTION_NAMELESS(ChoiceValue) {
-	if (fieldP->save_value || !reflector.isWriting()) REFLECT_NAMELESS(value);
-}
-
-INSTANTIATE_REFLECTION_NAMELESS(ChoiceValue)
-#endif USE_SCRIPT_VALUE_CHOICE

@@ -34,18 +34,6 @@ DECLARE_POINTER_TYPE(ValueEditor);
 // Value for which script updates are being run
 DECLARE_DYNAMIC_ARG(Value*, value_being_updated);
 
-// experimental: use ScriptValue to store any kind of value
-// TODO: get rid of the conditional stuff
-// TODO2: mergre Any{Field,Value} into {Field,Value}
-#define USE_SCRIPT_VALUE_VALUE   1
-#define USE_SCRIPT_VALUE_COLOR   1
-#define USE_SCRIPT_VALUE_CHOICE  1
-#define USE_SCRIPT_VALUE_INFO    1
-#define USE_SCRIPT_VALUE_TEXT    1
-#define USE_SCRIPT_VALUE_SYMBOL  1
-#define USE_SCRIPT_VALUE_IMAGE   1
-#define USE_SCRIPT_VALUE_PACKAGE 1
-
 // ----------------------------------------------------------------------------- : Field
 
 /// Information on how to store a value
@@ -327,10 +315,10 @@ inline String type_name(const Value&) {
 
 void mark_dependency_member(const IndexMap<FieldP,ValueP>& value, const String& name, const Dependency& dep);
 
-#if USE_SCRIPT_VALUE_VALUE
 // ----------------------------------------------------------------------------- : Value (new style)
 
 /// Base class for fields whos values can be scripted
+// TODO: merge into Field
 class AnyField : public Field {
   public:
 	AnyField();
@@ -346,6 +334,7 @@ class AnyField : public Field {
 DECLARE_POINTER_TYPE(AnyField)
 
 /// A Value object that can hold something of 'any' type
+// TODO: merge into Value
 class AnyValue : public Value {
   public:
 	AnyValue(AnyFieldP const& field);
@@ -368,8 +357,6 @@ class AnyValue : public Value {
 	DECLARE_REFLECTION_VIRTUAL();
 };
 DECLARE_POINTER_TYPE(AnyValue)
-
-#endif
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

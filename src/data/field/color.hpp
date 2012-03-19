@@ -19,16 +19,9 @@
 
 DECLARE_POINTER_TYPE(ColorField);
 DECLARE_POINTER_TYPE(ColorStyle);
-#if !USE_SCRIPT_VALUE_COLOR
-DECLARE_POINTER_TYPE(ColorValue);
-#endif
 
 /// A field for color values, it contains a list of choices for colors
-#if USE_SCRIPT_VALUE_COLOR
 class ColorField : public AnyField {
-#else
-class ColorField : public Field {
-#endif
   public:
 	ColorField();
 	DECLARE_FIELD_TYPE();
@@ -38,14 +31,6 @@ class ColorField : public Field {
 	
 	vector<ChoiceP>    choices;			///< Color choices available
 	bool               allow_custom;	///< Are colors not in the list of choices allowed?
-	
-#if !USE_SCRIPT_VALUE_COLOR
-	virtual void initDependencies(Context&, const Dependency&) const;
-	OptionalScript     script;			///< Script to apply to all values
-	OptionalScript     default_script;	///< Script that generates the default value
-	String             default_name;	///< Name of "default" value
-	Defaultable<Color> initial;		///< Initial choice of a new value, or ""
-#endif
 };
 
 /// A color that can be chosen for this field
@@ -77,21 +62,8 @@ class ColorStyle : public Style {
 
 // ----------------------------------------------------------------------------- : ColorValue
 
-#if USE_SCRIPT_VALUE_COLOR
 typedef AnyValue ColorValue;
 typedef AnyValueP ColorValueP;
-#else
-/// The Value in a ColorField
-class ColorValue : public Value {
-  public:
-	ColorValue(const ColorFieldP& field);
-	DECLARE_VALUE_TYPE(Color, Defaultable<Color>);
-	
-	ValueType value;	///< The value
-	
-	virtual bool update(Context&, const Action* = nullptr);
-};
-#endif
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

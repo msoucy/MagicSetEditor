@@ -14,27 +14,15 @@
 
 IMPLEMENT_FIELD_TYPE(Info, "info");
 
-#if USE_SCRIPT_VALUE_INFO
 IMPLEMENT_REFLECTION(InfoField) {
 	REFLECT_BASE(AnyField);
 }
+
 void InfoField::after_reading(Version ver) {
 	AnyField::after_reading(ver);
 	if (initial == script_default_nil) initial = to_script(caption);
 	initial = make_default(initial);
 }
-#else
-void InfoField::initDependencies(Context& ctx, const Dependency& dep) const {
-	Field ::initDependencies(ctx, dep);
-	script. initDependencies(ctx, dep);
-}
-
-
-IMPLEMENT_REFLECTION(InfoField) {
-	REFLECT_BASE(Field);
-	REFLECT(script);
-}
-#endif
 
 // ----------------------------------------------------------------------------- : InfoStyle
 
@@ -67,23 +55,3 @@ IMPLEMENT_REFLECTION(InfoStyle) {
 	REFLECT(padding_bottom);
 	REFLECT(background_color);
 }
-
-#if !USE_SCRIPT_VALUE_INFO
-// ----------------------------------------------------------------------------- : InfoValue
-
-IMPLEMENT_VALUE_CLONE(Info);
-
-String InfoValue::toFriendlyString() const {
-	return value;
-}
-bool InfoValue::update(Context& ctx, const Action*) {
-	if (value.empty()) value = field().caption;
-	bool change = field().script.invokeOn(ctx, value);
-	Value::update(ctx);
-	return change;
-}
-
-IMPLEMENT_REFLECTION_NAMELESS(InfoValue) {
-	// never save
-}
-#endif

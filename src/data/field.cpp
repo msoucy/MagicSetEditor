@@ -382,7 +382,6 @@ void Writer::handle(ScriptValueP const& value) {
 }
 
 // ----------------------------------------------------------------------------- : AnyField
-#if USE_SCRIPT_VALUE_VALUE
 
 AnyField::AnyField()
 	: default_name(_("Default"))
@@ -452,5 +451,3 @@ IMPLEMENT_REFLECTION_NAMELESS(AnyValue) {
 	WITH_DYNAMIC_ARG(field_for_reading, fieldP.get());
 	REFLECT_NAMELESS(value);
 }
-
-#endif

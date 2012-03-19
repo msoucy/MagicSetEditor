@@ -30,28 +30,3 @@ int ImageStyle::update(Context& ctx) {
 	return Style       ::update(ctx)
 	     | default_image.update(ctx) * CHANGE_DEFAULT;
 }
-
-// ----------------------------------------------------------------------------- : ImageValue
-
-#if !USE_SCRIPT_VALUE_IMAGE
-
-IMPLEMENT_VALUE_CLONE(Image);
-
-String ImageValue::toFriendlyString() const {
-	return filename.empty() ? wxEmptyString : _("<image>");
-}
-
-// custom reflection: convert to ScriptImageP for scripting
-
-void ImageValue::reflect(Reader& reflector) {
-	reflector.handle(filename);
-}
-void ImageValue::reflect(Writer& reflector) {
-	if (fieldP->save_value) reflector.handle(filename);
-}
-void ImageValue::reflect(GetMember& reflector) {}
-void ImageValue::reflect(GetDefaultMember& reflector) {
-	// convert to ScriptImageP for scripting
-	reflector.handle( (ScriptValueP)intrusive(new ImageValueToImage(filename)) );
-}
-#endif

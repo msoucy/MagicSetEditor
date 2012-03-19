@@ -50,11 +50,7 @@ class MultipleChoiceStyle : public ChoiceStyle {
  */
 class MultipleChoiceValue : public ChoiceValue {
   public:
-#if USE_SCRIPT_VALUE_CHOICE
 	inline MultipleChoiceValue(const MultipleChoiceFieldP& field) : ChoiceValue(field) {}
-#else
-	inline MultipleChoiceValue(const MultipleChoiceFieldP& field) : ChoiceValue(field, false) {}
-#endif
 	DECLARE_HAS_FIELD(MultipleChoice);
 	virtual ValueP clone() const;
 	

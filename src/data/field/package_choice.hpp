@@ -20,16 +20,9 @@ DECLARE_POINTER_TYPE(Packaged);
 
 DECLARE_POINTER_TYPE(PackageChoiceField);
 DECLARE_POINTER_TYPE(PackageChoiceStyle);
-#if !USE_SCRIPT_VALUE_PACKAGE
-DECLARE_POINTER_TYPE(PackageChoiceValue);
-#endif
 
 /// A field for PackageChoice values, it contains a list of choices for PackageChoices
-#if USE_SCRIPT_VALUE_PACKAGE
 class PackageChoiceField : public AnyField {
-#else
-class PackageChoiceField : public Field {
-#endif
   public:
 	PackageChoiceField() : required(true), empty_name(_("none")) {}
 	DECLARE_FIELD_TYPE();
@@ -37,12 +30,6 @@ class PackageChoiceField : public Field {
 	String             match;			///< Glob of package filenames to match
 	bool               required;		///< Is selecting a package required?
 	String             empty_name;		///< Displayed name for the empty value (if !required)
-#if !USE_SCRIPT_VALUE_PACKAGE
-	OptionalScript     script;			///< Script to apply to all values
-	String             initial;			///< Initial value
-	
-	virtual void initDependencies(Context&, const Dependency&) const;
-#endif
 };
 
 // ----------------------------------------------------------------------------- : PackageChoiceStyle
@@ -60,24 +47,8 @@ class PackageChoiceStyle : public Style {
 
 // ----------------------------------------------------------------------------- : PackageChoiceValue
 
-#if USE_SCRIPT_VALUE_PACKAGE
 typedef AnyValue PackageChoiceValue;
 typedef AnyValueP PackageChoiceValueP;
-#else
-/// The Value in a PackageChoiceField
-class PackageChoiceValue : public Value {
-  public:
-	PackageChoiceValue(const PackageChoiceFieldP& field) : Value(field), package_name(field->initial) {}
-	DECLARE_VALUE_TYPE(PackageChoice, String);
-	
-	ValueType package_name;	///< The selected package
-	
-	/// Get the package (if it is set)
-	PackagedP getPackage() const;
-	
-	virtual bool update(Context&, const Action* = nullptr);
-};
-#endif
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

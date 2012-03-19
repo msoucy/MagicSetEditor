@@ -15,31 +15,13 @@
 
 TextField::TextField()
 	: multi_line(false)
-#if !USE_SCRIPT_VALUE_TEXT
-	, default_name(_("Default"))
-#endif
 {}
 
 IMPLEMENT_FIELD_TYPE(Text, "text");
 
-#if !USE_SCRIPT_VALUE_TEXT
-void TextField::initDependencies(Context& ctx, const Dependency& dep) const {
-	Field        ::initDependencies(ctx, dep);
-	script        .initDependencies(ctx, dep);
-	default_script.initDependencies(ctx, dep);
-}
-#endif
-
 
 IMPLEMENT_REFLECTION(TextField) {
-#if USE_SCRIPT_VALUE_TEXT
 	REFLECT_BASE(AnyField);
-#else
-	REFLECT_BASE(Field);
-	REFLECT(script);
-	REFLECT_N("default", default_script);
-	REFLECT(default_name);
-#endif
 	REFLECT(multi_line);
 }
 
@@ -137,30 +119,6 @@ IMPLEMENT_REFLECTION(TextStyle) {
 	REFLECT(direction);
 	reflect_content(reflector, *this);
 }
-
-// ----------------------------------------------------------------------------- : TextValue
-
-#if !USE_SCRIPT_VALUE_TEXT
-
-IMPLEMENT_VALUE_CLONE(Text);
-
-String TextValue::toFriendlyString() const {
-	return untag_hide_sep(value());
-}
-bool TextValue::update(Context& ctx, const Action*) {
-	WITH_DYNAMIC_ARG(last_update_age,     last_modified.get());
-	WITH_DYNAMIC_ARG(value_being_updated, this);
-	bool change = field().default_script.invokeOnDefault(ctx, value)
-	            | field().        script.invokeOn(ctx, value);
-	updateSortValue(ctx);
-	return change;
-}
-
-IMPLEMENT_REFLECTION_NAMELESS(TextValue) {
-	if (fieldP->save_value || !reflector.isWriting()) REFLECT_NAMELESS(value);
-}
-
-#endif
 
 // ----------------------------------------------------------------------------- : FakeTextValue
 

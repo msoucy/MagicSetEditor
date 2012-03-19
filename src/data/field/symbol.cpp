@@ -45,9 +45,7 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(SymbolVariation) {
 	REFLECT_NAMELESS(filter);
 }
 
-// ----------------------------------------------------------------------------- : SymbolValue
-
-#if USE_SCRIPT_VALUE_SYMBOL
+// ----------------------------------------------------------------------------- : LocalSymbolFile
 
 ScriptValueP script_local_symbol_file(LocalFileName const& filename) {
 	return intrusive(new LocalSymbolFile(filename));
@@ -68,18 +66,3 @@ GeneratedImageP LocalSymbolFile::toImage() const {
 String LocalSymbolFile::toFriendlyString() const {
 	return _("<") + _TYPE_("symbol") + _(">");
 }
-
-#else
-
-IMPLEMENT_VALUE_CLONE(Symbol);
-
-String SymbolValue::toFriendlyString() const {
-	return filename.empty() ? wxEmptyString : _("<symbol>");
-}
-
-IMPLEMENT_REFLECTION_NO_GET_MEMBER(SymbolValue) {
-	if (fieldP->save_value || !reflector.isWriting()) REFLECT_NAMELESS(filename);
-}
-void SymbolValue::reflect(GetMember&) {}
-void SymbolValue::reflect(GetDefaultMember&) {}
-#endif

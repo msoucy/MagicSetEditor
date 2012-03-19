@@ -19,31 +19,16 @@
 
 DECLARE_POINTER_TYPE(InfoField);
 DECLARE_POINTER_TYPE(InfoStyle);
-#if !USE_SCRIPT_VALUE_INFO
-DECLARE_POINTER_TYPE(InfoValue);
-#endif
 
 /// A field for informational values.
 /** These values are not editable, they are just headers, icons, labels, etc.
  */
-#if USE_SCRIPT_VALUE_INFO
 class InfoField : public AnyField {
   public:
 	InfoField() { editable = false; }
 	DECLARE_FIELD_TYPE();
 	virtual void after_reading(Version ver);
 };
-#else
-class InfoField : public Field {
-  public:
-	InfoField() { editable = false; }
-	DECLARE_FIELD_TYPE();
-	
-	OptionalScript script;			///< Script to apply to all values
-	
-	virtual void initDependencies(Context&, const Dependency&) const;
-};
-#endif
 
 // ----------------------------------------------------------------------------- : InfoStyle
 
@@ -65,21 +50,8 @@ class InfoStyle : public Style {
 
 // ----------------------------------------------------------------------------- : InfoValue
 
-#if USE_SCRIPT_VALUE_INFO
 typedef AnyValue InfoValue;
 typedef AnyValueP InfoValueP;
-#else
-/// The Value in a InfoField
-class InfoValue : public Value {
-  public:
-	inline InfoValue(const InfoFieldP& field) : Value(field) {}
-	DECLARE_VALUE_TYPE(Info, String);
-	
-	ValueType value;
-	
-	virtual bool update(Context&, const Action* = nullptr);
-};
-#endif
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

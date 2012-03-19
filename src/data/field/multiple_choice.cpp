@@ -118,9 +118,5 @@ void MultipleChoiceValue::normalForm() {
 		val = field().empty_choice;
 	}
 	// store
-#if USE_SCRIPT_VALUE_CHOICE
 	value = with_defaultness_of(value, to_script(val));
-#else
-	value.assignDontChangeDefault(val);
-#endif
 }

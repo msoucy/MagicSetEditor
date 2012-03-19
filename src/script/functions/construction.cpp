@@ -37,31 +37,9 @@ SCRIPT_FUNCTION(new_card) {
 		}
 		Value* value = value_it->get();
 		// set the value
-#if !USE_SCRIPT_VALUE_TEXT
-		if (TextValue* tvalue = dynamic_cast<TextValue*>(value)) {
-			tvalue->value = v->toString();
-		} else 
-#endif
-#if !USE_SCRIPT_VALUE_CHOICE
-		if (ChoiceValue* cvalue = dynamic_cast<ChoiceValue*>(value)) {
-			cvalue->value = v->toString();
-		} else 
-#endif
-#if !USE_SCRIPT_VALUE_PACKAGE
-		if (PackageChoiceValue* pvalue = dynamic_cast<PackageChoiceValue*>(value)) {
-			pvalue->package_name = v->toString();
-		} else 
-#endif
-#if !USE_SCRIPT_VALUE_COLOR
-		if (ColorValue* cvalue = dynamic_cast<ColorValue*>(value)) {
-			cvalue->value = v->toColor();
-		} else 
-#endif
-#if USE_SCRIPT_VALUE_VALUE
 		if (AnyValue* avalue = dynamic_cast<AnyValue*>(value)) {
 			avalue->value = v;
 		} else 
-#endif
 		{
 			throw ScriptError(format_string(_("Can not set value '%s', it is not of the right type"),name));
 		}
