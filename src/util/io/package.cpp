@@ -351,7 +351,7 @@ LocalFileName LocalFileName::fromReadString(String const& fn, String const& pref
 			return local_name;
 		} catch (Error) {
 			// ignore errors
-			return _("");
+			return LocalFileName();
 		}
 	} else {
 		return LocalFileName(fn);

@@ -389,11 +389,11 @@ END_EVENT_TABLE()
 
 ConsolePanel::ConsolePanel(Window* parent, int id)
 	: SetWindowPanel(parent, id)
+	, messages(nullptr)
+	, entry(nullptr)
 	, is_active_window(false)
 	, blinker_state(0)
 	, blinker_timer(this)
-	, messages(nullptr)
-	, entry(nullptr)
 {
 	// init controls
 	splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);

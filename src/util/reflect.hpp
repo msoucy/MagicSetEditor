@@ -110,7 +110,7 @@
 #define REFLECT_NAMELESS(var) reflector.handle(var)
 
 /// Declare that the variables of a base class should also be reflected
-#define REFLECT_BASE(Base)    Base::reflect_impl(reflector)
+#define REFLECT_BASE(Base)    Base::reflect(reflector)
 
 /// Reflect a group of declarations only when reading
 /** Usage:

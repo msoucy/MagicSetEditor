@@ -131,7 +131,7 @@ inline ScriptDefault const* is_default(ScriptValueP const& x) {
 	return is_default(x.get());
 }
 inline ScriptValueP make_default(ScriptValueP const& x) {
-	return is_default(x) ? x : intrusive(new ScriptDefault(x));
+	return is_default(x) ? x : intrusive_ptr<ScriptValue>(new ScriptDefault(x));
 }
 inline ScriptValueP with_defaultness_of(ScriptValueP const& of, ScriptValueP const& x) {
 	return is_default(of) ? make_default(x) : x;

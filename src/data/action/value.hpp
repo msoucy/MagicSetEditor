@@ -62,7 +62,7 @@ ValueAction* value_action(const MultipleChoiceValueP& value, const ScriptValueP&
 class MultipleChoiceValueAction : public ValueAction {
   public:
 	inline MultipleChoiceValueAction(const ValueP& value, const ScriptValueP& new_value, const String& changed_choice)
-		: ValueAction(value), new_value(new_value), changed_choice(changed_choice)
+		: ValueAction(value), changed_choice(changed_choice), new_value(new_value)
 	{}
 	
 	virtual void perform(bool to_undo);

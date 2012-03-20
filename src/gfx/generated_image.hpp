@@ -355,8 +355,7 @@ class BuiltInImage : public GeneratedImage {
 /// Use a symbol as an image
 class SymbolToImage : public GeneratedImage {
   public:
-	SymbolToImage(const SymbolToImage& symbol, const SymbolVariationP& variation);
-	SymbolToImage(bool is_local, const LocalFileName& filename, const SymbolVariationP& variation = SymbolVariationP());
+	SymbolToImage(bool is_local, const LocalFileName& filename, const SymbolVariationP& variation);
 	~SymbolToImage();
 	virtual Image generate(const Options& opt) const;
 	virtual bool operator == (const GeneratedImage& that) const;
