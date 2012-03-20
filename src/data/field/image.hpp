@@ -20,7 +20,7 @@ DECLARE_POINTER_TYPE(ImageField);
 DECLARE_POINTER_TYPE(ImageStyle);
 
 /// A field for image values
-class ImageField : public AnyField {
+class ImageField : public Field {
   public:
 	// no extra data
 	DECLARE_FIELD_TYPE();
@@ -41,8 +41,8 @@ class ImageStyle : public Style {
 
 // ----------------------------------------------------------------------------- : ImageValue
 
-typedef AnyValue ImageValue;
-typedef AnyValueP ImageValueP;
+typedef Value ImageValue;
+typedef ValueP ImageValueP;
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

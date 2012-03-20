@@ -21,7 +21,7 @@ BooleanField::BooleanField() {
 IMPLEMENT_FIELD_TYPE(Boolean, "boolean");
 
 IMPLEMENT_REFLECTION(BooleanField) {
-	REFLECT_BASE(AnyField); // NOTE: don't reflect as a ChoiceField, because we don't want to add extra choices
+	REFLECT_BASE(Field); // NOTE: don't reflect as a ChoiceField, because we don't want to add extra choices
 }
 
 // ----------------------------------------------------------------------------- : BooleanStyle

@@ -22,7 +22,7 @@ DECLARE_POINTER_TYPE(PackageChoiceField);
 DECLARE_POINTER_TYPE(PackageChoiceStyle);
 
 /// A field for PackageChoice values, it contains a list of choices for PackageChoices
-class PackageChoiceField : public AnyField {
+class PackageChoiceField : public Field {
   public:
 	PackageChoiceField() : required(true), empty_name(_("none")) {}
 	DECLARE_FIELD_TYPE();
@@ -47,8 +47,8 @@ class PackageChoiceStyle : public Style {
 
 // ----------------------------------------------------------------------------- : PackageChoiceValue
 
-typedef AnyValue PackageChoiceValue;
-typedef AnyValueP PackageChoiceValueP;
+typedef Value PackageChoiceValue;
+typedef ValueP PackageChoiceValueP;
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

@@ -35,14 +35,9 @@ SCRIPT_FUNCTION(new_card) {
 		if (value_it == new_card->data.end()) {
 			throw ScriptError(format_string(_("Card doesn't have a field named '%s'"),name));
 		}
+		// set it
 		Value* value = value_it->get();
-		// set the value
-		if (AnyValue* avalue = dynamic_cast<AnyValue*>(value)) {
-			avalue->value = v;
-		} else 
-		{
-			throw ScriptError(format_string(_("Can not set value '%s', it is not of the right type"),name));
-		}
+		value->value = v;
 	}
 	SCRIPT_RETURN(new_card);
 }

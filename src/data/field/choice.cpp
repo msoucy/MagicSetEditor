@@ -25,14 +25,14 @@ ChoiceField::ChoiceField()
 IMPLEMENT_FIELD_TYPE(Choice, "choice");
 
 IMPLEMENT_REFLECTION(ChoiceField) {
-	REFLECT_BASE(AnyField);
+	REFLECT_BASE(Field);
 	REFLECT_N("choices", choices->choices);
 	REFLECT(choice_colors);
 	REFLECT(choice_colors_cardlist);
 }
 
 void ChoiceField::after_reading(Version ver) {
-	AnyField::after_reading(ver);
+	Field::after_reading(ver);
 	choices->initIds();
 	if(initial == script_default_nil && !dynamic_cast<MultipleChoiceField*>(this)) {
 		initial = make_default(to_script(choices->choiceName(0)));

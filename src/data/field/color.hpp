@@ -21,7 +21,7 @@ DECLARE_POINTER_TYPE(ColorField);
 DECLARE_POINTER_TYPE(ColorStyle);
 
 /// A field for color values, it contains a list of choices for colors
-class ColorField : public AnyField {
+class ColorField : public Field {
   public:
 	ColorField();
 	DECLARE_FIELD_TYPE();
@@ -62,8 +62,8 @@ class ColorStyle : public Style {
 
 // ----------------------------------------------------------------------------- : ColorValue
 
-typedef AnyValue ColorValue;
-typedef AnyValueP ColorValueP;
+typedef Value ColorValue;
+typedef ValueP ColorValueP;
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

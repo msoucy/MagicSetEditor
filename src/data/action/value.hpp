@@ -25,9 +25,8 @@ class LocalFileName;
 DECLARE_POINTER_TYPE(Set);
 DECLARE_POINTER_TYPE(Value);
 DECLARE_POINTER_TYPE(Style);
-DECLARE_POINTER_TYPE(AnyValue);
-typedef AnyValue TextValue;
-typedef AnyValueP TextValueP;
+typedef Value TextValue;
+typedef ValueP TextValueP;
 DECLARE_POINTER_TYPE(MultipleChoiceValue);
 
 // ----------------------------------------------------------------------------- : ValueAction (based class)
@@ -54,7 +53,7 @@ class ValueAction : public Action {
 // ----------------------------------------------------------------------------- : Simple
 
 /// Action that updates a Value to a new value
-ValueAction* value_action(const AnyValueP&            value, const ScriptValueP&        new_value);
+ValueAction* value_action(const ValueP&            value, const ScriptValueP&        new_value);
 ValueAction* value_action(const MultipleChoiceValueP& value, const ScriptValueP& new_value, const String& last_change);
 
 // ----------------------------------------------------------------------------- : MultipleChoice

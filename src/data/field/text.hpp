@@ -26,7 +26,7 @@ DECLARE_POINTER_TYPE(TextField);
 DECLARE_POINTER_TYPE(TextStyle);
 
 /// A field for values containing tagged text
-class TextField : public AnyField {
+class TextField : public Field {
   public:
 	TextField();
 	DECLARE_FIELD_TYPE();
@@ -74,8 +74,8 @@ class TextStyle : public Style {
 
 // ----------------------------------------------------------------------------- : TextValue
 
-typedef AnyValue TextValue;
-typedef AnyValueP TextValueP;
+typedef Value TextValue;
+typedef ValueP TextValueP;
 
 // ----------------------------------------------------------------------------- : TextValue
 

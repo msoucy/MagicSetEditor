@@ -21,7 +21,7 @@ IMPLEMENT_FIELD_TYPE(Text, "text");
 
 
 IMPLEMENT_REFLECTION(TextField) {
-	REFLECT_BASE(AnyField);
+	REFLECT_BASE(Field);
 	REFLECT(multi_line);
 }
 

@@ -42,24 +42,28 @@ class Field : public IntrusivePtrVirtualBase {
 	Field();
 	virtual ~Field();
 	
-	size_t    index;            ///< Used by IndexMap
-	String    name;             ///< Name of the field, for refering to it from scripts and files
-	String    caption;          ///< Caption for NativeLookEditor
-	String    description;      ///< Description, used in status bar
-	String    icon_filename;    ///< Filename for an icon (for list of fields)
-	bool      editable;         ///< Can values of this field be edited?
-	bool      save_value;       ///< Should values of this field be written to files? Can be false for script generated fields.
-	bool      show_statistics;  ///< Should this field appear as a group by choice in the statistics panel?
-	int       position_hint;    ///< Position in the statistics list
-	bool      identifying;      ///< Does this field give Card::identification()?
-	int       card_list_column; ///< What column to use in the card list?
-	UInt      card_list_width;  ///< Width of the card list column (pixels).
-	bool      card_list_visible;///< Is this field shown in the card list?
-	bool      card_list_allow;  ///< Is this field allowed to appear in the card list?
-	String    card_list_name;   ///< Alternate name to use in card list.
-	Alignment card_list_align;  ///< Alignment of the card list colummn.
-	OptionalScript sort_script; ///< The script to use when sorting this, if not the value.
-	Dependencies dependent_scripts; ///< Scripts that depend on values of this field
+	size_t          index;             ///< Used by IndexMap
+	String          name;              ///< Name of the field, for refering to it from scripts and files
+	String          caption;           ///< Caption for NativeLookEditor
+	String          description;       ///< Description, used in status bar
+	String          icon_filename;     ///< Filename for an icon (for list of fields)
+	bool            editable;          ///< Can values of this field be edited?
+	bool            save_value;        ///< Should values of this field be written to files? Can be false for script generated fields.
+	bool            show_statistics;   ///< Should this field appear as a group by choice in the statistics panel?
+	int             position_hint;     ///< Position in the statistics list
+	bool            identifying;       ///< Does this field give Card::identification()?
+	int             card_list_column;  ///< What column to use in the card list?
+	UInt            card_list_width;   ///< Width of the card list column (pixels).
+	bool            card_list_visible; ///< Is this field shown in the card list?
+	bool            card_list_allow;   ///< Is this field allowed to appear in the card list?
+	String          card_list_name;    ///< Alternate name to use in card list.
+	Alignment       card_list_align;   ///< Alignment of the card list colummn.
+	OptionalScript  script;            ///< Script to apply to all values
+	OptionalScript  default_script;    ///< Script that generates the default value, can be empty if there is no default
+	OptionalScript  sort_script;       ///< The script to use when sorting this, if not the value.
+	String          default_name;      ///< Name of the 'default' choice
+	ScriptValueP    initial;           ///< Initial value of a new value
+	Dependencies    dependent_scripts; ///< Scripts that depend on values of this field
 	
 	/// Creates a new Value corresponding to this Field
 	virtual ValueP newValue() = 0;
@@ -99,16 +103,16 @@ class Style : public IntrusivePtrVirtualBase {
 	Style(const FieldP&);
 	virtual ~Style();
 	
-	const FieldP       fieldP;          ///< Field this style is for, should have the right type!
+	const FieldP         fieldP;          ///< Field this style is for, should have the right type!
 	
-	int                z_index;         ///< Stacking of values of this field, higher = on top
-	int                tab_index;       ///< Tab order in editor
-	Scriptable<double> left,  top;      ///< Position of this field
-	Scriptable<double> width, height;   ///< Position of this field
-	Scriptable<double> right, bottom;   ///< Position of this field
-	Scriptable<Degrees> angle;          ///< Rotation of the box
-	Scriptable<bool>   visible;         ///< Is this field visible?
-	CachedScriptableMask mask;          ///< Mask image
+	int                  z_index;         ///< Stacking of values of this field, higher = on top
+	int                  tab_index;       ///< Tab order in editor
+	Scriptable<double>   left,  top;      ///< Position of this field
+	Scriptable<double>   width, height;   ///< Position of this field
+	Scriptable<double>   right, bottom;   ///< Position of this field
+	Scriptable<Degrees>  angle;           ///< Rotation of the box
+	Scriptable<bool>     visible;         ///< Is this field visible?
+	CachedScriptableMask mask;            ///< Mask image
 	
 	enum AutomaticSide {
 		AUTO_UNKNOWN = 0x00,
@@ -216,19 +220,24 @@ class StyleListener : public IntrusivePtrVirtualBase {
 /// A specific value 'in' a Field.
 class Value : public IntrusivePtrVirtualBase {
   public:
-	inline Value(const FieldP& field) : fieldP(field) {}
+	Value(const FieldP& field);
+	Value(const FieldP& field, ScriptValueP const& value);
 	virtual ~Value();
 	
-	const FieldP fieldP;				///< Field this value is for, should have the right type!
-	Age          last_modified;			///< When was the value last modified? Note: this also goes up on undo.
-	                                    ///< This variable is used by ScriptManager. It will be incremented by each round of script updates.
-	String       sort_value;			///< How this should be sorted.
+	const FieldP    fieldP;           ///< Field this value is for, should have the right type!
+	Age             last_modified;    ///< When was the value last modified? Note: this also goes up on undo.
+	                                  ///< This variable is used by ScriptManager. It will be incremented by each round of script updates.
+	String          sort_value;       ///< How this should be sorted.
+	ScriptValueP    value;            ///< The value, never null
+	
+	typedef ScriptValueP ValueType;
+	inline Field& field() const { return *fieldP; }
 	
 	/// Get a copy of this value
-	virtual ValueP clone() const = 0;
+	virtual ValueP clone() const;
 	
 	/// Convert this value to a string, should be human readable, so no <tags>
-	virtual String toFriendlyString() const = 0;
+	virtual String toFriendlyString() const;
 	/// Apply scripts to this value, return true if the value has changed
 	/** Optionally, the action that causes the update is also passed.
 	 */
@@ -314,49 +323,6 @@ inline String type_name(const Value&) {
 	}
 
 void mark_dependency_member(const IndexMap<FieldP,ValueP>& value, const String& name, const Dependency& dep);
-
-// ----------------------------------------------------------------------------- : Value (new style)
-
-/// Base class for fields whos values can be scripted
-// TODO: merge into Field
-class AnyField : public Field {
-  public:
-	AnyField();
-	
-	OptionalScript script;			///< Script to apply to all values
-	OptionalScript default_script;	///< Script that generates the default value, can be empty if there is no default
-	String         default_name;    ///< Name of the 'default' choice
-	ScriptValueP   initial;			///< Initial choice of a new value, if not set the first choice is used
-	
-	DECLARE_REFLECTION_VIRTUAL();
-	virtual void initDependencies(Context&, const Dependency&) const;
-};
-DECLARE_POINTER_TYPE(AnyField)
-
-/// A Value object that can hold something of 'any' type
-// TODO: merge into Value
-class AnyValue : public Value {
-  public:
-	AnyValue(AnyFieldP const& field);
-	AnyValue(AnyFieldP const& field, ScriptValueP const& value);
-	
-	/// The actual value
-	typedef ScriptValueP ValueType;
-	ScriptValueP value; // never null
-	
-	virtual ValueP clone() const;
-	virtual String toFriendlyString() const;
-	virtual bool update(Context& ctx, const Action* = nullptr);
-	
-	// Convenience functions
-	inline void operator = (ScriptValueP const& value) {
-		this->value = value;
-	}
-	
-	DECLARE_HAS_FIELD(Any)
-	DECLARE_REFLECTION_VIRTUAL();
-};
-DECLARE_POINTER_TYPE(AnyValue)
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

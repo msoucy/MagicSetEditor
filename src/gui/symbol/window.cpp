@@ -252,7 +252,7 @@ void SymbolWindow::onFileStore(wxCommandEvent& ev) {
 	if (performer) {
 		SymbolValueP value = static_pointer_cast<SymbolValue>(performer->value);
 		Package& package = performer->getLocalPackage();
-		LocalFileName new_filename = package.newFileName(value->field().name,_(".mse-symbol")); // a new unique name in the package
+		LocalFileName new_filename = package.newFileName(value->fieldP->name,_(".mse-symbol")); // a new unique name in the package
 		OutputStreamP stream = package.openOut(new_filename);
 		Writer writer(*stream, file_version_symbol);
 		writer.handle(control->getSymbol());

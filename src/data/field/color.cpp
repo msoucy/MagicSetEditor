@@ -21,7 +21,7 @@ ColorField::ColorField()
 IMPLEMENT_FIELD_TYPE(Color, "color");
 
 IMPLEMENT_REFLECTION(ColorField) {
-	REFLECT_BASE(AnyField);
+	REFLECT_BASE(Field);
 	REFLECT(allow_custom);
 	REFLECT(choices);
 }

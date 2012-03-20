@@ -15,7 +15,7 @@
 IMPLEMENT_FIELD_TYPE(PackageChoice, "package choice");
 
 IMPLEMENT_REFLECTION(PackageChoiceField) {
-	REFLECT_BASE(AnyField);
+	REFLECT_BASE(Field);
 	REFLECT(match);
 	REFLECT(required);
 	REFLECT(empty_name);

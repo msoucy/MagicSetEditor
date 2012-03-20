@@ -39,7 +39,7 @@ void ValueAction::isOnCard(Card* card) {
 // ----------------------------------------------------------------------------- : Simple
 
 /// Swap the value in a Value object with a new one
-inline void swap_value(AnyValue&            a, AnyValue           ::ValueType& b) { swap(a.value,    b); }
+inline void swap_value(Value& a, ScriptValueP& b) { swap(a.value,    b); }
 
 /// A ValueAction that swaps between old and new values
 template <typename T, bool ALLOW_MERGE>
@@ -71,7 +71,7 @@ class SimpleValueAction : public ValueAction {
 	typename T::ValueType new_value;
 };
 
-ValueAction* value_action(const AnyValueP&            value, const ScriptValueP&        new_value) { return new SimpleValueAction<AnyValue,            false>(value, new_value); }
+ValueAction* value_action(const ValueP& value, const ScriptValueP& new_value) { return new SimpleValueAction<Value,false>(value, new_value); }
 
 // ----------------------------------------------------------------------------- : MultipleChoice
 

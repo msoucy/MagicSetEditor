@@ -15,11 +15,11 @@
 IMPLEMENT_FIELD_TYPE(Info, "info");
 
 IMPLEMENT_REFLECTION(InfoField) {
-	REFLECT_BASE(AnyField);
+	REFLECT_BASE(Field);
 }
 
 void InfoField::after_reading(Version ver) {
-	AnyField::after_reading(ver);
+	Field::after_reading(ver);
 	if (initial == script_default_nil) initial = to_script(caption);
 	initial = make_default(initial);
 }

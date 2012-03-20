@@ -24,7 +24,7 @@ DECLARE_POINTER_TYPE(ChoiceField);
 DECLARE_POINTER_TYPE(ChoiceStyle);
 
 /// A field that contains a list of choices
-class ChoiceField : public AnyField {
+class ChoiceField : public Field {
   public:
 	ChoiceField();
 	DECLARE_FIELD_TYPE();
@@ -160,8 +160,8 @@ class ChoiceStyle : public Style {
 
 // ----------------------------------------------------------------------------- : ChoiceValue
 
-typedef AnyValue ChoiceValue;
-typedef AnyValueP ChoiceValueP;
+typedef Value ChoiceValue;
+typedef ValueP ChoiceValueP;
 
 // ----------------------------------------------------------------------------- : EOF
 #endif

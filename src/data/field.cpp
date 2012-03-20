@@ -35,12 +35,16 @@ Field::Field()
 	, card_list_visible(false)
 	, card_list_allow  (true)
 	, card_list_align  (ALIGN_LEFT)
+	, default_name     (_("Default"))
+	, initial          (script_default_nil)
 {}
 
 Field::~Field() {}
 
 void Field::initDependencies(Context& ctx, const Dependency& dep) const {
-	sort_script.initDependencies(ctx, dep);
+	script        .initDependencies(ctx, dep);
+	default_script.initDependencies(ctx, dep);
+	sort_script   .initDependencies(ctx, dep);
 }
 
 IMPLEMENT_REFLECTION(Field) {
@@ -62,8 +66,13 @@ IMPLEMENT_REFLECTION(Field) {
 	REFLECT(card_list_visible);
 	REFLECT(card_list_allow);
 	REFLECT(card_list_name);
-	REFLECT(sort_script);
 	REFLECT_N("card_list_alignment", card_list_align);
+	REFLECT(script);
+	REFLECT_N("default", default_script);
+	REFLECT(sort_script);
+	REFLECT(default_name);
+	WITH_DYNAMIC_ARG(field_for_reading, this);
+	REFLECT(initial);
 }
 
 void Field::after_reading(Version ver) {
@@ -265,47 +274,7 @@ StyleListener::~StyleListener() {
 }
 
 
-// ----------------------------------------------------------------------------- : Value
-
-IMPLEMENT_DYNAMIC_ARG(Value*, value_being_updated, nullptr);
-
-Value::~Value() {}
-
-IMPLEMENT_REFLECTION_NAMELESS(Value) {
-}
-
-bool Value::equals(const Value* that) {
-	return this == that;
-}
-
-bool Value::update(Context& ctx, const Action*) {
-	updateSortValue(ctx);
-	return false;
-}
-void Value::updateSortValue(Context& ctx) {
-	sort_value = fieldP->sort_script.invoke(ctx)->toString();
-}
-
-void init_object(const FieldP& field, ValueP& value) {
-	if (!value)
-		value = field->newValue();
-}
-template <> ValueP read_new<Value>(Reader&) {
-	throw InternalError(_("IndexMap contains nullptr ValueP the application should have crashed already"));
-}
-
-
-
-void mark_dependency_member(const IndexMap<FieldP,ValueP>& value, const String& name, const Dependency& dep) {
-	IndexMap<FieldP,ValueP>::const_iterator it = value.find(name);
-	if (it != value.end()) {
-		(*it)->fieldP->dependent_scripts.add(dep);
-	}
-}
-
-
-
-// ----------------------------------------------------------------------------- : AnyValue : reflecting ScriptValues
+// ----------------------------------------------------------------------------- : Value : reflecting ScriptValues
 // TODO: move this to a more sensible location
 
 DECLARE_DYNAMIC_ARG(Field const*, field_for_reading);
@@ -381,46 +350,33 @@ void Writer::handle(ScriptValueP const& value) {
 	handle(value->toCode());
 }
 
-// ----------------------------------------------------------------------------- : AnyField
+// ----------------------------------------------------------------------------- : Value
 
-AnyField::AnyField()
-	: default_name(_("Default"))
-	, initial(script_default_nil)
-{}
+IMPLEMENT_DYNAMIC_ARG(Value*, value_being_updated, nullptr);
 
-void AnyField::initDependencies(Context& ctx, const Dependency& dep) const {
-	Field        ::initDependencies(ctx, dep);
-	script        .initDependencies(ctx, dep);
-	default_script.initDependencies(ctx, dep);
-}
-
-IMPLEMENT_REFLECTION(AnyField) {
-	REFLECT_BASE(Field);
-	REFLECT(script);
-	REFLECT_N("default", default_script);
-	REFLECT(default_name);
-	WITH_DYNAMIC_ARG(field_for_reading, this);
-	REFLECT(initial);
-}
-
-// ----------------------------------------------------------------------------- : AnyValue
-
-AnyValue::AnyValue(AnyFieldP const& field)
-	: Value(field), value(field->initial)
+Value::Value(const FieldP& field)
+	: fieldP(field), value(field->initial)
 {
 	assert(value);
 }
 
-AnyValue::AnyValue(AnyFieldP const& field, ScriptValueP const& value)
-	: Value(field), value(value)
+Value::Value(const FieldP& field, const ScriptValueP& value)
+	: fieldP(field), value(value)
 {
 	assert(value);
 }
 
-ValueP AnyValue::clone() const {
-	return intrusive(new AnyValue(*this));
+Value::~Value() {}
+
+ValueP Value::clone() const {
+	return intrusive(new Value(*this));
 }
-String AnyValue::toFriendlyString() const {
+
+bool Value::equals(const Value* that) {
+	return this == that;
+}
+
+String Value::toFriendlyString() const {
 	try {
 		return value->toFriendlyString();
 	} catch (...) {
@@ -428,26 +384,49 @@ String AnyValue::toFriendlyString() const {
 	}
 }
 
-bool AnyValue::update(Context& ctx, const Action* act) {
+bool Value::update(Context& ctx, const Action* act) {
 	WITH_DYNAMIC_ARG(last_update_age,     last_modified.get()); // TODO: this is redundant, since it can be got from value_being_updated
 	WITH_DYNAMIC_ARG(value_being_updated, this);
 	bool change = false;
 	if (ScriptDefault const* dv = dynamic_cast<ScriptDefault*>(value.get())) {
 		ScriptValueP dvv = dv->un_default;
-		change = field().default_script.invokeOn(ctx, dvv);
-		change |= field().script.invokeOn(ctx, dvv);
+		change = fieldP->default_script.invokeOn(ctx, dvv);
+		change |= fieldP->script.invokeOn(ctx, dvv);
 		if (change) value = make_default(dvv);
 	} else {
-		change = field().script.invokeOn(ctx, value);
+		change = fieldP->script.invokeOn(ctx, value);
 	}
-	change |= Value::update(ctx, act);
+	updateSortValue(ctx);
 	return change;
 }
 
+void Value::updateSortValue(Context& ctx) {
+	sort_value = fieldP->sort_script.invoke(ctx)->toString();
+}
 
-IMPLEMENT_REFLECTION_NAMELESS(AnyValue) {
+
+IMPLEMENT_REFLECTION_NAMELESS(Value) {
 	if (reflector.isWriting() && !fieldP->save_value) return;
 	if (reflector.isWriting() && is_default(value)) return;
 	WITH_DYNAMIC_ARG(field_for_reading, fieldP.get());
 	REFLECT_NAMELESS(value);
 }
+
+void init_object(const FieldP& field, ValueP& value) {
+	if (!value) {
+		value = field->newValue();
+	}
+}
+
+template <> ValueP read_new<Value>(Reader&) {
+	throw InternalError(_("IndexMap contains nullptr ValueP the application should have crashed already"));
+}
+
+void mark_dependency_member(const IndexMap<FieldP,ValueP>& value, const String& name, const Dependency& dep) {
+	IndexMap<FieldP,ValueP>::const_iterator it = value.find(name);
+	if (it != value.end()) {
+		(*it)->fieldP->dependent_scripts.add(dep);
+	}
+}
+
+

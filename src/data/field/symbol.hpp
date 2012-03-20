@@ -23,7 +23,7 @@ DECLARE_POINTER_TYPE(SymbolField);
 DECLARE_POINTER_TYPE(SymbolStyle);
 
 /// A field for image values
-class SymbolField : public AnyField {
+class SymbolField : public Field {
   public:
 	DECLARE_FIELD_TYPE();
 	
@@ -62,8 +62,8 @@ class SymbolVariation : public IntrusivePtrBase<SymbolVariation> {
 
 // ----------------------------------------------------------------------------- : SymbolValue
 
-typedef AnyValue SymbolValue;
-typedef AnyValueP SymbolValueP;
+typedef Value SymbolValue;
+typedef ValueP SymbolValueP;
 
 // A file that refers to a symbol
 class LocalSymbolFile : public ScriptValue {

@@ -23,7 +23,7 @@ DECLARE_POINTER_TYPE(InfoStyle);
 /// A field for informational values.
 /** These values are not editable, they are just headers, icons, labels, etc.
  */
-class InfoField : public AnyField {
+class InfoField : public Field {
   public:
 	InfoField() { editable = false; }
 	DECLARE_FIELD_TYPE();
@@ -50,8 +50,8 @@ class InfoStyle : public Style {
 
 // ----------------------------------------------------------------------------- : InfoValue
 
-typedef AnyValue InfoValue;
-typedef AnyValueP InfoValueP;
+typedef Value InfoValue;
+typedef ValueP InfoValueP;
 
 // ----------------------------------------------------------------------------- : EOF
 #endif
