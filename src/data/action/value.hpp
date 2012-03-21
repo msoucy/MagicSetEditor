@@ -52,19 +52,32 @@ class ValueAction : public Action {
 
 // ----------------------------------------------------------------------------- : Simple
 
+/// A ValueAction that swaps between old and new values
+class SimpleValueAction : public ValueAction {
+  public:
+	inline SimpleValueAction(const ValueP& value, const ScriptValueP& new_value, bool allow_merge = false)
+		: ValueAction(value), new_value(new_value), allow_merge(allow_merge)
+	{}
+	
+	virtual void perform(bool to_undo);
+	virtual bool merge(const Action& action);
+	
+  protected:
+	ScriptValueP new_value;
+	bool allow_merge;
+};
+
 /// Action that updates a Value to a new value
-ValueAction* value_action(const ValueP&            value, const ScriptValueP&        new_value);
+ValueAction* value_action(const ValueP& value, const ScriptValueP& new_value);
 ValueAction* value_action(const MultipleChoiceValueP& value, const ScriptValueP& new_value, const String& last_change);
 
 // ----------------------------------------------------------------------------- : MultipleChoice
 
-class MultipleChoiceValueAction : public ValueAction {
+class MultipleChoiceValueAction : public SimpleValueAction {
   public:
 	inline MultipleChoiceValueAction(const ValueP& value, const ScriptValueP& new_value, const String& changed_choice)
-		: ValueAction(value), changed_choice(changed_choice), new_value(new_value)
+		: SimpleValueAction(value, new_value), changed_choice(changed_choice)
 	{}
-	
-	virtual void perform(bool to_undo);
 	
 	const String changed_choice; ///< What choice was toggled by this action (if any)
   private:
@@ -74,7 +87,7 @@ class MultipleChoiceValueAction : public ValueAction {
 // ----------------------------------------------------------------------------- : Text
 
 /// An action that changes a TextValue
-class TextValueAction : public ValueAction {
+class TextValueAction : public SimpleValueAction {
   public:
 	TextValueAction(const TextValueP& value, size_t start, size_t end, size_t new_end, const ScriptValueP& new_value, const String& name);
 	
@@ -90,7 +103,6 @@ class TextValueAction : public ValueAction {
 	inline TextValue& value() const;
 	
 	size_t new_selection_end;
-	ScriptValueP new_value;
 	String name;
 };
 
@@ -117,28 +129,6 @@ class TextToggleReminderAction : public ValueAction {
 	Char old;    ///< Old value of the <kw- tag
 };
 
-// ----------------------------------------------------------------------------- : Replace all
-
-/// A TextValueAction without the start and end stuff
-class SimpleTextValueAction : public ValueAction {
-  public:
-	SimpleTextValueAction(const Card* card, const TextValueP& value, const Defaultable<String>& new_value);
-	virtual void perform(bool to_undo);
-	bool merge(const SimpleTextValueAction& action);
-  private:
-	Defaultable<String> new_value;
-};
-
-/// An action from "Replace All"; just a bunch of value actions performed in sequence
-class ReplaceAllAction : public Action {
-  public:
-	~ReplaceAllAction();
-	
-	virtual String getName(bool to_undo) const;
-	virtual void perform(bool to_undo);
-	
-	vector<SimpleTextValueAction> actions;
-};
 
 // ----------------------------------------------------------------------------- : Event
 

@@ -38,73 +38,45 @@ void ValueAction::isOnCard(Card* card) {
 
 // ----------------------------------------------------------------------------- : Simple
 
-/// Swap the value in a Value object with a new one
-inline void swap_value(Value& a, ScriptValueP& b) { swap(a.value,    b); }
+void SimpleValueAction::perform(bool to_undo) {
+	ValueAction::perform(to_undo);
+	swap(valueP->value, new_value);
+	valueP->onAction(*this, to_undo); // notify value
+}
 
-/// A ValueAction that swaps between old and new values
-template <typename T, bool ALLOW_MERGE>
-class SimpleValueAction : public ValueAction {
-  public:
-	inline SimpleValueAction(const intrusive_ptr<T>& value, const typename T::ValueType& new_value)
-		: ValueAction(value), new_value(new_value)
-	{}
-	
-	virtual void perform(bool to_undo) {
-		ValueAction::perform(to_undo);
-		swap_value(static_cast<T&>(*valueP), new_value);
-		valueP->onAction(*this, to_undo); // notify value
-	}
-	
-	virtual bool merge(const Action& action) {
-		if (!ALLOW_MERGE) return false;
-		TYPE_CASE(action, SimpleValueAction) {
-			if (action.valueP == valueP) {
-				// adjacent actions on the same value, discard the other one,
-				// because it only keeps an intermediate value
-				return true;
-			}
+bool SimpleValueAction::merge(const Action& action) {
+	if (!allow_merge) return false;
+	TYPE_CASE(action, SimpleValueAction) {
+		if (action.valueP == valueP) {
+			// adjacent actions on the same value, discard the other one,
+			// because it only keeps an intermediate value
+			return true;
 		}
-		return false;
 	}
-	
-  private:
-	typename T::ValueType new_value;
-};
+	return false;
+}
 
-ValueAction* value_action(const ValueP& value, const ScriptValueP& new_value) { return new SimpleValueAction<Value,false>(value, new_value); }
-
-// ----------------------------------------------------------------------------- : MultipleChoice
+ValueAction* value_action(const ValueP& value, const ScriptValueP& new_value) {
+	return new SimpleValueAction(value, new_value);
+}
 
 ValueAction* value_action(const MultipleChoiceValueP& value, const ScriptValueP& new_value, const String& last_change) {
 	return new MultipleChoiceValueAction(value,new_value,last_change);
 }
 
-// copy paste of SimpleValueAction :(
-// TODO: do this in a better way
-
-void MultipleChoiceValueAction::perform(bool to_undo) {
-	ValueAction::perform(to_undo);
-	swap_value(static_cast<MultipleChoiceValue&>(*valueP), new_value);
-	valueP->onAction(*this, to_undo); // notify value
-}
-
-
 // ----------------------------------------------------------------------------- : Text
 
 TextValueAction::TextValueAction(const TextValueP& value, size_t start, size_t end, size_t new_end, const ScriptValueP& new_value, const String& name)
-	: ValueAction(value)
+	: SimpleValueAction(value, new_value)
 	, selection_start(start), selection_end(end), new_selection_end(new_end)
-	, new_value(new_value)
 	, name(name)
 {}
 
 String TextValueAction::getName(bool to_undo) const { return name; }
 
 void TextValueAction::perform(bool to_undo) {
-	ValueAction::perform(to_undo);
-	swap_value(value(), new_value);
 	swap(selection_end, new_selection_end);
-	valueP->onAction(*this, to_undo); // notify value
+	SimpleValueAction::perform(to_undo);
 }
 
 bool TextValueAction::merge(const Action& action) {
