@@ -21,6 +21,9 @@
 
 DECLARE_TYPEOF_COLLECTION(StyleListener*);
 
+DECLARE_DYNAMIC_ARG(Field const*, field_for_reading);
+IMPLEMENT_DYNAMIC_ARG(Field const*, field_for_reading, nullptr);
+
 // ----------------------------------------------------------------------------- : Field
 
 Field::Field()
@@ -226,6 +229,7 @@ void Style::checkContentDependencies(Context& ctx, const Dependency& dep) const 
 	left   .initDependencies(ctx,dep);
 	top    .initDependencies(ctx,dep);
 	width  .initDependencies(ctx,dep);
+
 	height .initDependencies(ctx,dep);
 	right  .initDependencies(ctx,dep);
 	bottom .initDependencies(ctx,dep);
@@ -276,9 +280,6 @@ StyleListener::~StyleListener() {
 
 // ----------------------------------------------------------------------------- : Value : reflecting ScriptValues
 // TODO: move this to a more sensible location
-
-DECLARE_DYNAMIC_ARG(Field const*, field_for_reading);
-IMPLEMENT_DYNAMIC_ARG(Field const*, field_for_reading, nullptr);
 
 	// possible values:
 	//  * "quoted string"           # a string
