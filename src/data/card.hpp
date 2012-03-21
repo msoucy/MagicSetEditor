@@ -66,27 +66,9 @@ class Card : public IntrusivePtrVirtualBase {
 	/// Does this card contain each of the words in the query string?
 	bool contains_words(String const& query) const;
 	
-	/// Find a value in the data by name and type
-	template <typename T> T& value(const String& name) {
-		for(IndexMap<FieldP, ValueP>::iterator it = data.begin() ; it != data.end() ; ++it) {
-			if ((*it)->fieldP->name == name) {
-				T* ret = dynamic_cast<T*>(it->get());
-				if (!ret) throw InternalError(_("Card field with name '")+name+_("' doesn't have the right type"));
-				return *ret;
-			}
-		}
-		throw InternalError(_("Expected a card field with name '")+name+_("'"));
-	}
-	template <typename T> const T& value(const String& name) const {
-		for(IndexMap<FieldP, ValueP>::const_iterator it = data.begin() ; it != data.end() ; ++it) {
-			if ((*it)->fieldP->name == name) {
-				const T* ret = dynamic_cast<const T*>(it->get());
-				if (!ret) throw InternalError(_("Card field with name '")+name+_("' doesn't have the right type"));
-				return *ret;
-			}
-		}
-		throw InternalError(_("Expected a card field with name '")+name+_("'"));
-	}
+	/// Find a (mutable) value in the data by name
+	ScriptValueP& value(const String& name);
+	const ScriptValueP& value(const String& name) const;
 	
 	DECLARE_REFLECTION();
 };

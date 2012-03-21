@@ -56,9 +56,9 @@ SetP MSE1FileFormat::importSet(const String& filename) {
 		throw ParseError(_("Expected MSE format version 8\nTo convert files made with older versions of Magic Set Editor:\n  1. Download the latest version 1 from http:;//magicsetedtitor.sourceforge.net\n  2. Open the set, then save the set\n  3. Try to open them again in this program."));
 	}
 	// read general info
-	set->value<TextValue>(_("title"))    .value = to_script(file.ReadLine());
-	set->value<TextValue>(_("artist"))   .value = to_script(file.ReadLine());
-	set->value<TextValue>(_("copyright")).value = to_script(file.ReadLine());
+	set->value(_("title"))     = to_script(file.ReadLine());
+	set->value(_("artist"))    = to_script(file.ReadLine());
+	set->value(_("copyright")) = to_script(file.ReadLine());
 	file.ReadLine(); // border color, ignored
 	String stylesheet = file.ReadLine();
 	set->apprentice_code = file.ReadLine(); // apprentice prefix
@@ -72,7 +72,7 @@ SetP MSE1FileFormat::importSet(const String& filename) {
 		if (line == _("\xFF")) break;
 		desc += line;
 	}
-	set->value<TextValue>(_("description")).value = to_script(desc);
+	set->value(_("description")) = to_script(desc);
 	
 	// load stylesheet
 	if (stylesheet.substr(0,3) == _("old")) {
@@ -118,42 +118,42 @@ void read_mse1_card(Set& set, wxFileInputStream& f, wxTextInputStream& file) {
 				set.cards.push_back(card);
 				return;
 			} case 'B': {	// name
-				card->value<TextValue>(_("name"))        .value = to_script(line);
+				card->value(_("name")) = to_script(line);
 				break;
 			} case 'C': case 'D': { // image filename
 				LocalFileName image_file = set.newFileName(_("image"),_("")); // a new unique name in the package
 				if (wxCopyFile(line, set.nameOut(image_file), true)) {
-					card->value<ImageValue>(_("image")).value = script_local_image_file(image_file);
+					card->value(_("image")) = script_local_image_file(image_file);
 				}
 				break;
 			} case 'E':	{	// super type
-				card->value<TextValue>(_("super type"))  .value = to_script(line);
+				card->value(_("super type")) = to_script(line);
 				break;
 			} case 'F': {	// sub type
-				card->value<TextValue>(_("sub type"))    .value = to_script(line);
+				card->value(_("sub type")) = to_script(line);
 				break;
 			} case 'G': {	// casting cost
-				card->value<TextValue>(_("casting cost")).value = to_script(line);
+				card->value(_("casting cost")) = to_script(line);
 				break;
 			} case 'H': {	// rarity
 				String rarity;
 				if      (line == _("(U)")) rarity = _("uncommon");
 				else if (line == _("(R)")) rarity = _("rare");
 				else                       rarity = _("common");
-				card->value<ChoiceValue>(_("rarity"))    .value = to_script(rarity);
+				card->value(_("rarity")) = to_script(rarity);
 				break;
 			} case 'I': {	// power/thoughness
 				size_t pos = line.find_first_of(_('/'));
 				if (pos != String::npos) {
-					card->value<TextValue>(_("power"))       .value = to_script(line.substr(0, pos));
-					card->value<TextValue>(_("toughness"))   .value = to_script(line.substr(pos+1));
+					card->value(_("power")) = to_script(line.substr(0, pos));
+					card->value(_("toughness")) = to_script(line.substr(pos+1));
 				}
 				break;
 			} case 'J': {	// rule text or part of text
-				append_line(card->value<TextValue>(_("rule text")).value, line);
+				append_line(card->value(_("rule text")), line);
 				break;
 			} case 'K':	{	// flavor text or part of text
-				append_line(card->value<TextValue>(_("flavor text")).value, line);
+				append_line(card->value(_("flavor text")), line);
 				break;
 			} case 'L': {	// card color (if not default)
 				// decode color
@@ -167,7 +167,7 @@ void read_mse1_card(Set& set, wxFileInputStream& f, wxTextInputStream& file) {
 				else if (line == _("7")) color = _("land");
 				else if (line == _("9")) color = _("multicolor");
 				else                     color = _("colorless");
-				card->value<ChoiceValue>(_("card color")).value = to_script(color);
+				card->value(_("card color")) = to_script(color);
 				break;
 			} default: {
 				throw ParseError(_("Not a valid MSE1 file"));

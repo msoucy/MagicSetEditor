@@ -75,7 +75,7 @@ void export_mws(Window* parent, const SetP& set) {
 	wxTextOutputStream file(f, wxEOL_DOS);
 	
 	// Write header
-	file.WriteString(set->value<TextValue>(_("title")).value->toString() + _(" Spoiler List\n"));
+	file.WriteString(set->value(_("title"))->toString() + _(" Spoiler List\n"));
 	file.WriteString(_("Set exported using Magic Set Editor 2, version ") + app_version.toString() + _("\n\n"));
 	wxDateTime now = wxDateTime::Now();
 	file.WriteString(_("Spoiler List created on ") + now.FormatISODate() + _(" ") + now.FormatISOTime());
@@ -84,31 +84,31 @@ void export_mws(Window* parent, const SetP& set) {
 	// Write cards
 	FOR_EACH(card, set->cards) {
 		file.WriteString(_("Card Name:\t"));
-		file.WriteString(untag_mws(card->value<TextValue>(_("name")).value));
+		file.WriteString(untag_mws(card->value(_("name"))));
 		file.WriteString(_("\nCard Color:\t"));
-		file.WriteString(card_color_mws(card->value<ChoiceValue>(_("card color")).value->toString()));
+		file.WriteString(card_color_mws(card->value(_("card color"))->toString()));
 		file.WriteString(_("\nMana Cost:\t"));
-		file.WriteString(untag_mws(card->value<TextValue>(_("casting cost")).value));
+		file.WriteString(untag_mws(card->value(_("casting cost"))));
 		file.WriteString(_("\nType & Class:\t"));
-		String sup_type = untag_mws(card->value<TextValue>(_("super type")).value);
-		String sub_type = untag_mws(card->value<TextValue>(_("sub type")).value);
+		String sup_type = untag_mws(card->value(_("super type")));
+		String sub_type = untag_mws(card->value(_("sub type")));
 		if (sub_type.empty()) {
 			file.WriteString(sup_type);
 		} else {
 			file.WriteString(sup_type + _(" - ") + sub_type);
 		}
 		file.WriteString(_("\nPow/Tou:\t"));
-		file.WriteString(untag_mws(card->value<TextValue>(_("pt")).value));
+		file.WriteString(untag_mws(card->value(_("pt"))));
 		file.WriteString(_("\nCard Text:\t"));
-		file.WriteString(untag_mws(card->value<TextValue>(_("rule text")).value));
+		file.WriteString(untag_mws(card->value(_("rule text"))));
 		file.WriteString(_("\nFlavor Text:\t"));
-		file.WriteString(untag_mws(card->value<TextValue>(_("flavor text")).value));
+		file.WriteString(untag_mws(card->value(_("flavor text"))));
 		file.WriteString(_("\nArtist:\t\t"));
-		file.WriteString(untag_mws(card->value<TextValue>(_("illustrator")).value));
+		file.WriteString(untag_mws(card->value(_("illustrator"))));
 		file.WriteString(_("\nRarity:\t\t"));
-		file.WriteString(card_rarity_code(card->value<ChoiceValue>(_("rarity")).value->toString()));
+		file.WriteString(card_rarity_code(card->value(_("rarity"))->toString()));
 		file.WriteString(_("\nCard #:\t\t"));
-		file.WriteString(untag_mws(card->value<TextValue>(_("card number")).value));
+		file.WriteString(untag_mws(card->value(_("card number"))));
 		file.WriteString(_("\n\n"));
 	}
 }

@@ -123,6 +123,15 @@ String Set::identification() const {
 	return wxEmptyString;
 }
 
+ScriptValueP& Set::value(const String& name) {
+	for(IndexMap<FieldP, ValueP>::iterator it = data.begin() ; it != data.end() ; ++it) {
+		if ((*it)->fieldP->name == name) {
+			return (*it)->value;
+		}
+	}
+	throw InternalError(_("Expected a set field with name '")+name+_("'"));
+}
+
 
 String Set::typeName() const { return _("set"); }
 Version Set::fileVersion() const { return file_version_set; }

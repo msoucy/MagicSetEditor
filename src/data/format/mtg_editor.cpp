@@ -76,7 +76,7 @@ SetP MtgEditorFileFormat::importSet(const String& filename) {
 		if (!current_card) current_card = intrusive(new Card(*set->game));
 		String line = file.ReadLine();
 		if        (line == _("#SET###########")) {										// set.title
-			target = &set->value<TextValue>(_("title")).value;
+			target = &set->value(_("title"));
 		} else if (line == _("#SETDATE#######")) {										// date
 			// remember date for generation of illustration filename
 			target = nullptr;
@@ -103,70 +103,70 @@ SetP MtgEditorFileFormat::importSet(const String& filename) {
 				untag(current_card, _("power"));
 				untag(current_card, _("toughness"));
 				// translate mtg editor tags to mse2 tags
-				translateTags(current_card->value<TextValue>(_("rule text")).value);
+				translateTags(current_card->value(_("rule text")));
 				// add the card to the set
 				set->cards.push_back(current_card);
 			}
 			first = false;
 			current_card = intrusive(new Card(*set->game));
-			target = &current_card->value<TextValue>(_("name")).value;
+			target = &current_card->value(_("name"));
 		} else if (line == _("#DATE##########")) {										// date
 			// remember date for generation of illustration filename
 			target = nullptr;
 			card_date = file.ReadLine();
 		} else if (line == _("#TYPE##########")) {										// super type
-			target = &current_card->value<TextValue>(_("super type")).value;
+			target = &current_card->value(_("super type"));
 		} else if (line == _("#SUBTYPE#######")) {										// sub type
-			target = &current_card->value<TextValue>(_("sub type")).value;
+			target = &current_card->value(_("sub type"));
 		} else if (line == _("#COST##########")) {										// casting cost
-			target = &current_card->value<TextValue>(_("casting cost")).value;
+			target = &current_card->value(_("casting cost"));
 		} else if (line == _("#RARITY########") || line == _("#FREQUENCY#####")) {	// rarity
 			target = 0;
 			line = file.ReadLine();
-			if      (line == _("0")) current_card->value<ChoiceValue>(_("rarity")).value = to_script(_("common"));
-			else if (line == _("1")) current_card->value<ChoiceValue>(_("rarity")).value = to_script(_("uncommon"));
-			else                     current_card->value<ChoiceValue>(_("rarity")).value = to_script(_("rare"));
+			if      (line == _("0")) current_card->value(_("rarity")) = to_script(_("common"));
+			else if (line == _("1")) current_card->value(_("rarity")) = to_script(_("uncommon"));
+			else                     current_card->value(_("rarity")) = to_script(_("rare"));
 		} else if (line == _("#COLOR#########")) {										// card color
 			target = 0;
 			line = file.ReadLine();
-			current_card->value<ChoiceValue>(_("card color")).value = to_script(line);
+			current_card->value(_("card color")) = to_script(line);
 		} else if (line == _("#AUTOBG########")) {										// card color.isDefault
 			target = 0;
 			line = file.ReadLine();
 			if (line == _("TRUE")) {
-				current_card->value<ChoiceValue>(_("card color")).value = script_default_nil;
+				current_card->value(_("card color")) = script_default_nil;
 			}
 		} else if (line == _("#RULETEXT######")) {										// rule text
-			target = &current_card->value<TextValue>(_("rule text")).value;
+			target = &current_card->value(_("rule text"));
 		} else if (line == _("#FLAVORTEXT####")) {										// flavor text
-			target = &current_card->value<TextValue>(_("flavor text")).value;
+			target = &current_card->value(_("flavor text"));
 		} else if (line == _("#ARTIST########")) {										// illustrator
-			target = &current_card->value<TextValue>(_("illustrator")).value;
+			target = &current_card->value(_("illustrator"));
 		} else if (line == _("#COPYRIGHT#####")) {										// copyright
-			target = &current_card->value<TextValue>(_("copyright")).value;
+			target = &current_card->value(_("copyright"));
 		} else if (line == _("#POWER#########")) {										// power
-			target = &current_card->value<TextValue>(_("power")).value;
+			target = &current_card->value(_("power"));
 		} else if (line == _("#TOUGHNESS#####")) {										// toughness
-			target = &current_card->value<TextValue>(_("toughness")).value;
+			target = &current_card->value(_("toughness"));
 		} else if (line == _("#ILLUSTRATION##") || line == _("#ILLUSTRATION8#")) {		// image
 			target = 0;
 			line = file.ReadLine();
 			if (!wxFileExists(line)) {
 				// based on card name and date
 				line = filter1(filename) + set_date + _("/") +
-				       filter2(current_card->value<TextValue>(_("name")).value->toString()) + card_date + _(".jpg");
+				       filter2(current_card->value(_("name"))->toString()) + card_date + _(".jpg");
 			}
 			// copy image into set
 			if (wxFileExists(line)) {
 				FileName image_file = set->newFileName(_("image"),_(""));
 				if (wxCopyFile(line, set->nameOut(image_file), true)) {
-					current_card->value<ImageValue>(_("image")).value = script_local_image_file(image_file);
+					current_card->value(_("image")) = script_local_image_file(image_file);
 				}
 			}
 		} else if (line == _("#TOMBSTONE#####")) {										// tombstone
 			target = 0;
 			line = file.ReadLine();
-			current_card->value<ChoiceValue>(_("card symbol")).value = to_script(
+			current_card->value(_("card symbol")) = to_script(
 				line==_("TRUE") ? _("tombstone") : _("none")
 			);
 		} else {
@@ -181,14 +181,14 @@ SetP MtgEditorFileFormat::importSet(const String& filename) {
 	
 	// set defaults for artist and copyright to that of the first card
 	if (!set->cards.empty()) {
-		ScriptValueP& artist    = set->cards[0]->value<TextValue>(_("illustrator")).value;
-		ScriptValueP& copyright = set->cards[0]->value<TextValue>(_("copyright"))  .value;
-		set->value<TextValue>(_("artist"))   .value = artist;
-		set->value<TextValue>(_("copyright")).value = copyright;
+		ScriptValueP& artist    = set->cards[0]->value(_("illustrator"));
+		ScriptValueP& copyright = set->cards[0]->value(_("copyright"));
+		set->value(_("artist")) = artist;
+		set->value(_("copyright")) = copyright;
 		// which cards have this value?
 		FOR_EACH(card, set->cards) {
-			ScriptValueP& card_artist    = card->value<TextValue>(_("illustrator")).value;
-			ScriptValueP& card_copyright = card->value<TextValue>(_("copyright"))  .value;
+			ScriptValueP& card_artist    = card->value(_("illustrator"));
+			ScriptValueP& card_copyright = card->value(_("copyright"));
 			if (equal(card_artist   , artist))    card_artist = make_default(artist);
 			if (equal(card_copyright, copyright)) card_copyright = make_default(card_copyright);
 		}
@@ -240,7 +240,7 @@ String MtgEditorFileFormat::filter2(const String& str) {
 }
 
 void MtgEditorFileFormat::untag(const CardP& card, const String& field) {
-	ScriptValueP& value = card->value<TextValue>(field).value;
+	ScriptValueP& value = card->value(field);
 	value = with_defaultness_of(value, to_script(untag_no_escape(value->toString())));
 }
 

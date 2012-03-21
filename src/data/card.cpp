@@ -63,6 +63,23 @@ bool Card::contains(String const& query) const {
 	return false;
 }
 
+ScriptValueP& Card::value(const String& name) {
+	for (IndexMap<FieldP, ValueP>::iterator it = data.begin() ; it != data.end() ; ++it) {
+		if ((*it)->fieldP->name == name) {
+			return (*it)->value;
+		}
+	}
+	throw InternalError(_("Expected a card field with name '")+name+_("'"));
+}
+const ScriptValueP& Card::value(const String& name) const {
+	for (IndexMap<FieldP, ValueP>::const_iterator it = data.begin() ; it != data.end() ; ++it) {
+		if ((*it)->fieldP->name == name) {
+			return (*it)->value;
+		}
+	}
+	throw InternalError(_("Expected a card field with name '")+name+_("'"));
+}
+
 IndexMap<FieldP, ValueP>& Card::extraDataFor(const StyleSheet& stylesheet) {
 	return extra_data.get(stylesheet.name(), stylesheet.extra_card_fields);
 }
