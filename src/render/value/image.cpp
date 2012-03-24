@@ -40,7 +40,7 @@ void ImageValueViewer::draw(RotatedDC& dc) {
 		Image image;
 		try {
 			if (!value().value->isNil()) {
-				image = value().value->toImage()->generate(opts);
+				image = value().value->toImage()->generateConform(opts);
 			}
 		} CATCH_ALL_ERRORS(false);
 		/*
