@@ -43,15 +43,6 @@ void ImageValueViewer::draw(RotatedDC& dc) {
 				image = value().value->toImage()->generateConform(opts);
 			}
 		} CATCH_ALL_ERRORS(false);
-		/*
-		if (!value().filename.empty()) {
-			try {
-				InputStreamP image_file = getLocalPackage().openIn(value().filename);
-				if (image.LoadFile(*image_file)) {
-					image.Rescale(w, h);
-				}
-			} CATCH_ALL_ERRORS(false);
-		}*/
 		// nice placeholder
 		if (!image.Ok() && style().default_image.isReady()) {
 			image = style().default_image.generate(GeneratedImage::Options(w, h, &getStylePackage(), &getLocalPackage()));
