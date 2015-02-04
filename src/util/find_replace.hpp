@@ -7,7 +7,8 @@
 #ifndef HEADER_UTIL_FIND_REPLACE
 #define HEADER_UTIL_FIND_REPLACE
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/field/text.hpp>
@@ -15,34 +16,39 @@
 
 DECLARE_POINTER_TYPE(Card);
 
-// ----------------------------------------------------------------------------- : Search/replace
+// -----------------------------------------------------------------------------
+// : Search/replace
 
 /// Information for search/replace
 class FindInfo {
   public:
-	FindInfo(wxFindReplaceData& what) : what(what) {}
+	FindInfo(wxFindReplaceData &what) : what(what) {}
 	virtual ~FindInfo() {}
-	
+
 	/// Handle that a match was found.
 	/** Returns true if we are done and searching should be ended. */
-	virtual bool handle(const CardP& card, const TextValueP& value, size_t pos, bool was_selection) = 0;
+	virtual bool handle(const CardP &card, const TextValueP &value, size_t pos,
+						bool was_selection) = 0;
 	/// Should the found text be selected?
 	virtual bool select() const { return true; }
 	/// Should the current selection also be searched?
 	virtual bool searchSelection() const { return false; }
-	
+
 	/// Searching forward?
-	inline bool forward()       const { return what.GetFlags() & wxFR_DOWN; }
+	inline bool forward() const { return what.GetFlags() & wxFR_DOWN; }
 	/// Match whole words?
-	inline bool wholeWord()     const { return what.GetFlags() & wxFR_WHOLEWORD; }
+	inline bool wholeWord() const { return what.GetFlags() & wxFR_WHOLEWORD; }
 	/// Case sensitive?
-	inline bool caseSensitive() const { return what.GetFlags() & wxFR_MATCHCASE; }
+	inline bool caseSensitive() const {
+		return what.GetFlags() & wxFR_MATCHCASE;
+	}
 	/// String to look for
-	inline const String& findString() const { return what.GetFindString(); }
-	
+	inline const String &findString() const { return what.GetFindString(); }
+
   protected:
-	wxFindReplaceData& what; ///< What to search for, the direction to search in
+	wxFindReplaceData &what; ///< What to search for, the direction to search in
 };
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

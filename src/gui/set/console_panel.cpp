@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/set/console_panel.hpp>
@@ -21,7 +22,8 @@ DECLARE_POINTER_TYPE(ConsoleMessage);
 DECLARE_TYPEOF_COLLECTION(ScriptParseError);
 DECLARE_TYPEOF_COLLECTION(ConsoleMessageP);
 
-// ----------------------------------------------------------------------------- : MessageControl
+// -----------------------------------------------------------------------------
+// : MessageControl
 
 class ConsoleMessage : public IntrusivePtrBase<ConsoleMessage> {
   public:
@@ -38,31 +40,39 @@ class ConsoleMessage : public IntrusivePtrBase<ConsoleMessage> {
 	int height;
 	int bottom() const { return top + height; }
 
-	ConsoleMessage(MessageType type, String const &text = _(""), bool joined_to_previous = false)
-		: type(type), text(text), line_number(-1), joined_to_previous(joined_to_previous), top(-1), height(-1) {}
+	ConsoleMessage(MessageType type, String const &text = _(""),
+				   bool joined_to_previous = false)
+		: type(type), text(text), line_number(-1),
+		  joined_to_previous(joined_to_previous), top(-1), height(-1) {}
 };
 
 class MessageCtrl : public wxScrolledWindow {
   public:
 	MessageCtrl(wxWindow *parent, int id)
-		: wxScrolledWindow(parent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME_FIX(wxBORDER_THEME)) {
+		: wxScrolledWindow(parent, id, wxDefaultPosition, wxDefaultSize,
+						   wxBORDER_THEME_FIX(wxBORDER_THEME)) {
 		SetBackgroundStyle(wxBG_STYLE_CUSTOM);
 		SetScrollRate(0, 1);
 		EnableScrolling(false, true);
 		// icons
 		BOOST_STATIC_ASSERT(MESSAGE_TYPE_MAX == 6);
-		icons[MESSAGE_INPUT] = wxBitmap(load_resource_image(_("message_input")));
+		icons[MESSAGE_INPUT] =
+			wxBitmap(load_resource_image(_("message_input")));
 		icons[MESSAGE_OUTPUT] = wxBitmap();
-		icons[MESSAGE_INFO] = wxBitmap(load_resource_image(_("message_information")));
-		icons[MESSAGE_WARNING] = wxBitmap(load_resource_image(_("message_warning")));
-		icons[MESSAGE_ERROR] = wxBitmap(load_resource_image(_("message_error")));
+		icons[MESSAGE_INFO] =
+			wxBitmap(load_resource_image(_("message_information")));
+		icons[MESSAGE_WARNING] =
+			wxBitmap(load_resource_image(_("message_warning")));
+		icons[MESSAGE_ERROR] =
+			wxBitmap(load_resource_image(_("message_error")));
 		icons[MESSAGE_FATAL_ERROR] = icons[MESSAGE_ERROR];
 		// color
 		colors[MESSAGE_INPUT] = wxColour(0, 80, 0);
 		colors[MESSAGE_OUTPUT] = wxColour(255, 255, 255);
 		colors[MESSAGE_INFO] = wxColour(0, 0, 255);
 		colors[MESSAGE_WARNING] = wxColour(255, 255, 0);
-		colors[MESSAGE_ERROR] = colors[MESSAGE_FATAL_ERROR] = wxColour(255, 0, 0);
+		colors[MESSAGE_ERROR] = colors[MESSAGE_FATAL_ERROR] =
+			wxColour(255, 0, 0);
 	}
 
 	void add_message(ConsoleMessageP const &msg) {
@@ -74,8 +84,10 @@ class MessageCtrl : public wxScrolledWindow {
 		ensure_visible(*messages.back());
 		Refresh(false);
 	}
-	void add_message(MessageType type, String const &text, bool joined_to_previous = false) {
-		add_message(intrusive(new ConsoleMessage(type, text, joined_to_previous)));
+	void add_message(MessageType type, String const &text,
+					 bool joined_to_previous = false) {
+		add_message(
+			intrusive(new ConsoleMessage(type, text, joined_to_previous)));
 	}
 
 	bool have_selection() const { return selection < messages.size(); }
@@ -183,7 +195,9 @@ class MessageCtrl : public wxScrolledWindow {
 	void draw(wxDC &dc) const {
 		clearDC(dc, wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
 		dc.SetFont(*wxNORMAL_FONT);
-		FOR_EACH_CONST(msg, messages) { draw(dc, *msg); }
+		for (auto msg : messages) {
+			draw(dc, *msg);
+		}
 		if (messages.empty()) {
 			// Say something about no messages?
 		}
@@ -201,7 +215,8 @@ class MessageCtrl : public wxScrolledWindow {
 				fg = wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHTTEXT);
 			} else {
 				bg = lerp(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW),
-						  wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT), 0.1);
+						  wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT),
+						  0.1);
 				fg = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
 			}
 		} else {
@@ -216,7 +231,8 @@ class MessageCtrl : public wxScrolledWindow {
 
 		// draw icon
 		if (icons[msg.type].Ok()) {
-			dc.DrawBitmap(icons[msg.type], left + ICON_PADDING, top + ICON_PADDING);
+			dc.DrawBitmap(icons[msg.type], left + ICON_PADDING,
+						  top + ICON_PADDING);
 		}
 
 		// draw text
@@ -275,7 +291,8 @@ class MessageCtrl : public wxScrolledWindow {
 		// height of bitmap
 		int bitmap_height = msg.bitmap.Ok() ? msg.bitmap.GetHeight() : 0;
 
-		return max(MIN_ITEM_HEIGHT, TEXT_PADDING_TOP + TEXT_PADDING_BOTTOM + text_height + bitmap_height) +
+		return max(MIN_ITEM_HEIGHT, TEXT_PADDING_TOP + TEXT_PADDING_BOTTOM +
+										text_height + bitmap_height) +
 			   LIST_SPACING;
 	}
 
@@ -338,12 +355,15 @@ EVT_SET_FOCUS(MessageCtrl::onFocus)
 EVT_KILL_FOCUS(MessageCtrl::onFocus)
 END_EVENT_TABLE()
 
-// ----------------------------------------------------------------------------- : TextCtrl with history
+// -----------------------------------------------------------------------------
+// : TextCtrl with history
 
 class HistoryTextCtrl : public wxTextCtrl {
   public:
 	HistoryTextCtrl(wxWindow *parent, wxWindowID id)
-		: wxTextCtrl(parent, id, _(""), wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER), history_pos(0) {}
+		: wxTextCtrl(parent, id, _(""), wxDefaultPosition, wxDefaultSize,
+					 wxTE_PROCESS_ENTER),
+		  history_pos(0) {}
 
 	String get_command_and_clear() {
 		String command = GetValue();
@@ -371,11 +391,13 @@ class HistoryTextCtrl : public wxTextCtrl {
 		}
 	}
 
-	// browse history for strings that share the part before the cursor with the current value in the control
+	// browse history for strings that share the part before the cursor with the
+	// current value in the control
 	bool browse_history(int dir) {
 		int caret = GetInsertionPoint();
 		String to_match = GetValue().substr(0, caret);
-		while (history_pos + dir >= 0 && history_pos + dir < (int)history.size()) {
+		while (history_pos + dir >= 0 &&
+			   history_pos + dir < (int)history.size()) {
 			history_pos += dir;
 			if (starts_with(history[history_pos], to_match)) {
 				SetValue(history[history_pos]);
@@ -396,17 +418,20 @@ BEGIN_EVENT_TABLE(HistoryTextCtrl, wxTextCtrl)
 EVT_CHAR(HistoryTextCtrl::onChar)
 END_EVENT_TABLE()
 
-// ----------------------------------------------------------------------------- : ConsolePanel
+// -----------------------------------------------------------------------------
+// : ConsolePanel
 
 ConsolePanel::ConsolePanel(Window *parent, int id)
-	: SetWindowPanel(parent, id), messages(nullptr), entry(nullptr), is_active_window(false), blinker_state(0),
-	  blinker_timer(this) {
+	: SetWindowPanel(parent, id), messages(nullptr), entry(nullptr),
+	  is_active_window(false), blinker_state(0), blinker_timer(this) {
 	// init controls
-	splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+	splitter = new wxSplitterWindow(this, wxID_ANY, wxDefaultPosition,
+									wxDefaultSize, wxTAB_TRAVERSAL);
 	messages = new MessageCtrl(splitter, ID_MESSAGE_LIST);
 	entry_panel = new wxPanel(splitter, wxID_ANY);
 	entry = new HistoryTextCtrl(entry_panel, wxID_ANY);
-	wxButton *evaluate = new wxButton(entry_panel, ID_EVALUATE, _BUTTON_("evaluate"));
+	wxButton *evaluate =
+		new wxButton(entry_panel, ID_EVALUATE, _BUTTON_("evaluate"));
 	// init sizer for entry_panel
 	wxSizer *se = new wxBoxSizer(wxHORIZONTAL);
 	se->Add(entry, 1, wxEXPAND, 2);
@@ -427,7 +452,8 @@ void ConsolePanel::onChangeSet() {
 	// TODO
 }
 
-// ----------------------------------------------------------------------------- : UI
+// -----------------------------------------------------------------------------
+// : UI
 
 void ConsolePanel::initUI(wxToolBar *tb, wxMenuBar *mb) {
 	// Menus
@@ -463,7 +489,8 @@ void ConsolePanel::onCommand(int id) {
 void ConsolePanel::onIdle(wxIdleEvent &) { get_pending_errors(); }
 
 void ConsolePanel::get_pending_errors() {
-	// The panel might not be initialized yet, in particular, construction of controls might fail, which results in a
+	// The panel might not be initialized yet, in particular, construction of
+	// controls might fail, which results in a
 	// popup dialog with an event loop
 	if (!messages)
 		return;
@@ -489,9 +516,10 @@ void ConsolePanel::exec(String const &command) {
 		// parse command
 		vector<ScriptParseError> errors;
 		ScriptP script = parse(command, nullptr, false, errors);
-		FOR_EACH(error, errors) {
+		for (auto error : errors) {
 			// TODO: also squiglify the input?
-			messages->add_message(script ? MESSAGE_WARNING : MESSAGE_ERROR, error.what(), true);
+			messages->add_message(script ? MESSAGE_WARNING : MESSAGE_ERROR,
+								  error.what(), true);
 		}
 		if (!script)
 			return;
@@ -507,7 +535,8 @@ void ConsolePanel::exec(String const &command) {
 		// type of result
 		ScriptType type = result->type();
 		if (type == SCRIPT_IMAGE) {
-			GeneratedImage::Options options(0, 0, set->stylesheet.get(), set.get());
+			GeneratedImage::Options options(0, 0, set->stylesheet.get(),
+											set.get());
 			wxImage image = result->toImage()->generate(options);
 			message->bitmap = wxBitmap(image);
 		} else if (type == SCRIPT_COLOR) {
@@ -532,23 +561,26 @@ EVT_IDLE(ConsolePanel::onIdle)
 EVT_TIMER(wxID_ANY, ConsolePanel::onTimer)
 END_EVENT_TABLE()
 
-// ----------------------------------------------------------------------------- : Clipboard
+// -----------------------------------------------------------------------------
+// : Clipboard
 
 // determine what control to use for clipboard actions
-#define CUT_COPY_PASTE(op, return )                                                                                    \
-	int id = focused_control(this);                                                                                    \
-	if (id == ID_MESSAGE_LIST) {                                                                                       \
-		return messages->op();                                                                                         \
-	} else {                                                                                                           \
-		return false;                                                                                                  \
+#define CUT_COPY_PASTE(op, return )                                            \
+	int id = focused_control(this);                                            \
+	if (id == ID_MESSAGE_LIST) {                                               \
+		return messages->op();                                                 \
+	} else {                                                                   \
+		return false;                                                          \
 	}
 
 bool ConsolePanel::canCut() const { return false; }
 bool ConsolePanel::canCopy() const { CUT_COPY_PASTE(canCopy, return ) }
-// void ConsolePanel::doCut()          { CUT_COPY_PASTE(doCut,    return (void)) }
+// void ConsolePanel::doCut()          { CUT_COPY_PASTE(doCut,    return (void))
+// }
 void ConsolePanel::doCopy() { CUT_COPY_PASTE(doCopy, return (void)) }
 
-// ----------------------------------------------------------------------------- : Annoying blinking icon thing
+// -----------------------------------------------------------------------------
+// : Annoying blinking icon thing
 
 void ConsolePanel::start_blinker() {
 	if (new_errors_since_last_view) {
@@ -575,9 +607,11 @@ void ConsolePanel::onTimer(wxTimerEvent &) {
 void ConsolePanel::update_blinker() {
 	SetWindow *parent = static_cast<SetWindow *>(GetParent());
 	if (blinker_state % 2 == 1 || !new_errors_since_last_view) {
-		parent->setPanelIcon(this, load_resource_image(_("tool/window_console")));
+		parent->setPanelIcon(this,
+							 load_resource_image(_("tool/window_console")));
 	} else if (new_errors_since_last_view == MESSAGE_INFO) {
-		parent->setPanelIcon(this, load_resource_image(_("message_information")));
+		parent->setPanelIcon(this,
+							 load_resource_image(_("message_information")));
 	} else if (new_errors_since_last_view == MESSAGE_WARNING) {
 		parent->setPanelIcon(this, load_resource_image(_("message_warning")));
 	} else {

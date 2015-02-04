@@ -4,43 +4,49 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <util/action_stack.hpp>
-#include <util/for_each.hpp>
 #include <algorithm>
 
-// ----------------------------------------------------------------------------- : Action stack
+// -----------------------------------------------------------------------------
+// : Action stack
 
-DECLARE_TYPEOF_COLLECTION(Action*);
-DECLARE_TYPEOF_COLLECTION(ActionListener*);
+DECLARE_TYPEOF_COLLECTION(Action *);
+DECLARE_TYPEOF_COLLECTION(ActionListener *);
 
-ActionStack::ActionStack()
-	: save_point(nullptr)
-	, last_was_add(false)
-{}
+ActionStack::ActionStack() : save_point(nullptr), last_was_add(false) {}
 
 ActionStack::~ActionStack() {
 	// we own the actions, delete them
-	FOR_EACH(a, undo_actions) delete a;
-	FOR_EACH(a, redo_actions) delete a;
+	for (auto a : undo_actions) {
+		delete a;
+	}
+	for (auto a : redo_actions) {
+		delete a;
+	}
 }
 
-void ActionStack::addAction(Action* action, bool allow_merge) {
-	if (!action) return; // no action
+void ActionStack::addAction(Action *action, bool allow_merge) {
+	if (!action)
+		return;				// no action
 	action->perform(false); // TODO: delete action if perform throws
 	tellListeners(*action, false);
 	// clear redo list
-	if (!redo_actions.empty()) allow_merge = false; // don't merge after undo
-	FOR_EACH(a, redo_actions) delete a;
+	if (!redo_actions.empty())
+		allow_merge = false; // don't merge after undo
+	for (auto a : redo_actions)
+		delete a;
 	redo_actions.clear();
 	// try to merge?
 	if (allow_merge && !undo_actions.empty() &&
-	    last_was_add                         && // never merge with something that was redone once already
-	    undo_actions.back() != save_point    && // never merge with the save point
-	    undo_actions.back()->merge(*action) // merged with top undo action
-	    ) {
+		last_was_add && // never merge with something that was redone once
+						// already
+		undo_actions.back() != save_point && // never merge with the save point
+		undo_actions.back()->merge(*action)  // merged with top undo action
+		) {
 		delete action;
 	} else {
 		undo_actions.push_back(action);
@@ -50,8 +56,9 @@ void ActionStack::addAction(Action* action, bool allow_merge) {
 
 void ActionStack::undo() {
 	assert(canUndo());
-	if (!canUndo()) return;
-	Action* action = undo_actions.back();
+	if (!canUndo())
+		return;
+	Action *action = undo_actions.back();
 	action->perform(true);
 	tellListeners(*action, true);
 	// move to redo stack
@@ -61,8 +68,9 @@ void ActionStack::undo() {
 }
 void ActionStack::redo() {
 	assert(canRedo());
-	if (!canRedo()) return;
-	Action* action = redo_actions.back();
+	if (!canRedo())
+		return;
+	Action *action = redo_actions.back();
 	action->perform(false);
 	tellListeners(*action, false);
 	// move to undo stack
@@ -71,12 +79,8 @@ void ActionStack::redo() {
 	last_was_add = false;
 }
 
-bool ActionStack::canUndo() const {
-	return !undo_actions.empty();
-}
-bool ActionStack::canRedo() const {
-	return !redo_actions.empty();
-}
+bool ActionStack::canUndo() const { return !undo_actions.empty(); }
+bool ActionStack::canRedo() const { return !redo_actions.empty(); }
 
 String ActionStack::undoName() const {
 	if (canUndo()) {
@@ -94,8 +98,8 @@ String ActionStack::redoName() const {
 }
 
 bool ActionStack::atSavePoint() const {
-	return (undo_actions.empty() && save_point == nullptr)
-	    || (undo_actions.back() == save_point);
+	return (undo_actions.empty() && save_point == nullptr) ||
+		   (undo_actions.back() == save_point);
 }
 void ActionStack::setSavePoint() {
 	if (undo_actions.empty()) {
@@ -105,19 +109,15 @@ void ActionStack::setSavePoint() {
 	}
 }
 
-void ActionStack::addListener(ActionListener* listener) {
+void ActionStack::addListener(ActionListener *listener) {
 	listeners.push_back(listener);
 }
-void ActionStack::removeListener(ActionListener* listener) {
-	listeners.erase(
-		std::remove(
-			listeners.begin(),
-			listeners.end(),
-			listener
-			),
-		listeners.end()
-		);
+void ActionStack::removeListener(ActionListener *listener) {
+	listeners.erase(std::remove(listeners.begin(), listeners.end(), listener),
+					listeners.end());
 }
-void ActionStack::tellListeners(const Action& action, bool undone) {
-	FOR_EACH(l, listeners) l->onAction(action, undone);
+void ActionStack::tellListeners(const Action &action, bool undone) {
+	for (auto l : listeners) {
+		l->onAction(action, undone);
+	}
 }
