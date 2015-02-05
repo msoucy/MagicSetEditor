@@ -120,7 +120,7 @@ void StylePanel::onAction(const Action &action, bool undone) {
 		// is it a styling action?
 		if (!action.card) {
 			const StyleSheet &s = set->stylesheetFor(card);
-			for (auto const f : s.styling_fields) {
+			for (auto const &f : s.styling_fields) {
 				if (action.valueP->fieldP == f) {
 					// refresh the viewer
 					preview->redraw();

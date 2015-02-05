@@ -158,7 +158,7 @@ void GalleryList::RefreshItem(size_t item) {
 				false);
 }
 void GalleryList::RefreshSelection() {
-	for (auto col : subcolumns)
+	for (auto &col : subcolumns)
 		RefreshItem(col.selection);
 }
 

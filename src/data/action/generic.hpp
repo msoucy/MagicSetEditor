@@ -107,7 +107,7 @@ void GenericAddAction<T>::perform(vector<T> &container, bool to_undo) const {
 	if (adding != to_undo) {
 		// (re)insert the items
 		// ascending order, this is the reverse of removal
-		for (auto const s : steps) {
+		for (auto const &s : steps) {
 			assert(s.pos <= container.size());
 			container.insert(container.begin() + s.pos, s.item);
 		}

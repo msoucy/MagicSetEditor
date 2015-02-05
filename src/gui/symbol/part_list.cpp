@@ -117,7 +117,7 @@ void SymbolPartList::update() {
 void SymbolPartList::updateParts(const set<SymbolPartP> &parts) {
 	symbol_preview.up_to_date = false;
 	int i = 0;
-	for (auto p : symbol->parts) {
+	for (auto &p : symbol->parts) {
 		updatePart(parts, i, false, p);
 	}
 	// refresh
@@ -131,7 +131,7 @@ void SymbolPartList::updatePart(const set<SymbolPartP> &parts, int &i,
 	}
 	++i;
 	if (SymbolGroup *g = part->isSymbolGroup()) {
-		for (auto p : g->parts) {
+		for (auto &p : g->parts) {
 			updatePart(parts, i, update, p);
 		}
 	}
@@ -331,7 +331,7 @@ void SymbolPartList::sendEvent(int type) {
 // : Items
 
 SymbolPartP SymbolPartList::findItem(int i, int x) const {
-	for (auto p : symbol->parts) {
+	for (auto &p : symbol->parts) {
 		SymbolPartP f = findItem(i, x, p);
 		if (f)
 			return f;
@@ -346,7 +346,7 @@ SymbolPartP SymbolPartList::findItem(int &i, int x, const SymbolPartP &part) {
 	i -= 1;
 	// sub item?
 	if (SymbolGroup *g = part->isSymbolGroup()) {
-		for (auto p : g->parts) {
+		for (auto &p : g->parts) {
 			SymbolPartP f = findItem(i, x - 5, p);
 			if (f)
 				return x < 5 ? part : f; // clicked on bar at the left of group?
@@ -384,7 +384,7 @@ bool SymbolPartList::findDropTarget(const SymbolPartP &parent, int &i,
 		--i;
 	if (SymbolGroup *g = parent->isSymbolGroup()) {
 		size_t pos = 0;
-		for (auto p : g->parts) {
+		for (auto &p : g->parts) {
 			if (i <= 0) {
 				// drop before this part
 				drop_parent = static_pointer_cast<SymbolGroup>(parent);
@@ -413,7 +413,7 @@ bool SymbolPartList::findDropTarget(const SymbolPartP &parent, int &i,
 int SymbolPartList::childCount(const SymbolPartP &part) {
 	if (SymbolGroup *g = part->isSymbolGroup()) {
 		int count = 0;
-		for (auto p : g->parts)
+		for (auto &p : g->parts)
 			count += 1 + childCount(p);
 		return count;
 	} else {
@@ -504,7 +504,7 @@ void SymbolPartList::drawItem(DC &dc, int x, int &i, bool parent_active,
 	// Draw children
 	int child_x = part == symbol ? x : x + 5;
 	if (SymbolGroup *g = part->isSymbolGroup()) {
-		for (auto p : g->parts)
+		for (auto &p : g->parts)
 			drawItem(dc, child_x, i, active || parent_active, p);
 	}
 	// draw bar on the left?

@@ -205,7 +205,7 @@ wxMenu *CardsPanel::makeAddCardsSubmenu(bool add_single_card_option) {
 		int id = ID_ADD_CARDS_MENU_MIN;
 		if (!cards_scripts_menu)
 			cards_scripts_menu = new IconMenu;
-		for (auto const cs : set->game->add_cards_scripts) {
+		for (auto const &cs : set->game->add_cards_scripts) {
 			cards_scripts_menu->Append(id++, cs->name, cs->description);
 		}
 	}

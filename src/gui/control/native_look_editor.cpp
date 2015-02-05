@@ -62,7 +62,7 @@ void NativeLookEditor::resizeViewers() {
 		label_width = 0;
 		wxClientDC dc(this);
 		dc.SetFont(*wxNORMAL_FONT);
-		for (auto v : viewers) {
+		for (auto &v : viewers) {
 			ValueEditor *e = v->getEditor();
 			if (!e || e->drawLabel()) {
 				// width of the label string
@@ -76,7 +76,7 @@ void NativeLookEditor::resizeViewers() {
 		}
 	}
 	// Set editor sizes
-	for (auto v : viewers) {
+	for (auto &v : viewers) {
 		StyleP s = v->getStyle();
 		ValueEditor *e = v->getEditor();
 		if (!e || e->drawLabel()) {
@@ -98,7 +98,7 @@ void NativeLookEditor::resizeViewers() {
 		// Doesn't fit vertically, add scrollbar and resize
 		/*
 		y = margin;
-		for(auto v: viewers) {
+		for(auto &v: viewers) {
 			StyleP s = v->getStyle();
 			ValueEditor* e = v->getEditor();
 			s->top  = y;
@@ -179,7 +179,7 @@ void NativeLookEditor::scrollTo(int direction, int pos) {
 			SetScrollPos(wxVERTICAL, pos);
 
 			// move child controls
-			for (auto v : viewers) {
+			for (auto &v : viewers) {
 				ValueEditor *e = v->getEditor();
 				if (e)
 					e->determineSize();

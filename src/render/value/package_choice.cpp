@@ -32,7 +32,7 @@ void PackageChoiceValueViewer::initItems() {
 	vector<PackagedP> choices;
 	package_manager.findMatching(field().match, choices);
 	sort(choices.begin(), choices.end(), ComparePackagePosHint());
-	for (auto p : choices) {
+	for (auto &p : choices) {
 		Item i;
 		i.package_name = p->relativeFilename();
 		i.name = capitalize_sentence(p->short_name);
@@ -53,7 +53,7 @@ void PackageChoiceValueViewer::draw(RotatedDC &dc) {
 	if (text.empty()) {
 		text = field().empty_name;
 	} else {
-		for (auto const i : items) {
+		for (auto const &i : items) {
 			if (i.package_name == text) {
 				text = i.name;
 				image = i.image;

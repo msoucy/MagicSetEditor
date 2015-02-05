@@ -18,10 +18,10 @@ ActionStack::ActionStack() : save_point(nullptr), last_was_add(false) {}
 
 ActionStack::~ActionStack() {
 	// we own the actions, delete them
-	for (auto a : undo_actions) {
+	for (auto &a : undo_actions) {
 		delete a;
 	}
-	for (auto a : redo_actions) {
+	for (auto &a : redo_actions) {
 		delete a;
 	}
 }
@@ -34,7 +34,7 @@ void ActionStack::addAction(Action *action, bool allow_merge) {
 	// clear redo list
 	if (!redo_actions.empty())
 		allow_merge = false; // don't merge after undo
-	for (auto a : redo_actions)
+	for (auto &a : redo_actions)
 		delete a;
 	redo_actions.clear();
 	// try to merge?
@@ -114,7 +114,7 @@ void ActionStack::removeListener(ActionListener *listener) {
 					listeners.end());
 }
 void ActionStack::tellListeners(const Action &action, bool undone) {
-	for (auto l : listeners) {
+	for (auto &l : listeners) {
 		l->onAction(action, undone);
 	}
 }

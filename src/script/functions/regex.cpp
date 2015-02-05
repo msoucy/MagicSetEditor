@@ -141,7 +141,7 @@ SCRIPT_FUNCTION_WITH_SIMPLIFY(replace_text) {
 	}
 }
 SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(replace_text) {
-	for (auto b : closure.bindings) {
+	for (auto &b : closure.bindings) {
 		if (b.first == SCRIPT_VAR_match || b.first == SCRIPT_VAR_in_context) {
 			b.second = regex_from_script(b.second); // pre-compile
 		}
@@ -169,7 +169,7 @@ SCRIPT_FUNCTION_WITH_SIMPLIFY(filter_text) {
 	SCRIPT_RETURN(ret);
 }
 SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(filter_text) {
-	for (auto b : closure.bindings) {
+	for (auto &b : closure.bindings) {
 		if (b.first == SCRIPT_VAR_match || b.first == SCRIPT_VAR_in_context) {
 			b.second = regex_from_script(b.second); // pre-compile
 		}
@@ -196,7 +196,7 @@ SCRIPT_FUNCTION_WITH_SIMPLIFY(break_text) {
 	return ret;
 }
 SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(break_text) {
-	for (auto b : closure.bindings) {
+	for (auto &b : closure.bindings) {
 		if (b.first == SCRIPT_VAR_match || b.first == SCRIPT_VAR_in_context) {
 			b.second = regex_from_script(b.second); // pre-compile
 		}
@@ -229,7 +229,7 @@ SCRIPT_FUNCTION_WITH_SIMPLIFY(split_text) {
 	return ret;
 }
 SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(split_text) {
-	for (auto b : closure.bindings) {
+	for (auto &b : closure.bindings) {
 		if (b.first == SCRIPT_VAR_match) {
 			b.second = regex_from_script(b.second); // pre-compile
 		}
@@ -246,7 +246,7 @@ SCRIPT_FUNCTION_WITH_SIMPLIFY(match_text) {
 	SCRIPT_RETURN(match->matches(input));
 }
 SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(match_text) {
-	for (auto b : closure.bindings) {
+	for (auto &b : closure.bindings) {
 		if (b.first == SCRIPT_VAR_match) {
 			b.second = regex_from_script(b.second); // pre-compile
 		}

@@ -30,7 +30,7 @@ Package::~Package() {
 	delete zipStream;
 	delete fileStream;
 	// remove any remaining temporary files
-	for (auto const f : files) {
+	for (auto const &f : files) {
 		if (f.second.wasWritten()) {
 			wxRemoveFile(f.second.tempName);
 		}
@@ -145,7 +145,7 @@ void Package::removeTempFiles(bool remove_unused) {
 }
 
 void Package::clearKeepFlag() {
-	for (auto f : files) {
+	for (auto &f : files) {
 		f.second.keep = false;
 	}
 }
@@ -443,7 +443,7 @@ void Package::saveToDirectory(const String &saveAs, bool remove_unused,
 							  bool is_copy) {
 	// write to a directory
 	VCSP vcs = getVCS();
-	for (auto f : files) {
+	for (auto &f : files) {
 		if (!f.second.keep && remove_unused) {
 			// remove files that are not to be kept
 			// ignore failure (new file that is not kept)
@@ -491,7 +491,7 @@ void Package::saveToZipfile(const String &saveAs, bool remove_unused,
 		// copy everything to a new zip file, unless it's updated or removed
 		if (zipStream)
 			newZip->CopyArchiveMetaData(*zipStream);
-		for (auto f : files) {
+		for (auto &f : files) {
 			if (!f.second.keep && remove_unused) {
 				// to remove a file simply don't copy it
 			} else if (!is_copy && f.second.zipEntry &&
@@ -670,7 +670,7 @@ void Packaged::validate(Version) {
 		short_name = name();
 	}
 	// check dependencies
-	for (auto dep : dependencies) {
+	for (auto &dep : dependencies) {
 		package_manager.checkDependency(*dep, true);
 	}
 }
@@ -679,7 +679,7 @@ void Packaged::requireDependency(Packaged *package) {
 	if (package == this)
 		return; // dependency on self
 	String n = package->relativeFilename();
-	for (auto dep : dependencies) {
+	for (auto &dep : dependencies) {
 		if (dep->package == n) {
 			if (package->version < dep->version) {
 				queue_message(MESSAGE_WARNING,

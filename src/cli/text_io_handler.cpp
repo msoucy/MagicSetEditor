@@ -153,7 +153,7 @@ void TextIOHandler::flushRaw() {
 	}
 	// count newlines
 	int newline_count = 0;
-	for (auto const c : buffer)
+	for (auto const &c : buffer)
 		if (c == _('\n'))
 			newline_count++;
 	// write record

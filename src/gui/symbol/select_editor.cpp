@@ -45,7 +45,7 @@ SymbolSelectEditor::SymbolSelectEditor(SymbolControl *control, bool rotate)
 
 void SymbolSelectEditor::draw(DC &dc) {
 	// highlight selected parts
-	for (auto p : control.selected_parts.get()) {
+	for (auto &p : control.selected_parts.get()) {
 		control.highlightPart(dc, *p, HIGHLIGHT_INTERIOR);
 	}
 	// highlight the part under the cursor
@@ -161,7 +161,7 @@ void SymbolSelectEditor::onUpdateUI(wxUpdateUIEvent &ev) {
 	if (ev.GetId() >= ID_SYMBOL_COMBINE && ev.GetId() < ID_SYMBOL_COMBINE_MAX) {
 		bool enable = false;
 		bool check = true;
-		for (auto p : control.selected_parts.get()) {
+		for (auto &p : control.selected_parts.get()) {
 			if (SymbolShape *s = p->isSymbolShape()) {
 				enable = true;
 				if (s->combine != ev.GetId() - ID_SYMBOL_COMBINE) {
@@ -178,7 +178,7 @@ void SymbolSelectEditor::onUpdateUI(wxUpdateUIEvent &ev) {
 		ev.Enable(control.selected_parts.size() >= 2);
 	} else if (ev.GetId() == ID_EDIT_UNGROUP) {
 		// is a group selected
-		for (auto p : control.selected_parts.get()) {
+		for (auto &p : control.selected_parts.get()) {
 			if (p->isSymbolGroup() && !p->isSymbolSymmetry()) {
 				ev.Enable(true);
 				return;
@@ -513,12 +513,12 @@ double SymbolSelectEditor::angleTo(const Vector2D &pos) {
 void SymbolSelectEditor::updateBoundingBox() {
 	// Find min and max coordinates
 	bounds = Bounds();
-	for (auto p : control.selected_parts.get()) {
+	for (auto &p : control.selected_parts.get()) {
 		bounds.update(p->bounds);
 	}
 	/*	// Find rotation center
 		center = Vector2D(0,0);
-		for(auto p: control.selected_parts) {
+		for(auto &p: control.selected_parts) {
 			Vector2D size = p->max_pos - p->min_pos;
 			size = size.mul(p->rotation_center);
 			center += p->min_pos + size;

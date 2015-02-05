@@ -178,7 +178,7 @@ SCRIPT_FUNCTION(symbol_variation) {
 			throw InternalError(
 				_("Symbol value has a style of the wrong type"));
 		// find variation
-		for (auto v : style->variations) {
+		for (auto &v : style->variations) {
 			if (v->name == variation) {
 				// found it
 				return intrusive(new SymbolToImage(value, filename, v));

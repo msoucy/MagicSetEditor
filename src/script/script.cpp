@@ -43,7 +43,7 @@ Variable string_to_variable(const String &s) {
  * and such.
  */
 String variable_to_string(Variable v) {
-	for (auto vi : variables) {
+	for (auto &vi : variables) {
 		if (vi.second == v)
 			return replace_all(vi.first, _(" "), _("_"));
 	}
@@ -154,7 +154,7 @@ unsigned int Script::getLabel() const {
 String Script::dumpScript() const {
 	String ret;
 	int pos = 0;
-	for (auto const i : instructions) {
+	for (auto const &i : instructions) {
 		wxLogDebug(dumpInstr(pos, i));
 		ret += dumpInstr(pos++, i) + _("\n");
 	}

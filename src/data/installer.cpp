@@ -105,7 +105,7 @@ void Installer::install(bool local, bool check_dependencies) {
 	// All the packages we're installing.
 	vector<PackagedP> new_packages;
 
-	for(auto&p: packages) {
+	for(auto &p : packages) {
 		if (wxDirExists(install_dir + _("/") + p) || wxFileExists(install_dir +
 	_("/") + p)) {
 			throw PackageError(_("Package ") + p + _(" is already installed.
@@ -134,8 +134,8 @@ void Installer::install(bool local, bool check_dependencies) {
 
 	if (check_dependencies) {
 		// Check dependencies for each and every package.
-		for(auto&p: new_packages) {
-			for(auto&d: p->dependencies) {
+		for(auto &p : new_packages) {
+			for(auto &d : p->dependencies) {
 				if (find_if(new_packages.begin(), new_packages.end(),
 	dependency_check(d)) == new_packages.end() &&
 					!::packages.checkDependency(*d, false)) {

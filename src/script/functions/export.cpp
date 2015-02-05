@@ -108,7 +108,7 @@ class TagStack {
 	}
 	// Write all pending tags, should be called before non-tag output
 	void write_pending_tags(String &ret) {
-		for (auto t : pending_tags) {
+		for (auto &t : pending_tags) {
 			t.tag->write(ret, t.neg);
 			if (!t.neg)
 				tags.push_back(t.tag);
@@ -165,7 +165,7 @@ class TagStack {
 // html-escape a string
 String html_escape(const String &str) {
 	String ret;
-	for (auto const c : str) {
+	for (auto const &c : str) {
 		if (c == _('\1') || c == _('<')) { // escape <
 			ret += _("&lt;");
 		} else if (c == _('>')) { // escape >
@@ -193,7 +193,7 @@ String symbols_to_html(const String &str, SymbolFont &symbol_font,
 	vector<SymbolFont::DrawableSymbol> symbols;
 	symbol_font.split(str, symbols);
 	String html;
-	for (auto sym : symbols) {
+	for (auto &sym : symbols) {
 		String filename =
 			symbol_font.name() + _("-") + clean_filename(sym.text) + _(".png");
 		map<String, wxSize>::iterator it = ei.exported_images.find(filename);

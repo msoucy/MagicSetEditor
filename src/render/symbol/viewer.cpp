@@ -103,7 +103,7 @@ void SymbolViewer::draw(DC &dc) {
 	MemoryDCP interiorDC;
 	// Check if we can paint directly to the dc
 	// This will fail if there are parts with combine == intersection
-	for (auto p : symbol->parts) {
+	for (auto &p : symbol->parts) {
 		if (SymbolShape *s = p->isSymbolShape()) {
 			if (s->combine == SYMBOL_COMBINE_INTERSECTION) {
 				paintedSomething = true;
@@ -379,7 +379,7 @@ void SymbolViewer::highlightPart(DC &dc, const SymbolShape &shape,
 void SymbolViewer::highlightPart(DC &dc, const SymbolSymmetry &sym,
 								 HighlightStyle style) {
 	// highlight parts?
-	for (auto const part : sym.parts) {
+	for (auto const &part : sym.parts) {
 		highlightPart(dc, *part, (HighlightStyle)(style | HIGHLIGHT_LESS));
 	}
 	// Color?
@@ -414,7 +414,7 @@ void SymbolViewer::highlightPart(DC &dc, const SymbolGroup &group,
 		dc.SetPen(wxPen(Color(255, 0, 0), 2));
 		dc.DrawRectangle(rotation.trRectToBB(RealRect(group.bounds)));
 	}
-	for (auto const part : group.parts) {
+	for (auto const &part : group.parts) {
 		highlightPart(dc, *part, (HighlightStyle)(style | HIGHLIGHT_LESS));
 	}
 }

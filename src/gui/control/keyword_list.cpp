@@ -87,7 +87,7 @@ void KeywordList::onAction(const Action &action, bool undone) {
 
 void KeywordList::updateUsageStatistics() {
 	usage_statistics.clear();
-	for (auto const card : set->cards) {
+	for (auto const &card : set->cards) {
 		for (const pair<Value *, const Keyword *> &pr : card->keyword_usage) {
 			usage_statistics[pr.second]++;
 		}
@@ -157,13 +157,13 @@ String match_string(const Keyword &a) {
 }
 
 void KeywordList::getItems(vector<VoidP> &out) const {
-	for (auto k : set->keywords) {
+	for (auto &k : set->keywords) {
 		k->fixed = false;
 		if (!filter || filter->keep(*k)) {
 			out.push_back(k);
 		}
 	}
-	for (auto k : set->game->keywords) {
+	for (auto &k : set->game->keywords) {
 		k->fixed = true;
 		if (!filter || filter->keep(*k)) {
 			out.push_back(k);

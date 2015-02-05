@@ -46,7 +46,7 @@ void MultipleChoiceValueViewer::draw(RotatedDC &dc) {
 		}
 	} else if (style().render_style & RENDER_LIST) {
 		// render only selected choices
-		for (auto choice : selected) {
+		for (auto &choice : selected) {
 			drawChoice(dc, pos, choice);
 		}
 	} else {

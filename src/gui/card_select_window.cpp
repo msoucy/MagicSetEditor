@@ -48,7 +48,7 @@ wxSizer *ExportWindowBase::Create() {
 	// create choice radio buttons
 	int i = 0;
 	bool any_custom = false;
-	for (auto choice : cards_choices) {
+	for (auto &choice : cards_choices) {
 		wxRadioButton *btn =
 			new wxRadioButton(this, ID_SELECTION_CHOICE + i, choice->label);
 		btn->SetValue(i == 0);

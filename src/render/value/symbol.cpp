@@ -38,7 +38,7 @@ void SymbolValueViewer::draw(RotatedDC &dc) {
 			ar = min(style().max_aspect_ratio,
 					 max(style().min_aspect_ratio, ar));
 			// render and filter variations
-			for (auto variation : style().variations) {
+			for (auto &variation : style().variations) {
 				Image img =
 					render_symbol(symbol, *variation->filter,
 								  variation->border_radius, int(200 * ar), 200);

@@ -891,7 +891,7 @@ ExprType parseOper(TokenIterator &input, Script &script, Precedence minPrec,
 			expectToken(input, _(")"), &token);
 			// generate instruction
 			script.addInstruction(I_CALL, (unsigned int)arguments.size());
-			for (auto arg : arguments) {
+			for (auto &arg : arguments) {
 				script.addInstruction(I_NOP, arg);
 			}
 		} else if (minPrec <= PREC_FUN && token == _("@")) {
@@ -902,7 +902,7 @@ ExprType parseOper(TokenIterator &input, Script &script, Precedence minPrec,
 			expectToken(input, _(")"), &token);
 			// generate instruction
 			script.addInstruction(I_CLOSURE, (unsigned int)arguments.size());
-			for (auto arg : arguments) {
+			for (auto &arg : arguments) {
 				script.addInstruction(I_NOP, arg);
 			}
 		} else if (minPrec <= PREC_STRING && token == _("\"{")) {

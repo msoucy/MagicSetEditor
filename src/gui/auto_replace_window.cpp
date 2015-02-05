@@ -79,7 +79,7 @@ class AutoReplaceList : public ItemList {
 AutoReplaceList::AutoReplaceList(Window *parent, int id, const Game &game)
 	: ItemList(parent, id), game(game), gs(settings.gameSettingsFor(game)) {
 	// clone items
-	for (auto const ar : gs.auto_replaces) {
+	for (auto const &ar : gs.auto_replaces) {
 		items.push_back(ar->clone());
 	}
 	// Add columns
@@ -121,14 +121,14 @@ void AutoReplaceList::removeSelected() {
 void AutoReplaceList::reset() {
 	// reset to list from game
 	items.clear();
-	for (auto const ar : game.auto_replaces) {
+	for (auto const &ar : game.auto_replaces) {
 		items.push_back(ar->clone());
 	}
 	refreshList();
 }
 
 void AutoReplaceList::getItems(vector<VoidP> &out) const {
-	for (auto const i : items)
+	for (auto const &i : items)
 		out.push_back(i);
 }
 

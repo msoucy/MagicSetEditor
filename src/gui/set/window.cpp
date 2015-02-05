@@ -286,7 +286,7 @@ void SetWindow::selectPanel(int id) {
 		// don't change, but fix tab bar
 		wxToolBar *tabBar = (wxToolBar *)FindWindow(ID_TAB_BAR);
 		int wid = ID_WINDOW_MIN;
-		for (auto const p : panels) {
+		for (auto const &p : panels) {
 			tabBar->ToggleTool(wid++, p == current_panel);
 		}
 		return;
@@ -301,7 +301,7 @@ void SetWindow::selectPanel(int id) {
 	wxToolBar *tabBar = (wxToolBar *)FindWindow(ID_TAB_BAR);
 	wxMenuBar *menuBar = GetMenuBar();
 	int wid = ID_WINDOW_MIN;
-	for (auto const p : panels) {
+	for (auto const &p : panels) {
 		sizer->Show(p, p == current_panel);
 		tabBar->ToggleTool(wid, p == current_panel);
 		menuBar->Check(wid, p == current_panel);
@@ -352,7 +352,7 @@ void SetWindow::setPanelIcon(SetWindowPanel *panel, wxBitmap const &icon) {
 vector<SetWindow *> SetWindow::set_windows;
 
 bool SetWindow::isOnlyWithSet() {
-	for (auto const w : set_windows) {
+	for (auto const &w : set_windows) {
 		if (w != this && w->set == set)
 			return false;
 	}
@@ -370,11 +370,11 @@ void SetWindow::onChangeSet() {
 	if (set->cards.empty())
 		set->cards.push_back(intrusive(new Card(*set->game)));
 	// all panels view the same set
-	for (auto p : panels) {
+	for (auto &p : panels) {
 		p->setSet(set);
 	}
 	// only after setSet select a card
-	for (auto p : panels) {
+	for (auto &p : panels) {
 		p->selectFirstCard();
 	}
 	fixMinWindowSize();
@@ -428,7 +428,7 @@ void SetWindow::fixMinWindowSize() {
 }
 
 void SetWindow::onSizeChange(wxCommandEvent &) {
-	for (auto p : panels) {
+	for (auto &p : panels) {
 		p->Layout();
 	}
 	fixMinWindowSize();
@@ -438,7 +438,7 @@ void SetWindow::onSizeChange(wxCommandEvent &) {
 // : Cards
 
 void SetWindow::onCardSelect(CardSelectEvent &ev) {
-	for (auto p : panels) {
+	for (auto &p : panels) {
 		p->selectCard(ev.getCard());
 	}
 }
@@ -448,7 +448,7 @@ void SetWindow::onCardActivate(CardSelectEvent &ev) {
 
 void SetWindow::selectionChoices(ExportCardSelectionChoices &out) {
 	out.push_back(intrusive(new ExportCardSelectionChoice(*set))); // entire set
-	for (auto p : panels) {
+	for (auto &p : panels) {
 		p->selectionChoices(out);
 	}
 	out.push_back(intrusive(new ExportCardSelectionChoice())); // custom
@@ -660,7 +660,7 @@ void SetWindow::updateRecentSets() {
 		   (UInt)settings.recent_sets
 			   .size()); // the number of recent sets should only increase
 	UInt i = 0;
-	for (auto file : settings.recent_sets) {
+	for (auto &file : settings.recent_sets) {
 		if (i >= settings.max_recent_sets)
 			break;
 		if (i < number_of_recent_sets) {
@@ -852,7 +852,7 @@ void SetWindow::onFileReload(wxCommandEvent &) {
 	setSet(import_set(filename));
 	// reselect card
 	if (card_pos < set->cards.size()) {
-		for (auto p : panels) {
+		for (auto &p : panels) {
 			p->selectCard(set->cards[card_pos]);
 		}
 	}

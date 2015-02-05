@@ -79,7 +79,7 @@ bool compare_pos_hint(const PackageUpdateList::TreeItemP &a,
 
 void PackageUpdateList::TreeItem::toItems(vector<TreeList::ItemP> &items) {
 	sort(children.begin(), children.end(), compare_pos_hint);
-	for (auto c : children) {
+	for (auto &c : children) {
 		items.push_back(c);
 		c->toItems(items);
 	}
@@ -88,7 +88,7 @@ void PackageUpdateList::TreeItem::toItems(vector<TreeList::ItemP> &items) {
 bool PackageUpdateList::TreeItem::highlight() const {
 	if (package && package->willBeInstalled())
 		return true;
-	for (auto const c : children)
+	for (auto const &c : children)
 		if (c->highlight())
 			return true;
 	return false;
@@ -228,7 +228,7 @@ PackageUpdateList::~PackageUpdateList() { thumbnail_thread.abort(this); }
 void PackageUpdateList::initItems() {
 	// add packages to tree
 	TreeItem root;
-	for (auto const ip : packages) {
+	for (auto const &ip : packages) {
 		String group = ip->description->installer_group;
 		if (group.empty())
 			group = _("custom");
@@ -240,7 +240,7 @@ void PackageUpdateList::initItems() {
 	items.clear();
 	root.toItems(items);
 	// init image list
-	for (auto i : items) {
+	for (auto &i : items) {
 		TreeItem &ti = static_cast<TreeItem &>(*i);
 		const InstallablePackageP &p = ti.package;
 		// load icon

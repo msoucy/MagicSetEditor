@@ -155,7 +155,7 @@ GlobalPreferencesPage::GlobalPreferencesPage(Window *parent)
 	package_manager.findMatching(_("*.mse-locale"), locales);
 	sort(locales.begin(), locales.end(), compare_package_name);
 	int n = 0;
-	for (auto package : locales) {
+	for (auto &package : locales) {
 		language->Append(package->name() + _(": ") + package->full_name,
 						 package.get());
 		if (settings.locale == package->name()) {

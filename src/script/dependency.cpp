@@ -198,7 +198,7 @@ ScriptValueP Context::dependencies(const Dependency &dep,
 					unify(stack[stack_size + i], j->stack_top[i]);
 				}
 				// unify bindings
-				for (auto v : j->bindings) {
+				for (auto &v : j->bindings) {
 					ScriptValueP old_value = variables[v.variable].value;
 					if (old_value) {
 						setVariable(v.variable,
@@ -240,9 +240,9 @@ ScriptValueP Context::dependencies(const Dependency &dep,
 					Jump *jumpTo = jumps.top();
 					jumps.pop();
 					instr = jumpTo->target;
-					for (auto s : jumpTo->stack_top)
+					for (auto &s : jumpTo->stack_top)
 						stack.push_back(s);
-					for (auto b : jumpTo->bindings)
+					for (auto &b : jumpTo->bindings)
 						setVariable(b.variable, b.value.value);
 					delete jumpTo;
 				} else {

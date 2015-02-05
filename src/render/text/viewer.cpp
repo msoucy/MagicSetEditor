@@ -96,7 +96,7 @@ void TextViewer::draw(RotatedDC &dc, const TextStyle &style, DrawWhat what) {
 		drawSeparators(dc);
 	}
 	// Draw the text, line by line
-	for (auto l : lines) {
+	for (auto &l : lines) {
 		if (l.visible(dc)) {
 			if (l.justifying) {
 				// Draw characters separatly
@@ -134,7 +134,7 @@ void TextViewer::drawSelection(RotatedDC &dc, const TextStyle &style,
 	dc.SetPen(*wxTRANSPARENT_PEN);
 	dc.SetLogicalFunction(wxINVERT);
 	RealRect prev_rect(0, 0, 0, 0);
-	for (auto l : lines) {
+	for (auto &l : lines) {
 		RealRect rect = l.selectionRectangle(dc, sel_start, sel_end);
 		if (rect.height > 0)
 			dc.DrawRectangle(rect);
@@ -163,7 +163,7 @@ void TextViewer::drawSeparators(RotatedDC &dc) {
 	// separator lines
 	bool separator = false;
 	double y = 0;
-	for (auto l : lines) {
+	for (auto &l : lines) {
 		double y2 = l.top + l.line_height;
 		if (separator && l.visible(dc)) {
 			// between the two lines
@@ -337,7 +337,7 @@ double TextViewer::heightOfLastLine() const {
 size_t TextViewer::lineCount() const { return lines.size(); }
 size_t TextViewer::visibleLineCount(double height) const {
 	size_t count = 0;
-	for (auto const l : lines) {
+	for (auto const &l : lines) {
 		if (l.top + l.line_height > height)
 			return count;
 		if (l.top >= 0)
@@ -347,7 +347,7 @@ size_t TextViewer::visibleLineCount(double height) const {
 }
 size_t TextViewer::firstVisibleLine() const {
 	size_t i = 0;
-	for (auto const l : lines) {
+	for (auto const &l : lines) {
 		if (l.top >= 0)
 			return i;
 		i++;
@@ -374,7 +374,7 @@ bool TextViewer::ensureVisible(double height, size_t char_id) {
 		return true;
 	} else if (line.bottom() > height) {
 		// scroll down
-		for (auto l : lines) {
+		for (auto &l : lines) {
 			if (l.top > 0)
 				scrollBy(-l.line_height); // scroll down a single line ...
 			if (line.bottom() <= height)
@@ -418,7 +418,7 @@ void TextViewer::prepareLines(RotatedDC &dc, const String &text,
 	// store information about the content/layout, allow this to change
 	// alignment
 	style.content_width = 0;
-	for (auto l : lines) {
+	for (auto &l : lines) {
 		style.content_width = max(style.content_width, l.width());
 	}
 	style.content_height = 0;
@@ -678,7 +678,7 @@ bool TextViewer::prepareLinesScale(RotatedDC &dc, const vector<CharInfo> &chars,
 		// Ending the current word
 		if (accept_word) {
 			// move word pos to line
-			for (auto const p : positions_word) {
+			for (auto const &p : positions_word) {
 				line.positions.push_back(line_size.width + p);
 			}
 			if (word_end_or_soft != 0)
@@ -740,7 +740,7 @@ bool TextViewer::prepareLinesScale(RotatedDC &dc, const vector<CharInfo> &chars,
 		}
 	}
 	// the last word
-	for (auto const p : positions_word) {
+	for (auto const &p : positions_word) {
 		line.positions.push_back(line_size.width + p);
 	}
 	if (word_end_or_soft != 0)

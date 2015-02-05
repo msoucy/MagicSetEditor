@@ -33,7 +33,7 @@ SetScriptContext::SetScriptContext(Set &set) : set(set) {}
 
 SetScriptContext::~SetScriptContext() {
 	// destroy contexts
-	for (auto sc : contexts) {
+	for (auto &sc : contexts) {
 		delete sc.second;
 	}
 }
@@ -117,11 +117,11 @@ void SetScriptManager::initDependencies(Context &ctx, Game &game) {
 		return;
 	game.dependencies_initialized = true;
 	// find dependencies of card fields
-	for (auto f : game.card_fields) {
+	for (auto &f : game.card_fields) {
 		f->initDependencies(ctx, Dependency(DEP_CARD_FIELD, f->index));
 	}
 	// find dependencies of set fields
-	for (auto f : game.set_fields) {
+	for (auto &f : game.set_fields) {
 		f->initDependencies(ctx, Dependency(DEP_SET_FIELD, f->index));
 	}
 }
@@ -131,12 +131,12 @@ void SetScriptManager::initDependencies(Context &ctx, StyleSheet &stylesheet) {
 		return;
 	stylesheet.dependencies_initialized = true;
 	// find dependencies of extra card fields
-	for (auto f : stylesheet.extra_card_fields) {
+	for (auto &f : stylesheet.extra_card_fields) {
 		f->initDependencies(
 			ctx, Dependency(DEP_EXTRA_CARD_FIELD, f->index, &stylesheet));
 	}
 	// find dependencies of choice images and other style stuff
-	for (auto s : stylesheet.card_style) {
+	for (auto &s : stylesheet.card_style) {
 		s->initDependencies(
 			ctx, Dependency(DEP_CARD_STYLE, s->fieldP->index, &stylesheet));
 		// are there dependencies of this style on other style properties?
@@ -145,7 +145,7 @@ void SetScriptManager::initDependencies(Context &ctx, StyleSheet &stylesheet) {
 		if (test.index)
 			s->content_dependent = true;
 	}
-	for (auto s : stylesheet.extra_card_style) {
+	for (auto &s : stylesheet.extra_card_style) {
 		// are there dependencies of this style on other style properties?
 		Dependency test(DEP_DUMMY, false);
 		s->checkContentDependencies(ctx, test);
@@ -193,10 +193,10 @@ void SetScriptManager::onAction(const Action &action, bool undone) {
 	TYPE_CASE(action, AddCardAction) {
 		if (action.action.adding != undone) {
 			// update the added cards specificly
-			for (auto const step : action.action.steps) {
+			for (auto const &step : action.action.steps) {
 				const CardP &card = step.item;
 				Context &ctx = getContext(card);
-				for (auto v : card->data) {
+				for (auto &v : card->data) {
 					v->update(ctx, &action);
 				}
 			}
@@ -237,7 +237,7 @@ void SetScriptManager::updateStyles(const CardP &card,
 	if (!only_content_dependent) {
 		// update extra card fields
 		IndexMap<FieldP, ValueP> &extra_data = card->extraDataFor(stylesheet);
-		for (auto v : extra_data) {
+		for (auto &v : extra_data) {
 			if (v->update(ctx)) {
 				// changed, send event
 				ScriptValueEvent change(card.get(), v.get());
@@ -252,7 +252,7 @@ void SetScriptManager::updateStyles(const CardP &card,
 void SetScriptManager::updateStyles(Context &ctx,
 									const IndexMap<FieldP, StyleP> &styles,
 									bool only_content_dependent) {
-	for (auto const s : styles) {
+	for (auto const &s : styles) {
 		if (only_content_dependent && !s->content_dependent)
 			continue;
 		try {
@@ -306,7 +306,7 @@ void SetScriptManager::updateAll() {
 	wxBusyCursor busy;
 	// update set data
 	Context &ctx = getContext(set.stylesheet);
-	for (auto v : set.data) {
+	for (auto &v : set.data) {
 		try {
 			PROFILER2(v->fieldP.get(), _("update set.") + v->fieldP->name);
 			v->update(ctx);
@@ -317,9 +317,9 @@ void SetScriptManager::updateAll() {
 		}
 	}
 	// update card data of all cards
-	for (auto card : set.cards) {
+	for (auto &card : set.cards) {
 		Context &ctx = getContext(card);
-		for (auto v : card->data) {
+		for (auto &v : card->data) {
 			try {
 #if USE_SCRIPT_PROFILING
 				Timer t;
@@ -394,7 +394,7 @@ void SetScriptManager::updateToUpdate(const ToUpdate &u,
 void SetScriptManager::alsoUpdate(deque<ToUpdate> &to_update,
 								  const vector<Dependency> &deps,
 								  const CardP &card) {
-	for (auto const d : deps) {
+	for (auto const &d : deps) {
 		switch (d.type) {
 		case DEP_SET_FIELD: {
 			ValueP value = set.data.at(d.index);
@@ -414,7 +414,7 @@ void SetScriptManager::alsoUpdate(deque<ToUpdate> &to_update,
 		case DEP_CARDS_FIELD: {
 			// something invalidates a card value for all cards, so all cards
 			// need updating
-			for (auto card : set.cards) {
+			for (auto &card : set.cards) {
 				ValueP value = card->data.at(d.index);
 				to_update.push_back(ToUpdate(value.get(), card));
 			}

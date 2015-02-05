@@ -535,7 +535,7 @@ ScriptValueP sort_script(Context &ctx, const ScriptValueP &list,
 		}
 		// return collection
 		ScriptCustomCollectionP ret(new ScriptCustomCollection());
-		for (auto v : values) {
+		for (auto &v : values) {
 			ret->value.push_back(v.second);
 		}
 		return ret;

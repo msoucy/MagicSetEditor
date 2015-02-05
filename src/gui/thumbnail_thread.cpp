@@ -30,7 +30,7 @@ String image_cache_dir() {
 String safe_filename(const String &str) {
 	String ret;
 	ret.reserve(str.size());
-	for (auto const c : str) {
+	for (auto const &c : str) {
 		if (isAlnum(c)) {
 			ret += c;
 		} else if (c == _(' ') || c == _('-')) {
@@ -191,7 +191,7 @@ bool ThumbnailThread::done(void *owner) {
 		}
 	}
 	// store them
-	for (auto r : finished) {
+	for (auto &r : finished) {
 		// store image
 		r.first->store(r.second);
 		// remove from name list

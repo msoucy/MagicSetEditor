@@ -29,7 +29,7 @@ SelectCardList::SelectCardList(Window *parent, int id, long additional_style)
 SelectCardList::~SelectCardList() {}
 
 void SelectCardList::selectAll() {
-	for (auto const c : set->cards) {
+	for (auto const &c : set->cards) {
 		selected.insert(c);
 	}
 	Refresh(false);
@@ -43,7 +43,7 @@ bool SelectCardList::isSelected(const CardP &card) const {
 }
 
 void SelectCardList::getSelection(vector<CardP> &out) const {
-	for (auto const card : set->cards) {
+	for (auto const &card : set->cards) {
 		if (isSelected(card))
 			out.push_back(card);
 	}

@@ -290,7 +290,7 @@ String quote_string(String const &str) {
 	String out;
 	out.reserve(str.size() + 2);
 	out += _('"');
-	for (auto const c : str) {
+	for (auto const &c : str) {
 		if (c == _('"') || c == _('\\')) {
 			out += _('\\');
 			out += c;
@@ -594,7 +594,7 @@ void ScriptClosure::addBinding(Variable v, const ScriptValueP &value) {
 	bindings.push_back(make_pair(v, value));
 }
 ScriptValueP ScriptClosure::getBinding(Variable v) const {
-	for (auto const b : bindings) {
+	for (auto const &b : bindings) {
 		if (b.first == v)
 			return b.second;
 	}
@@ -615,7 +615,7 @@ ScriptValueP ScriptClosure::dependencies(Context &ctx,
 	return fun->dependencies(ctx, dep);
 }
 void ScriptClosure::applyBindings(Context &ctx) const {
-	for (auto const b : bindings) {
+	for (auto const &b : bindings) {
 		if (ctx.getVariableScope(b.first) != 0) {
 			// variables passed as arguments (i.e. in scope 0) override these
 			// default bindings

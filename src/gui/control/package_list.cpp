@@ -73,7 +73,7 @@ void PackageList::showData(const String &pattern) {
 		PROFILER(_("find matching packages"));
 		package_manager.findMatching(pattern, matching);
 	}
-	for (auto p : matching) {
+	for (auto &&p : matching) {
 		// open image
 		PROFILER(_("load package image"));
 		InputStreamP stream = p->openIconFile();

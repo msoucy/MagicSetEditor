@@ -27,7 +27,7 @@ bool SymbolPartsSelection::select(const SymbolPartP &part, SelectMode mode) {
 		return false;
 	// make sure part is not the decendent of a part that is already selected
 	if (mode != SELECT_OVERRIDE) {
-		for (auto s : selection) {
+		for (auto &s : selection) {
 			if (s != part && s->isAncestor(*part))
 				return false;
 		}
@@ -59,7 +59,7 @@ bool SymbolPartsSelection::select(const SymbolPartP &part, SelectMode mode) {
 
 void SymbolPartsSelection::clearChildren(SymbolPart *part) {
 	if (SymbolGroup *g = part->isSymbolGroup()) {
-		for (auto p : g->parts) {
+		for (auto &p : g->parts) {
 			if (selected(p))
 				selection.erase(p);
 			clearChildren(p.get());
@@ -68,7 +68,7 @@ void SymbolPartsSelection::clearChildren(SymbolPart *part) {
 }
 
 SymbolShapeP SymbolPartsSelection::getAShape() const {
-	for (auto s : selection) {
+	for (auto &s : selection) {
 		if (s->isSymbolShape())
 			return static_pointer_cast<SymbolShape>(s);
 	}
@@ -76,7 +76,7 @@ SymbolShapeP SymbolPartsSelection::getAShape() const {
 }
 
 SymbolSymmetryP SymbolPartsSelection::getASymmetry() const {
-	for (auto s : selection) {
+	for (auto &s : selection) {
 		if (s->isSymbolSymmetry())
 			return static_pointer_cast<SymbolSymmetry>(s);
 	}
@@ -93,7 +93,7 @@ SymbolPartP SymbolPartsSelection::find(const SymbolPartP &part,
 			return part;
 	}
 	if (SymbolGroup *g = part->isSymbolGroup()) {
-		for (auto p : g->parts) {
+		for (auto &p : g->parts) {
 			SymbolPartP found = find(p, pos);
 			if (found) {
 				if (part->isSymbolSymmetry() || selected(found)) {
@@ -108,7 +108,7 @@ SymbolPartP SymbolPartsSelection::find(const SymbolPartP &part,
 }
 
 SymbolPartP SymbolPartsSelection::find(const Vector2D &position) const {
-	for (auto p : root->parts) {
+	for (auto &p : root->parts) {
 		SymbolPartP found = find(p, position);
 		if (found)
 			return found;
@@ -131,7 +131,7 @@ bool SymbolPartsSelection::selectRect(const SymbolGroup &parent,
 	ab.update(b);
 	Bounds bc(b);
 	bc.update(c);
-	for (auto const p : parent.parts) {
+	for (auto const &p : parent.parts) {
 		bool in_ab = ab.contains(p->bounds);
 		bool in_bc = bc.contains(p->bounds);
 		if (in_ab != in_bc) {

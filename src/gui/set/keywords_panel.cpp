@@ -221,7 +221,7 @@ void KeywordsPanel::onCommand(int id) {
 	case ID_KEYWORD_ADD_PARAM: {
 		wxMenu param_menu;
 		int id = ID_PARAM_TYPE_MIN;
-		for (auto p : set->game->keyword_parameter_types) {
+		for (auto &p : set->game->keyword_parameter_types) {
 			param_menu.Append(id++, p->name, p->description);
 		}
 		add_param->PopupMenu(&param_menu, 0, add_param->GetSize().y);
@@ -231,14 +231,14 @@ void KeywordsPanel::onCommand(int id) {
 		wxMenu ref_menu;
 		int id = ID_PARAM_REF_MIN;
 		int param = 0;
-		for (auto p : list->getKeyword()->parameters) {
+		for (auto &p : list->getKeyword()->parameters) {
 			String item = String() << ++param << _(". ") << LEFT_ANGLE_BRACKET
 								   << p->name << RIGHT_ANGLE_BRACKET;
 			if (p->refer_scripts.empty()) {
 				ref_menu.Append(id++, item);
 			} else {
 				wxMenu *submenu = new wxMenu();
-				for (auto r : p->refer_scripts) {
+				for (auto &r : p->refer_scripts) {
 					submenu->Append(id++, r->name, r->description);
 				}
 				ref_menu.Append(wxID_ANY, item, submenu);
@@ -270,7 +270,7 @@ void KeywordsPanel::onCommand(int id) {
 String KeywordsPanel::runRefScript(int find_i) {
 	int param = 0;
 	int i = 0;
-	for (auto p : list->getKeyword()->parameters) {
+	for (auto &p : list->getKeyword()->parameters) {
 		String param_s = String(_("param")) << ++param;
 		if (p->refer_scripts.empty()) {
 			if (i++ == find_i) {
@@ -278,7 +278,7 @@ String KeywordsPanel::runRefScript(int find_i) {
 				return _("{") + param_s + _("}");
 			}
 		} else {
-			for (auto r : p->refer_scripts) {
+			for (auto &r : p->refer_scripts) {
 				if (i++ == find_i) {
 					Context &ctx = set->getContext();
 					ctx.setVariable(SCRIPT_VAR_input, to_script(param_s));
@@ -361,7 +361,7 @@ void KeywordsPanel::onChangeSet() {
 	add_param->Enable(false);
 	ref_param->Enable(false);
 	mode->Clear();
-	for (auto m : set->game->keyword_modes) {
+	for (auto &m : set->game->keyword_modes) {
 		mode->Append(m->name);
 	}
 	mode->Enable(false);

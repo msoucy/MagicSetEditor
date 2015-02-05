@@ -192,9 +192,9 @@ SCRIPT_FUNCTION_DEPENDENCIES(combined_editor) {
 	// Add dependencies, from target_field on field#
 	// For card fields
 	size_t j = 0;
-	for (auto f : game->card_fields) {
+	for (auto &f : game->card_fields) {
 		Dependency dep(DEP_CARD_COPY_DEP, j++);
-		for (auto fn : fields) {
+		for (auto &fn : fields) {
 			if (f == fn) {
 				target_field->dependent_scripts.add(dep);
 				break;
@@ -203,9 +203,9 @@ SCRIPT_FUNCTION_DEPENDENCIES(combined_editor) {
 	}
 	// For set fields
 	j = 0;
-	for (auto f : game->set_fields) {
+	for (auto &f : game->set_fields) {
 		Dependency dep(DEP_SET_COPY_DEP, j++);
-		for (auto fn : fields) {
+		for (auto &fn : fields) {
 			if (f == fn) {
 				target_field->dependent_scripts.add(dep);
 				break;
@@ -436,7 +436,7 @@ SCRIPT_FUNCTION(count_chosen) {
 			SCRIPT_RETURN(0);
 		} else {
 			int count = 1;
-			for (auto c : input)
+			for (auto &c : input)
 				if (c == _(','))
 					++count;
 			SCRIPT_RETURN(count);
