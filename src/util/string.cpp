@@ -443,8 +443,9 @@ bool smart_equal(const String &sa, const String &sb) {
 bool starts_with(const String &str, const String &start) {
 	if (str.size() < start.size())
 		return false;
-	for (auto ab : combine(str, start)) {
-		if (get<0>(ab) != get<1>(ab))
+	for (String::const_iterator s1{str.begin()}, s2{start.begin()};
+		 s1 != str.end() && s2 != start.end(); ++s1, ++s2) {
+		if (*s1 != *s2)
 			return false;
 	}
 	return true;
