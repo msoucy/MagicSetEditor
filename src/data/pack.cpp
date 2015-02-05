@@ -253,7 +253,7 @@ void PackInstance::generate(vector<CardP> *out) {
 		if (out && !cards.empty()) {
 			// to prevent us from being too predictable for small sets,
 			// periodically reshuffle
-			RandomRange<boost::mt19937> gen_range(parent.gen);
+			RandomRange<std::mt19937> gen_range(parent.gen);
 			int max_per_batch = ((int)cards.size() + 1) / 2;
 			int rem = (int)requested_copies;
 			while (rem > 0) {
