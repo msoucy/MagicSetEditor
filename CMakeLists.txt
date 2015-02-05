@@ -4,6 +4,7 @@ find_package(Boost REQUIRED regex system)
 find_package(wxWidgets REQUIRED)
 
 include(${wxWidgets_USE_FILE})
+include(CPack)
 
 add_definitions(-std=c++11)
 
@@ -195,4 +196,31 @@ target_link_libraries(magicseteditor
 	${Boost_LIBRARIES}
 	#${Boost_regex_LIBRARY}
 	${wxWidgets_LIBRARIES}
+)
+
+install(
+	TARGETS magicseteditor
+	DESTINATION bin
+)
+
+set(MSE_BASEDIR /home/msoucy/.magicseteditor)
+
+install(
+	DIRECTORY data
+	DESTINATION ${MSE_BASEDIR}
+)
+
+install(
+	DIRECTORY src/resource/common/
+	DESTINATION ${MSE_BASEDIR}/resource
+)
+foreach(dr tool icon cursor)
+install(
+	DIRECTORY src/resource/msw/${dr}
+	DESTINATION ${MSE_BASEDIR}/resource
+)
+endforeach()
+install(
+	DIRECTORY src/resource/msw/other/
+	DESTINATION ${MSE_BASEDIR}/resource
 )
