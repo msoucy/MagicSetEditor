@@ -55,7 +55,7 @@ class MessageCtrl : public wxScrolledWindow {
 		SetScrollRate(0, 1);
 		EnableScrolling(false, true);
 		// icons
-		BOOST_STATIC_ASSERT(MESSAGE_TYPE_MAX == 6);
+		static_assert(MESSAGE_TYPE_MAX == 6, "MESSAGE_TYPE_MAX != 6");
 		icons[MESSAGE_INPUT] =
 			wxBitmap(load_resource_image(_("message_input")));
 		icons[MESSAGE_OUTPUT] = wxBitmap();

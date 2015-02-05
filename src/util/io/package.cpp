@@ -216,19 +216,19 @@ InputStreamP Package::openIn(const String &file) {
 	InputStreamP stream;
 	if (it != files.end() && it->second.wasWritten()) {
 		// written to this file, open the temp file
-		stream = shared(new BufferedFileInputStream(it->second.tempName));
+		stream = make_shared<BufferedFileInputStream>(it->second.tempName);
 	} else if (wxFileExists(filename + _("/") + file)) {
 		// a file in directory package
-		stream = shared(new BufferedFileInputStream(filename + _("/") + file));
+		stream = make_shared<BufferedFileInputStream>(filename + _("/") + file);
 	} else if (wxFileExists(filename) && it != files.end() &&
 			   it->second.zipEntry) {
 		// a file in a zip archive
 		// somebody in wx thought seeking was no longer needed, it now only
 		// works with the 'compatability constructor'
-		stream = shared(new wxZipInputStream(
-			filename, it->second.zipEntry->GetInternalName()));
+		stream = make_shared<wxZipInputStream>(
+			filename, it->second.zipEntry->GetInternalName());
 		// stream = static_pointer_cast<wxZipInputStream>(
-		//			shared(new ZipFileInputStream(filename,
+		//			make_shared<ZipFileInputStream>(filename,
 		// it->second.zipEntry)));
 	} else {
 		// shouldn't happen, packaged changed by someone else since opening it
@@ -242,7 +242,7 @@ InputStreamP Package::openIn(const String &file) {
 }
 
 OutputStreamP Package::openOut(const String &file) {
-	return shared(new wxFileOutputStream(nameOut(file)));
+	return make_shared<wxFileOutputStream>(nameOut(file));
 }
 
 String Package::nameOut(const String &file) {
@@ -324,7 +324,7 @@ InputStreamP Package::openAbsoluteFile(const String &name) {
 	size_t pos = name.find_first_of(_('\1'));
 	if (pos == String::npos) {
 		// temp or dir file
-		shared_ptr<wxFileInputStream> f = shared(new wxFileInputStream(name));
+		shared_ptr<wxFileInputStream> f = make_shared<wxFileInputStream>(name);
 		if (!f->IsOk())
 			throw FileNotFoundError(_("<unknown>"), name);
 		return f;
