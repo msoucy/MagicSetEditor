@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/symbol/control.hpp>
@@ -20,10 +21,13 @@
 #include <util/window_id.hpp>
 #include <wx/dcbuffer.h>
 
-// ----------------------------------------------------------------------------- : SymbolControl
+// -----------------------------------------------------------------------------
+// : SymbolControl
 
-SymbolControl::SymbolControl(SymbolWindow *parent, int id, const SymbolP &symbol)
-	: wxControl(parent, id, wxDefaultPosition, wxDefaultSize, wxBORDER_THEME_FIX(wxBORDER_THEME)),
+SymbolControl::SymbolControl(SymbolWindow *parent, int id,
+							 const SymbolP &symbol)
+	: wxControl(parent, id, wxDefaultPosition, wxDefaultSize,
+				wxBORDER_THEME_FIX(wxBORDER_THEME)),
 	  SymbolViewer(symbol, true), parent(parent) {
 	onChangeSymbol();
 }
@@ -55,7 +59,8 @@ void SymbolControl::onModeChange(wxCommandEvent &ev) {
 		if (selected_parts.size() == 1) {
 			selected_shape = selected_parts.getAShape();
 			if (selected_shape) {
-				switchEditor(intrusive(new SymbolPointEditor(this, selected_shape)));
+				switchEditor(
+					intrusive(new SymbolPointEditor(this, selected_shape)));
 			}
 		}
 		break;
@@ -67,7 +72,8 @@ void SymbolControl::onModeChange(wxCommandEvent &ev) {
 		switchEditor(intrusive(new SymbolBasicShapeEditor(this)));
 		break;
 	case ID_MODE_SYMMETRY:
-		switchEditor(intrusive(new SymbolSymmetryEditor(this, selected_parts.getASymmetry())));
+		switchEditor(intrusive(
+			new SymbolSymmetryEditor(this, selected_parts.getASymmetry())));
 		break;
 	}
 }
@@ -155,10 +161,12 @@ void SymbolControl::selectPart(const SymbolPartP &part) {
 void SymbolControl::activatePart(const SymbolPartP &part) {
 	if (part->isSymbolShape()) {
 		selected_parts.select(part);
-		switchEditor(intrusive(new SymbolPointEditor(this, static_pointer_cast<SymbolShape>(part))));
+		switchEditor(intrusive(new SymbolPointEditor(
+			this, static_pointer_cast<SymbolShape>(part))));
 	} else if (part->isSymbolSymmetry()) {
 		selected_parts.select(part);
-		switchEditor(intrusive(new SymbolSymmetryEditor(this, static_pointer_cast<SymbolSymmetry>(part))));
+		switchEditor(intrusive(new SymbolSymmetryEditor(
+			this, static_pointer_cast<SymbolSymmetry>(part))));
 	}
 }
 
@@ -166,7 +174,8 @@ void SymbolControl::signalSelectionChange() { parent->onSelectFromControl(); }
 
 bool SymbolControl::isEditing() { return editor && editor->isEditing(); }
 
-// ----------------------------------------------------------------------------- : Drawing
+// -----------------------------------------------------------------------------
+// : Drawing
 
 void SymbolControl::draw(DC &dc) {
 	// clear the background
@@ -180,7 +189,8 @@ void SymbolControl::draw(DC &dc) {
 		for (int i = 0; i <= lines; ++i) {
 			double x = (double)i / lines;
 			rdc.SetLogicalFunction(wxAND);
-			rdc.SetPen(i % 5 == 0 ? Color(191, 255, 191) : Color(191, 255, 191));
+			rdc.SetPen(i % 5 == 0 ? Color(191, 255, 191)
+								  : Color(191, 255, 191));
 			rdc.DrawLine(RealPoint(0, x), RealPoint(1, x));
 			rdc.DrawLine(RealPoint(x, 0), RealPoint(x, 1));
 			rdc.SetLogicalFunction(wxOR);
@@ -209,7 +219,8 @@ void SymbolControl::onPaint(wxPaintEvent &) {
 	CATCH_ALL_ERRORS(false); // don't show message boxes in onPaint!
 }
 
-// ----------------------------------------------------------------------------- : Events
+// -----------------------------------------------------------------------------
+// : Events
 
 // Mouse events, convert position, forward event
 
@@ -311,7 +322,8 @@ void SymbolControl::onUpdateUI(wxUpdateUIEvent &ev) {
 	}
 }
 
-// ----------------------------------------------------------------------------- : Event table
+// -----------------------------------------------------------------------------
+// : Event table
 
 BEGIN_EVENT_TABLE(SymbolControl, wxControl)
 EVT_PAINT(SymbolControl::onPaint)

@@ -4,22 +4,26 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <render/value/information.hpp>
 #include <render/card/viewer.hpp>
 
-// ----------------------------------------------------------------------------- : InfoValueViewer
+// -----------------------------------------------------------------------------
+// : InfoValueViewer
 
 IMPLEMENT_VALUE_VIEWER(Info);
 
-void InfoValueViewer::draw(RotatedDC& dc) {
+void InfoValueViewer::draw(RotatedDC &dc) {
 	dc.SetPen(*wxTRANSPARENT_PEN);
 	if (nativeLook()) {
-		dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
+		dc.SetTextForeground(
+			wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
 		dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE));
-		dc.SetFont(wxFont(16, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, _("Arial")));
+		dc.SetFont(wxFont(16, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL,
+						  wxFONTWEIGHT_NORMAL, false, _("Arial")));
 	} else {
 		dc.SetTextForeground(style().font.color);
 		dc.SetBrush(style().background_color);
@@ -29,12 +33,9 @@ void InfoValueViewer::draw(RotatedDC& dc) {
 	RealRect rect = style().getInternalRect();
 	dc.DrawRectangle(rect.grow(2));
 	// draw text
-	rect = rect.move(
-		style().padding_left,
-		style().padding_top,
-		-style().padding_left - style().padding_right,
-		-style().padding_top  - style().padding_bottom
-	);
+	rect = rect.move(style().padding_left, style().padding_top,
+					 -style().padding_left - style().padding_right,
+					 -style().padding_top - style().padding_bottom);
 	String val = value().value->toString();
 	RealSize size = dc.GetTextExtent(val);
 	dc.DrawText(val, align_in_rect(style().alignment, size, rect));

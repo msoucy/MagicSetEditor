@@ -4,29 +4,28 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/field/image.hpp>
 #include <gfx/generated_image.hpp>
 
-// ----------------------------------------------------------------------------- : ImageField
+// -----------------------------------------------------------------------------
+// : ImageField
 
 IMPLEMENT_FIELD_TYPE(Image, "image");
 
-IMPLEMENT_REFLECTION(ImageField) {
-	REFLECT_BASE(Field);
-}
+IMPLEMENT_REFLECTION(ImageField) { REFLECT_BASE(Field); }
 
-
-// ----------------------------------------------------------------------------- : ImageStyle
+// -----------------------------------------------------------------------------
+// : ImageStyle
 
 IMPLEMENT_REFLECTION(ImageStyle) {
 	REFLECT_BASE(Style);
 	REFLECT_N("default", default_image);
 }
 
-int ImageStyle::update(Context& ctx) {
-	return Style       ::update(ctx)
-	     | default_image.update(ctx) * CHANGE_DEFAULT;
+int ImageStyle::update(Context &ctx) {
+	return Style::update(ctx) | default_image.update(ctx) * CHANGE_DEFAULT;
 }

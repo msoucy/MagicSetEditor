@@ -16,7 +16,7 @@
 #include <util/version.hpp>
 #include <util/window_id.hpp>
 //#include <script/value.hpp> // for some strange reason the profile build needs
-//this :(
+// this :(
 //#include <script/to_value.hpp>
 #include <wx/dialup.h>
 #include <wx/url.h>

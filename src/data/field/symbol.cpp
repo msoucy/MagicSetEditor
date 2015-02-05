@@ -4,22 +4,22 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/field/symbol.hpp>
 #include <render/symbol/filter.hpp>
 
-// ----------------------------------------------------------------------------- : SymbolField
+// -----------------------------------------------------------------------------
+// : SymbolField
 
 IMPLEMENT_FIELD_TYPE(Symbol, "symbol");
 
-IMPLEMENT_REFLECTION(SymbolField) {
-	REFLECT_BASE(Field);
-}
+IMPLEMENT_REFLECTION(SymbolField) { REFLECT_BASE(Field); }
 
-
-// ----------------------------------------------------------------------------- : SymbolStyle
+// -----------------------------------------------------------------------------
+// : SymbolStyle
 
 IMPLEMENT_REFLECTION(SymbolStyle) {
 	REFLECT_BASE(Style);
@@ -28,15 +28,12 @@ IMPLEMENT_REFLECTION(SymbolStyle) {
 	REFLECT(variations);
 }
 
-SymbolVariation::SymbolVariation()
-	: border_radius(0.05)
-{}
+SymbolVariation::SymbolVariation() : border_radius(0.05) {}
 SymbolVariation::~SymbolVariation() {}
 
-bool SymbolVariation::operator == (const SymbolVariation& that) const {
-	return name          == that.name
-	    && border_radius == that.border_radius
-	    && *filter       == *that.filter;
+bool SymbolVariation::operator==(const SymbolVariation &that) const {
+	return name == that.name && border_radius == that.border_radius &&
+		   *filter == *that.filter;
 }
 
 IMPLEMENT_REFLECTION_NO_SCRIPT(SymbolVariation) {
@@ -45,19 +42,19 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(SymbolVariation) {
 	REFLECT_NAMELESS(filter);
 }
 
-// ----------------------------------------------------------------------------- : LocalSymbolFile
+// -----------------------------------------------------------------------------
+// : LocalSymbolFile
 
-ScriptValueP script_local_symbol_file(LocalFileName const& filename) {
+ScriptValueP script_local_symbol_file(LocalFileName const &filename) {
 	return intrusive(new LocalSymbolFile(filename));
 }
 
-String quote_string(String const& str);
+String quote_string(String const &str);
 String LocalSymbolFile::toCode() const {
-	return _("local_symbol_file(") + quote_string(filename.toStringForWriting()) + _(")");
+	return _("local_symbol_file(") +
+		   quote_string(filename.toStringForWriting()) + _(")");
 }
-String LocalSymbolFile::typeName() const {
-	return _("symbol");
-}
+String LocalSymbolFile::typeName() const { return _("symbol"); }
 GeneratedImageP LocalSymbolFile::toImage() const {
 	SymbolVariationP variation(new SymbolVariation);
 	variation->filter = intrusive(new SolidFillSymbolFilter);

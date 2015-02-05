@@ -4,26 +4,31 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <util/vcs.hpp>
 #include <util/vcs/subversion.hpp>
 
-// ----------------------------------------------------------------------------- : Reflection
+// -----------------------------------------------------------------------------
+// : Reflection
 
 template <>
-VCSP read_new<VCS>(Reader& reader) {
+VCSP read_new<VCS>(Reader &reader) {
 	// there must be a type specified
 	String type;
 	reader.handle(_("type"), type);
-	if      (type == _("none"))				return intrusive(new VCS);
-	else if (type == _("subversion"))		return intrusive(new SubversionVCS);
+	if (type == _("none"))
+		return intrusive(new VCS);
+	else if (type == _("subversion"))
+		return intrusive(new SubversionVCS);
 	else if (type.empty()) {
 		reader.warning(_ERROR_1_("expected key", _("version control system")));
 		throw ParseError(_ERROR_("aborting parsing"));
 	} else {
-		reader.warning(format_string(_("Unsupported version control type: '%s'"), type));
+		reader.warning(
+			format_string(_("Unsupported version control type: '%s'"), type));
 		throw ParseError(_ERROR_("aborting parsing"));
 	}
 }
@@ -36,9 +41,10 @@ IMPLEMENT_REFLECTION(VCS) {
 }
 
 template <>
-void Reader::handle(VCSP& pointer) {
+void Reader::handle(VCSP &pointer) {
 	pointer = read_new<VCS>(*this);
 	handle(*pointer);
 }
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF

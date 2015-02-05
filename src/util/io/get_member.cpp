@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <util/io/get_member.hpp>
@@ -14,30 +15,63 @@
 #include <boost/logic/tribool.hpp>
 using boost::tribool;
 
-// ---------------------------------------------------------------------------- : GetDefaultMember
+// ----------------------------------------------------------------------------
+// : GetDefaultMember
 
-            void GetDefaultMember::handle(const Char*         v) { value = to_script(v); }
-template <> void GetDefaultMember::handle(const String&       v) { value = to_script(v); }
-//template <> void GetDefaultMember::handle(const FileName&     v) { value = to_script(v); }
-template <> void GetDefaultMember::handle(const int&          v) { value = to_script(v); }
-template <> void GetDefaultMember::handle(const unsigned int& v) { value = to_script((int)v); }
-template <> void GetDefaultMember::handle(const double&       v) { value = to_script(v); }
-template <> void GetDefaultMember::handle(const bool&         v) { value = to_script(v); }
-template <> void GetDefaultMember::handle(const tribool&      v) { value = to_script((bool)v); }
-template <> void GetDefaultMember::handle(const Vector2D&     v) { value = to_script(String::Format(_("(%.10lf,%.10lf)"), v.x, v.y)); }
-template <> void GetDefaultMember::handle(const Color&        v) { value = to_script(v); }
-template <> void GetDefaultMember::handle(const AColor&       v) { value = to_script(v); }
-template <> void GetDefaultMember::handle(const wxDateTime&   v) { value = to_script(v); }
-            void GetDefaultMember::handle(const ScriptValueP& v) { value = v; }
-            void GetDefaultMember::handle(const ScriptP&      v) { value = v; }
+void GetDefaultMember::handle(const Char *v) { value = to_script(v); }
+template <>
+void GetDefaultMember::handle(const String &v) {
+	value = to_script(v);
+}
+// template <> void GetDefaultMember::handle(const FileName&     v) { value =
+// to_script(v); }
+template <>
+void GetDefaultMember::handle(const int &v) {
+	value = to_script(v);
+}
+template <>
+void GetDefaultMember::handle(const unsigned int &v) {
+	value = to_script((int)v);
+}
+template <>
+void GetDefaultMember::handle(const double &v) {
+	value = to_script(v);
+}
+template <>
+void GetDefaultMember::handle(const bool &v) {
+	value = to_script(v);
+}
+template <>
+void GetDefaultMember::handle(const tribool &v) {
+	value = to_script((bool)v);
+}
+template <>
+void GetDefaultMember::handle(const Vector2D &v) {
+	value = to_script(String::Format(_("(%.10lf,%.10lf)"), v.x, v.y));
+}
+template <>
+void GetDefaultMember::handle(const Color &v) {
+	value = to_script(v);
+}
+template <>
+void GetDefaultMember::handle(const AColor &v) {
+	value = to_script(v);
+}
+template <>
+void GetDefaultMember::handle(const wxDateTime &v) {
+	value = to_script(v);
+}
+void GetDefaultMember::handle(const ScriptValueP &v) { value = v; }
+void GetDefaultMember::handle(const ScriptP &v) { value = v; }
 
-// ----------------------------------------------------------------------------- : GetMember
+// -----------------------------------------------------------------------------
+// : GetMember
 
-GetMember::GetMember(const String& name)
-	: target_name(name)
-{}
+GetMember::GetMember(const String &name) : target_name(name) {}
 
-// caused by the pattern: if (!reflector.isCompound()) { REFLECT_NAMELESS(stuff) }
-template <> void GetMember::handle(const String& v) {
+// caused by the pattern: if (!reflector.isCompound()) { REFLECT_NAMELESS(stuff)
+// }
+template <>
+void GetMember::handle(const String &v) {
 	throw InternalError(_("GetDefaultMember::handle"));
 }

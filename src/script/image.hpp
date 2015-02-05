@@ -7,7 +7,8 @@
 #ifndef HEADER_SCRIPT_IMAGE
 #define HEADER_SCRIPT_IMAGE
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <util/age.hpp>
@@ -17,7 +18,8 @@
 
 class CachedScriptableMask;
 
-// ----------------------------------------------------------------------------- : ScriptableImage
+// -----------------------------------------------------------------------------
+// : ScriptableImage
 
 /// An image that can also be scripted
 /** Differs from Scriptable<Image> in that:
@@ -45,7 +47,9 @@ class ScriptableImage {
 	/// Update the script, returns true if the value has changed
 	bool update(Context &ctx);
 
-	inline void initDependencies(Context &ctx, const Dependency &dep) const { script.initDependencies(ctx, dep); }
+	inline void initDependencies(Context &ctx, const Dependency &dep) const {
+		script.initDependencies(ctx, dep);
+	}
 
 	/// Can this be safely generated from another thread?
 	inline bool threadSafe() const { return !value || value->threadSafe(); }
@@ -69,14 +73,17 @@ class ScriptableImage {
 /// Missing for now
 inline ScriptValueP to_script(const ScriptableImage &) { return script_nil; }
 
-// ----------------------------------------------------------------------------- : CachedScriptableImage
+// -----------------------------------------------------------------------------
+// : CachedScriptableImage
 
 /// A version of ScriptableImage that does caching
 class CachedScriptableImage : public ScriptableImage {
   public:
 	inline CachedScriptableImage() {}
-	inline CachedScriptableImage(const String &script) : ScriptableImage(script) {}
-	inline CachedScriptableImage(const GeneratedImageP &gen) : ScriptableImage(gen) {}
+	inline CachedScriptableImage(const String &script)
+		: ScriptableImage(script) {}
+	inline CachedScriptableImage(const GeneratedImageP &gen)
+		: ScriptableImage(gen) {}
 
 	/// Generate an image, using caching if possible.
 	/** *combine should be set to the combine value of the style.
@@ -86,7 +93,8 @@ class CachedScriptableImage : public ScriptableImage {
 	 *     - or combine >  COMBINE_NORMAL && image->Ok()
 	 *  Optionally, an alpha mask is applied to the image.
 	 */
-	void generateCached(const GeneratedImage::Options &img_options, CachedScriptableMask *mask, ImageCombine *combine,
+	void generateCached(const GeneratedImage::Options &img_options,
+						CachedScriptableMask *mask, ImageCombine *combine,
 						wxBitmap *bitmap, wxImage *image, RealSize *size);
 
 	/// Update the script, returns true if the value has changed
@@ -102,7 +110,8 @@ class CachedScriptableImage : public ScriptableImage {
 	Radians cached_angle;
 };
 
-// ----------------------------------------------------------------------------- : CachedScriptableMask
+// -----------------------------------------------------------------------------
+// : CachedScriptableMask
 
 /// A version of ScriptableImage that caches an AlphaMask
 class CachedScriptableMask {
@@ -110,19 +119,24 @@ class CachedScriptableMask {
 	/// Update the script, returns true if the value has changed
 	bool update(Context &ctx);
 
-	inline void initDependencies(Context &ctx, const Dependency &dep) const { script.initDependencies(ctx, dep); }
+	inline void initDependencies(Context &ctx, const Dependency &dep) const {
+		script.initDependencies(ctx, dep);
+	}
 
 	/// Get the alpha mask; with the given options
-	/** if img_options.width == 0 and the mask is already loaded, just returns it.
+	/** if img_options.width == 0 and the mask is already loaded, just returns
+	 * it.
 	 *  Returns a reference, so calling again might change earlier results.
 	 */
 	const AlphaMask &get(const GeneratedImage::Options &img_options);
 
 	/// Get a mask that is not cached
-	void getNoCache(const GeneratedImage::Options &img_options, AlphaMask &mask) const;
+	void getNoCache(const GeneratedImage::Options &img_options,
+					AlphaMask &mask) const;
 
 	/// Get the mask directly from the cache, without updating
-	/** Should only be used after get() was called before, otherwise an old mask might be returned */
+	/** Should only be used after get() was called before, otherwise an old mask
+	 * might be returned */
 	inline const AlphaMask &getFromCache() const { return mask; }
 
   private:
@@ -133,5 +147,6 @@ class CachedScriptableMask {
 	friend class GetDefaultMember;
 };
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

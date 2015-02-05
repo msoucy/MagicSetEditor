@@ -7,7 +7,8 @@
 #ifndef HEADER_GUI_VALUE_PACKAGE_CHOICE
 #define HEADER_GUI_VALUE_PACKAGE_CHOICE
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/value/editor.hpp>
@@ -15,28 +16,30 @@
 
 DECLARE_SHARED_POINTER_TYPE(DropDownList);
 
-// ----------------------------------------------------------------------------- : PackageChoiceValueEditor
+// -----------------------------------------------------------------------------
+// : PackageChoiceValueEditor
 
 /// An editor 'control' for editing PackageChoiceValues
-class PackageChoiceValueEditor : public PackageChoiceValueViewer, public ValueEditor {
+class PackageChoiceValueEditor : public PackageChoiceValueViewer,
+								 public ValueEditor {
   public:
 	DECLARE_VALUE_EDITOR(PackageChoice);
-	
-	virtual void draw(RotatedDC& dc);
+
+	virtual void draw(RotatedDC &dc);
 	virtual void determineSize(bool force_fit);
-	virtual bool onLeftDown   (const RealPoint& pos, wxMouseEvent& ev);
-	virtual bool onChar(wxKeyEvent& ev);
+	virtual bool onLeftDown(const RealPoint &pos, wxMouseEvent &ev);
+	virtual bool onChar(wxKeyEvent &ev);
 	virtual void onLoseFocus();
-	
+
   private:
 	DropDownListP drop_down;
 	friend class DropDownPackageChoiceList;
 	/// Change the choice
-	void change(const String& c);
+	void change(const String &c);
 	/// Initialize the drop down list
 	void initDropDown();
 };
 
-
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

@@ -7,12 +7,14 @@
 #ifndef HEADER_DATA_FIELD_BOOLEAN
 #define HEADER_DATA_FIELD_BOOLEAN
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/field/choice.hpp>
 
-// ----------------------------------------------------------------------------- : BooleanField
+// -----------------------------------------------------------------------------
+// : BooleanField
 
 DECLARE_POINTER_TYPE(BooleanField);
 DECLARE_POINTER_TYPE(BooleanStyle);
@@ -22,30 +24,34 @@ class BooleanField : public ChoiceField {
   public:
 	BooleanField();
 	DECLARE_FIELD_TYPE();
-	
+
 	// no extra data
 };
 
-// ----------------------------------------------------------------------------- : BooleanStyle
+// -----------------------------------------------------------------------------
+// : BooleanStyle
 
 /// The Style for a BooleanField
 class BooleanStyle : public ChoiceStyle {
   public:
-	BooleanStyle(const ChoiceFieldP& field);
-	DECLARE_HAS_FIELD(Boolean); // not DECLARE_STYLE_TYPE, because we use a normal ChoiceValueViewer/Editor
+	BooleanStyle(const ChoiceFieldP &field);
+	DECLARE_HAS_FIELD(Boolean); // not DECLARE_STYLE_TYPE, because we use a
+								// normal ChoiceValueViewer/Editor
 	virtual StyleP clone() const;
-	
+
 	// no extra data
-	
+
   private:
 	DECLARE_REFLECTION();
 	virtual void after_reading(Version ver);
 };
 
-// ----------------------------------------------------------------------------- : BooleanValue
+// -----------------------------------------------------------------------------
+// : BooleanValue
 
-typedef ChoiceValue  BooleanValue;
+typedef ChoiceValue BooleanValue;
 typedef ChoiceValueP BooleanValueP;
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

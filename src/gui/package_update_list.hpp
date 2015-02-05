@@ -7,46 +7,52 @@
 #ifndef HEADER_GUI_PACKAGE_UPDATE_LIST
 #define HEADER_GUI_PACKAGE_UPDATE_LIST
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/control/tree_list.hpp>
 #include <data/installer.hpp>
 
-// ----------------------------------------------------------------------------- : PackageUpdateList
+// -----------------------------------------------------------------------------
+// : PackageUpdateList
 
 /// A list of installed and downloadable packages
 class PackageUpdateList : public TreeList {
   public:
-	PackageUpdateList(Window* parent, const InstallablePackages& packages, bool show_only_installable, int id = wxID_ANY);
+	PackageUpdateList(Window *parent, const InstallablePackages &packages,
+					  bool show_only_installable, int id = wxID_ANY);
 	~PackageUpdateList();
-	
+
 	inline InstallablePackageP getSelection() const {
 		return selection == NOTHING ? InstallablePackageP() : get(selection);
 	}
-	
+
 	inline InstallablePackageP get(size_t item) const {
 		return static_pointer_cast<TreeItem>(items[item])->package;
 	}
-		
+
   protected:
 	// overridden methods from TreeList
 	virtual void initItems();
-	virtual void drawItem(DC& dc, size_t index, size_t column, int x, int y, bool selected) const;
-	
+	virtual void drawItem(DC &dc, size_t index, size_t column, int x, int y,
+						  bool selected) const;
+
 	virtual size_t columnCount() const { return 3; }
 	virtual String columnText(size_t column) const;
-	virtual int    columnWidth(size_t column) const;
-	
+	virtual int columnWidth(size_t column) const;
+
   private:
 	/// The list of packages we are displaying
-	const InstallablePackages& packages;
+	const InstallablePackages &packages;
 	/// Show only packages with an installer?
 	bool show_only_installable;
-	
+
 	class TreeItem;
+
   public:
 	typedef intrusive_ptr<TreeItem> TreeItemP;
+
   private:
 	class TreeItem : public Item {
 	  public:
@@ -66,18 +72,20 @@ class PackageUpdateList : public TreeList {
 			TYPE_INCLUDE,
 			TYPE_FONT,
 			TYPE_OTHER,
-		}   position_type;
+		} position_type;
 		int position_hint;
-		
-		void add(const InstallablePackageP& package, const String& path, int level = -1);
-		void toItems(vector<TreeList::ItemP>& items);
-		void setIcon(const Image& image);
+
+		void add(const InstallablePackageP &package, const String &path,
+				 int level = -1);
+		void toItems(vector<TreeList::ItemP> &items);
+		void setIcon(const Image &image);
 		bool highlight() const;
-		
-		static PackageType package_type(const PackageDescription& desc);
+
+		static PackageType package_type(const PackageDescription &desc);
 	};
 	friend class PackageIconRequest;
 };
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

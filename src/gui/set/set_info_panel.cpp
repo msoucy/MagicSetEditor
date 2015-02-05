@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/set/set_info_panel.hpp>
@@ -13,44 +14,53 @@
 #include <gui/util.hpp>
 #include <util/window_id.hpp>
 
-// ----------------------------------------------------------------------------- : SetInfoPanel
+// -----------------------------------------------------------------------------
+// : SetInfoPanel
 
-SetInfoPanel::SetInfoPanel(Window* parent, int id)
-	: SetWindowPanel(parent, id)
-{
+SetInfoPanel::SetInfoPanel(Window *parent, int id)
+	: SetWindowPanel(parent, id) {
 	// init controls
 	editor = new SetInfoEditor(this, wxID_ANY);
 	// init sizer
-	wxSizer* s = new wxBoxSizer(wxVERTICAL);
+	wxSizer *s = new wxBoxSizer(wxVERTICAL);
 	s->Add(editor, 1, wxEXPAND, 2);
 	s->SetSizeHints(this);
 	SetSizer(s);
 }
 
-void SetInfoPanel::onChangeSet() {
-	editor->setSet(set);
-}
+void SetInfoPanel::onChangeSet() { editor->setSet(set); }
 
-// ----------------------------------------------------------------------------- : UI
+// -----------------------------------------------------------------------------
+// : UI
 
-void SetInfoPanel::initUI(wxToolBar* tb, wxMenuBar* mb) {
+void SetInfoPanel::initUI(wxToolBar *tb, wxMenuBar *mb) {
 	// Toolbar
-	tb->AddTool(ID_FORMAT_BOLD,		_(""), load_resource_tool_image(_("bold")),			wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("bold"),			_HELP_("bold"));
-	tb->AddTool(ID_FORMAT_ITALIC,	_(""), load_resource_tool_image(_("italic")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("italic"),		_HELP_("italic"));
-	tb->AddTool(ID_FORMAT_SYMBOL,	_(""), load_resource_tool_image(_("symbol")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("symbols"),		_HELP_("symbols"));
+	tb->AddTool(ID_FORMAT_BOLD, _(""), load_resource_tool_image(_("bold")),
+				wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("bold"), _HELP_("bold"));
+	tb->AddTool(ID_FORMAT_ITALIC, _(""), load_resource_tool_image(_("italic")),
+				wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("italic"),
+				_HELP_("italic"));
+	tb->AddTool(ID_FORMAT_SYMBOL, _(""), load_resource_tool_image(_("symbol")),
+				wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("symbols"),
+				_HELP_("symbols"));
 	tb->Realize();
 	// Menus
-	IconMenu* menuFormat = new IconMenu();
-		menuFormat->Append(ID_FORMAT_BOLD,		_("bold"),			_MENU_("bold"),				_HELP_("bold"),				wxITEM_CHECK);
-		menuFormat->Append(ID_FORMAT_ITALIC,	_("italic"),		_MENU_("italic"),			_HELP_("italic"),			wxITEM_CHECK);
-		menuFormat->Append(ID_FORMAT_SYMBOL,	_("symbol"),		_MENU_("symbols"),			_HELP_("symbols"),			wxITEM_CHECK);
-		menuFormat->Append(ID_FORMAT_REMINDER,	_("reminder"),		_MENU_("reminder text"),	_HELP_("reminder text"),	wxITEM_CHECK);
+	IconMenu *menuFormat = new IconMenu();
+	menuFormat->Append(ID_FORMAT_BOLD, _("bold"), _MENU_("bold"),
+					   _HELP_("bold"), wxITEM_CHECK);
+	menuFormat->Append(ID_FORMAT_ITALIC, _("italic"), _MENU_("italic"),
+					   _HELP_("italic"), wxITEM_CHECK);
+	menuFormat->Append(ID_FORMAT_SYMBOL, _("symbol"), _MENU_("symbols"),
+					   _HELP_("symbols"), wxITEM_CHECK);
+	menuFormat->Append(ID_FORMAT_REMINDER, _("reminder"),
+					   _MENU_("reminder text"), _HELP_("reminder text"),
+					   wxITEM_CHECK);
 	mb->Insert(2, menuFormat, _MENU_("format"));
 	// focus on editor
 	editor->SetFocus();
 }
 
-void SetInfoPanel::destroyUI(wxToolBar* tb, wxMenuBar* mb) {
+void SetInfoPanel::destroyUI(wxToolBar *tb, wxMenuBar *mb) {
 	// Toolbar
 	tb->DeleteTool(ID_FORMAT_BOLD);
 	tb->DeleteTool(ID_FORMAT_ITALIC);
@@ -59,30 +69,35 @@ void SetInfoPanel::destroyUI(wxToolBar* tb, wxMenuBar* mb) {
 	delete mb->Remove(2);
 }
 
-void SetInfoPanel::onUpdateUI(wxUpdateUIEvent& ev) {
+void SetInfoPanel::onUpdateUI(wxUpdateUIEvent &ev) {
 	switch (ev.GetId()) {
-		case ID_FORMAT_BOLD: case ID_FORMAT_ITALIC: case ID_FORMAT_SYMBOL: {
-			ev.Enable(editor->canFormat(ev.GetId()));
-			ev.Check (editor->hasFormat(ev.GetId()));
-			break;
-		}
+	case ID_FORMAT_BOLD:
+	case ID_FORMAT_ITALIC:
+	case ID_FORMAT_SYMBOL: {
+		ev.Enable(editor->canFormat(ev.GetId()));
+		ev.Check(editor->hasFormat(ev.GetId()));
+		break;
+	}
 	}
 }
 
 void SetInfoPanel::onCommand(int id) {
 	switch (id) {
-		case ID_FORMAT_BOLD: case ID_FORMAT_ITALIC: case ID_FORMAT_SYMBOL: {
-			editor->doFormat(id);
-			break;
-		}
+	case ID_FORMAT_BOLD:
+	case ID_FORMAT_ITALIC:
+	case ID_FORMAT_SYMBOL: {
+		editor->doFormat(id);
+		break;
+	}
 	}
 }
 
-// ----------------------------------------------------------------------------- : Clipboard
+// -----------------------------------------------------------------------------
+// : Clipboard
 
-bool SetInfoPanel::canCut()   const { return editor->canCut();   }
-bool SetInfoPanel::canCopy()  const { return editor->canCopy();  }
+bool SetInfoPanel::canCut() const { return editor->canCut(); }
+bool SetInfoPanel::canCopy() const { return editor->canCopy(); }
 bool SetInfoPanel::canPaste() const { return editor->canPaste(); }
-void SetInfoPanel::doCut()          {        editor->doCut();    }
-void SetInfoPanel::doCopy()         {        editor->doCopy();   }
-void SetInfoPanel::doPaste()        {        editor->doPaste();  }
+void SetInfoPanel::doCut() { editor->doCut(); }
+void SetInfoPanel::doCopy() { editor->doCopy(); }
+void SetInfoPanel::doPaste() { editor->doPaste(); }

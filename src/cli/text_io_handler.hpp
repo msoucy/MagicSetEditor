@@ -7,11 +7,13 @@
 #ifndef HEADER_CLI_TEXT_IO_HANDLER
 #define HEADER_CLI_TEXT_IO_HANDLER
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 
-// ----------------------------------------------------------------------------- : Text I/O handler
+// -----------------------------------------------------------------------------
+// : Text I/O handler
 
 // color codes
 extern const Char *BRIGHT, *NORMAL, *PARAM, *FILE_EXT, *GRAY, *RED, *ENDL;
@@ -20,36 +22,36 @@ extern const Char *BRIGHT, *NORMAL, *PARAM, *FILE_EXT, *GRAY, *RED, *ENDL;
 class TextIOHandler {
   public:
 	void init();
-	
+
 	/// Do we have a console to read/write from/to?
 	bool haveConsole() const;
-	
+
 	/// Output text to the console
-	TextIOHandler& operator << (const Char*);
-	TextIOHandler& operator << (const String&);
-	
+	TextIOHandler &operator<<(const Char *);
+	TextIOHandler &operator<<(const String &);
+
 	/// Read a line from stdin
 	String getLine();
 	/// Can another line be got?
 	bool canGetLine();
-	
+
 	/// Flush output
 	void flush();
-	
+
 	/// Show an error or warning message
-	void show_message(MessageType type, String const& message);
+	void show_message(MessageType type, String const &message);
 	void print_pending_errors();
-	
+
 	/// Enable raw mode
 	void enableRaw();
 	/// Output a single raw-mode record
 	/// Has no effect unless enableRaw() was called
 	void flushRaw();
-	
+
   private:
 	bool have_console;
 	bool escapes;
-	FILE* stream;
+	FILE *stream;
 	String buffer; ///< Buffer when not writing to console
 	bool raw_mode;
 	int raw_mode_status;
@@ -58,5 +60,6 @@ class TextIOHandler {
 /// The global TextIOHandler object
 extern TextIOHandler cli;
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

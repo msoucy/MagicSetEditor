@@ -7,7 +7,8 @@
 #ifndef HEADER_DATA_LOCALE
 #define HEADER_DATA_LOCALE
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <util/locale.hpp>
@@ -18,20 +19,21 @@ DECLARE_POINTER_TYPE(Locale);
 DECLARE_POINTER_TYPE(SubLocale);
 DECLARE_POINTER_TYPE(SubLocaleValidator);
 
-// ----------------------------------------------------------------------------- : Locale class
+// -----------------------------------------------------------------------------
+// : Locale class
 
 /// Translations of the texts of a game/stylesheet/symbolfont
 class SubLocale : public IntrusivePtrBase<SubLocale> {
   public:
-	map<String,String> translations;
-	
+	map<String, String> translations;
+
 	/// Translate a key, if not found, apply the default function to the key
-	String tr(const String& key, DefaultLocaleFun def);
-	String tr(const String& subcat, const String& key, DefaultLocaleFun def);
-	
+	String tr(const String &key, DefaultLocaleFun def);
+	String tr(const String &subcat, const String &key, DefaultLocaleFun def);
+
 	/// Is this a valid sublocale? Returns errors
-	String validate(const String& name, const SubLocaleValidatorP&) const;
-	
+	String validate(const String &name, const SubLocaleValidatorP &) const;
+
 	DECLARE_REFLECTION();
 };
 
@@ -39,16 +41,16 @@ class SubLocale : public IntrusivePtrBase<SubLocale> {
 class Locale : public Packaged {
   public:
 	/// Translations of UI strings in each category
-	SubLocale              translations[LOCALE_CAT_MAX];
+	SubLocale translations[LOCALE_CAT_MAX];
 	/// Translations of Package specific texts, by relativeFilename
-	map<String,SubLocaleP> package_translations;
-	
+	map<String, SubLocaleP> package_translations;
+
 	/// Open a locale with the given name
-	static LocaleP byName(const String& name);
-	
+	static LocaleP byName(const String &name);
+
 	/// Validate that the locale is valid for this MSE version
 	virtual void validate(Version = app_version);
-	
+
   protected:
 	String typeName() const;
 	Version fileVersion() const;
@@ -58,5 +60,6 @@ class Locale : public Packaged {
 /// The global locale object
 extern LocaleP the_locale;
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

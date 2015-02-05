@@ -7,40 +7,45 @@
 #ifndef HEADER_GUI_VALUE_MULTIPLE_CHOICE
 #define HEADER_GUI_VALUE_MULTIPLE_CHOICE
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/value/editor.hpp>
 #include <gui/value/choice.hpp>
 #include <render/value/multiple_choice.hpp>
 
-// ----------------------------------------------------------------------------- : MultipleChoiceValueEditor
+// -----------------------------------------------------------------------------
+// : MultipleChoiceValueEditor
 
 /// An editor 'control' for editing MultipleChoiceValues
-class MultipleChoiceValueEditor : public MultipleChoiceValueViewer, public ValueEditor {
+class MultipleChoiceValueEditor : public MultipleChoiceValueViewer,
+								  public ValueEditor {
   public:
 	DECLARE_VALUE_EDITOR(MultipleChoice);
 	~MultipleChoiceValueEditor();
-	
+
 	virtual void onValueChange();
-	
+
 	virtual void determineSize(bool force_fit);
-	
-	virtual bool onLeftDown   (const RealPoint& pos, wxMouseEvent& ev);
-	virtual bool onChar(wxKeyEvent& ev);
+
+	virtual bool onLeftDown(const RealPoint &pos, wxMouseEvent &ev);
+	virtual bool onChar(wxKeyEvent &ev);
 	virtual void onLoseFocus();
-	
+
   private:
 	DropDownListP drop_down;
-	vector<int> active;      ///< Which choices are active? (note: vector<bool> is evil)
+	vector<int>
+		active; ///< Which choices are active? (note: vector<bool> is evil)
 	friend class DropDownMultipleChoiceList;
 	/// Initialize the drop down list
-	DropDownList& initDropDown();
+	DropDownList &initDropDown();
 	/// Toggle a choice or on or off
 	void toggle(int id);
 	/// Toggle defaultness or on or off
 	void toggleDefault();
 };
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

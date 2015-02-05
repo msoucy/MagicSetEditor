@@ -7,13 +7,15 @@
 #ifndef HEADER_UTIL_INDEX_MAP
 #define HEADER_UTIL_INDEX_MAP
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <vector>
 #include <map>
 #include <util/string.hpp>
 
-// ----------------------------------------------------------------------------- : IndexMap
+// -----------------------------------------------------------------------------
+// : IndexMap
 
 /// A kind of map of Key->Value, with the following properties:
 /**  - K must have a unique member ->index of type UInt
@@ -47,14 +49,16 @@ class IndexMap : private vector<Value> {
 	/// Initialize this map with default values given a list of keys
 	/** has no effect if already initialized with the given keys */
 	bool init(const vector<Key> &keys) {
-		if (!this->empty() && (keys.empty() || get_key(this->front()) != keys.front())) {
+		if (!this->empty() &&
+			(keys.empty() || get_key(this->front()) != keys.front())) {
 			// switch to different keys
 			clear();
 		}
 		if (this->size() == keys.size())
 			return false;
 		this->reserve(keys.size());
-		for (typename vector<Key>::const_iterator it = keys.begin(); it != keys.end(); ++it) {
+		for (typename vector<Key>::const_iterator it = keys.begin();
+			 it != keys.end(); ++it) {
 			const Key &key = *it;
 			assert(key);
 			if (key->index >= this->size())
@@ -114,7 +118,8 @@ class IndexMap : private vector<Value> {
 	/// Find a value given the key name, return an iterator
 	template <typename Name>
 	typename vector<Value>::const_iterator find(const Name &key) const {
-		for (typename vector<Value>::const_iterator it = begin(); it != end(); ++it) {
+		for (typename vector<Value>::const_iterator it = begin(); it != end();
+			 ++it) {
 			if (get_key_name(*it) == key)
 				return it;
 		}
@@ -132,25 +137,29 @@ inline void swap(IndexMap<Key, Value> &a, IndexMap<Key, Value> &b) {
 	a.swap(b);
 }
 
-// ----------------------------------------------------------------------------- : DelayedIndexMaps
+// -----------------------------------------------------------------------------
+// : DelayedIndexMaps
 
 // The data for a specific name.
 /* Invariant: read_data is initialized <=> unread_data.empty()
  */
 template <typename Key, typename Value>
-struct DelayedIndexMapsData : public IntrusivePtrBase<DelayedIndexMapsData<Key, Value>> {
+struct DelayedIndexMapsData
+	: public IntrusivePtrBase<DelayedIndexMapsData<Key, Value>> {
 	String unread_data;
 	IndexMap<Key, Value> read_data;
 };
 
-/// A map<String,IndexMap> where the reading of the index map depends on the name.
+/// A map<String,IndexMap> where the reading of the index map depends on the
+/// name.
 /** The reading is delayed until the data to initialize the map with is known.
  *  The only way to access data is using get()
  */
 template <typename Key, typename Value>
 class DelayedIndexMaps {
   public:
-	/// Get the data for a specific name. Initialize the map with init_with (if it is not alread initialized)
+	/// Get the data for a specific name. Initialize the map with init_with (if
+	/// it is not alread initialized)
 	IndexMap<Key, Value> &get(const String &name, const vector<Key> &init_with);
 	/// Clear the delayed index map
 	void clear();
@@ -163,5 +172,6 @@ class DelayedIndexMaps {
 	friend class GetMember;
 };
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

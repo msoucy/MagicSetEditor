@@ -4,27 +4,28 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/word_list.hpp>
 
-// ----------------------------------------------------------------------------- : WordList
+// -----------------------------------------------------------------------------
+// : WordList
 
-WordListWord::WordListWord()
-	: line_below(false)
-	, is_prefix(false)
-{}
+WordListWord::WordListWord() : line_below(false), is_prefix(false) {}
 
 IMPLEMENT_REFLECTION_NO_SCRIPT(WordListWord) {
-	REFLECT_IF_READING_COMPOUND_OR(line_below || is_prefix || isGroup() || script) {
+	REFLECT_IF_READING_COMPOUND_OR(line_below || is_prefix || isGroup() ||
+								   script) {
 		// complex value
 		REFLECT(name);
 		REFLECT(line_below);
 		REFLECT(is_prefix);
 		REFLECT(words);
 		REFLECT(script);
-	} else {
+	}
+	else {
 		REFLECT_NAMELESS(name);
 	}
 }
@@ -34,14 +35,10 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(WordList) {
 	REFLECT(words);
 }
 
+// -----------------------------------------------------------------------------
+// : Auto replace words
 
-// ----------------------------------------------------------------------------- : Auto replace words
-
-AutoReplace::AutoReplace()
-	: enabled(true)
-	, whole_word(true)
-	, custom(true)
-{}
+AutoReplace::AutoReplace() : enabled(true), whole_word(true), custom(true) {}
 
 IMPLEMENT_REFLECTION_NO_SCRIPT(AutoReplace) {
 	REFLECT(enabled);

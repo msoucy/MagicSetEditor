@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <script/image.hpp>
@@ -15,34 +16,39 @@
 #include <gfx/generated_image.hpp>
 #include <data/field/image.hpp>
 
-// ----------------------------------------------------------------------------- : ScriptableImage
+// -----------------------------------------------------------------------------
+// : ScriptableImage
 
-Image ScriptableImage::generate(const GeneratedImage::Options& options) const {
+Image ScriptableImage::generate(const GeneratedImage::Options &options) const {
 	// generate
 	Image image;
 	if (isReady()) {
-		// note: Don't catch exceptions here, we don't want to return an invalid image.
-		//       We could return a blank one, but the thumbnail code does want an invalid
+		// note: Don't catch exceptions here, we don't want to return an invalid
+		// image.
+		//       We could return a blank one, but the thumbnail code does want
+		//       an invalid
 		//       image in case of errors.
 		//       This allows the caller to catch errors.
 		image = value->generate(options);
 	} else {
 		// error, return blank image
-		Image i(1,1);
+		Image i(1, 1);
 		i.InitAlpha();
-		i.SetAlpha(0,0,0);
+		i.SetAlpha(0, 0, 0);
 		image = i;
 	}
 	return conform_image(image, options);
 }
 
 ImageCombine ScriptableImage::combine() const {
-	if (!isReady()) return COMBINE_DEFAULT;
+	if (!isReady())
+		return COMBINE_DEFAULT;
 	return value->combine();
 }
 
-bool ScriptableImage::update(Context& ctx) {
-	if (!isScripted()) return false;
+bool ScriptableImage::update(Context &ctx) {
+	if (!isScripted())
+		return false;
 	GeneratedImageP new_value = script.invoke(ctx)->toImage();
 	if (!new_value || !value || *new_value != *value) {
 		value = new_value;
@@ -53,18 +59,24 @@ bool ScriptableImage::update(Context& ctx) {
 }
 
 ScriptP ScriptableImage::getValidScriptP() {
-	if (script) return script.getScriptP();
+	if (script)
+		return script.getScriptP();
 	// return value or a blank image
 	ScriptP s(new Script);
-	s->addInstruction(I_PUSH_CONST, value ? static_pointer_cast<ScriptValue>(value) : script_nil);
+	s->addInstruction(I_PUSH_CONST,
+					  value ? static_pointer_cast<ScriptValue>(value)
+							: script_nil);
 	return s;
 }
 
-// ----------------------------------------------------------------------------- : Reflection
+// -----------------------------------------------------------------------------
+// : Reflection
 
-// we need some custom io, because the behaviour is different for each of Reader/Writer/GetMember
+// we need some custom io, because the behaviour is different for each of
+// Reader/Writer/GetMember
 
-template <> void Reader::handle(ScriptableImage& s) {
+template <>
+void Reader::handle(ScriptableImage &s) {
 	handle(s.script.unparsed);
 	if (starts_with(s.script.unparsed, _("script:"))) {
 		s.script.unparsed = s.script.unparsed.substr(7);
@@ -76,41 +88,47 @@ template <> void Reader::handle(ScriptableImage& s) {
 		s.value = intrusive(new PackagedImage(s.script.unparsed));
 	}
 }
-template <> void Writer::handle(const ScriptableImage& s) {
+template <>
+void Writer::handle(const ScriptableImage &s) {
 	handle(s.script.unparsed);
 }
-template <> void GetDefaultMember::handle(const ScriptableImage& s) {
+template <>
+void GetDefaultMember::handle(const ScriptableImage &s) {
 	handle(s.script.unparsed);
 }
 
+// -----------------------------------------------------------------------------
+// : CachedScriptableImage
 
-// ----------------------------------------------------------------------------- : CachedScriptableImage
-
-void CachedScriptableImage::generateCached(const GeneratedImage::Options& options,
-	                                       CachedScriptableMask* mask,
-	                                       ImageCombine* combine, wxBitmap* bitmap, wxImage* image, RealSize* size) {
+void CachedScriptableImage::generateCached(
+	const GeneratedImage::Options &options, CachedScriptableMask *mask,
+	ImageCombine *combine, wxBitmap *bitmap, wxImage *image, RealSize *size) {
 	// ready?
 	if (!isReady()) {
 		// error, return blank image
-		Image i(1,1);
+		Image i(1, 1);
 		i.InitAlpha();
-		i.SetAlpha(0,0,0);
+		i.SetAlpha(0, 0, 0);
 		*image = i;
-		*size = RealSize(0,0);
+		*size = RealSize(0, 0);
 		return;
 	}
 	// find combine mode
 	ImageCombine combine_i = value->combine();
-	if (combine_i != COMBINE_DEFAULT) *combine = combine_i;
+	if (combine_i != COMBINE_DEFAULT)
+		*combine = combine_i;
 	*size = cached_size;
 	// does the size match?
-	bool w_ok = cached_size.width  == options.width,
-	     h_ok = cached_size.height == options.height;
+	bool w_ok = cached_size.width == options.width,
+		 h_ok = cached_size.height == options.height;
 	// image or bitmap?
 	if (*combine <= COMBINE_NORMAL) {
 		// bitmap
 		if (cached_b.Ok() && options.angle == cached_angle) {
-			if ((w_ok && h_ok) || (options.preserve_aspect == ASPECT_FIT && (w_ok || h_ok))) { // only one dimension has to fit when fitting
+			if ((w_ok && h_ok) ||
+				(options.preserve_aspect == ASPECT_FIT &&
+				 (w_ok ||
+				  h_ok))) { // only one dimension has to fit when fitting
 				// cached, we are done
 				*bitmap = cached_b;
 				return;
@@ -120,8 +138,12 @@ void CachedScriptableImage::generateCached(const GeneratedImage::Options& option
 		// image
 		Radians relative_rotation = options.angle + rad360 - cached_angle;
 		if (cached_i.Ok() && is_straight(relative_rotation)) {
-			// we need only an {0,90,180,270} degree rotation compared to the cached one, this doesn't reduce image quality
-			if ((w_ok && h_ok) || (options.preserve_aspect == ASPECT_FIT && (w_ok || h_ok))) { // only one dimension has to fit when fitting
+			// we need only an {0,90,180,270} degree rotation compared to the
+			// cached one, this doesn't reduce image quality
+			if ((w_ok && h_ok) ||
+				(options.preserve_aspect == ASPECT_FIT &&
+				 (w_ok ||
+				  h_ok))) { // only one dimension has to fit when fitting
 				if (options.angle != cached_angle) {
 					// rotate cached image
 					cached_i = rotate_image(cached_i, relative_rotation);
@@ -132,19 +154,20 @@ void CachedScriptableImage::generateCached(const GeneratedImage::Options& option
 			}
 		}
 	}
-	// hack(part1): temporarily set angle to 0, do actual rotation after applying mask
+	// hack(part1): temporarily set angle to 0, do actual rotation after
+	// applying mask
 	Radians a = options.angle;
-	const_cast<GeneratedImage::Options&>(options).angle = 0;
+	const_cast<GeneratedImage::Options &>(options).angle = 0;
 	// generate
 	cached_i = generate(options);
-	const_cast<GeneratedImage::Options&>(options).angle = cached_angle = a;
+	const_cast<GeneratedImage::Options &>(options).angle = cached_angle = a;
 	*size = cached_size = RealSize(options.width, options.height);
 	if (mask) {
 		// apply mask
 		GeneratedImage::Options mask_opts(options);
-		mask_opts.width  = cached_i.GetWidth();
+		mask_opts.width = cached_i.GetWidth();
 		mask_opts.height = cached_i.GetHeight();
-		mask_opts.angle  = 0;
+		mask_opts.angle = 0;
 		mask->get(mask_opts).setAlpha(cached_i);
 	}
 	if (options.angle != 0) {
@@ -159,7 +182,7 @@ void CachedScriptableImage::generateCached(const GeneratedImage::Options& option
 	}
 }
 
-bool CachedScriptableImage::update(Context& ctx) {
+bool CachedScriptableImage::update(Context &ctx) {
 	bool change = ScriptableImage::update(ctx);
 	if (change) {
 		clearCache();
@@ -172,22 +195,23 @@ void CachedScriptableImage::clearCache() {
 	cached_b = Bitmap();
 }
 
-
-template <> void Reader::handle(CachedScriptableImage& s) {
-	handle((ScriptableImage&)s);
+template <>
+void Reader::handle(CachedScriptableImage &s) {
+	handle((ScriptableImage &)s);
 }
-template <> void Writer::handle(const CachedScriptableImage& s) {
-	handle((const ScriptableImage&)s);
+template <>
+void Writer::handle(const CachedScriptableImage &s) {
+	handle((const ScriptableImage &)s);
 }
-template <> void GetDefaultMember::handle(const CachedScriptableImage& s) {
-	handle((const ScriptableImage&)s);
+template <>
+void GetDefaultMember::handle(const CachedScriptableImage &s) {
+	handle((const ScriptableImage &)s);
 }
 
+// -----------------------------------------------------------------------------
+// : CachedScriptableMask
 
-// ----------------------------------------------------------------------------- : CachedScriptableMask
-
-
-bool CachedScriptableMask::update(Context& ctx) {
+bool CachedScriptableMask::update(Context &ctx) {
 	if (script.update(ctx)) {
 		mask.clear();
 		return true;
@@ -196,17 +220,22 @@ bool CachedScriptableMask::update(Context& ctx) {
 	}
 }
 
-const AlphaMask& CachedScriptableMask::get(const GeneratedImage::Options& img_options) {
+const AlphaMask &
+CachedScriptableMask::get(const GeneratedImage::Options &img_options) {
 	if (mask.isLoaded()) {
 		// already loaded?
-		if (img_options.width == 0 && img_options.height == 0) return mask;
-		if (mask.hasSize(wxSize(img_options.width,img_options.height))) return mask;
+		if (img_options.width == 0 && img_options.height == 0)
+			return mask;
+		if (mask.hasSize(wxSize(img_options.width, img_options.height)))
+			return mask;
 	}
 	// load?
-	getNoCache(img_options,mask);
+	getNoCache(img_options, mask);
 	return mask;
 }
-void CachedScriptableMask::getNoCache(const GeneratedImage::Options& img_options, AlphaMask& other_mask) const {
+void
+CachedScriptableMask::getNoCache(const GeneratedImage::Options &img_options,
+								 AlphaMask &other_mask) const {
 	if (script.isBlank()) {
 		other_mask.clear();
 	} else {
@@ -215,12 +244,15 @@ void CachedScriptableMask::getNoCache(const GeneratedImage::Options& img_options
 	}
 }
 
-template <> void Reader::handle(CachedScriptableMask& i) {
+template <>
+void Reader::handle(CachedScriptableMask &i) {
 	handle(i.script);
 }
-template <> void Writer::handle(const CachedScriptableMask& i) {
+template <>
+void Writer::handle(const CachedScriptableMask &i) {
 	handle(i.script);
 }
-template <> void GetDefaultMember::handle(const CachedScriptableMask& i) {
+template <>
+void GetDefaultMember::handle(const CachedScriptableMask &i) {
 	handle(i.script);
 }

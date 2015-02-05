@@ -7,12 +7,14 @@
 #ifndef HEADER_DATA_FIELD_MULTIPLE_CHOICE
 #define HEADER_DATA_FIELD_MULTIPLE_CHOICE
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/field/choice.hpp>
 
-// ----------------------------------------------------------------------------- : MultipleChoiceField
+// -----------------------------------------------------------------------------
+// : MultipleChoiceField
 
 DECLARE_POINTER_TYPE(MultipleChoiceField);
 DECLARE_POINTER_TYPE(MultipleChoiceStyle);
@@ -23,26 +25,30 @@ class MultipleChoiceField : public ChoiceField {
   public:
 	MultipleChoiceField();
 	DECLARE_FIELD_TYPE();
-	
-	UInt minimum_selection, maximum_selection; ///< How many choices can be selected simultaniously?
-	String empty_choice; ///< Name to use when nothing is selected
+
+	UInt minimum_selection,
+		maximum_selection; ///< How many choices can be selected simultaniously?
+	String empty_choice;   ///< Name to use when nothing is selected
 };
 
-// ----------------------------------------------------------------------------- : MultipleChoiceStyle
+// -----------------------------------------------------------------------------
+// : MultipleChoiceStyle
 
 /// The Style for a MultipleChoiceField
 class MultipleChoiceStyle : public ChoiceStyle {
   public:
-	MultipleChoiceStyle(const MultipleChoiceFieldP& field);
+	MultipleChoiceStyle(const MultipleChoiceFieldP &field);
 	DECLARE_STYLE_TYPE(MultipleChoice);
-	
-	Scriptable<Direction> direction;	///< In what direction are choices layed out?
-	Scriptable<double> spacing;			///< Spacing between choices (images) in pixels
-	
-	virtual int  update(Context&);
+
+	Scriptable<Direction>
+		direction;				///< In what direction are choices layed out?
+	Scriptable<double> spacing; ///< Spacing between choices (images) in pixels
+
+	virtual int update(Context &);
 };
 
-// ----------------------------------------------------------------------------- : MultipleChoiceValue
+// -----------------------------------------------------------------------------
+// : MultipleChoiceValue
 
 /// The Value in a MultipleChoiceField
 /** The value is stored as "<choice>, <choice>, <choice>"
@@ -50,26 +56,29 @@ class MultipleChoiceStyle : public ChoiceStyle {
  */
 class MultipleChoiceValue : public ChoiceValue {
   public:
-	inline MultipleChoiceValue(const MultipleChoiceFieldP& field) : ChoiceValue(field) {}
+	inline MultipleChoiceValue(const MultipleChoiceFieldP &field)
+		: ChoiceValue(field) {}
 	DECLARE_HAS_FIELD(MultipleChoice);
 	virtual ValueP clone() const;
-	
+
 	/// Splits the value, stores the selected choices in the out parameter
-	void get(vector<String>& out) const;
-	
-	virtual bool update(Context&, const Action* = nullptr);
-	
+	void get(vector<String> &out) const;
+
+	virtual bool update(Context &, const Action * = nullptr);
+
   private:
 	DECLARE_REFLECTION();
-	
+
 	/// Put the value in normal form (all choices ordered, empty_name
 	void normalForm();
 };
 
-// ----------------------------------------------------------------------------- : Utilities
+// -----------------------------------------------------------------------------
+// : Utilities
 
 /// Is the given choice selected in the value?
-bool chosen(const String& multiple_choice_value, const String& chioce);
+bool chosen(const String &multiple_choice_value, const String &chioce);
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

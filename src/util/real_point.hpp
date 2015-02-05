@@ -12,68 +12,57 @@
  *  @brief Points and sizes with floating point (real) coordinates.
  */
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <util/vector2d.hpp>
 
-// ----------------------------------------------------------------------------- : Point using doubles
+// -----------------------------------------------------------------------------
+// : Point using doubles
 
 /// A point using real (double) coordinates
 typedef Vector2D RealPoint;
 
-// ----------------------------------------------------------------------------- : Size using doubles
+// -----------------------------------------------------------------------------
+// : Size using doubles
 
 /// A size (width,height) using real (double) coordinates
 class RealSize {
   public:
 	double width;
 	double height;
-	
-	inline RealSize()
-		: width(0), height(0)
-	{}
-	inline RealSize(double w, double h)
-		: width(w), height(h)
-	{}
-	inline RealSize(wxSize s)
-		: width(s.x), height(s.y)
-	{}
-	inline explicit RealSize(const Vector2D& v)
-		: width(v.x), height(v.y)
-	{}
+
+	inline RealSize() : width(0), height(0) {}
+	inline RealSize(double w, double h) : width(w), height(h) {}
+	inline RealSize(wxSize s) : width(s.x), height(s.y) {}
+	inline explicit RealSize(const Vector2D &v) : width(v.x), height(v.y) {}
 	/// size of an image
-	inline explicit RealSize(const wxImage& img)
-		: width(img.GetWidth()), height(img.GetHeight())
-	{}
+	inline explicit RealSize(const wxImage &img)
+		: width(img.GetWidth()), height(img.GetHeight()) {}
 	/// size of a bitmap
-	inline explicit RealSize(const wxBitmap& img)
-		: width(img.GetWidth()), height(img.GetHeight())
-	{}
-	
+	inline explicit RealSize(const wxBitmap &img)
+		: width(img.GetWidth()), height(img.GetHeight()) {}
+
 	/// Negation of a size, negates both components
-	inline RealSize operator - () const {
-		return RealSize(-width, -height);
-	}
-	
+	inline RealSize operator-() const { return RealSize(-width, -height); }
+
 	/// Multiplying a size by a scalar r, multiplies both components
-	inline void operator *= (double r) {
-		width  *= r;
+	inline void operator*=(double r) {
+		width *= r;
 		height *= r;
 	}
 	/// Multiplying a size by a scalar r, multiplies both components
-	inline RealSize operator * (double r) const {
+	inline RealSize operator*(double r) const {
 		return RealSize(width * r, height * r);
 	}
 	/// Dividing a size by a scalar r, divides both components
-	inline RealSize operator / (double r) const {
+	inline RealSize operator/(double r) const {
 		return RealSize(width / r, height / r);
 	}
-	
+
 	/// Can be converted to a wxSize, with integer components
-	inline operator wxSize() {
-		return wxSize(to_int(width), to_int(height));
-	}
+	inline operator wxSize() { return wxSize(to_int(width), to_int(height)); }
 };
 
 /// Add two sizes horizontally
@@ -81,7 +70,7 @@ class RealSize {
  *   #### + $$$  = ####$$$
  *   ####          ####...
  */
-inline RealSize add_horizontal(const RealSize& a, const RealSize& b) {
+inline RealSize add_horizontal(const RealSize &a, const RealSize &b) {
 	return RealSize(a.width + b.width, max(a.height, b.height));
 }
 
@@ -92,7 +81,7 @@ inline RealSize add_horizontal(const RealSize& a, const RealSize& b) {
  *                 $$$.
  *                 $$$.
  */
-inline RealSize add_vertical(const RealSize& a, const RealSize& b) {
+inline RealSize add_vertical(const RealSize &a, const RealSize &b) {
 	return RealSize(max(a.width, b.width), a.height + b.height);
 }
 
@@ -103,26 +92,23 @@ inline RealSize add_vertical(const RealSize& a, const RealSize& b) {
  *                 ....$$$
  *                 ....$$$
  */
-inline RealSize add_diagonal(const RealSize& a, const RealSize& b) {
+inline RealSize add_diagonal(const RealSize &a, const RealSize &b) {
 	return RealSize(a.width + b.width, a.height + b.height);
 }
 
 /// Piecewise minimum
-inline RealSize piecewise_min(const RealSize& a, const RealSize& b) {
-	return RealSize(
-		a.width  < b.width  ? a.width  : b.width,
-		a.height < b.height ? a.height : b.height
-	);
+inline RealSize piecewise_min(const RealSize &a, const RealSize &b) {
+	return RealSize(a.width < b.width ? a.width : b.width,
+					a.height < b.height ? a.height : b.height);
 }
 /// Piecewise maximum
-inline RealSize piecewise_max(const RealSize& a, const RealSize& b) {
-	return RealSize(
-		a.width  < b.width  ? b.width  : a.width,
-		a.height < b.height ? b.height : a.height
-	);
+inline RealSize piecewise_max(const RealSize &a, const RealSize &b) {
+	return RealSize(a.width < b.width ? b.width : a.width,
+					a.height < b.height ? b.height : a.height);
 }
 
-// ----------------------------------------------------------------------------- : Rectangle using doubles
+// -----------------------------------------------------------------------------
+// : Rectangle using doubles
 
 /// A rectangle (postion and size) using real (double) coordinats
 class RealRect : private RealPoint, private RealSize {
@@ -131,43 +117,43 @@ class RealRect : private RealPoint, private RealSize {
 	using RealPoint::y;
 	using RealSize::width;
 	using RealSize::height;
-		
-	inline RealRect(const wxRect& rect)
-		: RealPoint(rect.x, rect.y), RealSize(rect.width, rect.height)
-	{}
-	inline RealRect(const RealPoint& position, const RealSize& size)
-		: RealPoint(position), RealSize(size)
-	{}
+
+	inline RealRect(const wxRect &rect)
+		: RealPoint(rect.x, rect.y), RealSize(rect.width, rect.height) {}
+	inline RealRect(const RealPoint &position, const RealSize &size)
+		: RealPoint(position), RealSize(size) {}
 	inline RealRect(double x, double y, double w, double h)
-		: RealPoint(x,y), RealSize(w,h)
-	{}
-	
+		: RealPoint(x, y), RealSize(w, h) {}
+
 	/// Position of the top left corner
-	inline       RealPoint& position()       { return *this; }
-	inline const RealPoint& position() const { return *this; }
+	inline RealPoint &position() { return *this; }
+	inline const RealPoint &position() const { return *this; }
 	/// Size of the rectangle
-	inline       RealSize&  size()           { return *this; }
-	inline const RealSize&  size()     const { return *this; }
-	
-	inline double left()   const { return x; }
-	inline double right()  const { return x + width; }
-	inline double top()    const { return y; }
+	inline RealSize &size() { return *this; }
+	inline const RealSize &size() const { return *this; }
+
+	inline double left() const { return x; }
+	inline double right() const { return x + width; }
+	inline double top() const { return y; }
 	inline double bottom() const { return y + height; }
-	
-	inline RealPoint topLeft    () const { return *this; }
-	inline RealPoint topRight   () const { return RealPoint(x + width, y); }
-	inline RealPoint bottomLeft () const { return RealPoint(x,         y + height); }
-	inline RealPoint bottomRight() const { return RealPoint(x + width, y + height); }
-	
+
+	inline RealPoint topLeft() const { return *this; }
+	inline RealPoint topRight() const { return RealPoint(x + width, y); }
+	inline RealPoint bottomLeft() const { return RealPoint(x, y + height); }
+	inline RealPoint bottomRight() const {
+		return RealPoint(x + width, y + height);
+	}
+
 	/// Return a rectangle that is amount larger to all sides
 	inline RealRect grow(double amount) {
-		return RealRect(x - amount, y - amount, width + 2 * amount, height + 2 * amount);
+		return RealRect(x - amount, y - amount, width + 2 * amount,
+						height + 2 * amount);
 	}
 	/// Move the coordinates by some amount
 	inline RealRect move(double dx, double dy, double dw, double dh) const {
 		return RealRect(x + dx, y + dy, width + dw, height + dh);
 	}
-	
+
 	inline operator wxRect() const {
 		// Prevent rounding errors, for example if
 		// x = 0.6 and width = 0.6
@@ -178,11 +164,9 @@ class RealRect : private RealPoint, private RealSize {
 		int i_t = to_int(y), i_b = to_int(bottom());
 		return wxRect(i_l, i_t, i_r - i_l, i_b - i_t);
 	}
-	
+
 	/// Explicit conversion to wxRect, to not confuse gcc
-	inline wxRect toRect() const {
-		return *this;
-	}
+	inline wxRect toRect() const { return *this; }
 };
 
 /// Split a rectangle horizontally
@@ -197,33 +181,34 @@ class RealRect : private RealPoint, private RealSize {
  *    | A  |   R   |
  *    +----+-------+
  */
-inline RealRect split_left(RealRect& r, double w) {
+inline RealRect split_left(RealRect &r, double w) {
 	RealRect result(r.x, r.y, w, r.height);
 	r.width -= w;
-	r.x     += w;
+	r.x += w;
 	return result;
 }
 /// Split a rectangle horizontally
-inline RealRect split_left(RealRect& r, const RealSize& s) {
+inline RealRect split_left(RealRect &r, const RealSize &s) {
 	return split_left(r, s.width);
 }
 
+// -----------------------------------------------------------------------------
+// : Operators
 
-// ----------------------------------------------------------------------------- : Operators
-
-inline RealPoint operator + (const RealSize& s, const RealPoint& p) {
+inline RealPoint operator+(const RealSize &s, const RealPoint &p) {
 	return RealPoint(p.x + s.width, p.y + s.height);
 }
-inline RealPoint operator + (const RealPoint& p, const RealSize& s) {
+inline RealPoint operator+(const RealPoint &p, const RealSize &s) {
 	return RealPoint(p.x + s.width, p.y + s.height);
 }
-inline RealPoint operator - (const RealPoint& p, const RealSize& s) {
+inline RealPoint operator-(const RealPoint &p, const RealSize &s) {
 	return RealPoint(p.x - s.width, p.y - s.height);
 }
-inline void operator += (RealPoint& p, const RealSize& s) {
+inline void operator+=(RealPoint &p, const RealSize &s) {
 	p.x += s.width;
 	p.y += s.height;
 }
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

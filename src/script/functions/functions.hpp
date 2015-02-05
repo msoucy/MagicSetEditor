@@ -11,26 +11,28 @@
  *
  *  @brief Header for buildin script functions.
  */
- 
-// ----------------------------------------------------------------------------- : Includes
+
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 
 class Context;
 
-// ----------------------------------------------------------------------------- : Script functions
+// -----------------------------------------------------------------------------
+// : Script functions
 
-void init_script_basic_functions(Context& ctx);
-void init_script_regex_functions(Context& ctx);
-void init_script_image_functions(Context& ctx);
-void init_script_editor_functions(Context& ctx);
-void init_script_export_functions(Context& ctx);
-void init_script_english_functions(Context& ctx);
-void init_script_spelling_functions(Context& ctx);
-void init_script_construction_functions(Context& ctx);
+void init_script_basic_functions(Context &ctx);
+void init_script_regex_functions(Context &ctx);
+void init_script_image_functions(Context &ctx);
+void init_script_editor_functions(Context &ctx);
+void init_script_export_functions(Context &ctx);
+void init_script_english_functions(Context &ctx);
+void init_script_spelling_functions(Context &ctx);
+void init_script_construction_functions(Context &ctx);
 
 /// Initialize all built in functions for a context
-inline void init_script_functions(Context& ctx) {
+inline void init_script_functions(Context &ctx) {
 	init_script_basic_functions(ctx);
 	init_script_regex_functions(ctx);
 	init_script_image_functions(ctx);
@@ -41,5 +43,6 @@ inline void init_script_functions(Context& ctx) {
 	init_script_construction_functions(ctx);
 }
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

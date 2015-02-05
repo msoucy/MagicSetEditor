@@ -7,7 +7,8 @@
 #ifndef HEADER_SCRIPT_PARSER
 #define HEADER_SCRIPT_PARSER
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <util/error.hpp>
@@ -15,7 +16,8 @@
 
 class Packaged;
 
-// ----------------------------------------------------------------------------- : Parser
+// -----------------------------------------------------------------------------
+// : Parser
 
 /// Parse a String to a Script
 /** If string_mode then s is interpreted as a string,
@@ -26,7 +28,8 @@ class Packaged;
  *
  *  The package is for loading included files, it may be null
  */
-ScriptP parse(const String& s, Packaged* package, bool string_mode, vector<ScriptParseError>& errors_out);
+ScriptP parse(const String &s, Packaged *package, bool string_mode,
+			  vector<ScriptParseError> &errors_out);
 
 /// Parse a String to a Script
 /** If string_mode then s is interpreted as a string,
@@ -34,19 +37,20 @@ ScriptP parse(const String& s, Packaged* package, bool string_mode, vector<Scrip
  *
  *  If an error is encountered, an exception is thrown.
  */
-ScriptP parse(const String& s, Packaged* package = nullptr, bool string_mode = false);
-
+ScriptP parse(const String &s, Packaged *package = nullptr,
+			  bool string_mode = false);
 
 /// Parse a String to a ScriptValue
 /** Can return nullptr in case of parse errors
  */
-ScriptValueP parse_value(const String& s, Packaged* package, vector<ScriptParseError>& errors_out);
+ScriptValueP parse_value(const String &s, Packaged *package,
+						 vector<ScriptParseError> &errors_out);
 
 /// Parse a String to a ScriptValue
 /** Throws an exception in case of parse errors
  */
-ScriptValueP parse_value(const String& s, Packaged* package = nullptr);
+ScriptValueP parse_value(const String &s, Packaged *package = nullptr);
 
-
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

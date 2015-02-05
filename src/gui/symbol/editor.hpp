@@ -7,7 +7,8 @@
 #ifndef HEADER_GUI_SYMBOL_EDITOR
 #define HEADER_GUI_SYMBOL_EDITOR
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/symbol.hpp>
@@ -15,7 +16,8 @@
 
 class SymbolControl;
 
-// ----------------------------------------------------------------------------- : SymbolEditorBase
+// -----------------------------------------------------------------------------
+// : SymbolEditorBase
 
 /// Base class for editors of symbols.
 /** A symbol editor is like a FieldEditor, events are forwarded to it.
@@ -25,65 +27,70 @@ class SymbolControl;
 class SymbolEditorBase : public IntrusivePtrVirtualBase {
   protected:
 	/// The control for which we are editing
-	SymbolControl& control;
-	
+	SymbolControl &control;
+
 	inline SymbolP getSymbol() { return control.getSymbol(); }
-	
+
 	/// Perform an action
-	void addAction(Action* action, bool allow_merge = true);
-	
-	void SetStatusText(const String& text);
-	
+	void addAction(Action *action, bool allow_merge = true);
+
+	void SetStatusText(const String &text);
+
   public:
-	SymbolEditorBase(SymbolControl* control)
-		: control(*control)
-	{}
-	virtual ~SymbolEditorBase() {};
-	
+	SymbolEditorBase(SymbolControl *control) : control(*control) {}
+	virtual ~SymbolEditorBase(){};
+
 	// --------------------------------------------------- : Drawing
-	
+
 	/// Drawing for this control,
-	virtual void draw(DC& dc) = 0;
-	
+	virtual void draw(DC &dc) = 0;
+
 	// --------------------------------------------------- : UI
-	
+
 	/// Init extra toolbar items and menus needed for this editor
-	virtual void initUI   (wxToolBar* tb, wxMenuBar* mb) {}
+	virtual void initUI(wxToolBar *tb, wxMenuBar *mb) {}
 	/// Destroy the extra items added by initUI.
-	virtual void destroyUI(wxToolBar* tb, wxMenuBar* mb) {}
+	virtual void destroyUI(wxToolBar *tb, wxMenuBar *mb) {}
 	/// Update the UI by enabling/disabling items
-	virtual void onUpdateUI(wxUpdateUIEvent& ev) {}
+	virtual void onUpdateUI(wxUpdateUIEvent &ev) {}
 	/// Respond to one of the extra menu/tool items
 	virtual void onCommand(int id) {}
 	/// Tool id used in the symbol window
 	virtual int modeToolId() = 0;
-	
+
 	// --------------------------------------------------- : Mouse events
-	
-	/// The left mouse button has been pressed, at the given position (internal coordinates)
-	virtual void onLeftDown   (const Vector2D& pos, wxMouseEvent& ev) {}
-	/// The left mouse button has been released, at the given position (internal coordinates)
-	virtual void onLeftUp     (const Vector2D& pos, wxMouseEvent& ev) {}
-	/// The left mouse button has been double clicked, at the given position (internal coordinates)
-	virtual void onLeftDClick (const Vector2D& pos, wxMouseEvent& ev) {}
-	/// The right mouse button has been pressed, at the given position (internal coordinates)
-	virtual void onRightDown  (const Vector2D& pos, wxMouseEvent& ev) {}
+
+	/// The left mouse button has been pressed, at the given position (internal
+	/// coordinates)
+	virtual void onLeftDown(const Vector2D &pos, wxMouseEvent &ev) {}
+	/// The left mouse button has been released, at the given position (internal
+	/// coordinates)
+	virtual void onLeftUp(const Vector2D &pos, wxMouseEvent &ev) {}
+	/// The left mouse button has been double clicked, at the given position
+	/// (internal coordinates)
+	virtual void onLeftDClick(const Vector2D &pos, wxMouseEvent &ev) {}
+	/// The right mouse button has been pressed, at the given position (internal
+	/// coordinates)
+	virtual void onRightDown(const Vector2D &pos, wxMouseEvent &ev) {}
 	/// The mouse is being moved, no mouse buttons are pressed
-	virtual void onMouseMove  (const Vector2D& from, const Vector2D& to, wxMouseEvent& ev) {}
+	virtual void onMouseMove(const Vector2D &from, const Vector2D &to,
+							 wxMouseEvent &ev) {}
 	/// The mouse is being moved while mouse buttons are being pressed
-	virtual void onMouseDrag  (const Vector2D& from, const Vector2D& to, wxMouseEvent& ev) {}
-	
+	virtual void onMouseDrag(const Vector2D &from, const Vector2D &to,
+							 wxMouseEvent &ev) {}
+
 	// --------------------------------------------------- : Keyboard events
-	
-	/// A key is pressed or released, should be used for modifier keys (Shift/Ctrl/Alt)
-	virtual void onKeyChange  (wxKeyEvent& ev) {}
+
+	/// A key is pressed or released, should be used for modifier keys
+	/// (Shift/Ctrl/Alt)
+	virtual void onKeyChange(wxKeyEvent &ev) {}
 	/// A key is pressed/clicked
-	virtual void onChar       (wxKeyEvent& ev) {}
-	
+	virtual void onChar(wxKeyEvent &ev) {}
+
 	// --------------------------------------------------- : Other events
 	/// A context menu is requested
-	virtual void onContextMenu(wxContextMenuEvent& ev) {}
-	
+	virtual void onContextMenu(wxContextMenuEvent &ev) {}
+
 	/// Is the user currently editing, i.e. dragging the mouse?
 	/** This disables undo/redo, so the current action is not
 	 *  undone while it is in progress.
@@ -91,5 +98,6 @@ class SymbolEditorBase : public IntrusivePtrVirtualBase {
 	virtual bool isEditing() { return false; }
 };
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

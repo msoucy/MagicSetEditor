@@ -4,49 +4,56 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <render/text/element.hpp>
 
-// ----------------------------------------------------------------------------- : CompoundTextElement
+// -----------------------------------------------------------------------------
+// : CompoundTextElement
 
-void CompoundTextElement::draw(RotatedDC& dc, double scale, const RealRect& rect, const double* xs, DrawWhat what, size_t start, size_t end) const {
+void CompoundTextElement::draw(RotatedDC &dc, double scale,
+							   const RealRect &rect, const double *xs,
+							   DrawWhat what, size_t start, size_t end) const {
 	elements.draw(dc, scale, rect, xs, what, start, end);
 }
-void CompoundTextElement::getCharInfo(RotatedDC& dc, double scale, vector<CharInfo>& out) const {
+void CompoundTextElement::getCharInfo(RotatedDC &dc, double scale,
+									  vector<CharInfo> &out) const {
 	elements.getCharInfo(dc, scale, start, end, out);
 }
-double CompoundTextElement::minScale() const {
-	return elements.minScale();
-}
-double CompoundTextElement::scaleStep() const {
-	return elements.scaleStep();
-}
+double CompoundTextElement::minScale() const { return elements.minScale(); }
+double CompoundTextElement::scaleStep() const { return elements.scaleStep(); }
 
-// ----------------------------------------------------------------------------- : AtomTextElement
+// -----------------------------------------------------------------------------
+// : AtomTextElement
 
-void AtomTextElement::draw(RotatedDC& dc, double scale, const RealRect& rect, const double* xs, DrawWhat what, size_t start, size_t end) const {
+void AtomTextElement::draw(RotatedDC &dc, double scale, const RealRect &rect,
+						   const double *xs, DrawWhat what, size_t start,
+						   size_t end) const {
 	if (what & DRAW_ACTIVE) {
 		dc.SetPen(*wxTRANSPARENT_PEN);
-		dc.SetBrush(Color(210,210,210));
+		dc.SetBrush(Color(210, 210, 210));
 		dc.DrawRectangle(rect);
 	}
 	CompoundTextElement::draw(dc, scale, rect, xs, what, start, end);
 }
 
-// ----------------------------------------------------------------------------- : ErrorTextElement
+// -----------------------------------------------------------------------------
+// : ErrorTextElement
 
-void ErrorTextElement::draw(RotatedDC& dc, double scale, const RealRect& rect, const double* xs, DrawWhat what, size_t start, size_t end) const {
+void ErrorTextElement::draw(RotatedDC &dc, double scale, const RealRect &rect,
+							const double *xs, DrawWhat what, size_t start,
+							size_t end) const {
 	// Draw wavy underline
 	if (what & DRAW_ERRORS) {
 		dc.SetPen(*wxRED_PEN);
-		RealPoint pos = rect.bottomLeft() - dc.trInvS(RealSize(0,2));
-		RealSize  dx(dc.trInvS(2), 0), dy(0, dc.trInvS(1));
+		RealPoint pos = rect.bottomLeft() - dc.trInvS(RealSize(0, 2));
+		RealSize dx(dc.trInvS(2), 0), dy(0, dc.trInvS(1));
 		while (pos.x + 1 < rect.right()) {
 			dc.DrawLine(pos - dy, pos + dx + dy);
 			pos += dx;
-			dy  = -dy;
+			dy = -dy;
 		}
 		if (pos.x < rect.right()) {
 			// final piece

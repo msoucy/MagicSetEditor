@@ -4,45 +4,41 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/field/information.hpp>
 #include <script/script.hpp>
 
-// ----------------------------------------------------------------------------- : InfoField
+// -----------------------------------------------------------------------------
+// : InfoField
 
 IMPLEMENT_FIELD_TYPE(Info, "info");
 
-IMPLEMENT_REFLECTION(InfoField) {
-	REFLECT_BASE(Field);
-}
+IMPLEMENT_REFLECTION(InfoField) { REFLECT_BASE(Field); }
 
 void InfoField::after_reading(Version ver) {
 	Field::after_reading(ver);
-	if (initial == script_default_nil) initial = to_script(caption);
+	if (initial == script_default_nil)
+		initial = to_script(caption);
 	initial = make_default(initial);
 }
 
-// ----------------------------------------------------------------------------- : InfoStyle
+// -----------------------------------------------------------------------------
+// : InfoStyle
 
-InfoStyle::InfoStyle(const InfoFieldP& field)
-	: Style(field)
-	, alignment(ALIGN_TOP_LEFT)
-	, padding_left  (2)
-	, padding_right (2)
-	, padding_top   (2)
-	, padding_bottom(2)
-	, background_color(255,255,255)
-{}
+InfoStyle::InfoStyle(const InfoFieldP &field)
+	: Style(field), alignment(ALIGN_TOP_LEFT), padding_left(2),
+	  padding_right(2), padding_top(2), padding_bottom(2),
+	  background_color(255, 255, 255) {}
 
-int InfoStyle::update(Context& ctx) {
-	return Style     ::update(ctx)
-	     | font       .update(ctx) * CHANGE_OTHER;
+int InfoStyle::update(Context &ctx) {
+	return Style::update(ctx) | font.update(ctx) * CHANGE_OTHER;
 }
-void InfoStyle::initDependencies(Context& ctx, const Dependency& dep) const {
-	Style     ::initDependencies(ctx, dep);
-//	font       .initDependencies(ctx, dep);
+void InfoStyle::initDependencies(Context &ctx, const Dependency &dep) const {
+	Style::initDependencies(ctx, dep);
+	//	font       .initDependencies(ctx, dep);
 }
 
 IMPLEMENT_REFLECTION(InfoStyle) {

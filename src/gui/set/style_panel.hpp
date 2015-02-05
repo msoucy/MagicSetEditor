@@ -7,7 +7,8 @@
 #ifndef HEADER_GUI_SET_STYLE_PANEL
 #define HEADER_GUI_SET_STYLE_PANEL
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/set/panel.hpp>
@@ -16,20 +17,21 @@ class CardViewer;
 class PackageList;
 class StylingEditor;
 
-// ----------------------------------------------------------------------------- : StylePanel
+// -----------------------------------------------------------------------------
+// : StylePanel
 
 /// A panel showing a list of stylesheets, and an editor for styling
 class StylePanel : public SetWindowPanel {
   public:
-	StylePanel(Window* parent, int id);
-	
+	StylePanel(Window *parent, int id);
+
 	virtual void onChangeSet();
-	virtual void onAction(const Action&, bool undone);
-	
+	virtual void onAction(const Action &, bool undone);
+
 	// --------------------------------------------------- : UI
-	
-	virtual void initUI(wxToolBar*, wxMenuBar*);
-	
+
+	virtual void initUI(wxToolBar *, wxMenuBar *);
+
 	// --------------------------------------------------- : Clipboard
 	virtual bool canCut() const;
 	virtual bool canCopy() const;
@@ -37,31 +39,33 @@ class StylePanel : public SetWindowPanel {
 	virtual void doCut();
 	virtual void doCopy();
 	virtual void doPaste();
-	
+
 	// --------------------------------------------------- : Selection
-	virtual void selectCard(const CardP& card);
-	
+	virtual void selectCard(const CardP &card);
+
   private:
 	DECLARE_EVENT_TABLE();
-	
-	CardViewer*    preview;		///< Card preview
-	PackageList*   list;		///< List of stylesheets
-	StylingEditor* editor;		///< Editor for styling information
-	wxButton*      use_for_all;
-	wxCheckBox*    use_custom_options;
-	CardP          card;		///< Card we are working on
-	
-	void onStyleSelect(wxCommandEvent&);
-	void onUseForAll(wxCommandEvent&);
-	void onUseCustom(wxCommandEvent&);
-	
-	/// Determine the best size for the list of stylesheets based on available space
+
+	CardViewer *preview;   ///< Card preview
+	PackageList *list;	 ///< List of stylesheets
+	StylingEditor *editor; ///< Editor for styling information
+	wxButton *use_for_all;
+	wxCheckBox *use_custom_options;
+	CardP card; ///< Card we are working on
+
+	void onStyleSelect(wxCommandEvent &);
+	void onUseForAll(wxCommandEvent &);
+	void onUseCustom(wxCommandEvent &);
+
+	/// Determine the best size for the list of stylesheets based on available
+	/// space
 	void updateListSize();
 	virtual bool Layout();
-	
+
 	/// Actual intialization of the controls
 	void initControls();
 };
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

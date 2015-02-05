@@ -7,27 +7,33 @@
 #ifndef HEADER_RENDER_VALUE_MULTIPLE_CHOICE
 #define HEADER_RENDER_VALUE_MULTIPLE_CHOICE
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <render/value/viewer.hpp>
 #include <data/field/multiple_choice.hpp>
 
-// ----------------------------------------------------------------------------- : MultipleChoiceValueViewer
+// -----------------------------------------------------------------------------
+// : MultipleChoiceValueViewer
 
 /// Viewer that displays a multiple choice value
 class MultipleChoiceValueViewer : public ValueViewer {
   public:
-	DECLARE_VALUE_VIEWER(MultipleChoice) : ValueViewer(parent,style), item_height(0) {}
-	
-	virtual bool prepare(RotatedDC& dc);
-	virtual void draw(RotatedDC& dc);
+	DECLARE_VALUE_VIEWER(MultipleChoice)
+		: ValueViewer(parent, style), item_height(0) {}
+
+	virtual bool prepare(RotatedDC &dc);
+	virtual void draw(RotatedDC &dc);
 	virtual void onStyleChange(int);
+
   protected:
 	double item_height; ///< Height of a single item, or 0 if non uniform
   private:
-	void drawChoice(RotatedDC& dc, RealPoint& pos, const String& choice, bool active = true);
+	void drawChoice(RotatedDC &dc, RealPoint &pos, const String &choice,
+					bool active = true);
 };
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif
