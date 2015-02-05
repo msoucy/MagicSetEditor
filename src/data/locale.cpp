@@ -234,15 +234,15 @@ InputStreamP load_resource_text(const String &name) {
 		throw InternalError(
 			String::Format(_("Resource cannot be locked: %s"), name));
 	int len = ::SizeofResource(wxGetInstance(), hResource);
-	return shared(new wxMemoryInputStream(data, len));
+	return make_shared<wxMemoryInputStream>(data, len);
 #else
 	static String path = wxStandardPaths::Get().GetDataDir() + _("/resource/");
 	static String local_path =
 		wxStandardPaths::Get().GetUserDataDir() + _("/resource/");
 	if (wxFileExists(path + name))
-		return shared(new wxFileInputStream(path + name));
+		return make_shared<wxFileInputStream>(path + name);
 	else
-		return shared(new wxFileInputStream(local_path + name));
+		return make_shared<wxFileInputStream>(local_path + name);
 #endif
 }
 

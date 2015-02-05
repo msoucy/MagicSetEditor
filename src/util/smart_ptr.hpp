@@ -12,7 +12,8 @@
  *  @brief Utilities related to boost smart pointers
  */
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/atomic.hpp>
 #ifndef HAVE_FAST_ATOMIC
@@ -20,7 +21,8 @@
 #error Need fast atomic type for intrusive_ptr
 #endif
 
-// Use slightly less fancy template stuff, so msvc7.1 doesn't crash with an internal compiler error
+// Use slightly less fancy template stuff, so msvc7.1 doesn't crash with an
+// internal compiler error
 #define BOOST_SP_NO_SP_CONVERTIBLE
 
 #include <memory>
@@ -33,32 +35,23 @@
 using std::shared_ptr;
 using boost::intrusive_ptr;
 using boost::scoped_ptr;
-using boost::static_pointer_cast;
-using boost::dynamic_pointer_cast;
+using std::static_pointer_cast;
+using std::dynamic_pointer_cast;
 
-// ----------------------------------------------------------------------------- : Declaring
+// -----------------------------------------------------------------------------
+// : Declaring
 
 /// Declares the type TypeP as a shared_ptr<Type>
-#define DECLARE_SHARED_POINTER_TYPE(Type)                                                                              \
-	class Type;                                                                                                        \
+#define DECLARE_SHARED_POINTER_TYPE(Type)                                      \
+	class Type;                                                                \
 	typedef std::shared_ptr<Type> Type##P;
 
-// ----------------------------------------------------------------------------- : Creating
-
-/// Wrap a newly allocated pointer in an shared_ptr
-/** Usage:
-	*    return shared(new T(stuff)));
-	*/
-template <typename T>
-inline std::shared_ptr<T> shared(T *ptr) {
-	return shared_ptr<T>(ptr);
-}
-
-// ----------------------------------------------------------------------------- : Intrusive pointers
+// -----------------------------------------------------------------------------
+// : Intrusive pointers
 
 /// Declares the type TypeP as a intrusive_ptr<Type>
-#define DECLARE_POINTER_TYPE(Type)                                                                                     \
-	class Type;                                                                                                        \
+#define DECLARE_POINTER_TYPE(Type)                                             \
+	class Type;                                                                \
 	typedef intrusive_ptr<Type> Type##P;
 
 /// Wrap a newly allocated pointer in an intrusive_ptr
@@ -81,7 +74,8 @@ inline intrusive_ptr<T> intrusive_from_existing(T *ptr) {
 	return intrusive_ptr<T>(ptr);
 }
 
-// ----------------------------------------------------------------------------- : Intrusive pointer base
+// -----------------------------------------------------------------------------
+// : Intrusive pointer base
 
 template <typename T>
 class IntrusivePtrBase;
@@ -131,18 +125,23 @@ void intrusive_ptr_release(IntrusivePtrBase<T> *p) {
 		static_cast<T *>(p)->destroy();
 	}
 }
-// ----------------------------------------------------------------------------- : Intrusive pointer base : virtual
+// -----------------------------------------------------------------------------
+// : Intrusive pointer base : virtual
 
 /// IntrusivePtrBase with a virtual destructor
-class IntrusivePtrVirtualBase : public IntrusivePtrBase<IntrusivePtrVirtualBase> {
+class IntrusivePtrVirtualBase
+	: public IntrusivePtrBase<IntrusivePtrVirtualBase> {
   public:
 	virtual ~IntrusivePtrVirtualBase() {}
 };
 
-// ----------------------------------------------------------------------------- : Intrusive pointer base : with delete
+// -----------------------------------------------------------------------------
+// : Intrusive pointer base : with delete
 
-/// Base class for objects wishing to use intrusive_ptrs, using a manual delete function
-class IntrusivePtrBaseWithDelete : public IntrusivePtrBase<IntrusivePtrBaseWithDelete> {
+/// Base class for objects wishing to use intrusive_ptrs, using a manual delete
+/// function
+class IntrusivePtrBaseWithDelete
+	: public IntrusivePtrBase<IntrusivePtrBaseWithDelete> {
   public:
 	virtual ~IntrusivePtrBaseWithDelete() {}
 
@@ -156,5 +155,6 @@ class IntrusivePtrBaseWithDelete : public IntrusivePtrBase<IntrusivePtrBaseWithD
 /// Pointer to 'anything'
 typedef intrusive_ptr<IntrusivePtrVirtualBase> VoidP;
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

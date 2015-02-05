@@ -130,5 +130,5 @@ void PackageChoiceValueEditor::change(const String &c) {
 void PackageChoiceValueEditor::initDropDown() {
 	if (drop_down)
 		return;
-	drop_down = shared(new DropDownPackageChoiceList(&editor(), this));
+	drop_down = make_shared<DropDownPackageChoiceList>(&editor(), this);
 }
