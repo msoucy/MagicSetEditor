@@ -22,9 +22,6 @@
 #include <gfx/color.hpp>
 #include <wx/clipbrd.h>
 
-DECLARE_TYPEOF_COLLECTION(KeywordP);
-DECLARE_TYPEOF_COLLECTION(CardP);
-
 // -----------------------------------------------------------------------------
 // : Events
 

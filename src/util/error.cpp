@@ -16,8 +16,6 @@
 #endif
 #include <queue>
 
-DECLARE_TYPEOF_COLLECTION(ScriptParseError);
-
 // -----------------------------------------------------------------------------
 // : Debug utilities
 

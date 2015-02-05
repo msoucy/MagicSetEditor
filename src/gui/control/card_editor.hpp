@@ -149,11 +149,11 @@ typedef DataEditor CardEditor;
 // : Utility
 
 #define FOR_EACH_EDITOR                                                        \
-	for (auto v : viewers)                                                     \
+	for (auto &v : viewers)                                                    \
 		if (ValueEditor *e = v->getEditor())
 #define FOR_EACH_EDITOR_REVERSE                                                \
-	FOR_EACH_REVERSE(v, viewers)                                               \
-	if (ValueEditor *e = v->getEditor())
+	for (auto &v : reverse(viewers))                                           \
+		if (ValueEditor *e = v->getEditor())
 
 // -----------------------------------------------------------------------------
 // : EOF

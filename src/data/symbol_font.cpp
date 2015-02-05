@@ -18,10 +18,6 @@
 #include <render/text/element.hpp> // fot CharInfo
 #include <script/image.hpp>
 
-DECLARE_TYPEOF_COLLECTION(SymbolFont::DrawableSymbol);
-DECLARE_TYPEOF_COLLECTION(SymbolInFontP);
-DECLARE_TYPEOF_COLLECTION(InsertSymbolMenuP);
-
 // -----------------------------------------------------------------------------
 // : SymbolFont
 

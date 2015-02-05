@@ -23,12 +23,7 @@
 #include <gfx/gfx.hpp>
 #include <wx/splitter.h>
 
-DECLARE_TYPEOF_COLLECTION(StatsDimensionP);
-DECLARE_TYPEOF_COLLECTION(String);
-DECLARE_TYPEOF_COLLECTION(size_t);
-DECLARE_TYPEOF_COLLECTION(CardP);
 typedef pair<StatsDimensionP, String> pair_StatsDimensionP_String;
-DECLARE_TYPEOF_COLLECTION(pair_StatsDimensionP_String);
 
 // -----------------------------------------------------------------------------
 // : StatCategoryList

@@ -17,8 +17,6 @@
 #include <render/card/viewer.hpp>
 #include <wx/filename.h>
 
-DECLARE_TYPEOF_COLLECTION(CardP);
-
 // -----------------------------------------------------------------------------
 // : Single card export
 

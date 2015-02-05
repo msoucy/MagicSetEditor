@@ -20,8 +20,6 @@
 #include <gfx/generated_image.hpp>
 #include <render/symbol/filter.hpp>
 
-DECLARE_TYPEOF_COLLECTION(SymbolVariationP);
-
 void parse_enum(const String &, ImageCombine &out);
 
 // -----------------------------------------------------------------------------

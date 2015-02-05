@@ -13,8 +13,6 @@
 #include <data/card.hpp>
 #include <wx/imaglist.h>
 
-DECLARE_TYPEOF_COLLECTION(CardP);
-
 // -----------------------------------------------------------------------------
 // : SelectCardList
 

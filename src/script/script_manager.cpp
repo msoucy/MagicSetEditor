@@ -23,12 +23,6 @@
 #include <util/error.hpp>
 
 typedef map<const StyleSheet *, Context *> Contexts;
-DECLARE_TYPEOF(Contexts);
-DECLARE_TYPEOF_COLLECTION(CardP);
-DECLARE_TYPEOF_COLLECTION(FieldP);
-DECLARE_TYPEOF_COLLECTION(Dependency);
-DECLARE_TYPEOF_NO_REV(IndexMap<FieldP COMMA StyleP>);
-DECLARE_TYPEOF_NO_REV(IndexMap<FieldP COMMA ValueP>);
 
 //#define LOG_UPDATES
 

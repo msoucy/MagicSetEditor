@@ -19,7 +19,6 @@
 #include <util/tagged_string.hpp>
 #include <wx/wfstream.h>
 
-DECLARE_TYPEOF_COLLECTION(CardP);
 ScriptValueP script_local_image_file(LocalFileName const &filename);
 
 // -----------------------------------------------------------------------------

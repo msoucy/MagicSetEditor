@@ -28,8 +28,6 @@ class wxTextOutputStream;
 /// The string type used throughout MSE
 typedef wxString String;
 
-DECLARE_TYPEOF_NO_REV(String); // iterating over characters in a string
-
 // -----------------------------------------------------------------------------
 // : Unicode
 

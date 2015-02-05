@@ -7,7 +7,8 @@
 #ifndef HEADER_UTIL_IO_PACKAGE
 #define HEADER_UTIL_IO_PACKAGE
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/reflect.hpp>
 #include <util/dynamic_arg.hpp>
@@ -22,19 +23,25 @@ class wxZipEntry;
 DECLARE_POINTER_TYPE(PackageDependency);
 
 /// The package that is currently being written to.
-/// When writing a filename, the writing_package should be notified that this file is still in use.
+/// When writing a filename, the writing_package should be notified that this
+/// file is still in use.
 DECLARE_DYNAMIC_ARG(Package *, writing_package);
-/// The package that contains the thing being written to the clipboard, or the package that will contain the thing being
+/// The package that contains the thing being written to the clipboard, or the
+/// package that will contain the thing being
 /// read from the clipboard.
-/// When writing a filename, it should be converted to a global name referencing clipboard_package.
-/// When reading a global name, the file should be copied into the clipboard_package.
+/// When writing a filename, it should be converted to a global name referencing
+/// clipboard_package.
+/// When reading a global name, the file should be copied into the
+/// clipboard_package.
 DECLARE_DYNAMIC_ARG(Package *, clipboard_package);
 
 typedef std::shared_ptr<wxOutputStream> OutputStreamP;
 
-// ----------------------------------------------------------------------------- : FileName
+// -----------------------------------------------------------------------------
+// : FileName
 
-/// A string standing for a filename, has different behaviour when reading/writing
+/// A string standing for a filename, has different behaviour when
+/// reading/writing
 /// Behaviour is controled by dynamic args:
 ///   * clipboard_package
 ///   * writing_package
@@ -46,12 +53,16 @@ class LocalFileName {
 	// when writing to the clipboard, instead returns a global file reference.
 	String toStringForWriting() const;
 	// Construct a LocalFileName based on a string read from a package.
-	// when reading from the clipboard, this will instead be a global file reference, and it is converted at this point.
-	static LocalFileName fromReadString(const String &, const String &prefix = _("image"),
+	// when reading from the clipboard, this will instead be a global file
+	// reference, and it is converted at this point.
+	static LocalFileName fromReadString(const String &,
+										const String &prefix = _("image"),
 										String const &suffix = _(""));
 
 	inline bool empty() const { return fn.empty(); }
-	inline bool operator==(LocalFileName const &that) const { return this->fn == that.fn; }
+	inline bool operator==(LocalFileName const &that) const {
+		return this->fn == that.fn;
+	}
 
   private:
 	LocalFileName(const wxString &fn) : fn(fn) {}
@@ -62,19 +73,23 @@ class LocalFileName {
 // TODO: rename to LocalFileName
 typedef LocalFileName FileName;
 
-// ----------------------------------------------------------------------------- : Package
+// -----------------------------------------------------------------------------
+// : Package
 
-/// A package is a container for files. On disk it is either a directory or a zip file.
+/// A package is a container for files. On disk it is either a directory or a
+/// zip file.
 /** Specific types of packages should inherit from Package or from Packaged.
  *
  *  When modifications are made to a package they are not directly written,
  *  only when save() or saveAs() is called
  *
- *  To accomplish this modified files are first written to temporary files, when save() is called
+ *  To accomplish this modified files are first written to temporary files, when
+ *save() is called
  *  the temporary files are moved/copied.
  *
  *  Zip files are accessed using wxZip(Input|Output)Stream.
- *  The zip input stream appears to only allow one file at a time, since the stream itself maintains
+ *  The zip input stream appears to only allow one file at a time, since the
+ *stream itself maintains
  *  state about what file we are reading.
  *  There are multiple solutions:
  *    1. (currently used) Open a new ZipInputStream for each file
@@ -85,7 +100,8 @@ typedef LocalFileName FileName;
  */
 class Package : public IntrusivePtrVirtualBase {
   public:
-	// --------------------------------------------------- : Managing the outside of the package
+	// --------------------------------------------------- : Managing the
+	// outside of the package
 
 	/// Creates a new package
 	Package();
@@ -96,7 +112,8 @@ class Package : public IntrusivePtrVirtualBase {
 	/// Must the package be saved with saveAs()?
 	/// This is the case if the package has not been saved/opened before
 	bool needSaveAs() const;
-	/// Determines the short name of this package: the filename without path or extension
+	/// Determines the short name of this package: the filename without path or
+	/// extension
 	String name() const;
 	/// Return the relative filename of this file, the name and extension
 	String relativeFilename() const;
@@ -107,9 +124,11 @@ class Package : public IntrusivePtrVirtualBase {
 
 	/// Open a package
 	/**
-	 * Should only be called when the package is constructed using the default constructor!
+	 * Should only be called when the package is constructed using the default
+	 *constructor!
 	 *
-	 * If 'fast' is set, then for directories a full directory listing is not performed.
+	 * If 'fast' is set, then for directories a full directory listing is not
+	 *performed.
 	 * This means that the file_infos will not be fully initialized.
 	 *
 	 * @pre open not called before [TODO]
@@ -122,7 +141,8 @@ class Package : public IntrusivePtrVirtualBase {
 	 *
 	 * If remove_unused=true all files that were in the file and
 	 *  are not touched with referenceFile will be deleted from the new archive!
-	 * This is a form of garbage collection, to get rid of old picture files for example.
+	 * This is a form of garbage collection, to get rid of old picture files for
+	 *example.
 	 */
 	void save(bool remove_unused = true);
 
@@ -132,21 +152,28 @@ class Package : public IntrusivePtrVirtualBase {
 	/// Saves the package under a different filename, but keep the old one open
 	void saveCopy(const String &package);
 
-	// --------------------------------------------------- : Managing the inside of the package
+	// --------------------------------------------------- : Managing the inside
+	// of the package
 
 	/// Open an input stream for a file in the package.
 	InputStreamP openIn(const String &file);
-	inline InputStreamP openIn(const LocalFileName &file) { return openIn(file.fn); }
+	inline InputStreamP openIn(const LocalFileName &file) {
+		return openIn(file.fn);
+	}
 
 	/// Open an output stream for a file in the package.
 	/// (changes are only committed with save())
 	OutputStreamP openOut(const String &file);
-	inline OutputStreamP openOut(const LocalFileName &file) { return openOut(file.fn); }
+	inline OutputStreamP openOut(const LocalFileName &file) {
+		return openOut(file.fn);
+	}
 
 	/// Get a filename that can be written to to modfify a file in the package
 	/// (changes are only committed with save())
 	String nameOut(const String &file);
-	inline String nameOut(const LocalFileName &file) { return nameOut(file.fn); }
+	inline String nameOut(const LocalFileName &file) {
+		return nameOut(file.fn);
+	}
 
 	/// Creates a new, unique, filename with the specified prefix and suffix
 	/// for example newFileName("image/",".jpg") -> "image/1.jpg"
@@ -158,7 +185,8 @@ class Package : public IntrusivePtrVirtualBase {
 	/// If they are to be kept in the package.
 	void referenceFile(const String &file);
 
-	// --------------------------------------------------- : Managing the inside of the package : Reader/writer
+	// --------------------------------------------------- : Managing the inside
+	// of the package : Reader/writer
 
 	template <typename T>
 	void readFile(const String &file, T &obj);
@@ -181,12 +209,14 @@ class Package : public IntrusivePtrVirtualBase {
 		writer.handle(obj);
 	}
 	template <typename T>
-	inline void writeFile(const LocalFileName &file, const T &obj, Version file_version) {
+	inline void writeFile(const LocalFileName &file, const T &obj,
+						  Version file_version) {
 		return readFile(file.fn, obj, file_version);
 	}
 
   protected:
-	// TODO: I dislike putting this here very much. There ought to be a better way.
+	// TODO: I dislike putting this here very much. There ought to be a better
+	// way.
 	virtual VCSP getVCS() { return intrusive(new VCS()); }
 
 	/// true if this is a zip file, false if a directory
@@ -198,9 +228,12 @@ class Package : public IntrusivePtrVirtualBase {
 	struct FileInfo {
 		FileInfo();
 		~FileInfo();
-		bool keep;			  ///< Should this file be kept in the package? (as opposed to deleting it)
-		bool created;		  ///< Was this file just created (e.g. should the VCS add it?)
-		String tempName;	  ///< Name of the temporary file where new contents of this file are placed
+		bool keep; ///< Should this file be kept in the package? (as opposed to
+		/// deleting it)
+		bool created; ///< Was this file just created (e.g. should the VCS add
+		/// it?)
+		String tempName; ///< Name of the temporary file where new contents of
+		/// this file are placed
 		wxZipEntry *zipEntry; ///< Entry in the zip file for this file
 		/// Is this file changed, and therefore written to a temporary file?
 		inline bool wasWritten() const { return !tempName.empty(); }
@@ -213,7 +246,6 @@ class Package : public IntrusivePtrVirtualBase {
 
   public:
 	/// Information on files in the package
-	/** Note: must be public for DECLARE_TYPEOF to work */
 	typedef map<String, FileInfo> FileInfos;
 	inline const FileInfos &getFileInfos() const { return files; }
 	/// When was a file last modified?
@@ -239,14 +271,16 @@ class Package : public IntrusivePtrVirtualBase {
 	FileInfos::iterator addFile(const String &file);
 
 	/// Get an 'absolute filename' for a file in the package.
-	/// This file can later be opened from anywhere (other process) using openAbsoluteFile()
+	/// This file can later be opened from anywhere (other process) using
+	/// openAbsoluteFile()
 	String absoluteName(const String &file);
 	/// Open a file given an absolute filename
 	static InputStreamP openAbsoluteFile(const String &name);
 	friend class LocalFileName;
 };
 
-// ----------------------------------------------------------------------------- : Packaged
+// -----------------------------------------------------------------------------
+// : Packaged
 
 /// Dependencies of a package
 class PackageDependency : public IntrusivePtrBase<PackageDependency> {
@@ -259,19 +293,21 @@ class PackageDependency : public IntrusivePtrBase<PackageDependency> {
 };
 
 /// Utility class for data types that are always stored in a package.
-/** When the package is opened/saved a file describing the data object is read/written
+/** When the package is opened/saved a file describing the data object is
+ * read/written
  */
 class Packaged : public Package {
   public:
 	Packaged();
 	virtual ~Packaged() {}
 
-	Version version;						 ///< Version number of this package
-	Version compatible_version;				 ///< Earliest version number this package is compatible with
-	String installer_group;					 ///< Group to place this package in in the installer
-	String short_name;						 ///< Short name of this package
-	String full_name;						 ///< Name of this package, for menus etc.
-	String icon_filename;					 ///< Filename of icon to use in package lists
+	Version version;			///< Version number of this package
+	Version compatible_version; ///< Earliest version number this package is
+	/// compatible with
+	String installer_group; ///< Group to place this package in in the installer
+	String short_name;		///< Short name of this package
+	String full_name;		///< Name of this package, for menus etc.
+	String icon_filename;   ///< Filename of icon to use in package lists
 	vector<PackageDependencyP> dependencies; ///< Dependencies of this package
 	int position_hint;						 ///< A hint for the package list
 
@@ -311,11 +347,15 @@ class Packaged : public Package {
 	friend class Installer;
 };
 
-inline void after_reading(Packaged &p, Version file_app_version) { p.validate(file_app_version); }
+inline void after_reading(Packaged &p, Version file_app_version) {
+	p.validate(file_app_version);
+}
 
-// ----------------------------------------------------------------------------- : IncludePackage
+// -----------------------------------------------------------------------------
+// : IncludePackage
 
-/// A package that just contains a bunch of files that are used from other packages
+/// A package that just contains a bunch of files that are used from other
+/// packages
 class IncludePackage : public Packaged {
   protected:
 	String typeName() const;
@@ -323,7 +363,8 @@ class IncludePackage : public Packaged {
 	DECLARE_REFLECTION();
 };
 
-// ----------------------------------------------------------------------------- : Utility
+// -----------------------------------------------------------------------------
+// : Utility
 
 /// Open a package with the given filename
 template <typename T>
@@ -333,19 +374,23 @@ intrusive_ptr<T> open_package(const String &filename) {
 	return package;
 }
 
-// ----------------------------------------------------------------------------- : readFile definition
+// -----------------------------------------------------------------------------
+// : readFile definition
 
 // This is here because it uses dynamic_cast and must be to a complete type.
 template <typename T>
 inline void Package::readFile(const String &filename, T &obj) {
 	InputStreamP stream = openIn(filename);
-	Reader reader(*stream, dynamic_cast<Packaged *>(this), absoluteFilename() + _("/") + filename);
+	Reader reader(*stream, dynamic_cast<Packaged *>(this),
+				  absoluteFilename() + _("/") + filename);
 	try {
 		reader.handle_greedy(obj);
 	} catch (const ParseError &err) {
-		throw FileParseError(err.what(), absoluteFilename() + _("/") + filename); // more detailed message
+		throw FileParseError(err.what(), absoluteFilename() + _("/") +
+											 filename); // more detailed message
 	}
 }
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

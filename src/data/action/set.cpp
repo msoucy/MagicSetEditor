@@ -15,11 +15,6 @@
 #include <data/stylesheet.hpp>
 #include <util/error.hpp>
 
-DECLARE_TYPEOF_COLLECTION(IndexMap<FieldP COMMA ValueP>);
-DECLARE_TYPEOF_COLLECTION(CardP);
-DECLARE_TYPEOF_COLLECTION(PackTypeP);
-DECLARE_TYPEOF_COLLECTION(int);
-
 // -----------------------------------------------------------------------------
 // : Add card
 
@@ -109,8 +104,8 @@ void ChangeSetStyleAction::perform(bool to_undo) {
 		card->stylesheet = set.stylesheet;
 		set.stylesheet = stylesheet;
 		// restore has_styling
-		FOR_EACH_2(card, set.cards, has, has_styling) {
-			card->has_styling = has;
+		for (auto data : combine(set.cards, has_styling)) {
+			get<0>(data)->has_styling = get<1>(data);
 		}
 	}
 }

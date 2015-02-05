@@ -22,8 +22,6 @@
 #include <wx/wfstream.h>
 #include <wx/filename.h>
 
-DECLARE_TYPEOF_COLLECTION(SymbolFont::DrawableSymbol);
-
 // -----------------------------------------------------------------------------
 // : Utility
 
@@ -92,8 +90,6 @@ struct NegTag {
 	bool neg; // a close tag instead of an open tag
 	NegTag(Tag *tag, bool neg) : tag(tag), neg(neg) {}
 };
-
-DECLARE_TYPEOF_COLLECTION(NegTag);
 
 /// A stack of opened HTML tags
 class TagStack {

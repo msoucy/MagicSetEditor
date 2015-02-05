@@ -13,7 +13,6 @@
 #include <data/field/text.hpp>
 #include <gfx/color.hpp>
 
-DECLARE_TYPEOF_COLLECTION(TextElementP);
 DECLARE_POINTER_TYPE(FontTextElement);
 
 // -----------------------------------------------------------------------------

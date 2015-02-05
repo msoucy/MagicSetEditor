@@ -22,8 +22,6 @@
 #include <wx/mstream.h>
 #endif
 
-DECLARE_TYPEOF(map<String COMMA SubLocaleP>);
-
 // -----------------------------------------------------------------------------
 // : Locale class
 
@@ -245,9 +243,6 @@ InputStreamP load_resource_text(const String &name) {
 		return make_shared<wxFileInputStream>(local_path + name);
 #endif
 }
-
-DECLARE_TYPEOF(map<String COMMA String>);
-DECLARE_TYPEOF(map<String COMMA KeyValidator>);
 
 void Locale::validate(Version ver) {
 	Packaged::validate(ver);

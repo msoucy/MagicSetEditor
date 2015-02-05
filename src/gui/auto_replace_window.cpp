@@ -18,8 +18,6 @@
 #include <util/window_id.hpp>
 #include <util/error.hpp>
 
-DECLARE_TYPEOF_COLLECTION(AutoReplaceP);
-
 // -----------------------------------------------------------------------------
 // : AutoReplaceList
 

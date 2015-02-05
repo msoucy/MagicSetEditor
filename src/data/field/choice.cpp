@@ -14,9 +14,6 @@
 #include <util/defaultable.hpp>
 #include <wx/imaglist.h>
 
-DECLARE_TYPEOF_COLLECTION(ChoiceField::ChoiceP);
-DECLARE_TYPEOF(map<String COMMA ScriptableImage>);
-
 // -----------------------------------------------------------------------------
 // : ChoiceField
 
@@ -97,8 +94,8 @@ String ChoiceField::Choice::choiceName(int id) const {
 	if (hasDefault() && id == first_id) {
 		return name;
 	} else {
-		FOR_EACH_CONST_REVERSE(
-			c, choices) { // take the last one that still contains id
+		// take the last one that still contains id
+		for (auto const &c : reverse(choices)) {
 			if (id >= c->first_id) {
 				if (name.empty()) {
 					return c->choiceName(id);
@@ -117,7 +114,7 @@ String ChoiceField::Choice::choiceNameNice(int id) const {
 	} else if (hasDefault() && id == first_id) {
 		return default_name;
 	} else {
-		FOR_EACH_CONST_REVERSE(c, choices) {
+		for (auto const &c : reverse(choices)) {
 			if (id == c->first_id) {
 				return c->name; // we don't want "<group> default"
 			} else if (id > c->first_id) {

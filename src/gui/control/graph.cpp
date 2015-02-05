@@ -14,17 +14,6 @@
 #include <wx/dcbuffer.h>
 #include <wx/tooltip.h>
 
-DECLARE_TYPEOF_COLLECTION(GraphAxisP);
-DECLARE_TYPEOF_COLLECTION(GraphElementP);
-DECLARE_TYPEOF_COLLECTION(GraphGroup);
-DECLARE_TYPEOF_COLLECTION(GraphDataElement *);
-DECLARE_TYPEOF_COLLECTION(GraphP);
-DECLARE_TYPEOF_COLLECTION(int);
-DECLARE_TYPEOF_COLLECTION(vector<int>);
-DECLARE_TYPEOF_COLLECTION(String);
-DECLARE_TYPEOF_COLLECTION(UInt);
-DECLARE_TYPEOF_COLLECTION(pair<String COMMA String>);
-
 template <typename T>
 inline T sgn(T v) {
 	return v < 0 ? -1 : 1;
@@ -83,7 +72,6 @@ struct SmartLess {
 		return smart_less(a, b);
 	}
 };
-DECLARE_TYPEOF(map<String COMMA UInt COMMA SmartLess>);
 
 String to_bin(double value, double bin_size) {
 	if (bin_size <= 0 || value == 0) {
@@ -1227,7 +1215,7 @@ void GraphContainer::draw(RotatedDC &dc, const vector<int> &current,
 }
 bool GraphContainer::findItem(const RealPoint &pos, const RealRect &screen_rect,
 							  bool tight, vector<int> &out) const {
-	FOR_EACH_CONST_REVERSE(g, items) {
+	for (auto const &g : reverse(items)) {
 		if (g->findItem(pos, screen_rect, tight, out))
 			return true;
 	}

@@ -13,9 +13,6 @@
 #include <data/field.hpp>
 #include <util/window_id.hpp>
 
-DECLARE_TYPEOF_COLLECTION(FieldP);
-DECLARE_TYPEOF_COLLECTION(CardListColumnSelectDialog::ColumnSettingsF);
-
 // -----------------------------------------------------------------------------
 // : CardListColumnSelectDialog
 

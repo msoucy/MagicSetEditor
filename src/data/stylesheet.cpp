@@ -14,9 +14,6 @@
 #include <util/io/package_manager.hpp>
 #include <gui/new_window.hpp> // for selecting stylesheets on load error
 
-DECLARE_TYPEOF_COLLECTION(StyleSheet *);
-DECLARE_TYPEOF_COLLECTION(FieldP);
-
 // -----------------------------------------------------------------------------
 // : StyleSheet
 

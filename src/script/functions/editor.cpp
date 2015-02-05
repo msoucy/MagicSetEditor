@@ -20,12 +20,6 @@
 #include <data/field/multiple_choice.hpp>
 #include <data/action/value.hpp>
 
-DECLARE_TYPEOF_COLLECTION(FieldP);
-DECLARE_TYPEOF_COLLECTION(TextValue *);
-DECLARE_TYPEOF_COLLECTION(String);
-DECLARE_TYPEOF_COLLECTION(pair<String COMMA bool>);
-DECLARE_TYPEOF_COLLECTION(ChoiceField::ChoiceP);
-
 // -----------------------------------------------------------------------------
 // : Combined editor
 
@@ -97,7 +91,9 @@ SCRIPT_FUNCTION_WITH_DEP(combined_editor) {
 		values.size()); // TODO: what if there are more value_parts than values?
 	// update the values if our input value is newer?
 	Age new_value_update = last_update_age();
-	FOR_EACH_2(v, values, nv, value_parts) {
+	for (auto vs : combine(values, value_parts)) {
+		TextValue *v{get<0>(vs)};
+		pair<String, bool> &nv{get<1>(vs)};
 		if (v->last_modified < new_value_update) {
 			bool changed = v->value->toString() != nv.first;
 			if (changed)
@@ -239,7 +235,7 @@ SCRIPT_FUNCTION(primary_choice) {
 	int id = field->choices->choiceId(value->value->toString());
 	// find the last group that still contains id
 	const vector<ChoiceField::ChoiceP> &choices = field->choices->choices;
-	FOR_EACH_CONST_REVERSE(c, choices) {
+	for (auto const &c : reverse(choices)) {
 		if (id >= c->first_id) {
 			SCRIPT_RETURN(c->name);
 		}

@@ -26,13 +26,7 @@
 #undef small // some evil windows header defines this
 
 DECLARE_SHARED_POINTER_TYPE(DropDownList);
-DECLARE_TYPEOF_COLLECTION(WordListP);
-DECLARE_TYPEOF_COLLECTION(WordListWordP);
-DECLARE_TYPEOF_COLLECTION(WordListPosP);
-DECLARE_TYPEOF_COLLECTION(AutoReplaceP);
 struct DropDownWordListItem;
-DECLARE_TYPEOF_COLLECTION(DropDownWordListItem);
-DECLARE_TYPEOF_COLLECTION(String);
 
 // -----------------------------------------------------------------------------
 // : TextValueEditorScrollBar
@@ -1651,7 +1645,7 @@ void TextValueEditor::drawWordListIndicators(RotatedDC &dc, bool redrawing) {
 		}
 	}
 	// Draw drop down arrows
-	FOR_EACH_REVERSE(wl, word_lists) {
+	for (auto &wl : reverse(word_lists)) {
 		RealRect &r = wl->rect;
 		// color
 		bool small = false;

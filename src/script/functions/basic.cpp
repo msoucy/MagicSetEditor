@@ -18,8 +18,6 @@
 #include <data/card.hpp>
 #include <data/game.hpp>
 
-DECLARE_TYPEOF_COLLECTION(pair<String COMMA ScriptValueP>);
-
 // -----------------------------------------------------------------------------
 // : Debugging
 

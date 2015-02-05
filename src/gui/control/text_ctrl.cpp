@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/control/text_ctrl.hpp>
@@ -13,23 +14,21 @@
 #include <data/field/text.hpp>
 #include <data/action/value.hpp>
 
-DECLARE_TYPEOF_COLLECTION(ValueViewerP);
+// -----------------------------------------------------------------------------
+// : TextCtrl
 
-// ----------------------------------------------------------------------------- : TextCtrl
-
-TextCtrl::TextCtrl(Window* parent, int id, bool multi_line, long style)
-	: DataEditor(parent, id, style)
-	, multi_line(multi_line)
-{}
+TextCtrl::TextCtrl(Window *parent, int id, bool multi_line, long style)
+	: DataEditor(parent, id, style), multi_line(multi_line) {}
 TextCtrl::~TextCtrl() {}
 
 Rotation TextCtrl::getRotation() const {
-	return Rotation(0, RealRect(RealPoint(0,0),GetClientSize()));
+	return Rotation(0, RealRect(RealPoint(0, 0), GetClientSize()));
 }
 
-void TextCtrl::draw(DC& dc) {
+void TextCtrl::draw(DC &dc) {
 	RotatedDC rdc(dc, getRotation(), QUALITY_LOW);
-	if (viewers.empty() || !static_cast<FakeTextValue&>(*viewers.front()->getValue()).editable) {
+	if (viewers.empty() ||
+		!static_cast<FakeTextValue &>(*viewers.front()->getValue()).editable) {
 		DataViewer::draw(rdc, wxSystemSettings::GetColour(wxSYS_COLOUR_3DFACE));
 	} else {
 		DataViewer::draw(rdc, wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
@@ -37,19 +36,17 @@ void TextCtrl::draw(DC& dc) {
 }
 
 bool TextCtrl::AcceptsFocus() const {
-	return wxWindow::AcceptsFocus() && 
-	       !viewers.empty() &&
-	       static_cast<FakeTextValue&>(*viewers.front()->getValue()).editable;
+	return wxWindow::AcceptsFocus() && !viewers.empty() &&
+		   static_cast<FakeTextValue &>(*viewers.front()->getValue()).editable;
 }
 
-
-TextStyle& TextCtrl::getStyle() {
+TextStyle &TextCtrl::getStyle() {
 	assert(!viewers.empty());
-	return static_cast<TextStyle&>(*viewers.front()->getStyle());
+	return static_cast<TextStyle &>(*viewers.front()->getStyle());
 }
-TextField& TextCtrl::getField() {
+TextField &TextCtrl::getField() {
 	assert(!viewers.empty());
-	return static_cast<TextField&>(*viewers.front()->getField());
+	return static_cast<TextField &>(*viewers.front()->getField());
 }
 TextFieldP TextCtrl::getFieldP() {
 	assert(!viewers.empty());
@@ -57,16 +54,16 @@ TextFieldP TextCtrl::getFieldP() {
 }
 void TextCtrl::updateSize() {
 	wxSize cs = GetClientSize();
-	Style& style = getStyle();
-	style.width  = cs.GetWidth()  - 2;
+	Style &style = getStyle();
+	style.width = cs.GetWidth() - 2;
 	style.height = cs.GetHeight() - 2;
 	viewers.front()->getEditor()->determineSize(true);
 }
 
-void TextCtrl::setValue(String* value, bool untagged) {
+void TextCtrl::setValue(String *value, bool untagged) {
 	setValue(intrusive(new FakeTextValue(getFieldP(), value, true, untagged)));
 }
-void TextCtrl::setValue(const FakeTextValueP& value) {
+void TextCtrl::setValue(const FakeTextValueP &value) {
 	value->retrieve();
 	viewers.front()->setValue(value);
 	updateSize();
@@ -88,10 +85,13 @@ void TextCtrl::onChangeSet() {
 		style->height = 20;
 		style->left = 1;
 		style->top = 1;
-		style->font.color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
+		style->font.color =
+			wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
 		// assign to this control
-		IndexMap<FieldP,StyleP> styles; styles.add(field, style);
-		IndexMap<FieldP,ValueP> values; values.add(field, value);
+		IndexMap<FieldP, StyleP> styles;
+		styles.add(field, style);
+		IndexMap<FieldP, ValueP> values;
+		values.add(field, value);
 		setStyles(set->stylesheet, styles);
 		setData(values);
 		updateSize();
@@ -105,15 +105,14 @@ void TextCtrl::onChangeSet() {
 }
 
 void TextCtrl::onInit() {
-	// Give viewers a chance to show/hide controls (scrollbar) when selecting other editors
-	FOR_EACH_EDITOR {
-		e->onShow(true);
-	}
+	// Give viewers a chance to show/hide controls (scrollbar) when selecting
+	// other editors
+	FOR_EACH_EDITOR { e->onShow(true); }
 	// also init the DataEditor
 	DataEditor::onInit();
 }
 
-void TextCtrl::onSize(wxSizeEvent&) {
+void TextCtrl::onSize(wxSizeEvent &) {
 	if (!viewers.empty()) {
 		updateSize();
 		onChange();
@@ -122,14 +121,14 @@ void TextCtrl::onSize(wxSizeEvent&) {
 wxSize TextCtrl::DoGetBestSize() const {
 	if (multi_line || viewers.empty()) {
 		// flexible size
-		return wxSize(1,1);
+		return wxSize(1, 1);
 	} else {
 		wxSize ws = GetSize(), cs = GetClientSize();
-		Style& style = *viewers.front()->getStyle();
+		Style &style = *viewers.front()->getStyle();
 		return wxSize(style.width, style.height) + ws - cs;
 	}
 }
 
 BEGIN_EVENT_TABLE(TextCtrl, DataEditor)
-	EVT_SIZE        (TextCtrl::onSize)
+EVT_SIZE(TextCtrl::onSize)
 END_EVENT_TABLE()

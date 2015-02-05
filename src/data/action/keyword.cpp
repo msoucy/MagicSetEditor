@@ -16,8 +16,6 @@
 #include <util/tagged_string.hpp>
 #include <util/error.hpp>
 
-DECLARE_TYPEOF_COLLECTION(KeywordModeP);
-
 // -----------------------------------------------------------------------------
 // : Add Keyword
 

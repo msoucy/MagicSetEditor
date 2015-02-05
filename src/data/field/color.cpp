@@ -4,19 +4,17 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/field/color.hpp>
 #include <script/script.hpp>
 
-DECLARE_TYPEOF_COLLECTION(ColorField::ChoiceP);
+// -----------------------------------------------------------------------------
+// : ColorField
 
-// ----------------------------------------------------------------------------- : ColorField
-
-ColorField::ColorField()
-	: allow_custom(true)
-{}
+ColorField::ColorField() : allow_custom(true) {}
 
 IMPLEMENT_FIELD_TYPE(Color, "color");
 
@@ -26,27 +24,26 @@ IMPLEMENT_REFLECTION(ColorField) {
 	REFLECT(choices);
 }
 
-// ----------------------------------------------------------------------------- : ColorField::Choice
+// -----------------------------------------------------------------------------
+// : ColorField::Choice
 
 IMPLEMENT_REFLECTION(ColorField::Choice) {
 	REFLECT_IF_READING_COMPOUND_OR(true) {
 		REFLECT(name);
 		REFLECT(color);
-	} else {
+	}
+	else {
 		REFLECT_NAMELESS(name);
 		color = parse_color(name);
 	}
 }
 
-// ----------------------------------------------------------------------------- : ColorStyle
+// -----------------------------------------------------------------------------
+// : ColorStyle
 
-ColorStyle::ColorStyle(const ColorFieldP& field)
-	: Style(field)
-	, radius(0)
-	, left_width(100000), right_width (100000)
-	, top_width (100000), bottom_width(100000)
-	, combine(COMBINE_NORMAL)
-{}
+ColorStyle::ColorStyle(const ColorFieldP &field)
+	: Style(field), radius(0), left_width(100000), right_width(100000),
+	  top_width(100000), bottom_width(100000), combine(COMBINE_NORMAL) {}
 
 IMPLEMENT_REFLECTION(ColorStyle) {
 	REFLECT_BASE(Style);
@@ -58,6 +55,4 @@ IMPLEMENT_REFLECTION(ColorStyle) {
 	REFLECT(combine);
 }
 
-int ColorStyle::update(Context& ctx) {
-	return Style::update(ctx);
-}
+int ColorStyle::update(Context &ctx) { return Style::update(ctx); }

@@ -21,9 +21,6 @@
 #include <util/error.hpp>
 #include <util/platform.hpp>
 
-DECLARE_TYPEOF_COLLECTION(ControlPointP);
-DECLARE_TYPEOF_COLLECTION(SymbolPartP);
-
 // -----------------------------------------------------------------------------
 // : Image preprocessing
 

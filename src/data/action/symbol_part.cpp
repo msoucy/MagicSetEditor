@@ -11,9 +11,6 @@
 #include <data/action/symbol_part.hpp>
 #include <gfx/bezier.hpp>
 
-DECLARE_TYPEOF_COLLECTION(Vector2D);
-DECLARE_TYPEOF_COLLECTION(ControlPointP);
-
 // -----------------------------------------------------------------------------
 // : Utility
 
@@ -115,7 +112,9 @@ String ControlPointMoveAction::getName(bool to_undo) const {
 }
 
 void ControlPointMoveAction::perform(bool to_undo) {
-	FOR_EACH_2(p, points, op, oldValues) { swap(p->pos, op); }
+	for (auto pts : combine(points, oldValues)) {
+		swap(get<0>(pts)->pos, get<1>(pts));
+	}
 }
 
 void ControlPointMoveAction::move(const Vector2D &deltaDelta) {
@@ -393,7 +392,6 @@ void SinglePointRemoveAction::perform(bool to_undo) {
 }
 
 DECLARE_POINTER_TYPE(SinglePointRemoveAction);
-DECLARE_TYPEOF_COLLECTION(SinglePointRemoveActionP);
 
 // Remove a set of points from a symbol shape.
 // Internally represented as a list of Single Point Remove Actions.
@@ -436,7 +434,8 @@ void ControlPointRemoveAction::perform(bool to_undo) {
 	} else {
 		// in reverse order, because positions of later points will
 		// change after removal of earlier points.
-		FOR_EACH_REVERSE(r, removals) r->perform(to_undo);
+		for (auto &r : reverse(removals))
+			r->perform(to_undo);
 	}
 }
 

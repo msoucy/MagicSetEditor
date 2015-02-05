@@ -20,8 +20,6 @@
 String read_utf8_line(wxInputStream &input, bool eat_bom = true,
 					  bool until_eof = false);
 
-DECLARE_TYPEOF_COLLECTION(ScriptParseError);
-
 // -----------------------------------------------------------------------------
 // : Command line interface
 
@@ -276,7 +274,6 @@ void CLISetInterface::handleCommand(const String &command) {
 }
 
 #if USE_SCRIPT_PROFILING
-DECLARE_TYPEOF_COLLECTION(FunctionProfileP);
 void CLISetInterface::showProfilingStats(const FunctionProfile &item,
 										 int level) {
 	// show parent
@@ -294,6 +291,8 @@ void CLISetInterface::showProfilingStats(const FunctionProfile &item,
 	// show children
 	vector<FunctionProfileP> children;
 	item.get_children(children);
-	FOR_EACH_REVERSE(c, children) { showProfilingStats(*c, level + 1); }
+	for (auto &c : reverse(children)) {
+		showProfilingStats(*c, level + 1);
+	}
 }
 #endif

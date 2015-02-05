@@ -115,7 +115,7 @@ void GenericAddAction<T>::perform(vector<T> &container, bool to_undo) const {
 		// remove the items
 		// descending order, because earlier removals shift the rest of the
 		// vector
-		FOR_EACH_CONST_REVERSE(s, steps) {
+		for (auto const &s : reverse(steps)) {
 			assert(s.pos < container.size());
 			container.erase(container.begin() + s.pos);
 		}

@@ -12,8 +12,6 @@
 #include <util/error.hpp> // clearDC_black
 #include <gui/util.hpp>   // clearDC_black
 
-DECLARE_TYPEOF_COLLECTION(SymbolPartP);
-
 // -----------------------------------------------------------------------------
 // : Simple rendering
 
@@ -173,7 +171,7 @@ void SymbolViewer::combineSymbolPart(DC &dc, const SymbolPart &part,
 		Vector2D old_o = origin;
 		int copies =
 			s->kind == SYMMETRY_REFLECTION ? s->copies / 2 * 2 : s->copies;
-		FOR_EACH_CONST_REVERSE(p, s->parts) {
+		for (auto const &p : reverse(s->parts)) {
 			if (copies > 1)
 				++in_symmetry;
 			for (int i = copies - 1; i >= 0; --i) {
@@ -228,7 +226,7 @@ void SymbolViewer::combineSymbolPart(DC &dc, const SymbolPart &part,
 		}
 	} else if (const SymbolGroup *g = part.isSymbolGroup()) {
 		// Draw all parts, in reverse order (bottom to top)
-		FOR_EACH_CONST_REVERSE(p, g->parts) {
+		for (auto const &p : reverse(g->parts)) {
 			combineSymbolPart(dc, *p, paintedSomething, buffersFilled,
 							  allow_overlap, borderDC, interiorDC);
 		}

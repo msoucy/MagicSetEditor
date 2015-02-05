@@ -19,9 +19,6 @@
 #include <util/io/package_manager.hpp>
 #include <script/script.hpp>
 
-DECLARE_TYPEOF_COLLECTION(FieldP);
-DECLARE_TYPEOF_COLLECTION(StatsDimensionP);
-
 // -----------------------------------------------------------------------------
 // : Game
 

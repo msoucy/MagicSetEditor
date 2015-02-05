@@ -11,8 +11,6 @@
 #include <render/value/color.hpp>
 #include <render/card/viewer.hpp>
 
-DECLARE_TYPEOF_COLLECTION(ColorField::ChoiceP);
-
 // -----------------------------------------------------------------------------
 // : ColorValueViewer
 

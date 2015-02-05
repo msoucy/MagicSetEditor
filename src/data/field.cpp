@@ -20,8 +20,6 @@
 #include <data/field/package_choice.hpp>
 #include <util/error.hpp>
 
-DECLARE_TYPEOF_COLLECTION(StyleListener *);
-
 DECLARE_DYNAMIC_ARG(Field const *, field_for_reading);
 IMPLEMENT_DYNAMIC_ARG(Field const *, field_for_reading, nullptr);
 

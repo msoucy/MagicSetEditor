@@ -24,8 +24,6 @@
 #include <wx/wfstream.h>
 #include <wx/stdpaths.h>
 
-DECLARE_TYPEOF_COLLECTION(AutoReplaceP);
-
 // -----------------------------------------------------------------------------
 // : Extra types
 

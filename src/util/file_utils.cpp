@@ -14,8 +14,6 @@
 #include <errno.h>
 #include <sys/stat.h>
 
-DECLARE_TYPEOF_COLLECTION(String);
-
 // -----------------------------------------------------------------------------
 // : File names
 
@@ -150,7 +148,7 @@ class RecursiveDeleter : public wxDirTraverser {
 	bool ok;
 
 	void remove() {
-		FOR_EACH_REVERSE(dir, to_delete) {
+		for (auto &dir : to_delete) {
 			if (!wxRmdir(dir)) {
 				ok = false;
 				handle_error(_("Cannot delete ") + dir + _("\n")

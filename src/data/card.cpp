@@ -16,9 +16,6 @@
 #include <util/reflect.hpp>
 #include <util/delayed_index_maps.hpp>
 
-DECLARE_TYPEOF_COLLECTION(FieldP);
-DECLARE_TYPEOF_NO_REV(IndexMap<FieldP COMMA ValueP>);
-
 // -----------------------------------------------------------------------------
 // : Card
 
