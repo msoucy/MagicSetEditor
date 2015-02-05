@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <render/card/viewer.hpp>
@@ -21,23 +22,28 @@
 DECLARE_TYPEOF_COLLECTION(ValueViewerP);
 DECLARE_TYPEOF_NO_REV(IndexMap<FieldP COMMA StyleP>);
 
-// ----------------------------------------------------------------------------- : DataViewer
+// -----------------------------------------------------------------------------
+// : DataViewer
 
 DataViewer::DataViewer() {}
 DataViewer::~DataViewer() {}
 
-// ----------------------------------------------------------------------------- : Drawing
+// -----------------------------------------------------------------------------
+// : Drawing
 
 IMPLEMENT_DYNAMIC_ARG(bool, drawing_card, false);
 
-void DataViewer::draw(DC& dc) {
-	StyleSheetSettings& ss = settings.stylesheetSettingsFor(*stylesheet);
-	RotatedDC rdc(dc, getRotation(),
-	              nativeLook() ? QUALITY_LOW : (ss.card_anti_alias() ? QUALITY_AA : QUALITY_SUB_PIXEL));
+void DataViewer::draw(DC &dc) {
+	StyleSheetSettings &ss = settings.stylesheetSettingsFor(*stylesheet);
+	RotatedDC rdc(
+		dc, getRotation(),
+		nativeLook() ? QUALITY_LOW
+					 : (ss.card_anti_alias() ? QUALITY_AA : QUALITY_SUB_PIXEL));
 	draw(rdc, stylesheet->card_background);
 }
-void DataViewer::draw(RotatedDC& dc, const Color& background) {
-	if (!set) return; // no set specified, don't draw anything
+void DataViewer::draw(RotatedDC &dc, const Color &background) {
+	if (!set)
+		return; // no set specified, don't draw anything
 	WITH_DYNAMIC_ARG(drawing_card, true);
 	// fill with background color
 	clearDC(dc.getDC(), background);
@@ -45,14 +51,14 @@ void DataViewer::draw(RotatedDC& dc, const Color& background) {
 	updateStyles(false);
 	// prepare viewers
 	bool changed_content_properties = false;
-	FOR_EACH(v, viewers) { // draw low z index fields first
+	for (auto const &v : viewers) { // draw low z index fields first
 		if (v->getStyle()->isVisible()) {
 			Rotater r(dc, v->getRotation());
 			try {
 				if (v->prepare(dc)) {
 					changed_content_properties = true;
 				}
-			} catch (const Error& e) {
+			} catch (const Error &e) {
 				handle_error(e);
 			}
 		}
@@ -61,84 +67,78 @@ void DataViewer::draw(RotatedDC& dc, const Color& background) {
 		updateStyles(true);
 	}
 	// draw viewers
-	FOR_EACH(v, viewers) { // draw low z index fields first
-		if (v->getStyle()->isVisible()) {// visible
+	for (auto const &v : viewers) {		  // draw low z index fields first
+		if (v->getStyle()->isVisible()) { // visible
 			Rotater r(dc, v->getRotation());
 			try {
 				drawViewer(dc, *v);
-			} catch (const Error& e) {
+			} catch (const Error &e) {
 				handle_error(e);
 			}
 		}
 	}
 }
-void DataViewer::drawViewer(RotatedDC& dc, ValueViewer& v) {
-	v.draw(dc);
-}
+void DataViewer::drawViewer(RotatedDC &dc, ValueViewer &v) { v.draw(dc); }
 
 void DataViewer::updateStyles(bool only_content_dependent) {
 	try {
 		if (card) {
 			set->updateStyles(card, only_content_dependent);
 		} else {
-			Context& ctx = getContext();
-			FOR_EACH(v, viewers) {
-				Style& s = *v->getStyle();
-				if (only_content_dependent && !s.content_dependent) continue;
+			Context &ctx = getContext();
+			for (auto const &v : viewers) {
+				Style &s = *v->getStyle();
+				if (only_content_dependent && !s.content_dependent)
+					continue;
 				if (s.update(ctx)) {
 					s.tellListeners(only_content_dependent);
 				}
 			}
 		}
-	} catch (const Error& e) {
+	} catch (const Error &e) {
 		handle_error(e);
 	}
 }
 
-// ----------------------------------------------------------------------------- : Utility for ValueViewers
+// -----------------------------------------------------------------------------
+// : Utility for ValueViewers
 
-bool DataViewer::nativeLook() const {
-	return false;
-}
+bool DataViewer::nativeLook() const { return false; }
 
-DrawWhat DataViewer::drawWhat(const ValueViewer*) const {
+DrawWhat DataViewer::drawWhat(const ValueViewer *) const {
 	return (DrawWhat)(DRAW_NORMAL | nativeLook() * DRAW_NATIVELOOK);
 }
 
-bool DataViewer::viewerIsCurrent(const ValueViewer*) const {
-	return false;
-}
+bool DataViewer::viewerIsCurrent(const ValueViewer *) const { return false; }
 
-Context& DataViewer::getContext()  const {
-	return set->getContext(card);
-}
+Context &DataViewer::getContext() const { return set->getContext(card); }
 
 Rotation DataViewer::getRotation() const {
-	if (!stylesheet) stylesheet = set->stylesheet;
-	StyleSheetSettings& ss = settings.stylesheetSettingsFor(*stylesheet);
-	return Rotation(deg_to_rad(ss.card_angle()), stylesheet->getCardRect(), ss.card_zoom(), 1.0, ROTATION_ATTACH_TOP_LEFT);
+	if (!stylesheet)
+		stylesheet = set->stylesheet;
+	StyleSheetSettings &ss = settings.stylesheetSettingsFor(*stylesheet);
+	return Rotation(deg_to_rad(ss.card_angle()), stylesheet->getCardRect(),
+					ss.card_zoom(), 1.0, ROTATION_ATTACH_TOP_LEFT);
 }
 
-Package& DataViewer::getStylePackage() const {
-	return *stylesheet;
-}
-Package& DataViewer::getLocalPackage() const {
-	return *set;
-}
-Game& DataViewer::getGame() const {
-	return *set->game;
-}
+Package &DataViewer::getStylePackage() const { return *stylesheet; }
+Package &DataViewer::getLocalPackage() const { return *set; }
+Game &DataViewer::getGame() const { return *set->game; }
 
-// ----------------------------------------------------------------------------- : Setting data
+// -----------------------------------------------------------------------------
+// : Setting data
 
-void DataViewer::setCard(const CardP& card, bool refresh) {
-	if (!card) return; // TODO: clear viewer?
+void DataViewer::setCard(const CardP &card, bool refresh) {
+	if (!card)
+		return; // TODO: clear viewer?
 	StyleSheetP new_stylesheet = set->stylesheetForP(card);
-	if (!refresh && this->card == card && this->stylesheet == new_stylesheet) return; // already set
+	if (!refresh && this->card == card && this->stylesheet == new_stylesheet)
+		return; // already set
 	assert(set);
 	this->card = card;
 	stylesheet = new_stylesheet;
-	setStyles(stylesheet, stylesheet->card_style, &stylesheet->extra_card_style);
+	setStyles(stylesheet, stylesheet->card_style,
+			  &stylesheet->extra_card_style);
 	setData(card->data, &card->extraDataFor(*stylesheet));
 	onChangeSize();
 }
@@ -150,15 +150,18 @@ void DataViewer::onChangeSet() {
 	onChangeSize();
 }
 
-// ----------------------------------------------------------------------------- : Viewers
+// -----------------------------------------------------------------------------
+// : Viewers
 
 struct CompareViewer {
-	bool operator() (const ValueViewerP& a, const ValueViewerP& b) {
+	bool operator()(const ValueViewerP &a, const ValueViewerP &b) {
 		return a->getStyle()->z_index < b->getStyle()->z_index;
 	}
 };
 
-void DataViewer::setStyles(const StyleSheetP& stylesheet, IndexMap<FieldP,StyleP>& styles, IndexMap<FieldP,StyleP>* extra_styles) {
+void DataViewer::setStyles(const StyleSheetP &stylesheet,
+						   IndexMap<FieldP, StyleP> &styles,
+						   IndexMap<FieldP, StyleP> *extra_styles) {
 	if (!viewers.empty() && styles.contains(viewers.front()->getStyle())) {
 		// already using these styles
 		return;
@@ -167,23 +170,27 @@ void DataViewer::setStyles(const StyleSheetP& stylesheet, IndexMap<FieldP,StyleP
 	// create viewers
 	viewers.clear();
 	addStyles(styles);
-	if (extra_styles) addStyles(*extra_styles);
+	if (extra_styles)
+		addStyles(*extra_styles);
 	// sort viewers by z-index of style
 	stable_sort(viewers.begin(), viewers.end(), CompareViewer());
 	onInit();
 }
-void DataViewer::addStyles(IndexMap<FieldP,StyleP>& styles) {
-	FOR_EACH(s, styles) {
-		if ((s->visible || s->visible.isScripted()) && (nativeLook() || s->hasSize())) {
+void DataViewer::addStyles(IndexMap<FieldP, StyleP> &styles) {
+	for (auto const &s : styles) {
+		if ((s->visible || s->visible.isScripted()) &&
+			(nativeLook() || s->hasSize())) {
 			// no need to make a viewer for things that are always invisible
 			ValueViewerP viewer = makeViewer(s);
-			if (viewer) viewers.push_back(viewer);
+			if (viewer)
+				viewers.push_back(viewer);
 		}
 	}
 }
 
-void DataViewer::setData(IndexMap<FieldP,ValueP>& values, IndexMap<FieldP,ValueP>* extra_values) {
-	FOR_EACH(v, viewers) {
+void DataViewer::setData(IndexMap<FieldP, ValueP> &values,
+						 IndexMap<FieldP, ValueP> *extra_values) {
+	for (auto const &v : viewers) {
 		// is this field contained in values?
 		ValueP val = values.tryGet(v->getField());
 		if (val) {
@@ -199,12 +206,11 @@ void DataViewer::setData(IndexMap<FieldP,ValueP>& values, IndexMap<FieldP,ValueP
 	onChange();
 }
 
-
-ValueViewerP DataViewer::makeViewer(const StyleP& style) {
+ValueViewerP DataViewer::makeViewer(const StyleP &style) {
 	return style->makeViewer(*this);
 }
 
-void DataViewer::onAction(const Action& action, bool undone) {
+void DataViewer::onAction(const Action &action, bool undone) {
 	TYPE_CASE_(action, DisplayChangeAction) {
 		// refresh
 		setCard(card, true);
@@ -212,8 +218,8 @@ void DataViewer::onAction(const Action& action, bool undone) {
 	}
 	TYPE_CASE(action, ValueAction) {
 		if (action.card == card.get()) {
-			FOR_EACH(v, viewers) {
-				if (v->getValue()->equals( action.valueP.get() )) {
+			for (auto const &v : viewers) {
+				if (v->getValue()->equals(action.valueP.get())) {
 					// refresh the viewer
 					v->onAction(action, undone);
 					onChange();
@@ -224,7 +230,7 @@ void DataViewer::onAction(const Action& action, bool undone) {
 	}
 	TYPE_CASE(action, ScriptValueEvent) {
 		if (action.card == card.get()) {
-			FOR_EACH(v, viewers) {
+			for (auto const &v : viewers) {
 				if (v->getValue().get() == action.value) {
 					// refresh the viewer
 					v->onAction(action, undone);
@@ -234,16 +240,16 @@ void DataViewer::onAction(const Action& action, bool undone) {
 			}
 		}
 	}
-/*//%	TYPE_CASE(action, ScriptStyleEvent) {
-		if (action.stylesheet == stylesheet.get()) {
-			FOR_EACH(v, viewers) {
-				if (v->getStyle().get() == action.style) {
-					// refresh the viewer
-					v->onStyleChange();
-					if (!drawing) onChange();
-					return;
+	/*//%	TYPE_CASE(action, ScriptStyleEvent) {
+			if (action.stylesheet == stylesheet.get()) {
+				for(auto const&v: viewers) {
+					if (v->getStyle().get() == action.style) {
+						// refresh the viewer
+						v->onStyleChange();
+						if (!drawing) onChange();
+						return;
+					}
 				}
 			}
-		}
-	}*/
+		}*/
 }

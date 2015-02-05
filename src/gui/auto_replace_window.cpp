@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/auto_replace_window.hpp>
@@ -19,7 +20,8 @@
 
 DECLARE_TYPEOF_COLLECTION(AutoReplaceP);
 
-// ----------------------------------------------------------------------------- : AutoReplaceList
+// -----------------------------------------------------------------------------
+// : AutoReplaceList
 
 DECLARE_EVENT_TYPE(EVENT_ITEM_SELECT, <not used>)
 DEFINE_EVENT_TYPE(EVENT_ITEM_SELECT);
@@ -35,7 +37,9 @@ class AutoReplaceList : public ItemList {
 	GameSettings &gs;
 
 	/// The current item
-	inline AutoReplaceP getSelected() const { return static_pointer_cast<AutoReplace>(selected_item); }
+	inline AutoReplaceP getSelected() const {
+		return static_pointer_cast<AutoReplace>(selected_item);
+	}
 
 	/// Add an item
 	void addItem(const AutoReplaceP &item);
@@ -51,9 +55,12 @@ class AutoReplaceList : public ItemList {
 	/// Get all items
 	virtual void getItems(vector<VoidP> &out) const;
 	/// Return the AutoReplace at the given position in the sorted list
-	inline AutoReplaceP getAR(long pos) const { return static_pointer_cast<AutoReplace>(getItem(pos)); }
+	inline AutoReplaceP getAR(long pos) const {
+		return static_pointer_cast<AutoReplace>(getItem(pos));
+	}
 
-	/// Send an 'item selected' event for the currently selected item (selected_item)
+	/// Send an 'item selected' event for the currently selected item
+	/// (selected_item)
 	virtual void sendEvent();
 	/// Compare items
 	virtual bool compareItems(void *a, void *b) const;
@@ -74,14 +81,18 @@ class AutoReplaceList : public ItemList {
 AutoReplaceList::AutoReplaceList(Window *parent, int id, const Game &game)
 	: ItemList(parent, id), game(game), gs(settings.gameSettingsFor(game)) {
 	// clone items
-	FOR_EACH_CONST(ar, gs.auto_replaces) { items.push_back(ar->clone()); }
+	for (auto const ar : gs.auto_replaces) {
+		items.push_back(ar->clone());
+	}
 	// Add columns
-	InsertColumn(0, _(""), wxLIST_FORMAT_LEFT, 0); // dummy, prevent the image from taking up space
+	InsertColumn(0, _(""), wxLIST_FORMAT_LEFT,
+				 0); // dummy, prevent the image from taking up space
 	InsertColumn(1, _LABEL_("auto match"), wxLIST_FORMAT_LEFT, 100);
 	InsertColumn(2, _LABEL_("auto replace"), wxLIST_FORMAT_LEFT, 200);
 	// grey for disabled items
-	item_attr.SetTextColour(lerp(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW),
-								 wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT), 0.5));
+	item_attr.SetTextColour(
+		lerp(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW),
+			 wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT), 0.5));
 	// init list
 	refreshList();
 	sortBy(1, true);
@@ -99,8 +110,10 @@ void AutoReplaceList::removeSelected() {
 			items.erase(items.begin() + i);
 			// select next
 			refreshList();
-			selectItem(items.empty() ? VoidP()
-									 : static_pointer_cast<IntrusivePtrVirtualBase>(items[min(i, items.size())]),
+			selectItem(items.empty()
+						   ? VoidP()
+						   : static_pointer_cast<IntrusivePtrVirtualBase>(
+								 items[min(i, items.size())]),
 					   true, true);
 			return;
 		}
@@ -110,11 +123,16 @@ void AutoReplaceList::removeSelected() {
 void AutoReplaceList::reset() {
 	// reset to list from game
 	items.clear();
-	FOR_EACH_CONST(ar, game.auto_replaces) { items.push_back(ar->clone()); }
+	for (auto const ar : game.auto_replaces) {
+		items.push_back(ar->clone());
+	}
 	refreshList();
 }
 
-void AutoReplaceList::getItems(vector<VoidP> &out) const { FOR_EACH_CONST(i, items) out.push_back(i); }
+void AutoReplaceList::getItems(vector<VoidP> &out) const {
+	for (auto const i : items)
+		out.push_back(i);
+}
 
 void AutoReplaceList::sendEvent() {
 	wxCommandEvent ev(EVENT_ITEM_SELECT, GetId());
@@ -150,7 +168,8 @@ wxListItemAttr *AutoReplaceList::OnGetItemAttr(long pos) const {
 	return getAR(pos)->enabled ? nullptr : &item_attr;
 }
 
-// ----------------------------------------------------------------------------- : AutoReplaceWindow
+// -----------------------------------------------------------------------------
+// : AutoReplaceWindow
 
 AutoReplaceWindow::AutoReplaceWindow(Window *parent, const Game &game)
 	: wxDialog(parent, wxID_ANY, _TITLE_("auto replaces")), in_event(false) {
@@ -160,7 +179,8 @@ AutoReplaceWindow::AutoReplaceWindow(Window *parent, const Game &game)
 	replace = new wxTextCtrl(this, ID_ITEM_VALUE);
 	enabled = new wxCheckBox(this, ID_ITEM_VALUE, _BUTTON_("enabled"));
 	whole_word = new wxCheckBox(this, ID_ITEM_VALUE, _BUTTON_("whole word"));
-	use_auto_replace = new wxCheckBox(this, ID_USE_AUTO_REPLACE, _BUTTON_("use auto replace"));
+	use_auto_replace =
+		new wxCheckBox(this, ID_USE_AUTO_REPLACE, _BUTTON_("use auto replace"));
 	add = new wxButton(this, ID_ADD_ITEM, _BUTTON_("add item"));
 	remove = new wxButton(this, ID_REMOVE_ITEM, _BUTTON_("remove item"));
 	wxButton *defaults = new wxButton(this, ID_DEFAULTS, _BUTTON_("defaults"));
@@ -215,7 +235,9 @@ void AutoReplaceWindow::onOk(wxCommandEvent &) {
 }
 
 void AutoReplaceWindow::onRemove(wxCommandEvent &) { list->removeSelected(); }
-void AutoReplaceWindow::onAdd(wxCommandEvent &) { list->addItem(intrusive(new AutoReplace())); }
+void AutoReplaceWindow::onAdd(wxCommandEvent &) {
+	list->addItem(intrusive(new AutoReplace()));
+}
 void AutoReplaceWindow::onDefault(wxCommandEvent &) {
 	use_auto_replace->SetValue(true);
 	list->reset();

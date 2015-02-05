@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/settings.hpp>
@@ -25,44 +26,45 @@
 
 DECLARE_TYPEOF_COLLECTION(AutoReplaceP);
 
-// ----------------------------------------------------------------------------- : Extra types
+// -----------------------------------------------------------------------------
+// : Extra types
 
 IMPLEMENT_REFLECTION_ENUM(CheckUpdates) {
-	VALUE_N("if connected", CHECK_IF_CONNECTED); //default
-	VALUE_N("always",       CHECK_ALWAYS);
-	VALUE_N("never",        CHECK_NEVER);
+	VALUE_N("if connected", CHECK_IF_CONNECTED); // default
+	VALUE_N("always", CHECK_ALWAYS);
+	VALUE_N("never", CHECK_NEVER);
 }
 
 IMPLEMENT_REFLECTION_ENUM(InstallType) {
-	VALUE_N("default",	INSTALL_DEFAULT); //default
-	VALUE_N("local",	INSTALL_LOCAL);
-	VALUE_N("global",	INSTALL_GLOBAL);
+	VALUE_N("default", INSTALL_DEFAULT); // default
+	VALUE_N("local", INSTALL_LOCAL);
+	VALUE_N("global", INSTALL_GLOBAL);
 }
 
 bool is_install_local(InstallType type) {
-	#ifdef __WXMSW__
-		#define DEFAULT_INSTALL_LOCAL false
-	#else
-		#define DEFAULT_INSTALL_LOCAL true
-	#endif
-	return type == INSTALL_DEFAULT ? DEFAULT_INSTALL_LOCAL : type == INSTALL_LOCAL;
+#ifdef __WXMSW__
+#define DEFAULT_INSTALL_LOCAL false
+#else
+#define DEFAULT_INSTALL_LOCAL true
+#endif
+	return type == INSTALL_DEFAULT ? DEFAULT_INSTALL_LOCAL
+								   : type == INSTALL_LOCAL;
 }
 
 IMPLEMENT_REFLECTION_ENUM(FilenameConflicts) {
-	VALUE_N("keep old",			CONFLICT_KEEP_OLD);
-	VALUE_N("overwrite",		CONFLICT_OVERWRITE);
-	VALUE_N("number",			CONFLICT_NUMBER);
-	VALUE_N("number overwrite",	CONFLICT_NUMBER_OVERWRITE);
+	VALUE_N("keep old", CONFLICT_KEEP_OLD);
+	VALUE_N("overwrite", CONFLICT_OVERWRITE);
+	VALUE_N("number", CONFLICT_NUMBER);
+	VALUE_N("number overwrite", CONFLICT_NUMBER_OVERWRITE);
 }
 
 const int COLUMN_NOT_INITIALIZED = -100000;
 
 ColumnSettings::ColumnSettings()
-	: width(100), position(COLUMN_NOT_INITIALIZED), visible(false)
-{}
+	: width(100), position(COLUMN_NOT_INITIALIZED), visible(false) {}
 
 // dummy for ColumnSettings reflection
-ScriptValueP to_script(const ColumnSettings&) { return script_nil; }
+ScriptValueP to_script(const ColumnSettings &) { return script_nil; }
 
 IMPLEMENT_REFLECTION_NO_SCRIPT(ColumnSettings) {
 	REFLECT(width);
@@ -71,27 +73,24 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(ColumnSettings) {
 }
 
 GameSettings::GameSettings()
-	: sort_cards_ascending(true)
-	, images_export_filename(_("{card.name}.jpg"))
-	, images_export_conflicts(CONFLICT_NUMBER_OVERWRITE)
-	, use_auto_replace(true)
-	, pack_seed_random(true)
-	, pack_seed(123456)
-	, initialized(false)
-{}
+	: sort_cards_ascending(true), images_export_filename(_("{card.name}.jpg")),
+	  images_export_conflicts(CONFLICT_NUMBER_OVERWRITE),
+	  use_auto_replace(true), pack_seed_random(true), pack_seed(123456),
+	  initialized(false) {}
 
-void GameSettings::initDefaults(const Game& game) {
+void GameSettings::initDefaults(const Game &game) {
 	// Defer initialization until the game is fully loaded.
 	// This prevents data that needs to be initialized from
 	// being accessed from the new set window, but removes
 	// the need to load the entire file, which takes too long.
-	if (initialized || !game.isFullyLoaded()) return;
+	if (initialized || !game.isFullyLoaded())
+		return;
 	initialized = true;
 	// init auto_replaces, copy from game file
-	FOR_EACH_CONST(ar, game.auto_replaces) {
+	for (auto const &ar : game.auto_replaces) {
 		// do we have this one?
 		bool already_have = false;
-		FOR_EACH(ar2, auto_replaces) {
+		for (auto &ar2 : auto_replaces) {
 			if (ar->match == ar2->match) {
 				ar2->custom = false;
 				already_have = true;
@@ -121,25 +120,26 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(GameSettings) {
 	REFLECT(pack_seed);
 }
 
-
 StyleSheetSettings::StyleSheetSettings()
-	: card_zoom              (1.0,  true)
-	, card_angle             (0,    true)
-	, card_anti_alias        (true, true)
-	, card_borders           (true, true)
-	, card_draw_editing      (true, true)
-	, card_normal_export     (true, true)
-	, card_spellcheck_enabled(true, true)
-{}
+	: card_zoom(1.0, true), card_angle(0, true), card_anti_alias(true, true),
+	  card_borders(true, true), card_draw_editing(true, true),
+	  card_normal_export(true, true), card_spellcheck_enabled(true, true) {}
 
-void StyleSheetSettings::useDefault(const StyleSheetSettings& ss) {
-	if (card_zoom              .isDefault()) card_zoom              .assignDefault(ss.card_zoom);
-	if (card_angle             .isDefault()) card_angle             .assignDefault(ss.card_angle);
-	if (card_anti_alias        .isDefault()) card_anti_alias        .assignDefault(ss.card_anti_alias);
-	if (card_borders           .isDefault()) card_borders           .assignDefault(ss.card_borders);
-	if (card_draw_editing      .isDefault()) card_draw_editing      .assignDefault(ss.card_draw_editing);
-	if (card_normal_export     .isDefault()) card_normal_export     .assignDefault(ss.card_normal_export);
-	if (card_spellcheck_enabled.isDefault()) card_spellcheck_enabled.assignDefault(ss.card_spellcheck_enabled);
+void StyleSheetSettings::useDefault(const StyleSheetSettings &ss) {
+	if (card_zoom.isDefault())
+		card_zoom.assignDefault(ss.card_zoom);
+	if (card_angle.isDefault())
+		card_angle.assignDefault(ss.card_angle);
+	if (card_anti_alias.isDefault())
+		card_anti_alias.assignDefault(ss.card_anti_alias);
+	if (card_borders.isDefault())
+		card_borders.assignDefault(ss.card_borders);
+	if (card_draw_editing.isDefault())
+		card_draw_editing.assignDefault(ss.card_draw_editing);
+	if (card_normal_export.isDefault())
+		card_normal_export.assignDefault(ss.card_normal_export);
+	if (card_spellcheck_enabled.isDefault())
+		card_spellcheck_enabled.assignDefault(ss.card_spellcheck_enabled);
 }
 
 IMPLEMENT_REFLECTION_NO_SCRIPT(StyleSheetSettings) {
@@ -152,40 +152,37 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(StyleSheetSettings) {
 	REFLECT(card_spellcheck_enabled);
 }
 
-// ----------------------------------------------------------------------------- : Printing
+// -----------------------------------------------------------------------------
+// : Printing
 
 IMPLEMENT_REFLECTION_ENUM(PageLayoutType) {
-	VALUE_N("no space",    LAYOUT_NO_SPACE);
+	VALUE_N("no space", LAYOUT_NO_SPACE);
 	VALUE_N("equal space", LAYOUT_EQUAL_SPACE);
 }
 
-// ----------------------------------------------------------------------------- : Settings
+// -----------------------------------------------------------------------------
+// : Settings
 
 Settings settings;
 
 Settings::Settings()
-	: locale               (_("en"))
-	, set_window_maximized (false)
-	, set_window_width     (790)
-	, set_window_height    (300)
-	, card_notes_height    (40)
-	, open_sets_in_new_window(true)
-	, symbol_grid_size     (30)
-	, symbol_grid          (true)
-	, symbol_grid_snap     (false)
-	, print_layout         (LAYOUT_NO_SPACE)
-	#if USE_OLD_STYLE_UPDATE_CHECKER
-	, updates_url          (_("http://magicseteditor.sourceforge.net/updates"))
-	#endif
-	, package_versions_url (_("http://magicseteditor.sourceforge.net/packages"))
-	, installer_list_url   (_("http://magicseteditor.sourceforge.net/installers"))
-	, check_updates        (CHECK_IF_CONNECTED)
-	, check_updates_all    (true)
-	, website_url          (_("http://magicseteditor.sourceforge.net/"))
-	, install_type         (INSTALL_DEFAULT)
-{}
+	: locale(_("en")), set_window_maximized(false), set_window_width(790),
+	  set_window_height(300), card_notes_height(40),
+	  open_sets_in_new_window(true), symbol_grid_size(30), symbol_grid(true),
+	  symbol_grid_snap(false), print_layout(LAYOUT_NO_SPACE)
+#if USE_OLD_STYLE_UPDATE_CHECKER
+	  ,
+	  updates_url(_("http://magicseteditor.sourceforge.net/updates"))
+#endif
+	  ,
+	  package_versions_url(_("http://magicseteditor.sourceforge.net/packages")),
+	  installer_list_url(_("http://magicseteditor.sourceforge.net/installers")),
+	  check_updates(CHECK_IF_CONNECTED), check_updates_all(true),
+	  website_url(_("http://magicseteditor.sourceforge.net/")),
+	  install_type(INSTALL_DEFAULT) {
+}
 
-void Settings::addRecentFile(const String& filename) {
+void Settings::addRecentFile(const String &filename) {
 	// get absolute path
 	wxFileName fn(filename);
 	fn.Normalize();
@@ -193,54 +190,62 @@ void Settings::addRecentFile(const String& filename) {
 	// remove duplicates
 	recent_sets.erase(
 		remove(recent_sets.begin(), recent_sets.end(), filenameAbs),
-		recent_sets.end()
-	);
+		recent_sets.end());
 	// add to front of list
 	recent_sets.insert(recent_sets.begin(), filenameAbs);
 	// enforce size limit
-	if (recent_sets.size() > max_recent_sets) recent_sets.resize(max_recent_sets);
+	if (recent_sets.size() > max_recent_sets)
+		recent_sets.resize(max_recent_sets);
 }
 
-GameSettings& Settings::gameSettingsFor(const Game& game) {
-	GameSettingsP& gs = game_settings[game.name()];
-	if (!gs) gs = intrusive(new GameSettings);
+GameSettings &Settings::gameSettingsFor(const Game &game) {
+	GameSettingsP &gs = game_settings[game.name()];
+	if (!gs)
+		gs = intrusive(new GameSettings);
 	gs->initDefaults(game);
 	return *gs;
 }
-ColumnSettings& Settings::columnSettingsFor(const Game& game, const Field& field) {
+ColumnSettings &Settings::columnSettingsFor(const Game &game,
+											const Field &field) {
 	// Get game info
-	GameSettings& gs = gameSettingsFor(game);
+	GameSettings &gs = gameSettingsFor(game);
 	// Get column info
-	ColumnSettings& cs = gs.cardlist_columns[field.name];
+	ColumnSettings &cs = gs.cardlist_columns[field.name];
 	if (cs.position == COLUMN_NOT_INITIALIZED) {
 		// column info not set, initialize based on the game
-		cs.visible  = field.card_list_visible;
+		cs.visible = field.card_list_visible;
 		cs.position = field.card_list_column;
-		cs.width    = field.card_list_width;
+		cs.width = field.card_list_width;
 	}
 	return cs;
 }
-StyleSheetSettings& Settings::stylesheetSettingsFor(const StyleSheet& stylesheet) {
-	StyleSheetSettingsP& ss = stylesheet_settings[stylesheet.name()];
-	if (!ss) ss = intrusive(new StyleSheetSettings);
+StyleSheetSettings &
+Settings::stylesheetSettingsFor(const StyleSheet &stylesheet) {
+	StyleSheetSettingsP &ss = stylesheet_settings[stylesheet.name()];
+	if (!ss)
+		ss = intrusive(new StyleSheetSettings);
 	ss->useDefault(default_stylesheet_settings); // update default settings
 	return *ss;
 }
 
-IndexMap<FieldP,ValueP>& Settings::exportOptionsFor(const ExportTemplate& export_template) {
-	return export_options.get(export_template.name(), export_template.option_fields);
+IndexMap<FieldP, ValueP> &
+Settings::exportOptionsFor(const ExportTemplate &export_template) {
+	return export_options.get(export_template.name(),
+							  export_template.option_fields);
 }
 
 /// Retrieve the directory to use for settings and other data files
 String user_settings_dir() {
 	String dir = wxStandardPaths::Get().GetUserDataDir();
-	if (!wxDirExists(dir)) wxMkdir(dir);
+	if (!wxDirExists(dir))
+		wxMkdir(dir);
 	return dir + _("/");
 }
 
 String Settings::settingsFile() {
-//	return user_settings_dir() + _("mse.config");
-	return user_settings_dir() + _("mse8.config"); // use different file during development of C++ port
+	//	return user_settings_dir() + _("mse.config");
+	return user_settings_dir() + _("mse8.config"); // use different file during
+												   // development of C++ port
 }
 
 IMPLEMENT_REFLECTION_NO_SCRIPT(Settings) {
@@ -261,11 +266,11 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(Settings) {
 	REFLECT(default_game);
 	REFLECT(print_layout);
 	REFLECT(apprentice_location);
-	#if USE_OLD_STYLE_UPDATE_CHECKER
-		REFLECT(updates_url);
-	#else
-		REFLECT_COMPAT_IGNORE(<306,"updates url",String);
-	#endif
+#if USE_OLD_STYLE_UPDATE_CHECKER
+	REFLECT(updates_url);
+#else
+	REFLECT_COMPAT_IGNORE(< 306, "updates url", String);
+#endif
 	REFLECT(package_versions_url);
 	REFLECT(installer_list_url);
 	REFLECT(check_updates);
@@ -275,8 +280,9 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(Settings) {
 	REFLECT(game_settings);
 	REFLECT(stylesheet_settings);
 	REFLECT(default_stylesheet_settings);
-	REFLECT_COMPAT(<300, "style_settings", stylesheet_settings);
-	REFLECT_COMPAT(<300, "default_style_settings", default_stylesheet_settings);
+	REFLECT_COMPAT(< 300, "style_settings", stylesheet_settings);
+	REFLECT_COMPAT(< 300, "default_style_settings",
+				   default_stylesheet_settings);
 	REFLECT(export_options);
 }
 
@@ -296,7 +302,8 @@ void Settings::read() {
 	if (wxFileExists(filename)) {
 		// settings file not existing is not an error
 		wxFileInputStream stream(filename);
-		if (!stream.Ok()) return; // failure is not an error
+		if (!stream.Ok())
+			return; // failure is not an error
 		Reader reader(stream, nullptr, filename);
 		reader.handle_greedy(*this);
 	}

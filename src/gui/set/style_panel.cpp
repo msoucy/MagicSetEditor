@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/set/style_panel.hpp>
@@ -23,7 +24,8 @@
 
 DECLARE_TYPEOF_COLLECTION(FieldP);
 
-// ----------------------------------------------------------------------------- : StylePanel : initialization
+// -----------------------------------------------------------------------------
+// : StylePanel : initialization
 
 StylePanel::StylePanel(Window *parent, int id) : SetWindowPanel(parent, id) {
 	// delayed initialization by initControls()
@@ -33,8 +35,10 @@ void StylePanel::initControls() {
 	// init controls
 	preview = new CardViewer(this, wxID_ANY);
 	list = new PackageList(this, wxID_ANY);
-	use_for_all = new wxButton(this, ID_STYLE_USE_FOR_ALL, _BUTTON_("use for all cards"));
-	use_custom_options = new wxCheckBox(this, ID_STYLE_USE_CUSTOM, _BUTTON_("use custom styling options"));
+	use_for_all =
+		new wxButton(this, ID_STYLE_USE_FOR_ALL, _BUTTON_("use for all cards"));
+	use_custom_options = new wxCheckBox(this, ID_STYLE_USE_CUSTOM,
+										_BUTTON_("use custom styling options"));
 	editor = new StylingEditor(this, ID_EDITOR, wxNO_BORDER);
 	// init sizer
 	wxSizer *s = new wxBoxSizer(wxHORIZONTAL);
@@ -42,7 +46,8 @@ void StylePanel::initControls() {
 	wxSizer *s2 = new wxBoxSizer(wxVERTICAL);
 	s2->Add(list, 0, wxEXPAND | wxBOTTOM, 4);
 	s2->Add(use_for_all, 0, wxRIGHT | wxBOTTOM | wxALIGN_RIGHT, 4);
-	wxSizer *s3 = new wxStaticBoxSizer(wxVERTICAL, this, _LABEL_("styling options"));
+	wxSizer *s3 =
+		new wxStaticBoxSizer(wxVERTICAL, this, _LABEL_("styling options"));
 	s3->Add(use_custom_options, 0, wxEXPAND | wxALL, 4);
 	s3->Add(editor, 2, wxEXPAND, 0);
 	s2->Add(s3, 1, wxEXPAND | wxALL, 2);
@@ -81,7 +86,8 @@ bool StylePanel::Layout() {
 	return SetWindowPanel::Layout();
 }
 
-// ----------------------------------------------------------------------------- : StylePanel
+// -----------------------------------------------------------------------------
+// : StylePanel
 
 void StylePanel::onChangeSet() {
 	if (!isInitialized())
@@ -116,7 +122,7 @@ void StylePanel::onAction(const Action &action, bool undone) {
 		// is it a styling action?
 		if (!action.card) {
 			const StyleSheet &s = set->stylesheetFor(card);
-			FOR_EACH_CONST(f, s.styling_fields) {
+			for (auto const f : s.styling_fields) {
 				if (action.valueP->fieldP == f) {
 					// refresh the viewer
 					preview->redraw();
@@ -130,7 +136,8 @@ void StylePanel::onAction(const Action &action, bool undone) {
 	use_custom_options->SetValue(card ? card->has_styling : false);
 }
 
-// ----------------------------------------------------------------------------- : Selection
+// -----------------------------------------------------------------------------
+// : Selection
 
 void StylePanel::selectCard(const CardP &card) {
 	this->card = card;
@@ -145,17 +152,18 @@ void StylePanel::selectCard(const CardP &card) {
 	use_custom_options->SetValue(card ? card->has_styling : false);
 }
 
-// ----------------------------------------------------------------------------- : Clipboard
+// -----------------------------------------------------------------------------
+// : Clipboard
 
 // determine what control to use for clipboard actions
-#define CUT_COPY_PASTE(op, return )                                                                                    \
-	if (!isInitialized())                                                                                              \
-		return false;                                                                                                  \
-	int id = focused_control(this);                                                                                    \
-	if (id == ID_EDITOR) {                                                                                             \
-		return editor->op();                                                                                           \
-	} else {                                                                                                           \
-		return false;                                                                                                  \
+#define CUT_COPY_PASTE(op, return )                                            \
+	if (!isInitialized())                                                      \
+		return false;                                                          \
+	int id = focused_control(this);                                            \
+	if (id == ID_EDITOR) {                                                     \
+		return editor->op();                                                   \
+	} else {                                                                   \
+		return false;                                                          \
 	}
 
 bool StylePanel::canCopy() const { CUT_COPY_PASTE(canCopy, return ) }
@@ -165,7 +173,8 @@ void StylePanel::doCopy() { CUT_COPY_PASTE(doCopy, return (void)) }
 void StylePanel::doCut() { CUT_COPY_PASTE(doCut, return (void)) }
 void StylePanel::doPaste() { CUT_COPY_PASTE(doPaste, return (void)) }
 
-// ----------------------------------------------------------------------------- : Events
+// -----------------------------------------------------------------------------
+// : Events
 
 void StylePanel::onStyleSelect(wxCommandEvent &) {
 	if (list->hasSelection() && card) {
@@ -174,7 +183,8 @@ void StylePanel::onStyleSelect(wxCommandEvent &) {
 			throw PackageError(_("Stylesheet made for the wrong game"));
 		}
 		if (stylesheet == set->stylesheet) {
-			// select no special style when selecting the same style as the set default
+			// select no special style when selecting the same style as the set
+			// default
 			stylesheet = StyleSheetP();
 		}
 		set->actions.addAction(new ChangeCardStyleAction(card, stylesheet));
@@ -187,7 +197,9 @@ void StylePanel::onUseForAll(wxCommandEvent &) {
 	Layout();
 }
 
-void StylePanel::onUseCustom(wxCommandEvent &) { set->actions.addAction(new ChangeCardHasStylingAction(*set, card)); }
+void StylePanel::onUseCustom(wxCommandEvent &) {
+	set->actions.addAction(new ChangeCardHasStylingAction(*set, card));
+}
 
 BEGIN_EVENT_TABLE(StylePanel, wxPanel)
 EVT_GALLERY_SELECT(wxID_ANY, StylePanel::onStyleSelect)

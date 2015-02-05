@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <render/value/color.hpp>
@@ -12,11 +13,12 @@
 
 DECLARE_TYPEOF_COLLECTION(ColorField::ChoiceP);
 
-// ----------------------------------------------------------------------------- : ColorValueViewer
+// -----------------------------------------------------------------------------
+// : ColorValueViewer
 
 IMPLEMENT_VALUE_VIEWER(Color);
 
-void ColorValueViewer::draw(RotatedDC& dc) {
+void ColorValueViewer::draw(RotatedDC &dc) {
 	// draw in the value color
 	dc.SetPen(*wxTRANSPARENT_PEN);
 	dc.SetBrush(value().value->toColor());
@@ -27,7 +29,7 @@ void ColorValueViewer::draw(RotatedDC& dc) {
 		if (field().default_script && is_default(value().value)) {
 			color_name = field().default_name;
 		} else {
-			FOR_EACH_CONST(c, field().choices) {
+			for (auto const c : field().choices) {
 				if (value().value->toColor() == c->color) {
 					color_name = capitalize(c->name);
 					break;
@@ -39,47 +41,53 @@ void ColorValueViewer::draw(RotatedDC& dc) {
 		dc.DrawRectangle(RealRect(0, 0, 40, dc.getHeight()));
 		dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
 		dc.SetPen(*wxTRANSPARENT_PEN);
-		dc.DrawRectangle(RealRect(40, 0, dc.getWidth()-40, dc.getHeight()));
+		dc.DrawRectangle(RealRect(40, 0, dc.getWidth() - 40, dc.getHeight()));
 		dc.DrawText(color_name, RealPoint(43, 3));
 	} else {
 		// is there a mask?
-		const AlphaMask& alpha_mask = getMask(dc);
+		const AlphaMask &alpha_mask = getMask(dc);
 		if (alpha_mask.isLoaded()) {
-			dc.DrawImage(alpha_mask.colorImage(value().value->toColor()), RealPoint(0,0), style().combine);
+			dc.DrawImage(alpha_mask.colorImage(value().value->toColor()),
+						 RealPoint(0, 0), style().combine);
 		} else {
 			// do we need clipping?
-			bool clip = style().left_width < style().width  && style().right_width  < style().width &&
-						style().top_width  < style().height && style().bottom_width < style().height;
+			bool clip = style().left_width < style().width &&
+						style().right_width < style().width &&
+						style().top_width < style().height &&
+						style().bottom_width < style().height;
 			if (clip) {
 				// clip away the inside of the rectangle
 				wxRegion r = dc.trRectToRegion(style().getInternalRect());
 				r.Subtract(dc.trRectToRegion(RealRect(
-					style().left_width,
-					style().top_width,
-					style().width  - style().left_width - style().right_width,
-					style().height - style().top_width  - style().bottom_width
-				)));
+					style().left_width, style().top_width,
+					style().width - style().left_width - style().right_width,
+					style().height - style().top_width -
+						style().bottom_width)));
 				dc.getDC().SetClippingRegion(r);
 			}
 			dc.DrawRoundedRectangle(style().getInternalRect(), style().radius);
-			if (clip) dc.getDC().DestroyClippingRegion();
+			if (clip)
+				dc.getDC().DestroyClippingRegion();
 		}
 		drawFieldBorder(dc);
 	}
 }
 
-bool ColorValueViewer::containsPoint(const RealPoint& p) const {
+bool ColorValueViewer::containsPoint(const RealPoint &p) const {
 	// check against mask
-	const AlphaMask& alpha_mask = getMask();
+	const AlphaMask &alpha_mask = getMask();
 	if (alpha_mask.isLoaded()) {
 		// check against mask
 		return alpha_mask.isOpaque(p, style().getSize());
 	} else {
-		double left = p.x, right  = style().width  - p.x - 1;
-		double top  = p.y, bottom = style().height - p.y - 1;
-		if (left < 0 || right < 0 || top < 0 || bottom < 0) return false;  // outside bounding box
+		double left = p.x, right = style().width - p.x - 1;
+		double top = p.y, bottom = style().height - p.y - 1;
+		if (left < 0 || right < 0 || top < 0 || bottom < 0)
+			return false; // outside bounding box
 		// check against border
-		return left < style().left_width || right  < style().right_width   // inside horizontal border
-			|| top  < style().top_width  || bottom < style().bottom_width; // inside vertical border
+		return left < style().left_width ||
+			   right < style().right_width // inside horizontal border
+			   || top < style().top_width ||
+			   bottom < style().bottom_width; // inside vertical border
 	}
 }

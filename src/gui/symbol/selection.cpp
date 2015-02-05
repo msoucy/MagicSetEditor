@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/symbol/selection.hpp>
@@ -13,28 +14,30 @@
 
 DECLARE_TYPEOF_COLLECTION(SymbolPartP);
 
-// ----------------------------------------------------------------------------- : Selection
+// -----------------------------------------------------------------------------
+// : Selection
 
-void SymbolPartsSelection::setSymbol(const SymbolP& symbol) {
+void SymbolPartsSelection::setSymbol(const SymbolP &symbol) {
 	root = symbol.get();
 	clear();
 }
 
-void SymbolPartsSelection::clear() {
-	selection.clear();
-}
+void SymbolPartsSelection::clear() { selection.clear(); }
 
-bool SymbolPartsSelection::select(const SymbolPartP& part, SelectMode mode) {
-	if (!part) return false;
+bool SymbolPartsSelection::select(const SymbolPartP &part, SelectMode mode) {
+	if (!part)
+		return false;
 	// make sure part is not the decendent of a part that is already selected
 	if (mode != SELECT_OVERRIDE) {
-		FOR_EACH(s, selection) {
-			if (s != part && s->isAncestor(*part)) return false;
+		for (auto s : selection) {
+			if (s != part && s->isAncestor(*part))
+				return false;
 		}
 	}
 	// select
 	if (mode == SELECT_OVERRIDE) {
-		if (selection.size() == 1 && *selection.begin() == part) return false; // already selected
+		if (selection.size() == 1 && *selection.begin() == part)
+			return false; // already selected
 		selection.clear();
 		selection.insert(part);
 	} else if (mode == SELECT_IF_OUTSIDE) {
@@ -56,38 +59,43 @@ bool SymbolPartsSelection::select(const SymbolPartP& part, SelectMode mode) {
 	return true;
 }
 
-void SymbolPartsSelection::clearChildren(SymbolPart* part) {
-	if (SymbolGroup* g = part->isSymbolGroup()) {
-		FOR_EACH(p, g->parts) {
-			if (selected(p)) selection.erase(p);
+void SymbolPartsSelection::clearChildren(SymbolPart *part) {
+	if (SymbolGroup *g = part->isSymbolGroup()) {
+		for (auto p : g->parts) {
+			if (selected(p))
+				selection.erase(p);
 			clearChildren(p.get());
 		}
 	}
 }
 
 SymbolShapeP SymbolPartsSelection::getAShape() const {
-	FOR_EACH(s, selection) {
-		if (s->isSymbolShape()) return static_pointer_cast<SymbolShape>(s);
+	for (auto s : selection) {
+		if (s->isSymbolShape())
+			return static_pointer_cast<SymbolShape>(s);
 	}
 	return SymbolShapeP();
 }
 
 SymbolSymmetryP SymbolPartsSelection::getASymmetry() const {
-	FOR_EACH(s, selection) {
-		if (s->isSymbolSymmetry()) return static_pointer_cast<SymbolSymmetry>(s);
+	for (auto s : selection) {
+		if (s->isSymbolSymmetry())
+			return static_pointer_cast<SymbolSymmetry>(s);
 	}
 	return SymbolSymmetryP();
 }
 
+// -----------------------------------------------------------------------------
+// : Position based
 
-// ----------------------------------------------------------------------------- : Position based
-
-SymbolPartP SymbolPartsSelection::find(const SymbolPartP& part, const Vector2D& pos) const {
-	if (SymbolShape* s = part->isSymbolShape()) {
-		if (point_in_shape(pos, *s)) return part;
+SymbolPartP SymbolPartsSelection::find(const SymbolPartP &part,
+									   const Vector2D &pos) const {
+	if (SymbolShape *s = part->isSymbolShape()) {
+		if (point_in_shape(pos, *s))
+			return part;
 	}
-	if (SymbolGroup* g = part->isSymbolGroup()) {
-		FOR_EACH(p, g->parts) {
+	if (SymbolGroup *g = part->isSymbolGroup()) {
+		for (auto p : g->parts) {
 			SymbolPartP found = find(p, pos);
 			if (found) {
 				if (part->isSymbolSymmetry() || selected(found)) {
@@ -101,30 +109,37 @@ SymbolPartP SymbolPartsSelection::find(const SymbolPartP& part, const Vector2D& 
 	return SymbolPartP();
 }
 
-SymbolPartP SymbolPartsSelection::find(const Vector2D& position) const {
-	FOR_EACH(p, root->parts) {
+SymbolPartP SymbolPartsSelection::find(const Vector2D &position) const {
+	for (auto p : root->parts) {
 		SymbolPartP found = find(p, position);
-		if (found) return found;
+		if (found)
+			return found;
 	}
 	return SymbolPartP();
 }
 
-// ----------------------------------------------------------------------------- : Rectangle based
+// -----------------------------------------------------------------------------
+// : Rectangle based
 
-bool SymbolPartsSelection::selectRect(const Vector2D& a, const Vector2D& b, const Vector2D& c) {
+bool SymbolPartsSelection::selectRect(const Vector2D &a, const Vector2D &b,
+									  const Vector2D &c) {
 	return selectRect(*root, a, b, c);
 }
-bool SymbolPartsSelection::selectRect(const SymbolGroup& parent, const Vector2D& a, const Vector2D& b, const Vector2D& c) {
+bool SymbolPartsSelection::selectRect(const SymbolGroup &parent,
+									  const Vector2D &a, const Vector2D &b,
+									  const Vector2D &c) {
 	bool changes = false;
-	Bounds ab(a); ab.update(b);
-	Bounds bc(b); bc.update(c);
-	FOR_EACH_CONST(p, parent.parts) {
+	Bounds ab(a);
+	ab.update(b);
+	Bounds bc(b);
+	bc.update(c);
+	for (auto const p : parent.parts) {
 		bool in_ab = ab.contains(p->bounds);
 		bool in_bc = bc.contains(p->bounds);
 		if (in_ab != in_bc) {
 			select(p, SELECT_TOGGLE);
 			changes = true;
-		} else if (SymbolGroup* g = p->isSymbolGroup()) {
+		} else if (SymbolGroup *g = p->isSymbolGroup()) {
 			if (p->isSymbolSymmetry() || selected(p)) {
 				selectRect(*g, a, b, c);
 			}

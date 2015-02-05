@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <script/value.hpp>
@@ -17,29 +18,48 @@
 
 DECLARE_TYPEOF_COLLECTION(pair<Variable COMMA ScriptValueP>);
 
-// ----------------------------------------------------------------------------- : ScriptValue
+// -----------------------------------------------------------------------------
+// : ScriptValue
 // Base cases
 
-String ScriptValue::toString() const { throw ScriptErrorConversion(typeName(), _TYPE_("string")); }
-int ScriptValue::toInt() const { throw ScriptErrorConversion(typeName(), _TYPE_("integer")); }
-bool ScriptValue::toBool() const { throw ScriptErrorConversion(typeName(), _TYPE_("boolean")); }
-double ScriptValue::toDouble() const { throw ScriptErrorConversion(typeName(), _TYPE_("double")); }
-AColor ScriptValue::toColor() const { throw ScriptErrorConversion(typeName(), _TYPE_("color")); }
-wxDateTime ScriptValue::toDateTime() const { throw ScriptErrorConversion(typeName(), _TYPE_("date")); }
-GeneratedImageP ScriptValue::toImage() const { throw ScriptErrorConversion(typeName(), _TYPE_("image")); }
+String ScriptValue::toString() const {
+	throw ScriptErrorConversion(typeName(), _TYPE_("string"));
+}
+int ScriptValue::toInt() const {
+	throw ScriptErrorConversion(typeName(), _TYPE_("integer"));
+}
+bool ScriptValue::toBool() const {
+	throw ScriptErrorConversion(typeName(), _TYPE_("boolean"));
+}
+double ScriptValue::toDouble() const {
+	throw ScriptErrorConversion(typeName(), _TYPE_("double"));
+}
+AColor ScriptValue::toColor() const {
+	throw ScriptErrorConversion(typeName(), _TYPE_("color"));
+}
+wxDateTime ScriptValue::toDateTime() const {
+	throw ScriptErrorConversion(typeName(), _TYPE_("date"));
+}
+GeneratedImageP ScriptValue::toImage() const {
+	throw ScriptErrorConversion(typeName(), _TYPE_("image"));
+}
 String ScriptValue::toCode() const { return toString(); }
 String ScriptValue::toFriendlyString() const { return toString(); }
 ScriptValueP ScriptValue::do_eval(Context &, bool) const {
 	return delay_error(ScriptErrorConversion(typeName(), _TYPE_("function")));
 }
 ScriptValueP ScriptValue::next(ScriptValueP *key_out) {
-	throw InternalError(_("Can't convert from ") + typeName() + _(" to iterator"));
+	throw InternalError(_("Can't convert from ") + typeName() +
+						_(" to iterator"));
 }
 ScriptValueP ScriptValue::makeIterator() const {
 	return delay_error(ScriptErrorConversion(typeName(), _TYPE_("collection")));
 }
-int ScriptValue::itemCount() const { throw ScriptErrorConversion(typeName(), _TYPE_("collection")); }
-CompareWhat ScriptValue::compareAs(String &compare_str, void const *&compare_ptr) const {
+int ScriptValue::itemCount() const {
+	throw ScriptErrorConversion(typeName(), _TYPE_("collection"));
+}
+CompareWhat ScriptValue::compareAs(String &compare_str,
+								   void const *&compare_ptr) const {
 	compare_str = toCode();
 	return COMPARE_AS_STRING;
 }
@@ -55,13 +75,21 @@ ScriptValueP ScriptValue::getIndex(int index) const {
 	return delay_error(ScriptErrorNoMember(typeName(), String() << index));
 }
 
-ScriptValueP ScriptValue::simplifyClosure(ScriptClosure &) const { return ScriptValueP(); }
+ScriptValueP ScriptValue::simplifyClosure(ScriptClosure &) const {
+	return ScriptValueP();
+}
 
-ScriptValueP ScriptValue::dependencyMember(const String &name, const Dependency &) const { return dependency_dummy; }
-ScriptValueP ScriptValue::dependencyName(const ScriptValue &container, const Dependency &dep) const {
+ScriptValueP ScriptValue::dependencyMember(const String &name,
+										   const Dependency &) const {
+	return dependency_dummy;
+}
+ScriptValueP ScriptValue::dependencyName(const ScriptValue &container,
+										 const Dependency &dep) const {
 	return container.dependencyMember(toString(), dep);
 }
-ScriptValueP ScriptValue::dependencies(Context &, const Dependency &) const { return dependency_dummy; }
+ScriptValueP ScriptValue::dependencies(Context &, const Dependency &) const {
+	return dependency_dummy;
+}
 void ScriptValue::dependencyThis(const Dependency &dep) {}
 
 bool approx_equal(double a, double b) { return a == b || fabs(a - b) < 1e-14; }
@@ -75,7 +103,8 @@ bool equal(const ScriptValueP &a, const ScriptValueP &b) {
 		return a->toInt() == b->toInt();
 	} else if (at == bt && at == SCRIPT_BOOL) {
 		return a->toBool() == b->toBool();
-	} else if ((at == SCRIPT_INT || at == SCRIPT_DOUBLE) && (bt == SCRIPT_INT || bt == SCRIPT_DOUBLE)) {
+	} else if ((at == SCRIPT_INT || at == SCRIPT_DOUBLE) &&
+			   (bt == SCRIPT_INT || bt == SCRIPT_DOUBLE)) {
 		return approx_equal(a->toDouble(), b->toDouble());
 	} else if (at == SCRIPT_COLLECTION && bt == SCRIPT_COLLECTION) {
 		// compare each element
@@ -107,7 +136,8 @@ bool equal(const ScriptValueP &a, const ScriptValueP &b) {
 	}
 }
 
-// ----------------------------------------------------------------------------- : Errors
+// -----------------------------------------------------------------------------
+// : Errors
 
 ScriptType ScriptDelayedError::type() const { return SCRIPT_ERROR; }
 
@@ -118,28 +148,35 @@ int ScriptDelayedError::toInt() const { throw error; }
 bool ScriptDelayedError::toBool() const { throw error; }
 AColor ScriptDelayedError::toColor() const { throw error; }
 int ScriptDelayedError::itemCount() const { throw error; }
-CompareWhat ScriptDelayedError::compareAs(String &, void const *&) const { throw error; }
+CompareWhat ScriptDelayedError::compareAs(String &, void const *&) const {
+	throw error;
+}
 ScriptValueP ScriptDelayedError::getMember(const String &) const {
 	return intrusive_from_existing(const_cast<ScriptDelayedError *>(this));
 }
-ScriptValueP ScriptDelayedError::dependencyMember(const String &, const Dependency &) const {
+ScriptValueP ScriptDelayedError::dependencyMember(const String &,
+												  const Dependency &) const {
 	return intrusive_from_existing(const_cast<ScriptDelayedError *>(this));
 }
 ScriptValueP ScriptDelayedError::do_eval(Context &, bool) const {
 	return intrusive_from_existing(const_cast<ScriptDelayedError *>(this));
 }
-ScriptValueP ScriptDelayedError::dependencies(Context &, const Dependency &) const {
+ScriptValueP ScriptDelayedError::dependencies(Context &,
+											  const Dependency &) const {
 	return intrusive_from_existing(const_cast<ScriptDelayedError *>(this));
 }
 ScriptValueP ScriptDelayedError::makeIterator() const {
 	return intrusive_from_existing(const_cast<ScriptDelayedError *>(this));
 }
 
-// ----------------------------------------------------------------------------- : Iterators
+// -----------------------------------------------------------------------------
+// : Iterators
 
 ScriptType ScriptIterator::type() const { return SCRIPT_ITERATOR; }
 String ScriptIterator::typeName() const { return _("iterator"); }
-CompareWhat ScriptIterator::compareAs(String &, void const *&) const { return COMPARE_NO; }
+CompareWhat ScriptIterator::compareAs(String &, void const *&) const {
+	return COMPARE_NO;
+}
 ScriptValueP ScriptIterator::makeIterator() const {
 	return intrusive_from_existing(const_cast<ScriptIterator *>(this));
 }
@@ -148,7 +185,8 @@ ScriptValueP ScriptIterator::makeIterator() const {
 class ScriptRangeIterator : public ScriptIterator {
   public:
 	// Construct a range iterator with the given bounds (inclusive)
-	ScriptRangeIterator(int start, int end) : pos(start), start(start), end(end) {}
+	ScriptRangeIterator(int start, int end)
+		: pos(start), start(start), end(end) {}
 	virtual ScriptValueP next(ScriptValueP *key_out) {
 		if (pos <= end) {
 			if (key_out)
@@ -163,9 +201,12 @@ class ScriptRangeIterator : public ScriptIterator {
 	int pos, start, end;
 };
 
-ScriptValueP rangeIterator(int start, int end) { return intrusive(new ScriptRangeIterator(start, end)); }
+ScriptValueP rangeIterator(int start, int end) {
+	return intrusive(new ScriptRangeIterator(start, end));
+}
 
-// ----------------------------------------------------------------------------- : Integers
+// -----------------------------------------------------------------------------
+// : Integers
 
 #define USE_POOL_ALLOCATOR
 
@@ -181,7 +222,9 @@ class ScriptInt : public ScriptValue {
 
   protected:
 #ifdef USE_POOL_ALLOCATOR
-	virtual void destroy() { boost::singleton_pool<ScriptValue, sizeof(ScriptInt)>::free(this); }
+	virtual void destroy() {
+		boost::singleton_pool<ScriptValue, sizeof(ScriptInt)>::free(this);
+	}
 #endif
   private:
 	int value;
@@ -189,13 +232,16 @@ class ScriptInt : public ScriptValue {
 
 ScriptValueP to_script(int v) {
 #ifdef USE_POOL_ALLOCATOR
-	return intrusive(new (boost::singleton_pool<ScriptValue, sizeof(ScriptInt)>::malloc()) ScriptInt(v));
+	return intrusive(
+		new (boost::singleton_pool<ScriptValue, sizeof(ScriptInt)>::malloc())
+		ScriptInt(v));
 #else
 	return intrusive(new ScriptInt(v));
 #endif
 }
 
-// ----------------------------------------------------------------------------- : Booleans
+// -----------------------------------------------------------------------------
+// : Booleans
 
 // Boolean values
 class ScriptBool : public ScriptValue {
@@ -213,12 +259,14 @@ class ScriptBool : public ScriptValue {
 
 // use integers to represent true/false
 /* NOTE: previous versions used ScriptInts as booleans, this gives problems
- * when we use a pool allocator for them, because the pool is destroyed before these globals.
+ * when we use a pool allocator for them, because the pool is destroyed before
+ * these globals.
  */
 ScriptValueP script_true(new ScriptBool(true));
 ScriptValueP script_false(new ScriptBool(false));
 
-// ----------------------------------------------------------------------------- : Doubles
+// -----------------------------------------------------------------------------
+// : Doubles
 
 // Double values
 class ScriptDouble : public ScriptValue {
@@ -228,20 +276,23 @@ class ScriptDouble : public ScriptValue {
 	virtual String typeName() const { return _TYPE_("double"); }
 	virtual String toString() const { return String() << value; }
 	virtual double toDouble() const { return value; }
-	virtual int toInt() const { return (int)value; } // TODO: do we want this automatic conversion?
+	virtual int toInt() const {
+		return (int)value;
+	} // TODO: do we want this automatic conversion?
   private:
 	double value;
 };
 
 ScriptValueP to_script(double v) { return intrusive(new ScriptDouble(v)); }
 
-// ----------------------------------------------------------------------------- : String type
+// -----------------------------------------------------------------------------
+// : String type
 
 String quote_string(String const &str) {
 	String out;
 	out.reserve(str.size() + 2);
 	out += _('"');
-	FOR_EACH_CONST(c, str) {
+	for (auto const c : str) {
 		if (c == _('"') || c == _('\\')) {
 			out += _('\\');
 			out += c;
@@ -266,7 +317,9 @@ class ScriptString : public ScriptValue {
 	ScriptString(const String &v) : value(v) {}
 	virtual ScriptType type() const { return SCRIPT_STRING; }
 	virtual String typeName() const {
-		return _TYPE_("string") + _(" (\"") + (value.size() < 30 ? value : value.substr(0, 30) + _("...")) + _("\")");
+		return _TYPE_("string") + _(" (\"") +
+			   (value.size() < 30 ? value : value.substr(0, 30) + _("...")) +
+			   _("\")");
 	}
 	virtual String toString() const { return value; }
 	virtual String toCode() const { return quote_string(value); }
@@ -336,9 +389,12 @@ class ScriptString : public ScriptValue {
 	String value;
 };
 
-ScriptValueP to_script(const String &v) { return intrusive(new ScriptString(v)); }
+ScriptValueP to_script(const String &v) {
+	return intrusive(new ScriptString(v));
+}
 
-// ----------------------------------------------------------------------------- : Color
+// -----------------------------------------------------------------------------
+// : Color
 
 // AColor values
 class ScriptAColor : public ScriptValue {
@@ -357,7 +413,8 @@ class ScriptAColor : public ScriptValue {
 ScriptValueP to_script(Color v) { return intrusive(new ScriptAColor(v)); }
 ScriptValueP to_script(AColor v) { return intrusive(new ScriptAColor(v)); }
 
-// ----------------------------------------------------------------------------- : DateTime
+// -----------------------------------------------------------------------------
+// : DateTime
 
 // wxDateTime values
 class ScriptDateTime : public ScriptValue {
@@ -366,15 +423,20 @@ class ScriptDateTime : public ScriptValue {
 	virtual ScriptType type() const { return SCRIPT_DATETIME; }
 	virtual String typeName() const { return _TYPE_("date"); }
 	virtual wxDateTime toDateTime() const { return value; }
-	virtual String toString() const { return value.Format(_("%Y-%m-%d %H:%M:%S")); }
+	virtual String toString() const {
+		return value.Format(_("%Y-%m-%d %H:%M:%S"));
+	}
 
   private:
 	wxDateTime value;
 };
 
-ScriptValueP to_script(wxDateTime v) { return intrusive(new ScriptDateTime(v)); }
+ScriptValueP to_script(wxDateTime v) {
+	return intrusive(new ScriptDateTime(v));
+}
 
-// ----------------------------------------------------------------------------- : Nil type
+// -----------------------------------------------------------------------------
+// : Nil type
 
 // the nil object
 class ScriptNil : public ScriptValue {
@@ -387,7 +449,9 @@ class ScriptNil : public ScriptValue {
 	virtual int toInt() const { return 0; }
 	virtual bool toBool() const { return false; }
 	virtual AColor toColor() const { return AColor(0, 0, 0, 0); }
-	virtual GeneratedImageP toImage() const { return intrusive(new BlankImage()); }
+	virtual GeneratedImageP toImage() const {
+		return intrusive(new BlankImage());
+	}
 
   protected:
 	virtual ScriptValueP do_eval(Context &ctx, bool) const {
@@ -402,7 +466,8 @@ ScriptValueP script_nil(new ScriptNil);
 /// Preallocated nil value marked as default
 ScriptValueP script_default_nil(new ScriptDefault(script_nil));
 
-// ----------------------------------------------------------------------------- : Collection base
+// -----------------------------------------------------------------------------
+// : Collection base
 
 String ScriptCollectionBase::toCode() const {
 	String ret = _("[");
@@ -419,12 +484,14 @@ String ScriptCollectionBase::toCode() const {
 	return ret;
 }
 
-// ----------------------------------------------------------------------------- : Custom collection
+// -----------------------------------------------------------------------------
+// : Custom collection
 
 // Iterator over a custom collection
 class ScriptCustomCollectionIterator : public ScriptIterator {
   public:
-	ScriptCustomCollectionIterator(ScriptCustomCollectionP col) : col(col), pos(0), it(col->key_value.begin()) {}
+	ScriptCustomCollectionIterator(ScriptCustomCollectionP col)
+		: col(col), pos(0), it(col->key_value.begin()) {}
 	virtual ScriptValueP next(ScriptValueP *key_out) {
 		if (pos < col->value.size()) {
 			if (key_out)
@@ -461,16 +528,19 @@ ScriptValueP ScriptCustomCollection::getIndex(int index) const {
 	}
 }
 ScriptValueP ScriptCustomCollection::makeIterator() const {
-	return intrusive(
-		new ScriptCustomCollectionIterator(intrusive_from_existing(const_cast<ScriptCustomCollection *>(this))));
+	return intrusive(new ScriptCustomCollectionIterator(
+		intrusive_from_existing(const_cast<ScriptCustomCollection *>(this))));
 }
 
-// ----------------------------------------------------------------------------- : Concat collection
+// -----------------------------------------------------------------------------
+// : Concat collection
 
 // Iterator over a concatenated collection
 class ScriptConcatCollectionIterator : public ScriptIterator {
   public:
-	ScriptConcatCollectionIterator(const ScriptValueP &itA, const ScriptValueP &itB) : itA(itA), itB(itB) {}
+	ScriptConcatCollectionIterator(const ScriptValueP &itA,
+								   const ScriptValueP &itB)
+		: itA(itA), itB(itB) {}
 	virtual ScriptValueP next(ScriptValueP *key_out) {
 		if (itA) {
 			ScriptValueP v = itA->next(key_out);
@@ -493,7 +563,8 @@ ScriptValueP ScriptConcatCollection::getMember(const String &name) const {
 		return member;
 	long index;
 	int itemsInA = a->itemCount();
-	if (name.ToLong(&index) && index - itemsInA >= 0 && index - itemsInA < b->itemCount()) {
+	if (name.ToLong(&index) && index - itemsInA >= 0 &&
+		index - itemsInA < b->itemCount()) {
 		// adjust integer index
 		return b->getMember(String() << (index - itemsInA));
 	} else {
@@ -509,17 +580,23 @@ ScriptValueP ScriptConcatCollection::getIndex(int index) const {
 	}
 }
 ScriptValueP ScriptConcatCollection::makeIterator() const {
-	return intrusive(new ScriptConcatCollectionIterator(a->makeIterator(), b->makeIterator()));
+	return intrusive(new ScriptConcatCollectionIterator(a->makeIterator(),
+														b->makeIterator()));
 }
 
-// ----------------------------------------------------------------------------- : Default arguments / closure
+// -----------------------------------------------------------------------------
+// : Default arguments / closure
 
 ScriptType ScriptClosure::type() const { return SCRIPT_FUNCTION; }
-String ScriptClosure::typeName() const { return fun->typeName() + _(" closure"); }
+String ScriptClosure::typeName() const {
+	return fun->typeName() + _(" closure");
+}
 
-void ScriptClosure::addBinding(Variable v, const ScriptValueP &value) { bindings.push_back(make_pair(v, value)); }
+void ScriptClosure::addBinding(Variable v, const ScriptValueP &value) {
+	bindings.push_back(make_pair(v, value));
+}
 ScriptValueP ScriptClosure::getBinding(Variable v) const {
-	FOR_EACH_CONST(b, bindings) {
+	for (auto const b : bindings) {
 		if (b.first == v)
 			return b.second;
 	}
@@ -533,15 +610,17 @@ ScriptValueP ScriptClosure::do_eval(Context &ctx, bool openScope) const {
 	applyBindings(ctx);
 	return fun->eval(ctx, openScope);
 }
-ScriptValueP ScriptClosure::dependencies(Context &ctx, const Dependency &dep) const {
+ScriptValueP ScriptClosure::dependencies(Context &ctx,
+										 const Dependency &dep) const {
 	LocalScope scope(ctx);
 	applyBindings(ctx);
 	return fun->dependencies(ctx, dep);
 }
 void ScriptClosure::applyBindings(Context &ctx) const {
-	FOR_EACH_CONST(b, bindings) {
+	for (auto const b : bindings) {
 		if (ctx.getVariableScope(b.first) != 0) {
-			// variables passed as arguments (i.e. in scope 0) override these default bindings
+			// variables passed as arguments (i.e. in scope 0) override these
+			// default bindings
 			ctx.setVariable(b.first, b.second);
 		}
 	}
@@ -549,4 +628,6 @@ void ScriptClosure::applyBindings(Context &ctx) const {
 
 ScriptType ScriptRule::type() const { return SCRIPT_FUNCTION; }
 String ScriptRule::typeName() const { return fun->typeName() + _(" rule"); }
-ScriptValueP ScriptRule::do_eval(Context &ctx, bool openScope) const { return ctx.makeClosure(fun); }
+ScriptValueP ScriptRule::do_eval(Context &ctx, bool openScope) const {
+	return ctx.makeClosure(fun);
+}

@@ -12,51 +12,56 @@
  *  Generic action stuff
  */
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <util/action_stack.hpp>
 
-// ----------------------------------------------------------------------------- : Generic add/remove action
+// -----------------------------------------------------------------------------
+// : Generic add/remove action
 
-enum AddingOrRemoving {ADD, REMOVE};
+enum AddingOrRemoving { ADD, REMOVE };
 
 /// Adding or removing some objects from a vector
 template <typename T>
 class GenericAddAction {
   public:
-	GenericAddAction(AddingOrRemoving, const T& item,          const vector<T>& container);
-	GenericAddAction(AddingOrRemoving, const vector<T>& items, const vector<T>& container);
-	
+	GenericAddAction(AddingOrRemoving, const T &item,
+					 const vector<T> &container);
+	GenericAddAction(AddingOrRemoving, const vector<T> &items,
+					 const vector<T> &container);
+
 	String getName() const;
-	void   perform(vector<T>& container, bool to_undo) const;
-	
+	void perform(vector<T> &container, bool to_undo) const;
+
 	/// A step of removing/adding
 	struct Step {
-		inline Step(size_t pos, const T& item) : pos(pos), item(item) {}
+		inline Step(size_t pos, const T &item) : pos(pos), item(item) {}
 		size_t pos;
-		T      item;
+		T item;
 	};
-	bool adding;        ///< Were objects added? (as opposed to removed)
+	bool adding;		///< Were objects added? (as opposed to removed)
 	vector<Step> steps; ///< Added/removed objects, sorted by ascending pos
 };
 
-// ----------------------------------------------------------------------------- : Implementation
+// -----------------------------------------------------------------------------
+// : Implementation
 
 template <typename T>
-bool contains(const vector<T>& items, const T& item) {
+bool contains(const vector<T> &items, const T &item) {
 	return find(items.begin(), items.end(), item) != items.end();
 }
 
 template <typename T>
-GenericAddAction<T>::GenericAddAction(AddingOrRemoving ar, const T& item, const vector<T>& container)
-	: adding(ar == ADD)
-{
+GenericAddAction<T>::GenericAddAction(AddingOrRemoving ar, const T &item,
+									  const vector<T> &container)
+	: adding(ar == ADD) {
 	if (ar == ADD) {
 		size_t pos = container.size();
 		steps.push_back(Step(pos, item));
 	} else {
-		for (size_t pos = 0 ; pos < container.size() ; ++pos) {
+		for (size_t pos = 0; pos < container.size(); ++pos) {
 			if (container[pos] == item) {
 				steps.push_back(Step(pos, item));
 				return;
@@ -67,16 +72,18 @@ GenericAddAction<T>::GenericAddAction(AddingOrRemoving ar, const T& item, const 
 }
 
 template <typename T>
-GenericAddAction<T>::GenericAddAction(AddingOrRemoving ar, const vector<T>& items, const vector<T>& container)
-	: adding(ar == ADD)
-{
+GenericAddAction<T>::GenericAddAction(AddingOrRemoving ar,
+									  const vector<T> &items,
+									  const vector<T> &container)
+	: adding(ar == ADD) {
 	if (ar == ADD) {
 		size_t pos = container.size();
-		for (typename vector<T>::const_iterator it = items.begin() ; it != items.end() ; ++it) {
+		for (typename vector<T>::const_iterator it = items.begin();
+			 it != items.end(); ++it) {
 			steps.push_back(Step(pos++, *it));
 		}
 	} else {
-		for (size_t pos = 0 ; pos < container.size() ; ++pos) {
+		for (size_t pos = 0; pos < container.size(); ++pos) {
 			if (contains(items, container[pos])) {
 				steps.push_back(Step(pos, container[pos]));
 			}
@@ -89,22 +96,25 @@ GenericAddAction<T>::GenericAddAction(AddingOrRemoving ar, const vector<T>& item
 
 template <typename T>
 String GenericAddAction<T>::getName() const {
-	String type = type_name(steps.front().item) + (steps.size() == 1 ? _("") : _("s"));
-	return adding ? _ACTION_1_("add item", type) : _ACTION_1_("remove item", type);
+	String type =
+		type_name(steps.front().item) + (steps.size() == 1 ? _("") : _("s"));
+	return adding ? _ACTION_1_("add item", type)
+				  : _ACTION_1_("remove item", type);
 }
 
 template <typename T>
-void GenericAddAction<T>::perform(vector<T>& container, bool to_undo) const {
+void GenericAddAction<T>::perform(vector<T> &container, bool to_undo) const {
 	if (adding != to_undo) {
 		// (re)insert the items
 		// ascending order, this is the reverse of removal
-		FOR_EACH_CONST(s, steps) {
+		for (auto const s : steps) {
 			assert(s.pos <= container.size());
 			container.insert(container.begin() + s.pos, s.item);
 		}
 	} else {
 		// remove the items
-		// descending order, because earlier removals shift the rest of the vector
+		// descending order, because earlier removals shift the rest of the
+		// vector
 		FOR_EACH_CONST_REVERSE(s, steps) {
 			assert(s.pos < container.size());
 			container.erase(container.begin() + s.pos);
@@ -112,5 +122,6 @@ void GenericAddAction<T>::perform(vector<T>& container, bool to_undo) const {
 	}
 }
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

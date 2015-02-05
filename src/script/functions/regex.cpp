@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <script/functions/functions.hpp>
@@ -15,20 +16,20 @@
 DECLARE_POINTER_TYPE(ScriptRegex);
 DECLARE_TYPEOF_COLLECTION(pair<Variable COMMA ScriptValueP>);
 
-// ----------------------------------------------------------------------------- : Regex type
+// -----------------------------------------------------------------------------
+// : Regex type
 
 /// A regular expression for use in a script
 class ScriptRegex : public ScriptValue, public Regex {
   public:
 	virtual ScriptType type() const { return SCRIPT_REGEX; }
 	virtual String typeName() const { return _("regex"); }
-	
-	ScriptRegex(const String& code) {
-		assign(code);
-	}
-	
+
+	ScriptRegex(const String &code) { assign(code); }
+
 	/// Match only if in_context also matches
-	bool matches(Results& results, const String& str, String::const_iterator begin, const ScriptRegexP& in_context) {
+	bool matches(Results &results, const String &str,
+				 String::const_iterator begin, const ScriptRegexP &in_context) {
 		if (!in_context) {
 			return matches(results, begin, str.end());
 		} else {
@@ -48,7 +49,7 @@ class ScriptRegex : public ScriptValue, public Regex {
 	using Regex::matches;
 };
 
-ScriptRegexP regex_from_script(const ScriptValueP& value) {
+ScriptRegexP regex_from_script(const ScriptValueP &value) {
 	// is it a regex already?
 	ScriptRegexP regex = dynamic_pointer_cast<ScriptRegex>(value);
 	if (!regex) {
@@ -58,33 +59,37 @@ ScriptRegexP regex_from_script(const ScriptValueP& value) {
 	return regex;
 }
 
-template <> inline ScriptRegexP from_script<ScriptRegexP>(const ScriptValueP& value) {
+template <>
+inline ScriptRegexP from_script<ScriptRegexP>(const ScriptValueP &value) {
 	return regex_from_script(value);
 }
 
-// ----------------------------------------------------------------------------- : Rules : regex replace
+// -----------------------------------------------------------------------------
+// : Rules : regex replace
 
 struct RegexReplacer {
-	ScriptRegexP match;					///< Regex to match
-	ScriptRegexP context;				///< Match only in a given context, optional
-	String       replacement_string;	///< Replacement
-	ScriptValueP replacement_function;	///< Replacement function instead of a simple string, optional
-	bool         recursive;				///< Recurse into the replacement
-	
-	String apply(Context& ctx, const String& input, int level = 0) const {
+	ScriptRegexP match;		   ///< Regex to match
+	ScriptRegexP context;	  ///< Match only in a given context, optional
+	String replacement_string; ///< Replacement
+	ScriptValueP replacement_function; ///< Replacement function instead of a
+	/// simple string, optional
+	bool recursive; ///< Recurse into the replacement
+
+	String apply(Context &ctx, const String &input, int level = 0) const {
 		String ret;
 		String::const_iterator start = input.begin();
 		ScriptRegex::Results results;
 		while (match->matches(results, input, start, context)) {
 			// for each match ...
 			ScriptRegex::Results::const_reference pos = results[0];
-			ret.append(start, pos.first); // everything before the match position stays
+			ret.append(start,
+					   pos.first); // everything before the match position stays
 			// determine replacement
 			String inside;
 			if (replacement_function) {
 				// set match results in context
-				for (UInt sub = 0 ; sub < results.size() ; ++sub) {
-					String name  = sub == 0 ? _("input") : String(_("_")) << sub;
+				for (UInt sub = 0; sub < results.size(); ++sub) {
+					String name = sub == 0 ? _("input") : String(_("_")) << sub;
 					ctx.setVariable(name, to_script(results.str(sub)));
 				}
 				// call
@@ -108,12 +113,15 @@ struct RegexReplacer {
 SCRIPT_FUNCTION_WITH_SIMPLIFY(replace_text) {
 	// construct replacer
 	RegexReplacer replacer;
-	replacer.match = from_script<ScriptRegexP>(ctx.getVariable(SCRIPT_VAR_match), SCRIPT_VAR_match);
+	replacer.match = from_script<ScriptRegexP>(
+		ctx.getVariable(SCRIPT_VAR_match), SCRIPT_VAR_match);
 	if (ctx.getVariableOpt(SCRIPT_VAR_in_context)) {
-		replacer.context = from_script<ScriptRegexP>(ctx.getVariableOpt(SCRIPT_VAR_in_context), SCRIPT_VAR_in_context);
+		replacer.context = from_script<ScriptRegexP>(
+			ctx.getVariableOpt(SCRIPT_VAR_in_context), SCRIPT_VAR_in_context);
 	}
 	if (ctx.getVariableOpt(SCRIPT_VAR_recursive)) {
-		replacer.recursive = from_script<bool>(ctx.getVariableOpt(SCRIPT_VAR_recursive), SCRIPT_VAR_recursive);
+		replacer.recursive = from_script<bool>(
+			ctx.getVariableOpt(SCRIPT_VAR_recursive), SCRIPT_VAR_recursive);
 	} else {
 		replacer.recursive = false;
 	}
@@ -124,7 +132,8 @@ SCRIPT_FUNCTION_WITH_SIMPLIFY(replace_text) {
 	}
 	// run
 	SCRIPT_PARAM_C(String, input);
-	if (replacer.context || replacer.replacement_function || replacer.recursive) {
+	if (replacer.context || replacer.replacement_function ||
+		replacer.recursive) {
 		SCRIPT_RETURN(replacer.apply(ctx, input));
 	} else {
 		// simple replacing
@@ -133,7 +142,7 @@ SCRIPT_FUNCTION_WITH_SIMPLIFY(replace_text) {
 	}
 }
 SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(replace_text) {
-	FOR_EACH(b, closure.bindings) {
+	for (auto b : closure.bindings) {
 		if (b.first == SCRIPT_VAR_match || b.first == SCRIPT_VAR_in_context) {
 			b.second = regex_from_script(b.second); // pre-compile
 		}
@@ -141,7 +150,8 @@ SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(replace_text) {
 	return ScriptValueP();
 }
 
-// ----------------------------------------------------------------------------- : Rules : regex filter
+// -----------------------------------------------------------------------------
+// : Rules : regex filter
 
 SCRIPT_FUNCTION_WITH_SIMPLIFY(filter_text) {
 	SCRIPT_PARAM_C(String, input);
@@ -154,13 +164,13 @@ SCRIPT_FUNCTION_WITH_SIMPLIFY(filter_text) {
 	while (match->matches(results, input, start, in_context)) {
 		// match, append to result
 		ScriptRegex::Results::const_reference pos = results[0];
-		ret.append(pos.first, pos.second);  // the match
+		ret.append(pos.first, pos.second); // the match
 		start = pos.second;
 	}
 	SCRIPT_RETURN(ret);
 }
 SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(filter_text) {
-	FOR_EACH(b, closure.bindings) {
+	for (auto b : closure.bindings) {
 		if (b.first == SCRIPT_VAR_match || b.first == SCRIPT_VAR_in_context) {
 			b.second = regex_from_script(b.second); // pre-compile
 		}
@@ -168,7 +178,8 @@ SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(filter_text) {
 	return ScriptValueP();
 }
 
-// ----------------------------------------------------------------------------- : Rules : regex break
+// -----------------------------------------------------------------------------
+// : Rules : regex break
 
 SCRIPT_FUNCTION_WITH_SIMPLIFY(break_text) {
 	SCRIPT_PARAM_C(String, input);
@@ -186,7 +197,7 @@ SCRIPT_FUNCTION_WITH_SIMPLIFY(break_text) {
 	return ret;
 }
 SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(break_text) {
-	FOR_EACH(b, closure.bindings) {
+	for (auto b : closure.bindings) {
 		if (b.first == SCRIPT_VAR_match || b.first == SCRIPT_VAR_in_context) {
 			b.second = regex_from_script(b.second); // pre-compile
 		}
@@ -194,7 +205,8 @@ SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(break_text) {
 	return ScriptValueP();
 }
 
-// ----------------------------------------------------------------------------- : Rules : regex split
+// -----------------------------------------------------------------------------
+// : Rules : regex split
 
 SCRIPT_FUNCTION_WITH_SIMPLIFY(split_text) {
 	SCRIPT_PARAM_C(String, input);
@@ -208,17 +220,17 @@ SCRIPT_FUNCTION_WITH_SIMPLIFY(split_text) {
 		// match, append the part before it to the result
 		ScriptRegex::Results::const_reference pos = results[0];
 		if (include_empty || pos.first != start) {
-			ret->value.push_back(to_script( String(start,pos.first) ));
+			ret->value.push_back(to_script(String(start, pos.first)));
 		}
 		start = pos.second;
 	}
 	if (include_empty || start != input.end()) {
-		ret->value.push_back(to_script( String(start,input.end()) ));
+		ret->value.push_back(to_script(String(start, input.end())));
 	}
 	return ret;
 }
 SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(split_text) {
-	FOR_EACH(b, closure.bindings) {
+	for (auto b : closure.bindings) {
 		if (b.first == SCRIPT_VAR_match) {
 			b.second = regex_from_script(b.second); // pre-compile
 		}
@@ -226,7 +238,8 @@ SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(split_text) {
 	return ScriptValueP();
 }
 
-// ----------------------------------------------------------------------------- : Rules : regex match
+// -----------------------------------------------------------------------------
+// : Rules : regex match
 
 SCRIPT_FUNCTION_WITH_SIMPLIFY(match_text) {
 	SCRIPT_PARAM_C(String, input);
@@ -234,7 +247,7 @@ SCRIPT_FUNCTION_WITH_SIMPLIFY(match_text) {
 	SCRIPT_RETURN(match->matches(input));
 }
 SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(match_text) {
-	FOR_EACH(b, closure.bindings) {
+	for (auto b : closure.bindings) {
 		if (b.first == SCRIPT_VAR_match) {
 			b.second = regex_from_script(b.second); // pre-compile
 		}
@@ -242,18 +255,25 @@ SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(match_text) {
 	return ScriptValueP();
 }
 
-// ----------------------------------------------------------------------------- : Init
+// -----------------------------------------------------------------------------
+// : Init
 
-void init_script_regex_functions(Context& ctx) {
-	ctx.setVariable(_("replace"),              script_replace_text); // compatability
-	ctx.setVariable(_("replace_text"),         script_replace_text);
-	ctx.setVariable(_("filter_text"),          script_filter_text);
-	ctx.setVariable(_("break_text"),           script_break_text);
-	ctx.setVariable(_("split_text"),           script_split_text);
-	ctx.setVariable(_("match"),                script_match_text); // compatability
-	ctx.setVariable(_("match_text"),           script_match_text);
-	ctx.setVariable(_("replace_rule"),         intrusive(new ScriptRule(script_replace_text))); // compatability
-	ctx.setVariable(_("filter_rule"),          intrusive(new ScriptRule(script_filter_text))); // compatability
-	ctx.setVariable(_("break_rule"),           intrusive(new ScriptRule(script_break_text))); // compatability
-	ctx.setVariable(_("match_rule"),           intrusive(new ScriptRule(script_match_text))); // compatability
+void init_script_regex_functions(Context &ctx) {
+	ctx.setVariable(_("replace"), script_replace_text); // compatability
+	ctx.setVariable(_("replace_text"), script_replace_text);
+	ctx.setVariable(_("filter_text"), script_filter_text);
+	ctx.setVariable(_("break_text"), script_break_text);
+	ctx.setVariable(_("split_text"), script_split_text);
+	ctx.setVariable(_("match"), script_match_text); // compatability
+	ctx.setVariable(_("match_text"), script_match_text);
+	ctx.setVariable(
+		_("replace_rule"),
+		intrusive(new ScriptRule(script_replace_text))); // compatability
+	ctx.setVariable(
+		_("filter_rule"),
+		intrusive(new ScriptRule(script_filter_text))); // compatability
+	ctx.setVariable(_("break_rule"), intrusive(new ScriptRule(
+										 script_break_text))); // compatability
+	ctx.setVariable(_("match_rule"), intrusive(new ScriptRule(
+										 script_match_text))); // compatability
 }

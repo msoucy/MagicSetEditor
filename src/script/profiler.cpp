@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <script/profiler.hpp>
@@ -13,16 +14,16 @@
 
 // don't use script profiling in final build
 #if !defined(UNICODE) && !defined(_DEBUG)
-	#error "It looks like you are building the final release; disable USE_SCRIPT_PROFILING!"
+#error                                                                         \
+	"It looks like you are building the final release; disable USE_SCRIPT_PROFILING!"
 #endif
 
 DECLARE_TYPEOF(map<size_t COMMA FunctionProfileP>);
 
-// ----------------------------------------------------------------------------- : Timer
+// -----------------------------------------------------------------------------
+// : Timer
 
-Timer::Timer() {
-	start = timer_now() + delta;
-}
+Timer::Timer() { start = timer_now() + delta; }
 
 ProfileTime Timer::time() {
 	ProfileTime end = timer_now() + delta;
@@ -39,15 +40,16 @@ void Timer::exclude_time() {
 
 ProfileTime Timer::delta = 0;
 
-// ----------------------------------------------------------------------------- : FunctionProfile
+// -----------------------------------------------------------------------------
+// : FunctionProfile
 
 FunctionProfile profile_root(_("root"));
 
-inline bool compare_time(const FunctionProfileP& a, const FunctionProfileP& b) {
+inline bool compare_time(const FunctionProfileP &a, const FunctionProfileP &b) {
 	return a->time_ticks < b->time_ticks;
 }
-void FunctionProfile::get_children(vector<FunctionProfileP>& out) const {
-	FOR_EACH_CONST(c,children) {
+void FunctionProfile::get_children(vector<FunctionProfileP> &out) const {
+	for (auto const c : children) {
 		out.push_back(c.second);
 	}
 	sort(out.begin(), out.end(), compare_time);
@@ -56,15 +58,17 @@ void FunctionProfile::get_children(vector<FunctionProfileP>& out) const {
 // note: not thread safe
 FunctionProfile profile_aggr(_("everywhere"));
 
-void profile_aggregate(FunctionProfile& parent, int level, int max_level, const FunctionProfile& p);
-void profile_aggregate(FunctionProfile& parent, int level, int max_level, size_t idx, const FunctionProfile& p) {
+void profile_aggregate(FunctionProfile &parent, int level, int max_level,
+					   const FunctionProfile &p);
+void profile_aggregate(FunctionProfile &parent, int level, int max_level,
+					   size_t idx, const FunctionProfile &p) {
 	// add to item at idx
-	FunctionProfileP& fpp = parent.children[idx];
+	FunctionProfileP &fpp = parent.children[idx];
 	if (!fpp) {
 		fpp = intrusive(new FunctionProfile(p.name));
 	}
 	fpp->time_ticks += p.time_ticks;
-	fpp->calls      += p.calls;
+	fpp->calls += p.calls;
 	// recurse
 	if (level == 0) {
 		profile_aggregate(parent, level, max_level, p);
@@ -73,31 +77,34 @@ void profile_aggregate(FunctionProfile& parent, int level, int max_level, size_t
 		profile_aggregate(*fpp, level + 1, max_level, p);
 	}
 }
-void profile_aggregate(FunctionProfile& parent, int level, int max_level, const FunctionProfile& p) {
-	FOR_EACH_CONST(c, p.children) {
+void profile_aggregate(FunctionProfile &parent, int level, int max_level,
+					   const FunctionProfile &p) {
+	for (auto const c : p.children) {
 		profile_aggregate(parent, level, max_level, c.first, *c.second);
 	}
 }
 
-const FunctionProfile& profile_aggregated(int max_level) {
+const FunctionProfile &profile_aggregated(int max_level) {
 	profile_aggr.children.clear();
 	profile_aggregate(profile_aggr, 0, max_level, profile_root);
 	return profile_aggr;
 }
 
-// ----------------------------------------------------------------------------- : Profiler
+// -----------------------------------------------------------------------------
+// : Profiler
 
-FunctionProfile* Profiler::function = &profile_root;
+FunctionProfile *Profiler::function = &profile_root;
 
 // Enter a function
-Profiler::Profiler(Timer& timer, Variable function_name)
-	: timer(timer)
-	, parent(function) // push
+Profiler::Profiler(Timer &timer, Variable function_name)
+	: timer(timer), parent(function) // push
 {
 	if ((int)function_name >= 0) {
-		FunctionProfileP& fpp = parent->children[(size_t)function_name << 1 | 1];
+		FunctionProfileP &fpp =
+			parent->children[(size_t)function_name << 1 | 1];
 		if (!fpp) {
-			fpp = intrusive(new FunctionProfile(variable_to_string(function_name)));
+			fpp = intrusive(
+				new FunctionProfile(variable_to_string(function_name)));
 		}
 		function = fpp.get();
 	}
@@ -105,11 +112,10 @@ Profiler::Profiler(Timer& timer, Variable function_name)
 }
 
 // Enter a function
-Profiler::Profiler(Timer& timer, const Char* function_name)
-	: timer(timer)
-	, parent(function) // push
+Profiler::Profiler(Timer &timer, const Char *function_name)
+	: timer(timer), parent(function) // push
 {
-	FunctionProfileP& fpp = parent->children[(size_t)function_name];
+	FunctionProfileP &fpp = parent->children[(size_t)function_name];
 	if (!fpp) {
 		fpp = intrusive(new FunctionProfile(function_name));
 	}
@@ -118,11 +124,11 @@ Profiler::Profiler(Timer& timer, const Char* function_name)
 }
 
 // Enter a function
-Profiler::Profiler(Timer& timer, void* function_object, const String& function_name)
-	: timer(timer)
-	, parent(function) // push
+Profiler::Profiler(Timer &timer, void *function_object,
+				   const String &function_name)
+	: timer(timer), parent(function) // push
 {
-	FunctionProfileP& fpp = parent->children[(size_t)function_object];
+	FunctionProfileP &fpp = parent->children[(size_t)function_object];
 	if (!fpp) {
 		fpp = intrusive(new FunctionProfile(function_name));
 	}
@@ -133,12 +139,14 @@ Profiler::Profiler(Timer& timer, void* function_object, const String& function_n
 // Leave a function
 Profiler::~Profiler() {
 	ProfileTime time = timer.time();
-	if (function == parent) return; // don't count
+	if (function == parent)
+		return; // don't count
 	function->time_ticks += time;
-	function->time_ticks_max = max(function->time_ticks_max,time);
-	function->calls      += 1;
+	function->time_ticks_max = max(function->time_ticks_max, time);
+	function->calls += 1;
 	function = parent; // pop
 }
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

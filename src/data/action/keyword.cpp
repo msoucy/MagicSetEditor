@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/action/keyword.hpp>
@@ -17,26 +18,26 @@
 
 DECLARE_TYPEOF_COLLECTION(KeywordModeP);
 
-// ----------------------------------------------------------------------------- : Add Keyword
+// -----------------------------------------------------------------------------
+// : Add Keyword
 
-AddKeywordAction::AddKeywordAction(Set& set)
-	: KeywordListAction(set)
-	, action(ADD, intrusive(new Keyword()), set.keywords)
-{
-	Keyword& keyword = *action.steps.front().item;
+AddKeywordAction::AddKeywordAction(Set &set)
+	: KeywordListAction(set),
+	  action(ADD, intrusive(new Keyword()), set.keywords) {
+	Keyword &keyword = *action.steps.front().item;
 	// find default mode
-	FOR_EACH(mode, set.game->keyword_modes) {
+	for (auto &mode : set.game->keyword_modes) {
 		if (mode->is_default) {
 			keyword.mode = mode->name;
 			break;
 		}
 	}
 }
-AddKeywordAction::AddKeywordAction(AddingOrRemoving ar, Set& set, const KeywordP& keyword)
-	: KeywordListAction(set)
-	, action(ar, keyword, set.keywords)
-{}
-/*AddKeywordAction::AddKeywordAction(AddingOrRemoving ar, Set& set, const vector<KeywordP>& keyword)
+AddKeywordAction::AddKeywordAction(AddingOrRemoving ar, Set &set,
+								   const KeywordP &keyword)
+	: KeywordListAction(set), action(ar, keyword, set.keywords) {}
+/*AddKeywordAction::AddKeywordAction(AddingOrRemoving ar, Set& set, const
+vector<KeywordP>& keyword)
 	: KeywordListAction(set)
 	, action(ar, keywords, set.keywords)
 {}*/
@@ -50,13 +51,16 @@ void AddKeywordAction::perform(bool to_undo) {
 	set.keyword_db.clear();
 }
 
-// ----------------------------------------------------------------------------- : Changing keywords
+// -----------------------------------------------------------------------------
+// : Changing keywords
 
-KeywordReminderTextValue::KeywordReminderTextValue(Set& set, const TextFieldP& field, Keyword* keyword, bool editable)
-	: KeywordTextValue(field, keyword, &keyword->reminder.getMutableUnparsed(), editable)
-	, set(set)
-	, keyword(*keyword)
-{}
+KeywordReminderTextValue::KeywordReminderTextValue(Set &set,
+												   const TextFieldP &field,
+												   Keyword *keyword,
+												   bool editable)
+	: KeywordTextValue(field, keyword, &keyword->reminder.getMutableUnparsed(),
+					   editable),
+	  set(set), keyword(*keyword) {}
 
 void KeywordReminderTextValue::store() {
 	if (!editable) {
@@ -88,18 +92,23 @@ void KeywordReminderTextValue::retrieve() {
 	highlight(*underlying, no_errors);
 }
 
-void KeywordReminderTextValue::highlight(const String& code, const vector<ScriptParseError>& errors) {
+void
+KeywordReminderTextValue::highlight(const String &code,
+									const vector<ScriptParseError> &errors) {
 	// Add tags to indicate code / syntax highlight
 	// i.e.  bla {if code "x" } bla
 	// becomes:
-	//       bla <code>{<code-kw>if</code-kw> code "<code-string>x</code-string>" } bla
+	//       bla <code>{<code-kw>if</code-kw> code
+	//       "<code-string>x</code-string>" } bla
 	String new_value;
-	vector<int> in_brace; // types of braces we are in, 0 for code brace, 1 for string escapes
-	bool in_string = true; 
+	vector<int> in_brace; // types of braces we are in, 0 for code brace, 1 for
+						  // string escapes
+	bool in_string = true;
 	vector<ScriptParseError>::const_iterator error = errors.begin();
-	for (size_t pos = 0 ; pos < code.size() ; ) {
+	for (size_t pos = 0; pos < code.size();) {
 		// error underlining
-		while (error != errors.end() && error->start == error->end) ++error;
+		while (error != errors.end() && error->start == error->end)
+			++error;
 		if (error != errors.end()) {
 			if (error->start == pos) {
 				new_value += _("<error>");
@@ -134,7 +143,8 @@ void KeywordReminderTextValue::highlight(const String& code, const vector<Script
 				new_value += _("</code>");
 				in_string = true;
 			}
-			if (!in_brace.empty()) in_brace.pop_back();
+			if (!in_brace.empty())
+				in_brace.pop_back();
 			++pos;
 		} else if (c == _('"')) {
 			if (in_string) {
@@ -163,9 +173,11 @@ void KeywordReminderTextValue::highlight(const String& code, const vector<Script
 		} else if (is_substr(code, pos, _("param")) && !in_string) {
 			// parameter reference
 			size_t end = code.find_first_not_of(_("0123456789"), pos + 5);
-			if (end == String::npos) end = code.size();
-			String param = code.substr(pos, end-pos);
-			new_value += _("<ref-") + param + _(">") + param + _("</ref-") + param + _(">");
+			if (end == String::npos)
+				end = code.size();
+			String param = code.substr(pos, end - pos);
+			new_value += _("<ref-") + param + _(">") + param + _("</ref-") +
+						 param + _(">");
 			pos = end;
 		} else {
 			new_value += c;
@@ -176,30 +188,37 @@ void KeywordReminderTextValue::highlight(const String& code, const vector<Script
 	value = to_script(new_value);
 }
 
-bool KeywordReminderTextValue::checkScript(const ScriptP& script) {
+bool KeywordReminderTextValue::checkScript(const ScriptP &script) {
 	try {
-		Context& ctx = set.cards.empty() ? set.getContext() : set.getContext(set.cards.front());
+		Context &ctx = set.cards.empty() ? set.getContext()
+										 : set.getContext(set.cards.front());
 		LocalScope scope(ctx);
-		for (size_t i = 0 ; i < keyword.parameters.size() ; ++i) {
-			const KeywordParam& kwp = *keyword.parameters[i];
-			String param_name = String(_("param")) << (int)(i+1);
-			String param_value = _("<atom-kwpph>") + (kwp.placeholder.empty() ? kwp.name : kwp.placeholder) + _("</atom-kwpph>");
-			ctx.setVariable(param_name, intrusive(new KeywordParamValue(kwp.name, _(""), _(""), param_value)));
+		for (size_t i = 0; i < keyword.parameters.size(); ++i) {
+			const KeywordParam &kwp = *keyword.parameters[i];
+			String param_name = String(_("param")) << (int)(i + 1);
+			String param_value =
+				_("<atom-kwpph>") +
+				(kwp.placeholder.empty() ? kwp.name : kwp.placeholder) +
+				_("</atom-kwpph>");
+			ctx.setVariable(param_name,
+							intrusive(new KeywordParamValue(
+								kwp.name, _(""), _(""), param_value)));
 		}
 		script->eval(ctx);
 		errors.clear();
 		return true;
-	} catch (const Error& e) {
+	} catch (const Error &e) {
 		errors = e.what();
 		return false;
 	}
 }
 
-// ----------------------------------------------------------------------------- : Changing keywords : mode
+// -----------------------------------------------------------------------------
+// : Changing keywords : mode
 
-ChangeKeywordModeAction::ChangeKeywordModeAction(Keyword& keyword, const String& new_mode)
-	: keyword(keyword), mode(new_mode)
-{}
+ChangeKeywordModeAction::ChangeKeywordModeAction(Keyword &keyword,
+												 const String &new_mode)
+	: keyword(keyword), mode(new_mode) {}
 
 String ChangeKeywordModeAction::getName(bool to_undo) const {
 	return _("Keyword mode");

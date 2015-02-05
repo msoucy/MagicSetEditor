@@ -4,18 +4,18 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/field/multiple_choice.hpp>
 #include <data/action/value.hpp>
 
-// ----------------------------------------------------------------------------- : MultipleChoiceField
+// -----------------------------------------------------------------------------
+// : MultipleChoiceField
 
 MultipleChoiceField::MultipleChoiceField()
-	: minimum_selection(0)
-	, maximum_selection(1000000)
-{}
+	: minimum_selection(0), maximum_selection(1000000) {}
 
 IMPLEMENT_FIELD_TYPE(MultipleChoice, "multiple choice");
 
@@ -26,13 +26,11 @@ IMPLEMENT_REFLECTION(MultipleChoiceField) {
 	REFLECT(empty_choice);
 }
 
-// ----------------------------------------------------------------------------- : MultipleChoiceStyle
+// -----------------------------------------------------------------------------
+// : MultipleChoiceStyle
 
-MultipleChoiceStyle::MultipleChoiceStyle(const MultipleChoiceFieldP& field)
-	: ChoiceStyle(field)
-	, direction(LEFT_TO_RIGHT)
-	, spacing(0)
-{}
+MultipleChoiceStyle::MultipleChoiceStyle(const MultipleChoiceFieldP &field)
+	: ChoiceStyle(field), direction(LEFT_TO_RIGHT), spacing(0) {}
 
 IMPLEMENT_REFLECTION(MultipleChoiceStyle) {
 	REFLECT_BASE(ChoiceStyle);
@@ -40,13 +38,13 @@ IMPLEMENT_REFLECTION(MultipleChoiceStyle) {
 	REFLECT(spacing);
 }
 
-int MultipleChoiceStyle::update(Context& ctx) {
-	return ChoiceStyle::update(ctx)
-	     | direction.update(ctx) * CHANGE_OTHER
-	     | spacing.update(ctx) * CHANGE_OTHER;
+int MultipleChoiceStyle::update(Context &ctx) {
+	return ChoiceStyle::update(ctx) | direction.update(ctx) * CHANGE_OTHER |
+		   spacing.update(ctx) * CHANGE_OTHER;
 }
 
-// ----------------------------------------------------------------------------- : MultipleChoiceValue
+// -----------------------------------------------------------------------------
+// : MultipleChoiceValue
 
 IMPLEMENT_VALUE_CLONE(MultipleChoice);
 
@@ -54,22 +52,23 @@ IMPLEMENT_REFLECTION_NAMELESS(MultipleChoiceValue) {
 	REFLECT_BASE(ChoiceValue);
 }
 
-bool MultipleChoiceValue::update(Context& ctx, const Action* act) {
+bool MultipleChoiceValue::update(Context &ctx, const Action *act) {
 	String old_value = value->toString();
-	if (const MultipleChoiceValueAction* mvca = dynamic_cast<const MultipleChoiceValueAction*>(act)) {
+	if (const MultipleChoiceValueAction *mvca =
+			dynamic_cast<const MultipleChoiceValueAction *>(act)) {
 		ctx.setVariable(_("last_change"), to_script(mvca->changed_choice));
 	}
-	ChoiceValue::update(ctx,act);
+	ChoiceValue::update(ctx, act);
 	normalForm();
 	return value->toString() != old_value;
 }
 
-void MultipleChoiceValue::get(vector<String>& out) const {
+void MultipleChoiceValue::get(vector<String> &out) const {
 	// split the value
 	out.clear();
 	bool is_new = true;
 	String val = value->toString();
-	FOR_EACH_CONST(c, val) {
+	for (auto const &c : val) {
 		if (c == _(',')) {
 			is_new = true;
 		} else if (is_new) {
@@ -88,15 +87,16 @@ void MultipleChoiceValue::normalForm() {
 	String val = value->toString();
 	// which choices are active?
 	vector<bool> seen(field().choices->lastId());
-	for (size_t pos = 0 ; pos < val.size() ; ) {
+	for (size_t pos = 0; pos < val.size();) {
 		if (val.GetChar(pos) == _(' ')) {
 			++pos; // ingore whitespace
 		} else {
 			// does this choice match the one asked about?
 			size_t end = val.find_first_of(_(','), pos);
-			if (end == String::npos) end = val.size();
+			if (end == String::npos)
+				end = val.size();
 			// find this choice
-			for (size_t i = 0 ; i < seen.size() ; ++i) {
+			for (size_t i = 0; i < seen.size(); ++i) {
 				if (is_substr(val, pos, field().choices->choiceName((int)i))) {
 					seen[i] = true;
 					break;
@@ -107,9 +107,10 @@ void MultipleChoiceValue::normalForm() {
 	}
 	// now put them back in the right order
 	val.clear();
-	for (size_t i = 0 ; i < seen.size() ; ++i) {
+	for (size_t i = 0; i < seen.size(); ++i) {
 		if (seen[i]) {
-			if (!val.empty()) val += _(", ");
+			if (!val.empty())
+				val += _(", ");
 			val += field().choices->choiceName((int)i);
 		}
 	}

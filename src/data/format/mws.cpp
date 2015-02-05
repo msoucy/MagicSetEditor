@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/format/formats.hpp>
@@ -19,29 +20,38 @@
 
 DECLARE_TYPEOF_COLLECTION(CardP);
 
-// ----------------------------------------------------------------------------- : Utilities
+// -----------------------------------------------------------------------------
+// : Utilities
 
-/// Convert a tagged string to MWS format: \t\t before each line beyond the first
-String untag_mws(const String& str) {
+/// Convert a tagged string to MWS format: \t\t before each line beyond the
+/// first
+String untag_mws(const String &str) {
 	// TODO : em dashes?
-	return replace_all(untag(curly_quotes(str,false)), _("\n"), _("\n\t\t") );
+	return replace_all(untag(curly_quotes(str, false)), _("\n"), _("\n\t\t"));
 }
-inline String untag_mws(const ScriptValueP& str) {
+inline String untag_mws(const ScriptValueP &str) {
 	return untag_mws(str->toString());
 }
-//String untag_mws(const Defaultable<String>& str) {
+// String untag_mws(const Defaultable<String>& str) {
 //	str.
 //}
 
 /// Code for card color in MWS format
-String card_color_mws(const String& col) {
-	if (col == _("white"))     return _("W");
-	if (col == _("blue"))      return _("U");
-	if (col == _("black"))     return _("B");
-	if (col == _("red"))       return _("R");
-	if (col == _("green"))     return _("G");
-	if (col == _("artifact"))  return _("Art");
-	if (col == _("colorless")) return _("Art");
+String card_color_mws(const String &col) {
+	if (col == _("white"))
+		return _("W");
+	if (col == _("blue"))
+		return _("U");
+	if (col == _("black"))
+		return _("B");
+	if (col == _("red"))
+		return _("R");
+	if (col == _("green"))
+		return _("G");
+	if (col == _("artifact"))
+		return _("Art");
+	if (col == _("colorless"))
+		return _("Art");
 	if (col.find(_("land")) != String::npos) {
 		return _("Lnd"); // land
 	} else {
@@ -50,43 +60,52 @@ String card_color_mws(const String& col) {
 }
 
 /// Code for card rarity, used for MWS and Apprentice
-String card_rarity_code(const String& rarity) {
-	if (rarity == _("rare"))     return _("R");
-	if (rarity == _("uncommon")) return _("U");
-	else                         return _("C");
+String card_rarity_code(const String &rarity) {
+	if (rarity == _("rare"))
+		return _("R");
+	if (rarity == _("uncommon"))
+		return _("U");
+	else
+		return _("C");
 }
 
-// ----------------------------------------------------------------------------- : export_mws
+// -----------------------------------------------------------------------------
+// : export_mws
 
-void export_mws(Window* parent, const SetP& set) {
+void export_mws(Window *parent, const SetP &set) {
 	if (!set->game->isMagic()) {
 		throw Error(_("Can only export Magic sets to Magic Workstation"));
 	}
-	
+
 	// Select filename
-	String name = wxFileSelector(_("Export to file"),settings.default_export_dir,_(""),_(""),
-		                         _("Text files (*.txt)|*.txt|All Files|*"),
-		                         wxFD_SAVE | wxFD_OVERWRITE_PROMPT, parent);
-	if (name.empty()) return;
+	String name =
+		wxFileSelector(_("Export to file"), settings.default_export_dir, _(""),
+					   _(""), _("Text files (*.txt)|*.txt|All Files|*"),
+					   wxFD_SAVE | wxFD_OVERWRITE_PROMPT, parent);
+	if (name.empty())
+		return;
 	settings.default_export_dir = wxPathOnly(name);
 	wxBusyCursor busy;
 	// Open file
 	wxFileOutputStream f(name);
 	wxTextOutputStream file(f, wxEOL_DOS);
-	
+
 	// Write header
 	file.WriteString(set->value(_("title"))->toString() + _(" Spoiler List\n"));
-	file.WriteString(_("Set exported using Magic Set Editor 2, version ") + app_version.toString() + _("\n\n"));
+	file.WriteString(_("Set exported using Magic Set Editor 2, version ") +
+					 app_version.toString() + _("\n\n"));
 	wxDateTime now = wxDateTime::Now();
-	file.WriteString(_("Spoiler List created on ") + now.FormatISODate() + _(" ") + now.FormatISOTime());
+	file.WriteString(_("Spoiler List created on ") + now.FormatISODate() +
+					 _(" ") + now.FormatISOTime());
 	file.WriteString(_("\n\n"));
-	
+
 	// Write cards
-	FOR_EACH(card, set->cards) {
+	for (auto &card : set->cards) {
 		file.WriteString(_("Card Name:\t"));
 		file.WriteString(untag_mws(card->value(_("name"))));
 		file.WriteString(_("\nCard Color:\t"));
-		file.WriteString(card_color_mws(card->value(_("card color"))->toString()));
+		file.WriteString(
+			card_color_mws(card->value(_("card color"))->toString()));
 		file.WriteString(_("\nMana Cost:\t"));
 		file.WriteString(untag_mws(card->value(_("casting cost"))));
 		file.WriteString(_("\nType & Class:\t"));
@@ -106,7 +125,8 @@ void export_mws(Window* parent, const SetP& set) {
 		file.WriteString(_("\nArtist:\t\t"));
 		file.WriteString(untag_mws(card->value(_("illustrator"))));
 		file.WriteString(_("\nRarity:\t\t"));
-		file.WriteString(card_rarity_code(card->value(_("rarity"))->toString()));
+		file.WriteString(
+			card_rarity_code(card->value(_("rarity"))->toString()));
 		file.WriteString(_("\nCard #:\t\t"));
 		file.WriteString(untag_mws(card->value(_("card number"))));
 		file.WriteString(_("\n\n"));

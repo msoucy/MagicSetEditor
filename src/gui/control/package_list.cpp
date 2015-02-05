@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/control/package_list.hpp>
@@ -14,53 +15,58 @@
 
 DECLARE_TYPEOF_COLLECTION(PackagedP);
 
-// ----------------------------------------------------------------------------- : PackageList
+// -----------------------------------------------------------------------------
+// : PackageList
 
-PackageList::PackageList(Window* parent, int id, int direction, bool always_focused)
-	: GalleryList(parent, id, direction, always_focused)
-{
+PackageList::PackageList(Window *parent, int id, int direction,
+						 bool always_focused)
+	: GalleryList(parent, id, direction, always_focused) {
 	item_size = subcolumns[0].size = wxSize(125, 150);
 	SetThemeEnabled(true);
 }
 
-size_t PackageList::itemCount() const {
-	return packages.size();
-}
+size_t PackageList::itemCount() const { return packages.size(); }
 
-void PackageList::drawItem(DC& dc, int x, int y, size_t item) {
-	dc.SetClippingRegion(x+1, y+2, item_size.x-2, item_size.y-2);
-	PackageData& d = packages.at(item);
-	RealRect rect(RealPoint(x,y),item_size);
+void PackageList::drawItem(DC &dc, int x, int y, size_t item) {
+	dc.SetClippingRegion(x + 1, y + 2, item_size.x - 2, item_size.y - 2);
+	PackageData &d = packages.at(item);
+	RealRect rect(RealPoint(x, y), item_size);
 	RealPoint pos;
 	int w, h;
 	// draw image
 	if (d.image.Ok()) {
-		dc.DrawBitmap(d.image, x + int(align_delta_x(ALIGN_CENTER, item_size.x, d.image.GetWidth())), y + 3, true);
+		dc.DrawBitmap(d.image, x + int(align_delta_x(ALIGN_CENTER, item_size.x,
+													 d.image.GetWidth())),
+					  y + 3, true);
 	}
 	// draw short name
-	dc.SetFont(wxFont(12,wxSWISS,wxNORMAL,wxBOLD,false,_("Arial")));
+	dc.SetFont(wxFont(12, wxSWISS, wxNORMAL, wxBOLD, false, _("Arial")));
 	dc.GetTextExtent(capitalize(d.package->short_name), &w, &h);
-	pos = align_in_rect(ALIGN_CENTER, RealSize(w,h), rect);
-	dc.DrawText(capitalize(d.package->short_name), max(x+1,(int)pos.x), (int)pos.y + 110);
+	pos = align_in_rect(ALIGN_CENTER, RealSize(w, h), rect);
+	dc.DrawText(capitalize(d.package->short_name), max(x + 1, (int)pos.x),
+				(int)pos.y + 110);
 	// draw name
 	dc.SetFont(wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT));
 	dc.GetTextExtent(d.package->full_name, &w, &h);
-	RealPoint text_pos = align_in_rect(ALIGN_CENTER, RealSize(w,h), rect);
-	dc.DrawText(d.package->full_name, max(x+1,(int)text_pos.x), (int)text_pos.y + 130);
+	RealPoint text_pos = align_in_rect(ALIGN_CENTER, RealSize(w, h), rect);
+	dc.DrawText(d.package->full_name, max(x + 1, (int)text_pos.x),
+				(int)text_pos.y + 130);
 	dc.DestroyClippingRegion();
 }
 
 struct PackageList::ComparePackagePosHint {
-	bool operator () (const PackageData& a, const PackageData& b) {
+	bool operator()(const PackageData &a, const PackageData &b) {
 		// use position_hints to determine order
-		if (a.package->position_hint < b.package->position_hint) return true;
-		if (a.package->position_hint > b.package->position_hint) return false;
+		if (a.package->position_hint < b.package->position_hint)
+			return true;
+		if (a.package->position_hint > b.package->position_hint)
+			return false;
 		// ensure a deterministic order: use the names
 		return a.package->name() < b.package->name();
 	}
 };
 
-void PackageList::showData(const String& pattern) {
+void PackageList::showData(const String &pattern) {
 	// clear
 	packages.clear();
 	// find matching packages
@@ -69,7 +75,7 @@ void PackageList::showData(const String& pattern) {
 		PROFILER(_("find matching packages"));
 		package_manager.findMatching(pattern, matching);
 	}
-	FOR_EACH(p, matching) {
+	for (auto p : matching) {
 		// open image
 		PROFILER(_("load package image"));
 		InputStreamP stream = p->openIconFile();
@@ -92,8 +98,9 @@ void PackageList::clear() {
 	update();
 }
 
-void PackageList::select(const String& name, bool send_event) {
-	for (vector<PackageData>::const_iterator it = packages.begin() ; it != packages.end() ; ++it) {
+void PackageList::select(const String &name, bool send_event) {
+	for (vector<PackageData>::const_iterator it = packages.begin();
+		 it != packages.end(); ++it) {
 		if (it->package->name() == name) {
 			subcolumns[0].selection = it - packages.begin();
 			update();
