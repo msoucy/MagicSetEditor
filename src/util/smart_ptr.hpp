@@ -29,14 +29,11 @@
 #include <boost/scoped_ptr.hpp>
 #include <boost/intrusive_ptr.hpp>
 
-// Can't do  using namespace boost;
-// because boost::shared_ptr conflicts with std::tr1::shared_ptr
-// and some boost headers do include boost/shared_ptr themselves
 using std::shared_ptr;
-using boost::intrusive_ptr;
-using boost::scoped_ptr;
 using std::static_pointer_cast;
 using std::dynamic_pointer_cast;
+using boost::intrusive_ptr;
+using boost::scoped_ptr;
 
 // -----------------------------------------------------------------------------
 // : Declaring
