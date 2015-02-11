@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(MagicSetEditor)
 
-find_package(Boost REQUIRED regex system)
+find_package(Boost REQUIRED system)
 find_package(wxWidgets REQUIRED)
 
 include(${wxWidgets_USE_FILE})
