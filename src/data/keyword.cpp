@@ -201,9 +201,6 @@ void Keyword::prepare(const vector<KeywordParamP> &param_types, bool force) {
 	String regex;
 	String text; // normal, non-regex, text
 	vector<KeywordParamP>::const_iterator param = parameters.begin();
-#if USE_CASE_INSENSITIVE_KEYWORDS
-	regex = _("(?i)"); // case insensitive matching
-#endif
 	// Parse the 'match' string
 	for (size_t i = 0; i < match.size();) {
 		Char c = match.GetChar(i);
@@ -247,13 +244,12 @@ void Keyword::prepare(const vector<KeywordParamP> &param_types, bool force) {
 		}
 	}
 	regex += _("(") + regex_escape(text) + _(")");
-#if USE_BOOST_REGEX
-	regex = _("\\<")
+	regex = _("\\b") + regex + _("\\b"); // only match whole words
+#if USE_CASE_INSENSITIVE_KEYWORDS
+	match_re.assign(regex, std::regex::ECMAScript | std::regex::icase);
 #else
-	regex = _("\\y")
+	match_re.assign(regex, std::regex::ECMAScript);
 #endif
-			+ regex + _("(?=$|[^a-zA-Z0-9\\(])"); // only match whole words
-	match_re.assign(regex);
 	// not valid if it matches "", that would make MSE hang
 	valid = !match_re.matches(_(""));
 }

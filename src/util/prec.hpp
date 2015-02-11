@@ -34,7 +34,6 @@
 #include <wx/wx.h>
 #include <wx/image.h>
 #include <wx/datetime.h>
-#include <wx/regex.h> // TODO : remove, see regex.hpp
 
 // Std headers
 #include <vector>

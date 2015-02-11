@@ -14,7 +14,6 @@
 #include <util/alignment.hpp>
 #include <util/io/package.hpp>
 #include <data/font.hpp>
-#include <wx/regex.h>
 
 DECLARE_POINTER_TYPE(Font);
 DECLARE_POINTER_TYPE(SymbolFont);
@@ -47,7 +46,7 @@ class SymbolFont : public Packaged {
 
 		String text;	  ///< Original text
 		String draw_text; ///< Text to draw (extracted from the regex to avoid
-						  ///performance costs)
+		/// performance costs)
 		SymbolInFont *symbol; ///< Symbol to draw
 	};
 	typedef vector<DrawableSymbol> SplitSymbols;

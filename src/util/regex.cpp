@@ -11,20 +11,19 @@
 #include <util/regex.hpp>
 #include <util/error.hpp>
 
-#if USE_BOOST_REGEX
 // -----------------------------------------------------------------------------
-// : Regex : boost
+// : Regex : std
 
-void Regex::assign(const String &code) {
+void Regex::assign(const String &code, std::basic_regex<Char>::flag_type flag) {
 	// compile string
+	m_empty = false;
 	try {
-		regex.assign(code.begin(), code.end());
-	} catch (const boost::regex_error &e) {
+		regex.assign(code.begin(), code.end(), flag);
+	} catch (const std::regex_error &e) {
 		/// TODO: be more precise
 		throw ScriptError(String::Format(
-			_("Error while compiling regular expression: '%s'\nAt position: "
-			  "%d\n%s"),
-			code.c_str(), e.position(),
+			_("Error while compiling regular expression: '%s'\n%s"),
+			code.c_str(),
 			String(e.what(), IF_UNICODE(wxConvUTF8, String::npos)).c_str()));
 	}
 }
@@ -34,23 +33,9 @@ void Regex::replace_all(String *input, const String &format) {
 	std::basic_string<Char> fmt(format.begin(), format.end());
 	String output;
 	regex_replace(insert_iterator<String>(output, output.end()), input->begin(),
-				  input->end(), regex, fmt, boost::format_sed);
+				  input->end(), regex, fmt, std::regex_constants::format_sed);
 	*input = output;
 }
 
-#else // USE_BOOST_REGEX
-// -----------------------------------------------------------------------------
-// : Regex : wx
-
-void Regex::assign(const String &code) {
-	// compile string
-	if (!regex.Compile(code, wxRE_ADVANCED)) {
-		throw ScriptError(_("Error while compiling regular expression: '") +
-						  code + _("'"));
-	}
-	assert(regex.IsValid());
-}
-
-#endif // USE_BOOST_REGEX
 // -----------------------------------------------------------------------------
 // : Regex : common
