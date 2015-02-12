@@ -95,11 +95,10 @@ typedef wxEvent wxMouseCaptureLostEvent;
 // -----------------------------------------------------------------------------
 // : Other aliasses
 
-typedef unsigned char Byte;
-typedef unsigned int UInt;
+#include <cstdint>
 
-/// Null pointer
-#define nullptr 0
+typedef uint8_t Byte;
+typedef unsigned int UInt;
 
 // -----------------------------------------------------------------------------
 // : MSE Headers
@@ -119,7 +118,7 @@ typedef unsigned int UInt;
 
 #ifdef _MSC_VER
 //# pragma conform(forScope,on)    // in "for(int x=..);" x goes out of scope
-//after the for
+// after the for
 // somehow forScope pragma doesn't work in precompiled headers, use this hack
 // instead:
 #ifdef _DEBUG
