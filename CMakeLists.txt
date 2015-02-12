@@ -32,6 +32,12 @@ if(UNIX)
 	endif()
 endif()
 
+option(UNICODE "Unicode build" ON)
+
+if(UNICODE)
+	add_definitions("-DUNICODE")
+endif()
+
 set(magicseteditor_SOURCES
 	"src/main.cpp"
 	"src/cli/cli_main.cpp"
