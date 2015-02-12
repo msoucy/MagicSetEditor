@@ -604,7 +604,8 @@ ScriptValueP ScriptClosure::getBinding(Variable v) const {
 ScriptValueP ScriptClosure::simplify() { return fun->simplifyClosure(*this); }
 
 ScriptValueP ScriptClosure::do_eval(Context &ctx, bool openScope) const {
-	scoped_ptr<LocalScope> scope(openScope ? new LocalScope(ctx) : nullptr);
+	const unique_ptr<LocalScope> scope(openScope ? new LocalScope(ctx)
+												 : nullptr);
 	applyBindings(ctx);
 	return fun->eval(ctx, openScope);
 }

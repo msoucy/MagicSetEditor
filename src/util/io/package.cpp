@@ -16,7 +16,6 @@
 #include <wx/wfstream.h>
 #include <wx/zipstrm.h>
 #include <wx/dir.h>
-#include <boost/scoped_ptr.hpp>
 
 // -----------------------------------------------------------------------------
 // : Package : outside
@@ -481,11 +480,12 @@ void Package::saveToZipfile(const String &saveAs, bool remove_unused,
 	wxRemoveFile(tempFile);
 	// open zip file
 	try {
-		scoped_ptr<wxFileOutputStream> newFile(
+		const unique_ptr<wxFileOutputStream> newFile(
 			new wxFileOutputStream(tempFile));
 		if (!newFile->IsOk())
 			throw PackageError(_ERROR_("unable to open output file"));
-		scoped_ptr<wxZipOutputStream> newZip(new wxZipOutputStream(*newFile));
+		const unique_ptr<wxZipOutputStream> newZip(
+			new wxZipOutputStream(*newFile));
 		if (!newZip->IsOk())
 			throw PackageError(_ERROR_("unable to open output file"));
 		// copy everything to a new zip file, unless it's updated or removed

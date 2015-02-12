@@ -12,7 +12,6 @@
 #include <gui/thumbnail_thread.hpp>
 #include <gui/util.hpp>
 #include <gfx/gfx.hpp>
-#include <boost/scoped_ptr.hpp>
 #include <wx/url.h>
 
 // -----------------------------------------------------------------------------
@@ -193,7 +192,7 @@ class PackageIconRequest : public ThumbnailRequest {
 
 	virtual Image generate() {
 		wxURL url(ti->package->description->icon_url);
-		scoped_ptr<wxInputStream> isP(url.GetInputStream());
+		const unique_ptr<wxInputStream> isP(url.GetInputStream());
 		if (!isP)
 			return wxImage();
 		SeekAtStartInputStream is2(*isP);

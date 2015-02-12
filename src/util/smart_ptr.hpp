@@ -26,14 +26,12 @@
 #define BOOST_SP_NO_SP_CONVERTIBLE
 
 #include <memory>
-#include <boost/scoped_ptr.hpp>
 #include <boost/intrusive_ptr.hpp>
 
 using std::shared_ptr;
 using std::static_pointer_cast;
 using std::dynamic_pointer_cast;
 using boost::intrusive_ptr;
-using boost::scoped_ptr;
 
 // -----------------------------------------------------------------------------
 // : Declaring

@@ -287,7 +287,7 @@ class KeywordTrie {
 	KeywordTrie *insertAnyStar();
 };
 
-KeywordTrie::KeywordTrie() : on_any_star(nullptr), finished(nullptr) {}
+KeywordTrie::KeywordTrie() : on_any_star(nullptr) {}
 
 KeywordTrie::~KeywordTrie() {
 	for (auto &c : children) {
