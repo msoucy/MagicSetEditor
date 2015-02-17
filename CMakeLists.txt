@@ -32,11 +32,15 @@ if(UNIX)
 	endif()
 endif()
 
-option(UNICODE "Unicode build" ON)
+add_definitions("-DUNICODE" "-D_UNICODE")
 
-if(UNICODE)
-	add_definitions("-DUNICODE")
-endif()
+IF(CMAKE_BUILD_TYPE MATCHES DEBUG)
+	message("debug mode")
+	set(EXTRA_FILES
+		"src/script/profiler.cpp"
+		"src/gui/profiler_window.cpp"
+	)
+ENDIF(CMAKE_BUILD_TYPE MATCHES DEBUG)
 
 set(magicseteditor_SOURCES
 	"src/main.cpp"
@@ -68,11 +72,9 @@ set(magicseteditor_SOURCES
 	"src/script/parser.cpp"
 	"src/script/context.cpp"
 	"src/script/image.cpp"
-	"src/script/profiler.cpp"
 	"src/script/scriptable.cpp"
 	"src/script/script.cpp"
 	"src/gui/preferences_window.cpp"
-	"src/gui/profiler_window.cpp"
 	"src/gui/symbol/basic_shape_editor.cpp"
 	"src/gui/symbol/point_editor.cpp"
 	"src/gui/symbol/part_list.cpp"
