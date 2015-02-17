@@ -236,7 +236,11 @@ install(
 	DESTINATION bin
 )
 
-set(MSE_BASEDIR /home/msoucy/.magicseteditor)
+if(WIN32)
+elseif(APPLE)
+else()
+	set(MSE_BASEDIR /home/msoucy/.magicseteditor)
+endif()
 
 install(
 	DIRECTORY data
