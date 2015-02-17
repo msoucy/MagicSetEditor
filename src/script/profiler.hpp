@@ -14,10 +14,6 @@
 #include <script/script.hpp>
 #include <script/context.hpp>
 
-#ifndef USE_SCRIPT_PROFILING
-#define USE_SCRIPT_PROFILING 1
-#endif
-
 #if USE_SCRIPT_PROFILING
 
 DECLARE_POINTER_TYPE(FunctionProfile);

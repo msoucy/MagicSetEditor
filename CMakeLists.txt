@@ -40,6 +40,7 @@ IF(CMAKE_BUILD_TYPE MATCHES DEBUG)
 		"src/script/profiler.cpp"
 		"src/gui/profiler_window.cpp"
 	)
+	add_definitions("-DUSE_SCRIPT_PROFILING")
 ENDIF(CMAKE_BUILD_TYPE MATCHES DEBUG)
 
 set(magicseteditor_SOURCES
