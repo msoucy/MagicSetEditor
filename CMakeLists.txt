@@ -2,8 +2,12 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(MagicSetEditor)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMake")
+message(STATUS "Module path: ${CMAKE_MODULE_PATH}")
+
 find_package(Boost REQUIRED system)
 find_package(wxWidgets REQUIRED)
+find_package(HUNSPELL REQUIRED)
 
 include(${wxWidgets_USE_FILE})
 
@@ -37,10 +41,10 @@ elseif(UNIX)
 	else()
 		message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 	endif()
+	# Force unicode builds - no reason to keep ASCII-only around
+	add_definitions("-DUNICODE" "-D_UNICODE")
 endif()
 
-# Force unicode builds - no reason to keep ASCII-only around
-add_definitions("-DUNICODE" "-D_UNICODE")
 
 IF(CMAKE_BUILD_TYPE MATCHES DEBUG)
 	message("debug mode")
@@ -232,11 +236,12 @@ add_executable(magicseteditor
 
 target_include_directories(magicseteditor PUBLIC
 	src
+	${HUNSPELL_INCLUDE_DIR}
 	${Boost_INCLUDE_DIRS}
 	${wxWidgets_INCLUDE_DIRS}
 )
 target_link_libraries(magicseteditor
-	hunspell-1.3
+	${HUNSPELL_LIBRARIES}
 	${Boost_LIBRARIES}
 	${wxWidgets_LIBRARIES}
 )
