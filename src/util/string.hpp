@@ -18,7 +18,6 @@
 #include "prec.hpp"
 #include "for_each.hpp"
 #include <ctype.h>
-#include <boost/preprocessor/cat.hpp>
 
 class wxTextOutputStream;
 
@@ -40,7 +39,6 @@ typedef wxString String;
 
 #undef _
 /// A string/character constant, correctly handled in unicode builds
-//#define _(S) IF_UNICODE(BOOST_PP_CAT(L, S), S)
 #define PP_CAT(x, y) x##y
 #define _(S) IF_UNICODE(PP_CAT(L, S), S)
 
