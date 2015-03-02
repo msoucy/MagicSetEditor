@@ -19,7 +19,14 @@ SET(CPACK_PACKAGE_EXECUTABLES "magicseteditor")
 
 include(CPack)
 
-if(UNIX)
+if(MSVC)
+	add_definitions(
+		"/wd4100" # unreferenced formal parameter
+		"/wd4355" # 'this' : used in base member initializer list
+		"/wd4800" # 'int' : forcing value to bool 'true' or 'false'
+		"/wd4675" # resolved overload was found by argument-dependent lookup (occurs in some boost header)
+	)
+elseif(UNIX)
 	include(CheckCXXCompilerFlag)
 	CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 	CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
@@ -32,6 +39,7 @@ if(UNIX)
 	endif()
 endif()
 
+# Force unicode builds - no reason to keep ASCII-only around
 add_definitions("-DUNICODE" "-D_UNICODE")
 
 IF(CMAKE_BUILD_TYPE MATCHES DEBUG)
@@ -42,6 +50,9 @@ IF(CMAKE_BUILD_TYPE MATCHES DEBUG)
 	)
 	add_definitions("-DUSE_SCRIPT_PROFILING")
 ENDIF(CMAKE_BUILD_TYPE MATCHES DEBUG)
+
+###############################################################################
+# Create and link executable
 
 set(magicseteditor_SOURCES
 	"src/main.cpp"
@@ -227,33 +238,38 @@ target_include_directories(magicseteditor PUBLIC
 target_link_libraries(magicseteditor
 	hunspell-1.3
 	${Boost_LIBRARIES}
-	#${Boost_regex_LIBRARY}
 	${wxWidgets_LIBRARIES}
 )
 
-install(
-	TARGETS magicseteditor
-	DESTINATION bin
-)
+###############################################################################
+# wxStandardPaths adapter
 
 if(WIN32)
+	set(WX_DATA_DIR ${CMAKE_INSTALL_PREFIX})
 elseif(APPLE)
+	set(WX_DATA_DIR ${CMAKE_INSTALL_PREFIX}/share/appinfo)
+elseif(UNIX)
+	set(WX_DATA_DIR ${CMAKE_INSTALL_PREFIX}/share/magicseteditor)
 else()
-	set(MSE_BASEDIR /home/msoucy/.magicseteditor)
+	message(FATAL_ERROR "Unknown operating system")
 endif()
+
+###############################################################################
+# Install data and executable
+
+install(
+	TARGETS magicseteditor
+	DESTINATION ${CMAKE_INSTALL_PREFIX}
+)
 
 install(
 	DIRECTORY data
-	DESTINATION ${MSE_BASEDIR}
+	DESTINATION ${WX_DATA_DIR}
 )
 
+foreach(dr common/ msw/tool msw/icon msw/cursor other/)
 install(
-	DIRECTORY src/resource/common/
-	DESTINATION ${MSE_BASEDIR}/resource
-)
-foreach(dr tool icon cursor other/)
-install(
-	DIRECTORY src/resource/msw/${dr}
-	DESTINATION ${MSE_BASEDIR}/resource
+	DIRECTORY src/resource/${dr}
+	DESTINATION ${WX_DATA_DIR}/resource
 )
 endforeach()

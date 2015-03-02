@@ -9,7 +9,7 @@
 
 /** @file util/smart_ptr.hpp
  *
- *  @brief Utilities related to boost smart pointers
+ *  @brief Utilities related to smart pointers
  */
 
 // -----------------------------------------------------------------------------
