@@ -13,10 +13,12 @@
 
 using std::basic_regex;
 using std::regex_error;
+using std::regex_replace;
+using std::string;
+using namespace std::regex_constants;
 
 static String code_to_str(const regex_error &err) {
 	// Taken from cplusplus.com
-	using namespace std::regex_constants;
 	switch (err.code()) {
 	case error_collate:
 		return _("Invalid collating element name");
@@ -33,7 +35,7 @@ static String code_to_str(const regex_error &err) {
 	case error_brace:
 		return _("Mismatched brackets ({ and })");
 	case error_badbrace:
-		return _("Invalid range between braces ({ and})");
+		return _("Invalid range between braces ({ and })");
 	case error_range:
 		return _("Invalid character range");
 	case error_space:
@@ -47,14 +49,41 @@ static String code_to_str(const regex_error &err) {
 	}
 }
 
+String escape_x(const String &code) {
+	std::wstring text{code.wc_str()};
+	basic_regex<Char> cm{_("#.*\\n")};
+	basic_regex<Char> ws{_("(?!\\\\)\\s")};
+	for (const auto &re : {cm, ws}) {
+		text = regex_replace(text, re, wstring(_("")));
+	}
+	// text = wx
+	return text;
+}
+
 // -----------------------------------------------------------------------------
 // : Regex : std
 
-void Regex::assign(const String &code, std::basic_regex<Char>::flag_type flag) {
+void Regex::assign(const String &code, syntax_option_type flag) {
 	// compile string
 	m_empty = false;
+	String prefix = _("(?");
+	String icmp = _("(?i");
+	String ispc = _("(?x");
+	String text = code;
+	while (text.StartsWith(prefix)) {
+		wxPrintf(text + _("\n"));
+		if (text.StartsWith(icmp)) {
+			flag |= icase;
+			text.Replace(icmp, prefix, false);
+		} else if (text.StartsWith(ispc)) {
+			text.Replace(ispc, prefix, false);
+			text = escape_x(text);
+		} else {
+			text.Replace(_("(?)"), _(""), false);
+		}
+	}
 	try {
-		regex.assign(code.begin(), code.end(), flag);
+		regex.assign(text.begin(), text.end(), flag);
 	} catch (const regex_error &e) {
 		throw ScriptError(String::Format(
 			_("Error while compiling regular expression: '%s'\n%s"),

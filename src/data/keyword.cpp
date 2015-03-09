@@ -98,42 +98,6 @@ IMPLEMENT_REFLECTION(Keyword) {
 	REFLECT(mode);
 }
 
-/*//%%
-String KeywordParam::make_separator_before() const {
-	// decode regex; find a string that matches it
-	String ret;
-	int disabled = 0;
-	for (size_t i = 0 ; i < separator_before_is.size() ; ++i) {
-		Char c = separator_before_is.GetChar(i);
-		if (c == _('(')) {
-			if (disabled) ++disabled;
-		} else if (c == _(')')) {
-			if (disabled) --disabled;
-		} else if (!disabled) {
-			if (c == _('|')) {
-				disabled = 1; // disable after |
-			} else if (c == _('+') || c == _('*') || c == _('?') || c == _('^')
-|| c == _('$')) {
-				// ignore
-			} else if (c == _('\\') && i + 1 < separator_before_is.size()) {
-				// escape
-				ret += separator_before_is.GetChar(++i);
-			} else if (c == _('[') && i + 1 < separator_before_is.size()) {
-				// character class
-				c = separator_before_is.GetChar(++i);
-				if (c != _('^')) ret += c;
-				// ignore the rest of the class
-				for ( ++i ; i < separator_before_is.size() ; ++i) {
-					c = separator_before_is.GetChar(i);
-					if (c == _(']')) break;
-				}
-			} else {
-				ret += c;
-			}
-		}
-	}
-	return ret;
-}*/
 void KeywordParam::compile() {
 	// compile separator_before
 	if (!separator_before_is.empty() && separator_before_re.empty()) {
@@ -244,12 +208,14 @@ void Keyword::prepare(const vector<KeywordParamP> &param_types, bool force) {
 		}
 	}
 	regex += _("(") + regex_escape(text) + _(")");
-	regex = _("\\b") + regex + _("\\b"); // only match whole words
+	// only match whole words
+	regex = _("\\b") + regex + _("(?=$|[^a-zA-Z0-9\\(])");
+	using namespace std::regex_constants;
+	syntax_option_type flag = ECMAScript;
 #if USE_CASE_INSENSITIVE_KEYWORDS
-	match_re.assign(regex, std::regex::ECMAScript | std::regex::icase);
-#else
-	match_re.assign(regex, std::regex::ECMAScript);
+	flag |= icase;
 #endif
+	match_re.assign(regex, flag);
 	// not valid if it matches "", that would make MSE hang
 	valid = !match_re.matches(_(""));
 }

@@ -10,13 +10,16 @@
 // -----------------------------------------------------------------------------
 // : Includes
 
-#include <regex>
 #include <util/prec.hpp>
+#include <regex>
 
 // -----------------------------------------------------------------------------
 // : STL implementation
 
 class Regex {
+  private:
+	typedef std::regex_constants::syntax_option_type syntax_option_type;
+
   public:
 	struct Results : public std::match_results<String::const_iterator> {
 		/// Get a sub match
@@ -39,7 +42,7 @@ class Regex {
 	inline Regex(const String &code) { assign(code); }
 
 	void assign(const String &code,
-				std::basic_regex<Char>::flag_type = std::regex::ECMAScript);
+				syntax_option_type = std::regex_constants::ECMAScript);
 	inline bool matches(const String &str) const {
 		return regex_search(str.begin(), str.end(), regex);
 	}
@@ -53,8 +56,6 @@ class Regex {
 	}
 	void replace_all(String *input, const String &format);
 
-	// This will always be false
-	// Failed assignment throws
 	inline bool empty() const { return m_empty; }
 
   private:
