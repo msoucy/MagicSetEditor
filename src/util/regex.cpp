@@ -11,6 +11,42 @@
 #include <util/regex.hpp>
 #include <util/error.hpp>
 
+using std::basic_regex;
+using std::regex_error;
+
+static String code_to_str(const regex_error &err) {
+	// Taken from cplusplus.com
+	using namespace std::regex_constants;
+	switch (err.code()) {
+	case error_collate:
+		return _("Invalid collating element name");
+	case error_ctype:
+		return _("Invalid character class name");
+	case error_escape:
+		return _("Invalid escaped character, or a trailing escape");
+	case error_backref:
+		return _("Invalid back reference");
+	case error_brack:
+		return _("Mismatched brackets ([ and ])");
+	case error_paren:
+		return _("Mismatched brackets (( and ))");
+	case error_brace:
+		return _("Mismatched brackets ({ and })");
+	case error_badbrace:
+		return _("Invalid range between braces ({ and})");
+	case error_range:
+		return _("Invalid character range");
+	case error_space:
+		return _("Insufficient memory");
+	case error_badrepeat:
+		return _("Repeat specifier without valid regular expression");
+	case error_complexity:
+		return _("Too complex");
+	case error_stack:
+		return _("Insufficient memory to determine match");
+	}
+}
+
 // -----------------------------------------------------------------------------
 // : Regex : std
 
@@ -19,12 +55,10 @@ void Regex::assign(const String &code, std::basic_regex<Char>::flag_type flag) {
 	m_empty = false;
 	try {
 		regex.assign(code.begin(), code.end(), flag);
-	} catch (const std::regex_error &e) {
-		/// TODO: be more precise
+	} catch (const regex_error &e) {
 		throw ScriptError(String::Format(
 			_("Error while compiling regular expression: '%s'\n%s"),
-			code.c_str(),
-			String(e.what(), IF_UNICODE(wxConvUTF8, String::npos)).c_str()));
+			code.c_str(), code_to_str(e).c_str()));
 	}
 }
 

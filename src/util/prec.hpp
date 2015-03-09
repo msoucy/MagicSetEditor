@@ -98,6 +98,7 @@ typedef unsigned int UInt;
 #include "error.hpp"
 #include "reflect.hpp"
 #include "regex.hpp"
+#include "paths.hpp"
 
 // -----------------------------------------------------------------------------
 // : Debugging fixes

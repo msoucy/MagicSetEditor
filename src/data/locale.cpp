@@ -234,9 +234,8 @@ InputStreamP load_resource_text(const String &name) {
 	int len = ::SizeofResource(wxGetInstance(), hResource);
 	return make_shared<wxMemoryInputStream>(data, len);
 #else
-	static String path = wxStandardPaths::Get().GetDataDir() + _("/resource/");
-	static String local_path =
-		wxStandardPaths::Get().GetUserDataDir() + _("/resource/");
+	static String path = getDataDir() + _("/resource/");
+	static String local_path = getUserDataDir() + _("/resource/");
 	if (wxFileExists(path + name))
 		return make_shared<wxFileInputStream>(path + name);
 	else

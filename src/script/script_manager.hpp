@@ -42,8 +42,8 @@ class SetScriptContext {
   protected:
 	Set &set; ///< Set for which we are managing scripts
 	map<const StyleSheet *, Context *> contexts; ///< Context for evaluating
-												 ///scripts that use a given
-												 ///stylesheet
+	/// scripts that use a given
+	/// stylesheet
 
 	/// Called when a new context for a stylesheet is initialized
 	virtual void onInit(const StyleSheetP &stylesheet, Context *ctx) {}
@@ -98,9 +98,10 @@ class SetScriptManager : public SetScriptContext, public ActionListener {
 	// Something that needs to be updated
 	struct ToUpdate {
 		ToUpdate(Value *value, CardP card) : value(value), card(card) {}
-		Value *value; ///< value to update
-		CardP
-			card; ///< card the value is in, or CadP() if it is not a card field
+		/// value to update
+		Value *value;
+		/// card the value is in, or CardP() if it is not a card field
+		CardP card;
 	};
 	/// Update all things in to_update, and things that depent on them, etc.
 	/** Only update things that are older than starting_age. */

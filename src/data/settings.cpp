@@ -234,7 +234,7 @@ Settings::exportOptionsFor(const ExportTemplate &export_template) {
 
 /// Retrieve the directory to use for settings and other data files
 String user_settings_dir() {
-	String dir = wxStandardPaths::Get().GetUserDataDir();
+	String dir = getUserDataDir();
 	if (!wxDirExists(dir))
 		wxMkdir(dir);
 	return dir + _("/");

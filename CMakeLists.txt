@@ -52,7 +52,10 @@ IF(CMAKE_BUILD_TYPE MATCHES DEBUG)
 		"src/script/profiler.cpp"
 		"src/gui/profiler_window.cpp"
 	)
-	add_definitions("-DUSE_SCRIPT_PROFILING")
+	add_definitions(
+		"-DUSE_SCRIPT_PROFILING"
+		"-DLOG_UPDATES"
+	)
 ENDIF(CMAKE_BUILD_TYPE MATCHES DEBUG)
 
 ###############################################################################
@@ -158,6 +161,7 @@ set(magicseteditor_SOURCES
 	"src/util/tagged_string.cpp"
 	"src/util/age.cpp"
 	"src/util/action_stack.cpp"
+	"src/util/paths.cpp"
 	"src/util/regex.cpp"
 	"src/util/vcs.cpp"
 	"src/util/rotation.cpp"
@@ -247,24 +251,13 @@ target_link_libraries(magicseteditor
 )
 
 ###############################################################################
-# wxStandardPaths adapter
-
-if(WIN32)
-	set(WX_DATA_DIR ${CMAKE_INSTALL_PREFIX})
-elseif(APPLE)
-	set(WX_DATA_DIR ${CMAKE_INSTALL_PREFIX}/share/appinfo)
-elseif(UNIX)
-	set(WX_DATA_DIR ${CMAKE_INSTALL_PREFIX}/share/magicseteditor)
-else()
-	message(FATAL_ERROR "Unknown operating system")
-endif()
-
-###############################################################################
 # Install data and executable
+
+set(WX_DATA_DIR share/magicseteditor)
 
 install(
 	TARGETS magicseteditor
-	DESTINATION ${CMAKE_INSTALL_PREFIX}
+	DESTINATION .
 )
 
 install(
@@ -272,7 +265,7 @@ install(
 	DESTINATION ${WX_DATA_DIR}
 )
 
-foreach(dr common/ msw/tool msw/icon msw/cursor other/)
+foreach(dr common/ msw/tool msw/icon msw/cursor msw/other/)
 install(
 	DIRECTORY src/resource/${dr}
 	DESTINATION ${WX_DATA_DIR}/resource

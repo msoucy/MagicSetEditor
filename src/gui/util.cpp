@@ -163,7 +163,7 @@ Image load_resource_image(const String &name) {
 	wxMemoryInputStream stream(data, len);
 	return wxImage(stream);
 #elif defined(__linux__)
-	static String path = wxStandardPaths::Get().GetDataDir() + _("/resource/");
+	static String path = getDataDir() + _("/resource/");
 	String file = path + name;
 	wxImage resource;
 	if (wxFileExists(file + _(".png")))
@@ -176,8 +176,7 @@ Image load_resource_image(const String &name) {
 		resource.LoadFile(file + _(".cur"));
 	if (resource.Ok())
 		return resource;
-	static String local_path =
-		wxStandardPaths::Get().GetUserDataDir() + _("/resource/");
+	static String local_path = getUserDataDir() + _("/resource/");
 	file = local_path + name;
 	if (wxFileExists(file + _(".png")))
 		resource.LoadFile(file + _(".png"));
@@ -208,10 +207,8 @@ wxIcon load_resource_icon(const String &name) {
 #if defined(__WXMSW__)
 	return wxIcon(_("icon/") + name);
 #else
-	static String path =
-		wxStandardPaths::Get().GetDataDir() + _("/resource/icon/");
-	static String local_path =
-		wxStandardPaths::Get().GetUserDataDir() + _("/resource/icon/");
+	static String path = getDataDir() + _("/resource/icon/");
+	static String local_path = getUserDataDir() + _("/resource/icon/");
 	if (wxFileExists(path + name + _(".ico")))
 		return wxIcon(path + name + _(".ico"), wxBITMAP_TYPE_ICO);
 	else
@@ -285,8 +282,8 @@ void draw_control_box(Window *win, DC &dc, const wxRect &rect, bool focused,
 			themeEngine->DrawThemeBackground(
 				(HTHEME)hTheme, (HDC)dc.GetHDC(),
 				EP_EDITTEXT, // EP_EDITBORDER_NOSCROLL, //@@ TODO:
-							 // EP_EDITBORDER_NOSCROLL not supported in earlier
-							 // API versions
+				// EP_EDITBORDER_NOSCROLL not supported in earlier
+				// API versions
 				state, &r, NULL);
 			return;
 		}

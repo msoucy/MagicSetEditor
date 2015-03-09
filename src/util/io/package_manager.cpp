@@ -31,9 +31,8 @@ void PackageManager::init() {
 	if (!(local.valid() || global.valid()))
 		throw Error(_("The MSE data files can not be found, there should be a "
 					  "directory called 'data' with these files. ")
-					_("The expected place to find it in was either ") +
-					wxStandardPaths::Get().GetDataDir() + _(" or ") +
-					wxStandardPaths::Get().GetUserDataDir());
+						_("The expected place to find it in was either ") +
+					getDataDir() + _(" or ") + getUserDataDir());
 }
 void PackageManager::destroy() { loaded_packages.clear(); }
 void PackageManager::reset() { loaded_packages.clear(); }
@@ -235,10 +234,10 @@ bool PackageManager::install(const InstallablePackage &package) {
 void PackageDirectory::init(bool local) {
 	is_local = local;
 	if (local) {
-		init(wxStandardPaths::Get().GetUserDataDir() + _("/data"));
+		init(getUserDataDir() + _("/data"));
 	} else {
 		// determine data directory
-		String dir = wxStandardPaths::Get().GetDataDir();
+		String dir = getDataDir();
 		// check if this is the actual data directory, especially during
 		// debugging,
 		// the data may be higher up:
@@ -249,7 +248,7 @@ void PackageDirectory::init(bool local) {
 			dir = wxPathOnly(dir);
 			if (d == dir) {
 				// we are at the root -> 'data' not found anywhere in the path
-				dir = wxStandardPaths::Get().GetDataDir();
+				dir = getDataDir();
 				break;
 			}
 		}
@@ -281,8 +280,8 @@ bool compare_name(const PackageVersionP &a, const PackageVersionP &b) {
 	return a->name < b->name;
 }
 
-void
-PackageDirectory::installedPackages(vector<InstallablePackageP> &packages_out) {
+void PackageDirectory::installedPackages(
+	vector<InstallablePackageP> &packages_out) {
 	loadDatabase();
 	// find all package files
 	vector<String> in_dir;
