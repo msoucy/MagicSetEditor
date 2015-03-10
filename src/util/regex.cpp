@@ -10,6 +10,7 @@
 #include <util/prec.hpp>
 #include <util/regex.hpp>
 #include <util/error.hpp>
+#include <locale>
 
 using std::basic_regex;
 using std::regex_error;
@@ -49,15 +50,41 @@ static String code_to_str(const regex_error &err) {
 	}
 }
 
-String escape_x(const String &code) {
-	std::wstring text{code.wc_str()};
-	basic_regex<Char> cm{_("#.*\\n")};
-	basic_regex<Char> ws{_("(?!\\\\)\\s")};
-	for (const auto &re : {cm, ws}) {
-		text = regex_replace(text, re, wstring(_("")));
+String escape_x(String text) {
+	String ret;
+	static std::locale loc;
+	size_t depth{0};
+	bool commented = false;
+	for (size_t chr{0}; chr < text.length(); ++chr) {
+		wchar_t c = text[chr];
+		if (c == _('\n') && commented) {
+			// End comment
+			commented = false;
+		} else if (c == _('#') && !depth) {
+			// Start comment
+			commented = true;
+		} else if (c == _('[')) {
+			// Depth in
+			++depth;
+		} else if (c == _(']')) {
+			// Depth out
+			if (!depth) {
+				throw regex_error{error_brack};
+			}
+			--depth;
+		} else if (c == _('\\')) {
+			// Escaped character
+			++chr;
+			if (chr == text.length()) {
+				throw regex_error{error_escape};
+			}
+			ret += text[chr];
+		}
+		if (!commented && (depth || !std::isspace(c, loc))) {
+			ret += c;
+		}
 	}
-	// text = wx
-	return text;
+	return ret;
 }
 
 // -----------------------------------------------------------------------------
@@ -70,19 +97,18 @@ void Regex::assign(const String &code, syntax_option_type flag) {
 	String icmp = _("(?i");
 	String ispc = _("(?x");
 	String text = code;
-	while (text.StartsWith(prefix)) {
-		wxPrintf(text + _("\n"));
-		if (text.StartsWith(icmp)) {
-			flag |= icase;
-			text.Replace(icmp, prefix, false);
-		} else if (text.StartsWith(ispc)) {
-			text.Replace(ispc, prefix, false);
-			text = escape_x(text);
-		} else {
-			text.Replace(_("(?)"), _(""), false);
-		}
-	}
 	try {
+		while (text.StartsWith(prefix)) {
+			if (text.StartsWith(icmp)) {
+				flag |= icase;
+				text.Replace(icmp, prefix, false);
+			} else if (text.StartsWith(ispc)) {
+				text.Replace(ispc, prefix, false);
+				text = escape_x(text);
+			} else {
+				text.Replace(_("(?)"), _(""), false);
+			}
+		}
 		regex.assign(text.begin(), text.end(), flag);
 	} catch (const regex_error &e) {
 		throw ScriptError(String::Format(
