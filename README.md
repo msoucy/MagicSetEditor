@@ -17,6 +17,12 @@ Currently, the big changes from the original version are mainly behind the scene
 
 Future plans involve going through the codebase, attempting to fix some of the known issues and enhance portability.
 
+## Dependencies
+
+- [Boost](http://boost.org)
+- [wxWidgets](http://wxwidgets.org/)
+- [Hunspell](http://hunspell.sourceforge.net/)
+
 ## Disclaimer
 
 I don't claim to know what I'm doing
