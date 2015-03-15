@@ -39,10 +39,8 @@ void PackageManager::reset() { loaded_packages.clear(); }
 
 PackagedP PackageManager::openAny(const String &name_, bool just_header) {
 	String name = trim(name_);
-	if (starts_with(name, _("/")))
-		name = name.substr(1);
-	if (starts_with(name, _(":NO-WARN-DEP:")))
-		name = name.substr(13);
+	if (starts_with(name, _("/:NO-WARN-DEP:")))
+		name = name.substr(14);
 	// Attempt to load local data first.
 	String filename;
 	if (wxFileName(name).IsRelative()) {
@@ -256,6 +254,7 @@ void PackageDirectory::init(bool local) {
 	}
 }
 void PackageDirectory::init(const String &dir) {
+	create_parent_dirs(dir + _("/sample.mse-sample"));
 	if (wxDirExists(dir))
 		directory = dir;
 	else
