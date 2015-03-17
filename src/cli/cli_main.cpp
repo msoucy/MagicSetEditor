@@ -27,7 +27,7 @@ CLISetInterface::CLISetInterface(const SetP &set, bool quiet)
 	: quiet(quiet), our_context(nullptr) {
 	if (!cli.haveConsole()) {
 		throw Error(_("Can not run command line interface without a console;\n")
-			_("start MSE with \"mse.com --cli\""));
+						_("start MSE with \"mse.com --cli\""));
 	}
 	ei.allow_writes_outside = true;
 	setExportInfoCwd();
@@ -147,7 +147,7 @@ bool CLISetInterface::run_script_file(String const &filename) {
 }
 
 void CLISetInterface::showWelcome() {
-	// clang-format: off
+	// clang-format off
 	cli << _(R"--(\
                                                                      ___  
   __  __           _       ___     _      ___    _ _ _              |__ \ 
@@ -156,12 +156,12 @@ void CLISetInterface::showWelcome() {
  |_|  |_\__,_\__, |_\__|  |___|___|\__|  |___\__,_|_|\__\___/_|      / /_
              |___/                                                  |____|
 )--");
-	// clang-format: on
+	// clang-format on
 	cli.flush();
 }
 
 void CLISetInterface::showUsage() {
-	// clang-format: off
+	// clang-format off
 	cli << _(" Commands available from the prompt:\n\n");
 	cli << _("   <expression>        Execute a script expression, display the result\n");
 	cli << _("   :help               Show this help page.\n");
@@ -172,7 +172,7 @@ void CLISetInterface::showUsage() {
 	cli << _("   :cd                 Change the working directory.\n");
 	cli << _("   :! <command>        Perform a shell command.\n");
 	cli << _("\n Commands can be abreviated to their first letter if there is no ambiguity.\n\n");
-	// clang-format: on
+	// clang-format on
 }
 
 void CLISetInterface::handleCommand(const String &command) {

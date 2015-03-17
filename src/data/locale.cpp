@@ -281,8 +281,7 @@ void Locale::validate(Version ver) {
 		} else {
 			errors = _("Errors in locale file ") + short_name +
 					 _("\nThis is probably because the locale was made ") +
-					 _("for a different version of MSE.") +
-					 errors;
+					 _("for a different version of MSE.") + errors;
 		}
 	} else if (ver != file_version_locale) {
 		errors = _("Errors in locale file ") + short_name + _(":") +
@@ -298,11 +297,11 @@ void Locale::validate(Version ver) {
 String SubLocale::validate(const String &name,
 						   const SubLocaleValidatorP &v) const {
 	if (!v) {
-		// clang-format: off
+		// clang-format off
 		return _("\nInternal error validating local file: ")
 				_("expected keys file missing for \"") +
 			   name + _("\" section.");
-		// clang-format: on
+		// clang-format on
 	}
 	String errors;
 	// 1. keys in v but not in this, check arg count

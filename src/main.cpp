@@ -98,8 +98,10 @@ int MSE::OnRun() {
 		SetAppName(_("magicseteditor"));
 #endif
 		wxInitAllImageHandlers();
-		wxFileSystem::AddHandler(
-			new wxInternetFSHandler); // needed for update checker
+		// needed for update checker
+		wxFileSystem::AddHandler(new wxInternetFSHandler);
+		// Open archives
+		wxFileSystem::AddHandler(new wxArchiveFSHandler);
 		wxSocketBase::Initialize();
 		init_script_variables();
 		init_file_formats();
@@ -168,7 +170,7 @@ int MSE::OnRun() {
 				} else if (args[0] == _("--help") || args[0] == _("-?") ||
 						   args[0] == _("/?")) {
 					// command line help
-					// clang-format: off
+					// clang-format off
 					cli << _("Magic Set Editor\n\n");
 					cli << _("Usage: ") << BRIGHT << argv[0] << NORMAL
 						<< _(" [") << PARAM << _("OPTIONS") << NORMAL << _("]");
@@ -236,7 +238,7 @@ int MSE::OnRun() {
 					cli << _("\n        - A line containing an integer k, the number of lines to follow");
 					cli << _("\n        - k lines, each containing UTF-8 encoded string data.");
 					cli << ENDL;
-					// clang-format: on
+					// clang-format on
 					cli.flush();
 					return EXIT_SUCCESS;
 				} else if (args[0] == _("--version") || args[0] == _("-v") ||

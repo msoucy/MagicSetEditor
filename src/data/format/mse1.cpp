@@ -56,7 +56,7 @@ SetP MSE1FileFormat::importSet(const String &filename) {
 	// file version check
 	String format = file.ReadLine();
 	if (format.substr(0, 8) != _("MTG Set8")) {
-		// clang-format: off
+		// clang-format off
 		throw ParseError(
 			_("Expected MSE format version 8\n")
 			_("To convert files made with older versions of Magic Set Editor:\n")
@@ -64,7 +64,7 @@ SetP MSE1FileFormat::importSet(const String &filename) {
 			_("  2. Open the set, then save the set\n")
 			_("  3. Try to open them again in this program.")
 		);
-		// clang-format: on
+		// clang-format on
 	}
 	// read general info
 	set->value(_("title")) = to_script(file.ReadLine());

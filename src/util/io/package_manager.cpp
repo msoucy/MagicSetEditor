@@ -29,14 +29,14 @@ void PackageManager::init() {
 	local.init(true);
 	global.init(false);
 	if (!(local.valid() || global.valid())) {
-		// clang-format: off
+		// clang-format off
 		throw Error(
 			_("The MSE data files can not be found,")
 			_("there should be a directory called 'data' with these files. ")
 			_("The expected place to find it in was either ") +
 			getDataDir() + _(" or ") + getUserDataDir()
 		);
-		// clang-format: on
+		// clang-format on
 	}
 }
 void PackageManager::destroy() { loaded_packages.clear(); }

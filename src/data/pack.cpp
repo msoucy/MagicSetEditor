@@ -240,12 +240,12 @@ void PackInstance::generate(vector<CardP> *out) {
 
 	} else if (pack_type.select == SELECT_NO_REPLACE) {
 		if (!pack_type.items.empty()) {
-			// clang-format: off
+			// clang-format off
 			throw Error(
 				_("'select:no replace' is not yet supported in combination with 'items',")
 				_("only with 'filter'.")
 			);
-			// clang-format: on
+			// clang-format on
 		}
 		card_copies += requested_copies;
 		// NOTE: there is no way to pick items without replacement
