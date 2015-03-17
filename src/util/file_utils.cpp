@@ -151,12 +151,15 @@ class RecursiveDeleter : public wxDirTraverser {
 		for (auto &dir : to_delete) {
 			if (!wxRmdir(dir)) {
 				ok = false;
-				handle_error(_("Cannot delete ") + dir + _("\n")
-							 _("The remainder of the package has still been "
-							   "removed, if possible.\n")
-							 _("Other packages may have been removed, "
-							   "including packages that this on is dependent "
-							   "on. Please remove manually."));
+				// clang-format: off
+				handle_error(
+					_("Cannot delete ") + dir + _("\n")
+					_("The remainder of the package has still been removed, if possible.\n")
+					_("Other packages may have been removed, ")
+					_("including packages that this one is dependent on. ")
+					_("Please remove manually.")
+				);
+				// clang-format: on
 			}
 		}
 	}
@@ -164,13 +167,15 @@ class RecursiveDeleter : public wxDirTraverser {
 	wxDirTraverseResult OnFile(const String &filename) {
 		if (!wxRemoveFile(filename)) {
 			ok = false;
+			// clang-format: off
 			handle_error(
 				_("Cannot delete ") + filename + _("\n")
-				_("The remainder of the package has still been removed, if "
-				  "possible.\n")
-				_("Other packages may have been removed, including "
-				  "packages "
-				  "that this on is dependent on. Please remove manually."));
+				_("The remainder of the package has still been removed, if possible.\n")
+				_("Other packages may have been removed, ")
+				_("including packages that this one is dependent on. ")
+				_("Please remove manually.")
+			);
+			// clang-format: on
 		}
 		return wxDIR_CONTINUE;
 	}

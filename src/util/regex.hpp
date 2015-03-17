@@ -27,15 +27,6 @@ class Regex {
 			const_reference v = (*this)[sub];
 			return String(v.first, v.second);
 		}
-		/// Format a replacement string
-		inline String format(const String &format) const {
-			std::basic_string<Char> fmt(format.begin(), format.end());
-			String output;
-			std::match_results<String::const_iterator>::format(
-				insert_iterator<String>(output, output.end()), fmt,
-				std::regex_constants::format_sed);
-			return output;
-		}
 	};
 
 	inline Regex() {}

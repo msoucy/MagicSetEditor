@@ -141,8 +141,12 @@ void init_object(const FieldP &field, StyleP &style) {
 }
 template <>
 StyleP read_new<Style>(Reader &) {
-	throw InternalError(_("IndexMap contains nullptr StyleP the application "
-						  "should have crashed already"));
+	// clang-format: off
+	throw InternalError(
+		_("IndexMap contains nullptr StyleP")
+		_(" the application should have crashed already")
+	);
+	// clang-format: on
 }
 
 inline bool is_set(const Scriptable<double> &x) {
@@ -437,8 +441,12 @@ void init_object(const FieldP &field, ValueP &value) {
 
 template <>
 ValueP read_new<Value>(Reader &) {
-	throw InternalError(_("IndexMap contains nullptr ValueP the application "
-						  "should have crashed already"));
+	// clang-format: off
+	throw InternalError(
+		_("IndexMap contains nullptr ValueP")
+		_(" the application should have crashed already")
+		);
+	// clang-format: on
 }
 
 void mark_dependency_member(const IndexMap<FieldP, ValueP> &value,

@@ -487,7 +487,7 @@ set(FILES
 	src/code_template.hpp
 	src/main.cpp
 )
-source_group('' FILES ${FILES})
+source_group("" FILES ${FILES})
 
 add_executable(magicseteditor
 	${CLI_FILES}

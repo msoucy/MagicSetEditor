@@ -105,12 +105,15 @@ String get_stack_trace() {
 #endif // wxUSE_STACKWALKER
 
 InternalError::InternalError(const String &str)
+	// clang-format: off
 	: Error(_("An internal error occured:\n\n") + str + _("\n")
-			_("Please save your work (use 'save as' to so you don't overwrite "
-			  "things)\n") _("and restart Magic Set Editor.\n\n")
-			_("You should leave a bug report on "
-			  "http://magicseteditor.sourceforge.net/\n")
-			_("Press Ctrl+C to copy this message to the clipboard.")) {
+			_("Please save your work ")
+			_("(use 'save as' to so you don't overwrite things)\n")
+			_("and restart Magic Set Editor.\n\n")
+			_("You should leave a bug report on http://magicseteditor.sourceforge.net/\n")
+			_("Press Ctrl+C to copy this message to the clipboard."))
+	// clang-format: on
+{
 	// add a stacktrace
 	const String stack_trace = get_stack_trace();
 	if (!stack_trace.empty()) {

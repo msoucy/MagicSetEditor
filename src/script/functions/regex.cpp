@@ -94,7 +94,7 @@ struct RegexReplacer {
 				// call
 				inside = replacement_function->eval(ctx)->toString();
 			} else {
-				inside = results.format(replacement_string);
+				inside = results.format(replacement_string, std::regex_constants::format_sed);
 			}
 			// append replaced inside
 			if (recursive && level < 20) {

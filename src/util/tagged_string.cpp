@@ -699,10 +699,11 @@ void check_tagged(const String &str, bool check_balance) {
 				} else {
 					size_t close = match_close_tag(str, i);
 					if (close == String::npos) {
+						// clang-format: off
 						queue_message(MESSAGE_WARNING,
-									  _("Invalid tagged string: missing close "
-										"tag for <") +
-										  tag_at(str, i) + _(">"));
+									  _("Invalid tagged string: missing close tag for <") +
+									  tag_at(str, i) + _(">"));
+						// clang-format: on
 					}
 				}
 			}

@@ -478,8 +478,11 @@ int position_in_vector(const ScriptValueP &of, const ScriptValueP &in,
 			return s->getValue()->positionOfCard(c->getValue(), order_by,
 												 filter);
 		} else {
-			throw ScriptError(_("position: using 'order_by' or 'filter' is "
-								"only supported for finding cards in the set"));
+			// clang-format: off
+			throw ScriptError(
+				_("position: using 'order_by' or 'filter' is only supported for finding cards in the set")
+			);
+			// clang-format: on
 		}
 	} else {
 		// unordered position
@@ -661,10 +664,11 @@ SCRIPT_FUNCTION(random_select_many) {
 		}
 	} else {
 		if (count > itemCount) {
-			throw ScriptError(
-				String::Format(_("Can not select %d items from a collection "
-								 "conaining only %d items"),
-							   count, input->itemCount()));
+			// clang-format: off
+			throw ScriptError(String::Format(
+				_("Can not select %d items from a collection conaining only %d items"),
+				count, input->itemCount()));
+			// clang-format: on
 		}
 		// transfer all to ret and shuffle
 		ScriptValueP it = input->makeIterator();

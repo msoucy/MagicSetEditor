@@ -345,12 +345,14 @@ const String &Reader::getValue() {
 			indent = -1;
 		}
 		if (indent >= expected_indent) {
-			warning(_("Blank line or comment in text block, that is "
-					  "insufficiently indented.\n")
-					_("\t\tEither indent the comment/blank line, or add a "
-					  "'key:' after it.\n")
-					_("\t\tThis could cause more more error messages.\n"),
-					-1, false);
+			// clang-format: off
+			warning(
+				_("Blank line or comment in text block, that is insufficiently indented.\n")
+				_("\t\tEither indent the comment/blank line, or add a 'key:' after it.\n")
+				_("\t\tThis could cause more more error messages.\n"),
+				-1, false
+			);
+			// clang-format: on
 		}
 		return previous_value;
 	} else {

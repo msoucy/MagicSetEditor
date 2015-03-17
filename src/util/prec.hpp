@@ -16,7 +16,6 @@
 // : Includes
 
 // Wx headers
-#include <wx/setup.h>
 #include <wx/wxprec.h>
 #include <wx/wx.h>
 #include <wx/image.h>
@@ -26,6 +25,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <random>
 using namespace std;
 
 #undef RGB

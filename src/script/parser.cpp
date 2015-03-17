@@ -530,9 +530,12 @@ ExprType parseExpr(TokenIterator &input, Script &script, Precedence minPrec) {
 		intrusive_ptr<Script> subScript(new Script);
 		ExprType t = parseOper(input, *subScript, PREC_ALL);
 		if (t == EXPR_STATEMENT) {
+			// clang-format: off
 			input.add_error(
-				_("Warning: last statement of a function should be an "
-				  "expression, i.e. it should return a result in all cases."));
+				_("Warning: last statement of a function should be an expression, ")
+				_("i.e. it should return a result in all cases.")
+			);
+			// clang-format: on
 		}
 		expectToken(input, _("}"), &token);
 		script.addInstruction(I_PUSH_CONST, subScript);
@@ -793,8 +796,11 @@ ExprType parseOper(TokenIterator &input, Script &script, Precedence minPrec,
 			script.getInstructions().pop_back();
 			type = parseOper(input, script, PREC_SET, I_SET_VAR, instr.data);
 			if (type == EXPR_STATEMENT) {
-				input.add_error(_("Warning: the right hand side of an "
-								  "assignment should always yield a value."));
+				// clang-format: off
+				input.add_error(
+					_("Warning: the right hand side of an assignment should always yield a value.")
+				);
+				// clang-format: on
 			}
 		} else if (minPrec <= PREC_AND && token == _("orelse"))
 			parseOper(input, script, PREC_ADD, I_BINARY, I_OR_ELSE);
@@ -826,8 +832,11 @@ ExprType parseOper(TokenIterator &input, Script &script, Precedence minPrec,
 			parseOper(input, script, PREC_CMP, I_BINARY, I_XOR);
 		else if (minPrec <= PREC_CMP && token == _("=")) {
 			if (minPrec <= PREC_SET) {
-				input.add_error(_("Use of '=', did you mean ':=' or '=='? I "
-								  "will assume '=='"));
+				// clang-format: off
+				input.add_error(
+					_("Use of '=', did you mean ':=' or '=='? I will assume '=='")
+				);
+				// clang-format: on
 			}
 			parseOper(input, script, PREC_ADD, I_BINARY, I_EQ);
 		} else if (minPrec <= PREC_CMP && token == _("=="))

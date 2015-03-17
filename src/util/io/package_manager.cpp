@@ -28,11 +28,16 @@ PackageManager package_manager;
 void PackageManager::init() {
 	local.init(true);
 	global.init(false);
-	if (!(local.valid() || global.valid()))
-		throw Error(_("The MSE data files can not be found, there should be a "
-					  "directory called 'data' with these files. ")
-						_("The expected place to find it in was either ") +
-					getDataDir() + _(" or ") + getUserDataDir());
+	if (!(local.valid() || global.valid())) {
+		// clang-format: off
+		throw Error(
+			_("The MSE data files can not be found,")
+			_("there should be a directory called 'data' with these files. ")
+			_("The expected place to find it in was either ") +
+			getDataDir() + _(" or ") + getUserDataDir()
+		);
+		// clang-format: on
+	}
 }
 void PackageManager::destroy() { loaded_packages.clear(); }
 void PackageManager::reset() { loaded_packages.clear(); }

@@ -16,7 +16,7 @@
 
 #if wxUSE_UXTHEME && defined(__WXMSW__)
 #include <wx/msw/uxtheme.h>
-#include <tmschema.h>
+#include <vssym32.h>
 #include <shlobj.h>
 #include <wx/mstream.h>
 #endif

@@ -168,13 +168,12 @@ int MSE::OnRun() {
 				} else if (args[0] == _("--help") || args[0] == _("-?") ||
 						   args[0] == _("/?")) {
 					// command line help
+					// clang-format: off
 					cli << _("Magic Set Editor\n\n");
 					cli << _("Usage: ") << BRIGHT << argv[0] << NORMAL
 						<< _(" [") << PARAM << _("OPTIONS") << NORMAL << _("]");
 					cli << _("\n\n  no options");
-					cli << _(
-						"\n         \tStart the MSE user interface showing the "
-						"welcome window.");
+					cli << _("\n         \tStart the MSE user interface showing the welcome window.");
 					cli << _("\n\n  ") << BRIGHT << _("-?") << NORMAL << _(", ")
 						<< BRIGHT << _("--help") << NORMAL;
 					cli << _("\n         \tShows this help screen.");
@@ -186,61 +185,42 @@ int MSE::OnRun() {
 						<< _("FILE") << FILE_EXT << _(".set") << NORMAL
 						<< _(", ") << PARAM << _("FILE") << FILE_EXT
 						<< _(".mse") << NORMAL;
-					cli << _("\n         \tLoad the set file in the MSE user "
-							 "interface.");
+					cli << _("\n         \tLoad the set file in the MSE user interface.");
 					cli << _("\n\n  ") << PARAM << _("FILE") << FILE_EXT
 						<< _(".mse-symbol") << NORMAL;
-					cli << _("\n         \tLoad the symbol into the MSE symbol "
-							 "editor.");
+					cli << _("\n         \tLoad the symbol into the MSE symbol editor.");
 					cli << _("\n\n  ") << PARAM << _("FILE") << FILE_EXT
 						<< _(".mse-installer") << NORMAL << _(" [") << BRIGHT
 						<< _("--local") << NORMAL << _("]");
-					cli << _("\n         \tInstall the packages from the "
-							 "installer.");
+					cli << _("\n         \tInstall the packages from the installer.");
 					cli << _("\n         \tIf the ") << BRIGHT << _("--local")
-						<< NORMAL << _(" flag is passed, install packages for "
-									   "this user only.");
-					cli << _("\n\n  ") << BRIGHT << _("--symbol-editor")
-						<< NORMAL;
-					cli << _("\n         \tShow the symbol editor instead of "
-							 "the welcome "
-							 "window.");
+						<< NORMAL << _(" flag is passed, install packages for this user only.");
+					cli << _("\n\n  ") << BRIGHT << _("--symbol-editor") << NORMAL;
+					cli << _("\n         \tShow the symbol editor instead of the welcome window.");
 					cli << _("\n\n  ") << BRIGHT << _("--create-installer")
 						<< NORMAL << _(" [") << PARAM << _("OUTFILE")
 						<< FILE_EXT << _(".mse-installer") << NORMAL << _("] [")
 						<< PARAM << _("PACKAGE") << NORMAL << _(" [") << PARAM
 						<< _("PACKAGE") << NORMAL << _(" ...]]");
-					cli << _("\n         \tCreate an instaler, containing the "
-							 "listed "
-							 "packages.");
-					cli << _("\n         \tIf no output filename is specified, "
-							 "the name "
-							 "of the first package is used.");
+					cli << _("\n         \tCreate an instaler, containing the listed packages.");
+					cli << _("\n         \tIf no output filename is specified, the name of the first package is used.");
 					cli << _("\n\n  ") << BRIGHT << _("--export") << NORMAL
 						<< PARAM << _(" TEMPLATE SETFILE ") << NORMAL << _(" [")
 						<< PARAM << _("OUTFILE") << NORMAL << _("]");
-					cli << _(
-						"\n         \tExport a set using an export template.");
-					cli << _(
-						"\n         \tIf no output filename is specified, the "
-						"result is written to stdout.");
+					cli << _("\n         \tExport a set using an export template.");
+					cli << _("\n         \tIf no output filename is specified, the result is written to stdout.");
 					cli << _("\n\n  ") << BRIGHT << _("--export-images")
 						<< NORMAL << PARAM << _(" SETFILE") << NORMAL << _(" [")
 						<< PARAM << _("IMAGE") << NORMAL << _("]");
-					cli << _("\n         \tExport the cards in a set to image "
-							 "files,");
-					cli << _("\n         \tIMAGE is the same format as for "
-							 "'export all "
-							 "card images'.");
+					cli << _("\n         \tExport the cards in a set to image files,");
+					cli << _("\n         \tIMAGE is the same format as for 'export all card images'.");
 					cli << _("\n\n  ") << BRIGHT << _("--cli") << NORMAL
 						<< _(" [") << BRIGHT << _("--quiet") << NORMAL
 						<< _("] [") << BRIGHT << _("--raw") << NORMAL
 						<< _("] [") << BRIGHT << _("--script ") << NORMAL
 						<< PARAM << _("FILE") << NORMAL << _("] [") << PARAM
 						<< _("SETFILE") << NORMAL << _("]");
-					cli << _(
-						"\n         \tStart the command line interface for "
-						"performing commands on the set file.");
+					cli << _("\n         \tStart the command line interface for performing commands on the set file.");
 					cli << _("\n         \tUse ") << BRIGHT << _("-q") << NORMAL
 						<< _(" or ") << BRIGHT << _("--quiet") << NORMAL
 						<< _(" to supress the startup banner and prompts.");
@@ -248,24 +228,15 @@ int MSE::OnRun() {
 						<< NORMAL << _(" for raw output mode.");
 					cli << _("\n         \tUse ") << BRIGHT << _("--script")
 						<< NORMAL << _(" to execute a script file.");
-					cli << _("\n\nRaw output mode is intended for use by other "
-							 "programs:");
-					cli << _("\n    - The only output is only in response to "
-							 "commands.");
-					cli << _("\n    - For each command a single 'record' is "
-							 "written to "
-							 "the standard output.");
+					cli << _("\n\nRaw output mode is intended for use by other programs:");
+					cli << _("\n    - The only output is only in response to commands.");
+					cli << _("\n    - For each command a single 'record' is written to the standard output.");
 					cli << _("\n    - The record consists of:");
-					cli << _("\n        - A line with an integer status code, "
-							 "0 for ok, "
-							 "1 for warnings, 2 for errors");
-					cli << _("\n        - A line containing an integer k, the "
-							 "number of "
-							 "lines to follow");
-					cli << _("\n        - k lines, each containing UTF-8 "
-							 "encoded string "
-							 "data.");
+					cli << _("\n        - A line with an integer status code, 0 for ok, 1 for warnings, 2 for errors");
+					cli << _("\n        - A line containing an integer k, the number of lines to follow");
+					cli << _("\n        - k lines, each containing UTF-8 encoded string data.");
 					cli << ENDL;
+					// clang-format: on
 					cli.flush();
 					return EXIT_SUCCESS;
 				} else if (args[0] == _("--version") || args[0] == _("-v") ||
