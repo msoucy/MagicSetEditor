@@ -26,7 +26,17 @@
 #include <map>
 #include <set>
 #include <random>
-using namespace std;
+#include <algorithm>
+using std::get;
+using std::make_pair;
+using std::map;
+using std::max;
+using std::min;
+using std::numeric_limits;
+using std::pair;
+using std::set;
+using std::swap;
+using std::vector;
 
 #undef RGB
 

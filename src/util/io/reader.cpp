@@ -417,7 +417,7 @@ void Reader::handle(tribool &tb) {
 
 template <>
 void Reader::handle(wxDateTime &date) {
-	if (!date.ParseDateTime(getValue().c_str())) {
+	if (!date.ParseDateTime(getValue())) {
 		throw ParseError(_("Expected a date and time"));
 	}
 }

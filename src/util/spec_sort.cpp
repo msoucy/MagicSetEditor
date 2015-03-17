@@ -332,10 +332,10 @@ String spec_sort(const String &spec, String &input, String &ret) {
 				String sub_spec = it.readRawParam(_(')'), _(' '));
 				spec_sort(sub_spec, input, ret);
 				// reverse this item
-				reverse(ret.begin() + before_ret_size, ret.end());
+				std::reverse(ret.begin() + before_ret_size, ret.end());
 			}
 			// re-reverse all items
-			reverse(ret.begin() + old_ret_size, ret.end());
+			std::reverse(ret.begin() + old_ret_size, ret.end());
 
 		} else if (it.keyword(_("ordered("))) { // in spec order
 			while (it.nextUntil(_(')'))) {

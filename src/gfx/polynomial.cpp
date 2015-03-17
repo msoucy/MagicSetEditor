@@ -56,6 +56,7 @@ inline T curt(T x) {
 }
 
 UInt solve_cubic(double a, double b, double c, double *roots) {
+	using std::complex;
 	double p = b - a * a / 3;
 	double q = c + (2 * a * a * a - 9 * a * b) / 27;
 	if (p == 0 && q == 0) {

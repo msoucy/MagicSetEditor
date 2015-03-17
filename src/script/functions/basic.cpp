@@ -342,7 +342,7 @@ SCRIPT_FUNCTION(to_sentence_case) {
 // reverse a string
 SCRIPT_FUNCTION(reverse_text) {
 	SCRIPT_PARAM_C(String, input);
-	reverse(input.begin(), input.end());
+	std::reverse(input.begin(), input.end());
 	SCRIPT_RETURN(input);
 }
 
@@ -401,7 +401,7 @@ SCRIPT_FUNCTION(sort_text) {
 		SCRIPT_RETURN(spec_sort(order, input));
 	}
 	else {
-		sort(input.begin(), input.end());
+		std::sort(input.begin(), input.end());
 		SCRIPT_RETURN(input);
 	}
 }
@@ -513,9 +513,9 @@ ScriptValueP sort_script(Context &ctx, const ScriptValueP &list,
 	if (list_t == SCRIPT_STRING) {
 		// sort a string
 		String s = list->toString();
-		sort(s.begin(), s.end());
+		std::sort(s.begin(), s.end());
 		if (remove_duplicates) {
-			s.erase(unique(s.begin(), s.end()), s.end());
+			s.erase(std::unique(s.begin(), s.end()), s.end());
 		}
 		SCRIPT_RETURN(s);
 	} else {

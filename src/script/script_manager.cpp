@@ -284,7 +284,7 @@ void SetScriptManager::updateValue(Value &value, const CardP &card,
 	Age starting_age = Age::next(); // the start of the update process, use
 									// next(), so the modified value also gets a
 									// chance to be updated
-	deque<ToUpdate> to_update;
+	std::deque<ToUpdate> to_update;
 	// execute script for initial changed value
 	value.last_modified = starting_age;
 	value.update(getContext(card), action);
@@ -343,13 +343,13 @@ void SetScriptManager::updateAll() {
 
 void SetScriptManager::updateAllDependend(
 	const vector<Dependency> &dependent_scripts, const CardP &card) {
-	deque<ToUpdate> to_update;
+	std::deque<ToUpdate> to_update;
 	Age starting_age = Age::next();
 	alsoUpdate(to_update, dependent_scripts, card);
 	updateRecursive(to_update, starting_age);
 }
 
-void SetScriptManager::updateRecursive(deque<ToUpdate> &to_update,
+void SetScriptManager::updateRecursive(std::deque<ToUpdate> &to_update,
 									   Age starting_age) {
 	if (to_update.empty())
 		return;
@@ -361,7 +361,7 @@ void SetScriptManager::updateRecursive(deque<ToUpdate> &to_update,
 }
 
 void SetScriptManager::updateToUpdate(const ToUpdate &u,
-									  deque<ToUpdate> &to_update,
+									  std::deque<ToUpdate> &to_update,
 									  Age starting_age) {
 	Age &age = u.value->last_modified;
 	if (starting_age <= age)
@@ -391,7 +391,7 @@ void SetScriptManager::updateToUpdate(const ToUpdate &u,
 #endif
 }
 
-void SetScriptManager::alsoUpdate(deque<ToUpdate> &to_update,
+void SetScriptManager::alsoUpdate(std::deque<ToUpdate> &to_update,
 								  const vector<Dependency> &deps,
 								  const CardP &card) {
 	for (auto const &d : deps) {

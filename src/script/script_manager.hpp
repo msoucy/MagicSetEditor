@@ -105,13 +105,13 @@ class SetScriptManager : public SetScriptContext, public ActionListener {
 	};
 	/// Update all things in to_update, and things that depent on them, etc.
 	/** Only update things that are older than starting_age. */
-	void updateRecursive(deque<ToUpdate> &to_update, Age starting_age);
+	void updateRecursive(std::deque<ToUpdate> &to_update, Age starting_age);
 	/// Update a value given by a ToUpdate object, and add things depending on
 	/// it to to_update
-	void updateToUpdate(const ToUpdate &u, deque<ToUpdate> &to_update,
+	void updateToUpdate(const ToUpdate &u, std::deque<ToUpdate> &to_update,
 						Age starting_age);
 	/// Schedule all things in deps to be updated by adding them to to_update
-	void alsoUpdate(deque<ToUpdate> &to_update, const vector<Dependency> &deps,
+	void alsoUpdate(std::deque<ToUpdate> &to_update, const vector<Dependency> &deps,
 					const CardP &card);
 
 	/// Delayed update for (bitmask)...

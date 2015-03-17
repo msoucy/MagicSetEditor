@@ -114,7 +114,7 @@ class TokenIterator {
 	String filename;	  ///< Filename of include files, "" for the main input
 	Packaged *package;	///< Package the input is from
 	vector<Token> buffer; ///< buffer of unread tokens, front() = current
-	stack<OpenBrace> open_braces; ///< braces/quotes we entered from script mode
+	std::stack<OpenBrace> open_braces; ///< braces/quotes we entered from script mode
 	bool newline;				  ///< Did we just pass a newline?
 	// more input?
 	struct MoreInput {
@@ -123,8 +123,8 @@ class TokenIterator {
 		String filename;
 		Packaged *package;
 	};
-	stack<MoreInput>
-		more; ///< Read tokens from here when we are done with the current input
+	/// Read tokens from here when we are done with the current input
+	std::stack<MoreInput> more; 
 
 	/// Add a token to the buffer, with the current newline value, resets
 	/// newline

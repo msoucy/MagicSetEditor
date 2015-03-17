@@ -57,7 +57,7 @@ void threshold(Byte *data, int w, int h) {
 	size_t size = w * h;
 	// make histogram of data
 	size_t hist[256];
-	fill_n(hist, 256, 0);
+	std::fill_n(hist, 256, 0);
 	for (size_t i = 0; i < size; ++i) {
 		hist[data[i]]++;
 	}

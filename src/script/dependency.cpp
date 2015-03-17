@@ -178,7 +178,7 @@ ScriptValueP Context::dependencies(const Dependency &dep,
 	size_t scope = openScope();
 
 	// Forward jumps waiting to be performed, by order of target (descending)
-	priority_queue<Jump *, vector<Jump *>, JumpOrder> jumps;
+	std::priority_queue<Jump *, vector<Jump *>, JumpOrder> jumps;
 
 	try {
 		// Instruction pointer

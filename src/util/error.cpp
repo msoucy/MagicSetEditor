@@ -160,7 +160,7 @@ ScriptParseErrors::ScriptParseErrors(const vector<ScriptParseError> &errors)
 // list
 wxMutex crit_error_handling;
 typedef pair<MessageType, String> Message;
-deque<Message> message_queue;
+std::deque<Message> message_queue;
 bool show_message_box_for_fatal_errors = true;
 bool write_errors_to_cli = false;
 

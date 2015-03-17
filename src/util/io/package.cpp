@@ -13,6 +13,7 @@
 #include <util/error.hpp>
 #include <script/to_value.hpp> // for reflection
 #include <script/profiler.hpp> // for PROFILER
+#include <wx/sstream.h>
 #include <wx/wfstream.h>
 #include <wx/zipstrm.h>
 #include <wx/dir.h>
@@ -209,6 +210,7 @@ InputStreamP Package::openIn(const String &file) {
 				_ERROR_2_("file not found package like", file, filename));
 		}
 	}
+	// http://docs.wxwidgets.org/trunk/overview_fs.html
 	InputStreamP stream;
 	if (it != files.end() && it->second.wasWritten()) {
 		// written to this file, open the temp file
@@ -222,7 +224,7 @@ InputStreamP Package::openIn(const String &file) {
 		// somebody in wx thought seeking was no longer needed, it now only
 		// works with the 'compatability constructor'
 		stream = make_shared<wxZipInputStream>(
-			filename, it->second.zipEntry->GetInternalName());
+			wxStringInputStream(filename), it->second.zipEntry->GetInternalName());
 		// stream = static_pointer_cast<wxZipInputStream>(
 		//			make_shared<ZipFileInputStream>(filename,
 		// it->second.zipEntry)));

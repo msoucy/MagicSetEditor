@@ -204,8 +204,8 @@ void weighted_equal_divide(vector<WeightedItem> &items, int total) {
 	if (items.size() == 1) {
 		items.front().count = total;
 	} else {
-		priority_queue<WeightedItem *, vector<WeightedItem *>,
-					   CompareWeightedItems> pq;
+		std::priority_queue<WeightedItem *, vector<WeightedItem *>,
+							CompareWeightedItems> pq;
 		for (size_t i = 0; i < items.size(); ++i) {
 			pq.push(&items[i]);
 		}

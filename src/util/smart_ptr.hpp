@@ -26,11 +26,13 @@
 #define BOOST_SP_NO_SP_CONVERTIBLE
 
 #include <memory>
-#include <boost/intrusive_ptr.hpp>
-
+using std::make_shared;
 using std::shared_ptr;
 using std::static_pointer_cast;
 using std::dynamic_pointer_cast;
+using std::unique_ptr;
+
+#include <boost/intrusive_ptr.hpp>
 using boost::intrusive_ptr;
 
 // -----------------------------------------------------------------------------
@@ -39,7 +41,7 @@ using boost::intrusive_ptr;
 /// Declares the type TypeP as a shared_ptr<Type>
 #define DECLARE_SHARED_POINTER_TYPE(Type)                                      \
 	class Type;                                                                \
-	typedef std::shared_ptr<Type> Type##P;
+	typedef shared_ptr<Type> Type##P;
 
 // -----------------------------------------------------------------------------
 // : Intrusive pointers

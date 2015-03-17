@@ -76,7 +76,7 @@ String escape(const String &str) {
 String fix_old_tags(const String &str) {
 	String ret;
 	ret.reserve(str.size());
-	stack<String> tags;
+	std::stack<String> tags;
 	bool intag = false;
 	// invariant : intag => !tags.empty()
 	for (size_t i = 0; i < str.size(); ++i) {
