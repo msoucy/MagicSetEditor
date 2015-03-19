@@ -22,9 +22,6 @@
 #include <wx/zipstrm.h>
 #include <wx/stdpaths.h>
 
-DECLARE_POINTER_TYPE(wxFileInputStream);
-DECLARE_POINTER_TYPE(wxZipInputStream);
-
 // Don't do this check for now, because we can't bless packages
 #define USE_MODIFIED_CHECK 0
 

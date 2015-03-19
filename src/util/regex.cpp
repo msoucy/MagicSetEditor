@@ -121,8 +121,9 @@ void Regex::replace_all(String *input, const String &format) {
 	// std::basic_string<Char> fmt; format_string(format,fmt);
 	std::basic_string<Char> fmt(format.begin(), format.end());
 	String output;
-	regex_replace(insert_iterator<String>(output, output.end()), input->begin(),
-				  input->end(), regex, fmt, std::regex_constants::format_sed);
+	regex_replace(std::insert_iterator<String>(output, output.end()),
+				  input->begin(), input->end(), regex, fmt,
+				  std::regex_constants::format_sed);
 	*input = output;
 }
 

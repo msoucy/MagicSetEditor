@@ -24,6 +24,7 @@
 #include <gui/set/window.hpp>
 #include <gui/symbol/window.hpp>
 #include <gui/thumbnail_thread.hpp>
+#include <wx/fs_arc.h>
 #include <wx/fs_inet.h>
 #include <wx/wfstream.h>
 #include <wx/txtstrm.h>

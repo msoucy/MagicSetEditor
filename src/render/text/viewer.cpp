@@ -844,7 +844,7 @@ void TextViewer::alignParagraph(size_t start_line, size_t end_line,
 		double d_line =
 			max(0.0, style.line_height_line_max - style.line_height_line);
 		double stops[] = {0.0, d_soft, d_hard, d_line};
-		sort(stops + 1, stops + 4);
+		std::sort(stops + 1, stops + 4);
 		for (int i = 1; i < 4 && height < s.height; ++i) {
 			double stop = stops[i] - stops[i - 1];
 			if (stop <= 0)

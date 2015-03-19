@@ -15,6 +15,7 @@
 #include <script/profiler.hpp> // for PROFILER
 #include <wx/sstream.h>
 #include <wx/wfstream.h>
+#include <wx/filesys.h>
 #include <wx/zipstrm.h>
 #include <wx/dir.h>
 
@@ -153,29 +154,6 @@ void Package::clearKeepFlag() {
 // -----------------------------------------------------------------------------
 // : Package : inside
 
-#if 0
-/// Class that is a wxZipInputStream over a wxFileInput stream
-/** Note that wxFileInputStream is also a base class, because it must be constructed first
- *  This class requires a patch in wxWidgets (2.5.4)
- *   change zipstrm.cpp line 1745:;
- *        if ((!m_ffile || AtHeader()));
- *   to:
- *        if ((AtHeader()));
- *  It seems that in 2.6.3 this is no longer necessary (TODO: test)
- *
- *  NOTE: Not used with wx 2.6.3, since it doesn't support seeking
- */
-class ZipFileInputStream : private wxFileInputStream, public wxZipInputStream {
-  public:
-	ZipFileInputStream(const String& filename, wxZipEntry* entry)
-		: wxFileInputStream(filename)
-		, wxZipInputStream(static_cast<wxFileInputStream&>(*this))
-	{
-		OpenEntry(*entry);
-	}
-};
-#endif
-
 class BufferedFileInputStream_aux {
   protected:
 	wxFileInputStream file_stream;
@@ -223,11 +201,10 @@ InputStreamP Package::openIn(const String &file) {
 		// a file in a zip archive
 		// somebody in wx thought seeking was no longer needed, it now only
 		// works with the 'compatability constructor'
-		stream = make_shared<wxZipInputStream>(
-			wxStringInputStream(filename), it->second.zipEntry->GetInternalName());
-		// stream = static_pointer_cast<wxZipInputStream>(
-		//			make_shared<ZipFileInputStream>(filename,
-		// it->second.zipEntry)));
+		wxFileSystem fs;
+		wxFSFile *file = fs.OpenFile(_("file:") + filename + _("#zip:") +
+									 it->second.zipEntry->GetInternalName());
+		stream = shared_ptr<InputStream>(file->GetStream());
 	} else {
 		// shouldn't happen, packaged changed by someone else since opening it
 		throw FileNotFoundError(file, filename);
