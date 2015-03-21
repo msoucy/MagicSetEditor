@@ -374,7 +374,7 @@ void closure(vector<KeywordTrie *> &state) {
 
 #ifdef _DEBUG
 void dump(int i, KeywordTrie *t) {
-	for (auto &c, t->children) {
+	for (auto &c: t->children) {
 		wxLogDebug(String(i, _(' ')) + c.first + _("     ") +
 				   String::Format(_("%p"), c.second));
 		dump(i + 2, c.second);

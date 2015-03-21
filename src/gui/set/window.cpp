@@ -777,8 +777,10 @@ void SetWindow::onFileExportImage(wxCommandEvent &) {
 	String name = wxFileSelector(
 		_TITLE_("save image"), settings.default_export_dir,
 		clean_filename(card->identification()), _(""),
-		_("JPEG images (*.jpg)|*.jpg|Windows bitmaps (*.bmp)|*.bmp|PNG images "
-		  "(*.png)|*.png|TIFF images (*.tif)|*.tif"),
+		// clang-format off
+		_("JPEG images (*.jpg)|*.jpg|Windows bitmaps (*.bmp)|*.bmp|PNG images ")
+		_("(*.png)|*.png|TIFF images (*.tif)|*.tif"),
+		// clang-format on
 		wxFD_SAVE | wxFD_OVERWRITE_PROMPT, this);
 	if (!name.empty()) {
 		settings.default_export_dir = wxPathOnly(name);

@@ -5,8 +5,10 @@ project(MagicSetEditor)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/CMake")
 message(STATUS "Module path: ${CMAKE_MODULE_PATH}")
 
-find_package(Boost REQUIRED system)
-find_package(wxWidgets REQUIRED)
+set(Boost_USE_STATIC_LIBS ON)
+add_definitions(-DBOOST_ALL_NO_LIB -DHUNSPELL_STATIC)
+find_package(Boost COMPONENTS system thread REQUIRED)
+find_package(wxWidgets COMPONENTS adv html net core base REQUIRED)
 find_package(HUNSPELL REQUIRED)
 
 include(${wxWidgets_USE_FILE})
@@ -19,7 +21,7 @@ SET(CPACK_PACKAGE_VERSION_MAJOR "2")
 SET(CPACK_PACKAGE_VERSION_MINOR "1")
 SET(CPACK_PACKAGE_VERSION_PATCH "0")
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "CMake ${CMake_VERSION_MAJOR}.${CMake_VERSION_MINOR}")
-SET(CPACK_PACKAGE_EXECUTABLES "magicseteditor")
+SET(CPACK_PACKAGE_EXECUTABLES "magicseteditor" "src/resource/msw/icon/app.ico")
 
 include(CPack)
 
@@ -486,6 +488,7 @@ set(FILES
 	src/code_template.cpp
 	src/code_template.hpp
 	src/main.cpp
+	src/resource/msw/mse.rc
 )
 source_group("" FILES ${FILES})
 
@@ -525,6 +528,7 @@ target_link_libraries(magicseteditor
 	${Boost_LIBRARIES}
 	${wxWidgets_LIBRARIES}
 )
+set_property(TARGET magicseteditor PROPERTY WIN32_EXECUTABLE TRUE)
 
 ###############################################################################
 # Install data and executable

@@ -19,7 +19,7 @@ FIND_LIBRARY(HUNSPELL_LIBRARIES
 	NAMES
 		hunspell-1.3 hunspell-1.2 hunspell
 		libhunspell-1.3 libhunspell-1.2 libhunspell
-	HINTS
+	PATHS
 		${HUNSPELL_ROOTDIR}/src/win_api/Debug/libhunspell
 		${HUNSPELL_ROOTDIR}/src/win_api/Release/libhunspell
 )

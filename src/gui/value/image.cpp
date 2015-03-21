@@ -24,11 +24,13 @@ IMPLEMENT_VALUE_EDITOR(Image) {}
 bool ImageValueEditor::onLeftDClick(const RealPoint &, wxMouseEvent &) {
 	String filename = wxFileSelector(
 		_("Open image file"), settings.default_image_dir, _(""), _(""),
-		_("All images|*.bmp;*.jpg;*.png;*.gif|Windows bitmaps "
-		  "(*.bmp)|*.bmp|JPEG images (*.jpg;*.jpeg)|*.jpg;*.jpeg|PNG images "
-		  "(*.png)|*.png|GIF images (*.gif)|*.gif|TIFF images "
-		  "(*.tif;*.tiff)|*.tif;*.tiff"),
-		wxOPEN, wxGetTopLevelParent(&editor()));
+		_("All images|*.bmp;*.jpg;*.png;*.gif|")
+		_("Windows bitmaps (*.bmp)|*.bmp|")
+		_("JPEG images (*.jpg;*.jpeg)|*.jpg;*.jpeg|")
+		_("PNG images (*.png)|*.png|")
+		_("GIF images (*.gif)|*.gif|")
+		_("TIFF images (*.tif;*.tiff)|*.tif;*.tiff"),
+		wxFD_OPEN, wxGetTopLevelParent(&editor()));
 	if (!filename.empty()) {
 		settings.default_image_dir = wxPathOnly(filename);
 		sliceImage(wxImage(filename));

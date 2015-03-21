@@ -27,6 +27,11 @@ class Regex {
 			const_reference v = (*this)[sub];
 			return String(v.first, v.second);
 		}
+		inline String format(String data, std::regex_constants::match_flag_type flags = std::regex_constants::format_sed) {
+			std::match_results<std::wstring::const_iterator> results;
+			String ret{ results.format(data, flags) };
+			return ret;
+		}
 	};
 
 	inline Regex() {}

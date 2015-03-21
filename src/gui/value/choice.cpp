@@ -202,8 +202,10 @@ void DropDownChoiceListBase::generateThumbnailImages() {
 				style().choice_images.insert(
 					make_pair(name, ScriptableImage(img)));
 			} catch (const Error &e) {
-				handle_error(Error(e.what() + _("\n  while generating choice "
-												"images for drop down list")));
+				// clang-format off
+				handle_error(Error(e.what() + _("\n  ") +
+					_("while generating choice images for drop down list")));
+				// clang-format on
 			}
 		}
 	}

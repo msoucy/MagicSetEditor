@@ -22,6 +22,7 @@
 #include <util/io/package.hpp>
 #include <util/error.hpp>
 #include <wx/filename.h>
+#include <wx/spinctrl.h>
 #include <wx/wfstream.h>
 
 // -----------------------------------------------------------------------------
@@ -273,12 +274,15 @@ void SymbolWindow::onFileNew(wxCommandEvent &ev) {
 }
 
 void SymbolWindow::onFileOpen(wxCommandEvent &ev) {
-	String name =
-		wxFileSelector(_("Open symbol"), settings.default_symbol_dir, _(""),
-					   _(""), _("Symbol files|*.mse-symbol;*.bmp|MSE2 symbol "
-								"files (*.mse-symbol)|*.mse-symbol|Images/MSE1 "
-								"symbol files|*.bmp;*.png;*.jpg;*.gif"),
-					   wxOPEN | wxFILE_MUST_EXIST, this);
+	// clang-format off
+	String name = wxFileSelector(_("Open symbol"), settings.default_symbol_dir,
+								 _(""), _(""),
+								 _("Symbol files|*.mse-symbol;*.bmp|")
+								 _("MSE2 symbol files (*.mse-symbol)|")
+								 _("*.mse-symbol|Images/MSE1 symbol files|")
+								 _("*.bmp;*.png;*.jpg;*.gif"),
+					   wxFD_OPEN | wxFD_FILE_MUST_EXIST, this);
+	// clang-format on
 	if (!name.empty()) {
 		settings.default_symbol_dir = wxPathOnly(name);
 		wxFileName n(name);
@@ -309,7 +313,7 @@ void SymbolWindow::onFileSave(wxCommandEvent &ev) {
 void SymbolWindow::onFileSaveAs(wxCommandEvent &ev) {
 	String name = wxFileSelector(
 		_("Save symbol"), settings.default_set_dir, _(""), _(""),
-		_("Symbol files (*.mse-symbol)|*.mse-symbol"), wxSAVE, this);
+		_("Symbol files (*.mse-symbol)|*.mse-symbol"), wxFD_SAVE, this);
 	if (!name.empty()) {
 		settings.default_set_dir = wxPathOnly(name);
 		wxFileOutputStream stream(name);
