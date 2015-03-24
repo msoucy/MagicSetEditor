@@ -172,17 +172,15 @@ String capitalize(const String &s) {
 			after_space = true;
 		} else if (after_space) {
 			after_space = false;
-			// See http://trac.wxwidgets.org/ticket/12594
-			// if (it != s.begin() &&
-			if (s.begin() != it && (is_substr(result, it, _("is ")) ||
-									is_substr(result, it, _("the ")) ||
-									is_substr(result, it, _("in ")) ||
-									is_substr(result, it, _("of ")) ||
-									is_substr(result, it, _("to ")) ||
-									is_substr(result, it, _("at ")) ||
-									is_substr(result, it, _("a ")))) {
-				// Short words are not capitalized, keep lower case
-			} else {
+			// Short words are not capitalized, keep lower case
+			if (it == result.begin() ||
+				!(is_substr(result, it, _("is ")) ||
+				  is_substr(result, it, _("the ")) ||
+				  is_substr(result, it, _("in ")) ||
+				  is_substr(result, it, _("of ")) ||
+				  is_substr(result, it, _("to ")) ||
+				  is_substr(result, it, _("at ")) ||
+				  is_substr(result, it, _("a ")))) {
 				*it = toUpper(*it);
 			}
 		}
