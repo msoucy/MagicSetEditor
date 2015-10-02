@@ -188,9 +188,9 @@ struct RandomRange {
 };
 
 struct WeightedItem {
-	double weight;
+	size_t weight;
 	int count;
-	int tiebreaker;
+	uint_fast32_t tiebreaker;
 };
 
 struct CompareWeightedItems{

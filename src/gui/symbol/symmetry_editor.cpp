@@ -87,17 +87,17 @@ void SymbolSymmetryEditor::destroyUI(wxToolBar* tb, wxMenuBar* mb) {
 
 void SymbolSymmetryEditor::onUpdateUI(wxUpdateUIEvent& ev) {
 	if (ev.GetId() >= ID_SYMMETRY && ev.GetId() < ID_SYMMETRY_MAX) {
-		ev.Enable(symmetry);
+		ev.Enable(symmetry != nullptr);
 		ev.Check(symmetry && symmetry->kind == ev.GetId() - ID_SYMMETRY);
 	} else if (ev.GetId() == ID_COPIES) {
-		ev.Enable(symmetry);
+		ev.Enable(symmetry != nullptr);
 		if (symmetry) {
 			copies->SetValue(symmetry->copies);
 		}
 	} else if (ev.GetId() == ID_ADD_SYMMETRY) {
 		ev.Enable(true);
 	} else if (ev.GetId() == ID_REMOVE_SYMMETRY) {
-		ev.Enable(symmetry);
+		ev.Enable(symmetry != nullptr);
 	} else {
 		ev.Enable(false); // we don't know about this item
 	}

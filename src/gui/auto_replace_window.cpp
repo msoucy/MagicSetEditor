@@ -258,13 +258,13 @@ void AutoReplaceWindow::refreshItem() {
 	in_event = true;
 	AutoReplaceP ar = list->getSelected();
 	match     ->Enable(ar && ar->custom);
-	replace   ->Enable(ar);
-	matchL    ->Enable(ar && ar->custom);
-	replaceL  ->Enable(ar);
-	enabled   ->Enable(ar);
-	whole_word->Enable(ar);
-	remove    ->Enable(ar && ar->custom);
-	if (ar) {
+	replace   ->Enable(ar != nullptr);
+	matchL    ->Enable(ar != nullptr && ar->custom);
+	replaceL  ->Enable(ar != nullptr);
+	enabled   ->Enable(ar != nullptr);
+	whole_word->Enable(ar != nullptr);
+	remove    ->Enable(ar != nullptr && ar->custom);
+	if (ar != nullptr) {
 		match     ->SetValue(ar->match);
 		replace   ->SetValue(ar->replace);
 		enabled   ->SetValue(ar->enabled);

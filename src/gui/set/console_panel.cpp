@@ -284,7 +284,7 @@ class MessageCtrl : public wxScrolledWindow {
 	static const int TEXT_PADDING_TOP    = 4;
 	static const int TEXT_PADDING_BOTTOM = 2;
 	static const int TEXT_LINE_SPACING   = 1;
-	static const int MIN_ITEM_HEIGHT     = 16 + 2*ICON_PADDING;
+	static const int MIN_ITEM_HEIGHT;
 	
 	/// Layout all messages, starting from number start
 	/// layout = determine their height
@@ -316,6 +316,7 @@ class MessageCtrl : public wxScrolledWindow {
 	// --------------------------------------------------- : Layout
 	
 };
+const int MessageCtrl::MIN_ITEM_HEIGHT     = 16 + 2*ICON_PADDING;
 
 BEGIN_EVENT_TABLE(MessageCtrl,wxScrolledWindow)
 	EVT_PAINT(MessageCtrl::onPaint)

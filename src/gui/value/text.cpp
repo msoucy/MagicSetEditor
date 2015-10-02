@@ -739,7 +739,7 @@ bool TextValueEditor::containsPoint(const RealPoint& pos) const {
 	RealPoint pos2(pos.x * style().getStretch(), pos.y);
 	if (TextValueViewer::containsPoint(pos2)) return true;
 	if (word_lists.empty()) return false;
-	return findWordList(pos);
+	return findWordList(pos) != nullptr;
 }
 RealRect TextValueEditor::boundingBox() const {
 	if (word_lists.empty()) return ValueViewer::boundingBox();

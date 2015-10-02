@@ -275,7 +275,7 @@ class KeywordTrie {
 
 KeywordTrie::KeywordTrie()
 	: on_any_star(nullptr)
-	, finished(nullptr)
+	, finished()
 {}
 
 KeywordTrie::~KeywordTrie() {

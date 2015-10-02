@@ -278,7 +278,7 @@ void SymbolControl::onUpdateUI(wxUpdateUIEvent& ev) {
 			ev.Check(editor->modeToolId() == ev.GetId());
 			if (ev.GetId() == ID_MODE_POINTS) {
 				// can only edit points when a shape is available
-				ev.Enable(selected_parts.getAShape());
+				ev.Enable(selected_parts.getAShape() != nullptr);
 			}
 			if (ev.GetId() == ID_MODE_SYMMETRY) {
 				ev.Enable(!selected_parts.empty());

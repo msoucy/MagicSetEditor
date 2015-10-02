@@ -23,18 +23,12 @@
 // Use slightly less fancy template stuff, so msvc7.1 doesn't crash with an internal compiler error
 #define BOOST_SP_NO_SP_CONVERTIBLE
 
-#include <boost/shared_ptr.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <boost/intrusive_ptr.hpp>
 
 // Can't do  using namespace boost;
 // because boost::shared_ptr conflicts with std::tr1::shared_ptr
 // and some boost headers do include boost/shared_ptr themselves
-#if _HAS_TR1
-	using std::tr1::shared_ptr;
-#else
-	using boost::shared_ptr;
-#endif
 using boost::intrusive_ptr;
 using boost::scoped_ptr;
 using boost::static_pointer_cast;

@@ -86,9 +86,6 @@ typedef wxDateTime DateTime;
 typedef unsigned char Byte;
 typedef unsigned int  UInt;
 
-/// Null pointer
-#define nullptr 0
-
 // ----------------------------------------------------------------------------- : MSE Headers
 
 // MSE utility headers (ones unlikely to change and used everywhere)
@@ -104,12 +101,6 @@ typedef unsigned int  UInt;
 // ----------------------------------------------------------------------------- : Debugging fixes
 
 #ifdef _MSC_VER
-	//# pragma conform(forScope,on)    // in "for(int x=..);" x goes out of scope after the for
-	// somehow forScope pragma doesn't work in precompiled headers, use this hack instead:
-	#ifdef _DEBUG
-		#define for if(false);else for
-	#endif
-	
 	#if defined(_DEBUG) && defined(_CRT_WIDE)
 		// Use OutputDebugString/DebugBreak for assertions if in debug mode
 		void msvc_assert(const wchar_t*, const wchar_t*, const wchar_t*, unsigned);
