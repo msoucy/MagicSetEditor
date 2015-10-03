@@ -6,17 +6,17 @@
 
 // ----------------------------------------------------------------------------- : Includes
 
-#include <util/prec.hpp>
-#include <util/io/package_manager.hpp>
-#include <util/error.hpp>
-#include <util/file_utils.hpp>
-#include <data/game.hpp>
-#include <data/stylesheet.hpp>
-#include <data/symbol_font.hpp>
-#include <data/locale.hpp>
-#include <data/export_template.hpp>
-#include <data/installer.hpp>
-#include <wx/stdpaths.h>
+#include "util/prec.hpp"
+#include "util/io/package_manager.hpp"
+#include "util/error.hpp"
+#include "util/file_utils.hpp"
+#include "util/paths.hpp"
+#include "data/game.hpp"
+#include "data/stylesheet.hpp"
+#include "data/symbol_font.hpp"
+#include "data/locale.hpp"
+#include "data/export_template.hpp"
+#include "data/installer.hpp"
 #include <wx/wfstream.h>
 
 DECLARE_TYPEOF_COLLECTION(InstallablePackageP);
@@ -33,8 +33,8 @@ void PackageManager::init() {
 	global.init(false);
 	if (!(local.valid() || global.valid()))
 		throw Error(_("The MSE data files can not be found, there should be a directory called 'data' with these files. ")
-								_("The expected place to find it in was either ") + wxStandardPaths::Get().GetDataDir() + _(" or ") +
-								wxStandardPaths::Get().GetUserDataDir());
+								_("The expected place to find it in was either ") + getDataDir() + _(" or ") +
+								getUserDataDir());
 }
 void PackageManager::destroy() {
 	loaded_packages.clear();
@@ -208,10 +208,10 @@ bool PackageManager::install(const InstallablePackage& package) {
 void PackageDirectory::init(bool local) {
 	is_local = local;
 	if (local) {
-		init(wxStandardPaths::Get().GetUserDataDir() + _("/data"));
+		init(getUserDataDir() + _("/data"));
 	} else {
 		// determine data directory
-		String dir = wxStandardPaths::Get().GetDataDir();
+		String dir = getDataDir();
 		// check if this is the actual data directory, especially during debugging,
 		// the data may be higher up:
 		//  exe path  = mse/build/debug/mse.exe
@@ -221,7 +221,7 @@ void PackageDirectory::init(bool local) {
 			dir = wxPathOnly(dir);
 			if (d == dir) {
 				// we are at the root -> 'data' not found anywhere in the path
-				dir = wxStandardPaths::Get().GetDataDir();
+				dir = getDataDir();
 				break;
 			}
 		}

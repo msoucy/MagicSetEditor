@@ -466,8 +466,8 @@ set(UTIL_FILES
 	src/util/regex.hpp
 	src/util/rotation.cpp
 	src/util/rotation.hpp
-	#src/util/paths.cpp
-	#src/util/paths.hpp
+	src/util/paths.cpp
+	src/util/paths.hpp
 	src/util/smart_ptr.hpp
 	src/util/spec_sort.cpp
 	src/util/spec_sort.hpp

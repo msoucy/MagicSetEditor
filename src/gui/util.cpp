@@ -6,12 +6,12 @@
 
 // ----------------------------------------------------------------------------- : Includes
 
-#include <util/prec.hpp>
-#include <gui/util.hpp>
-#include <util/error.hpp>
-#include <util/rotation.hpp>
+#include "util/prec.hpp"
+#include "gui/util.hpp"
+#include "util/error.hpp"
+#include "util/rotation.hpp"
+#include "util/paths.hpp"
 #include <wx/renderer.h>
-#include <wx/stdpaths.h>
 
 #if wxUSE_UXTHEME && defined(__WXMSW__)
 	#include <wx/msw/uxtheme.h>
@@ -146,7 +146,7 @@ Image load_resource_image(const String& name) {
 		wxMemoryInputStream stream(data, len);
 		return wxImage(stream);
 	#elif defined(__linux__)
-		static String path = wxStandardPaths::Get().GetDataDir() + _("/resource/");
+		static String path = getDataDir() + _("/resource/");
 		String file = path + name;
 		wxImage resource;
 		if (wxFileExists(file + _(".png"))) resource.LoadFile(file + _(".png"));
@@ -154,7 +154,7 @@ Image load_resource_image(const String& name) {
 		else if (wxFileExists(file + _(".ico"))) resource.LoadFile(file + _(".ico"));
 		else if (wxFileExists(file + _(".cur"))) resource.LoadFile(file + _(".cur"));
 		if (resource.Ok()) return resource;
-        static String local_path = wxStandardPaths::Get().GetUserDataDir() + _("/resource/");
+        static String local_path = getUserDataDir() + _("/resource/");
         file = local_path + name;
         if (wxFileExists(file + _(".png"))) resource.LoadFile(file + _(".png"));
         else if (wxFileExists(file + _(".bmp"))) resource.LoadFile(file + _(".bmp"));
@@ -179,8 +179,8 @@ wxIcon load_resource_icon(const String& name) {
 	#if defined(__WXMSW__)
 		return wxIcon(_("icon/") + name);
 	#else
-		static String path = wxStandardPaths::Get().GetDataDir() + _("/resource/icon/");
-        static String local_path = wxStandardPaths::Get().GetUserDataDir() + _("/resource/icon/");
+		static String path = getDataDir() + _("/resource/icon/");
+        static String local_path = getUserDataDir() + _("/resource/icon/");
         if (wxFileExists(path + name + _(".ico"))) return wxIcon(path + name + _(".ico"), wxBITMAP_TYPE_ICO);
         else return wxIcon(local_path + name + _(".ico"), wxBITMAP_TYPE_ICO);
 	#endif

@@ -6,22 +6,22 @@
 
 // ----------------------------------------------------------------------------- : Includes
 
-#include <util/prec.hpp>
-#include <data/settings.hpp>
-#include <data/installer.hpp>
-#include <data/game.hpp>
-#include <data/stylesheet.hpp>
-#include <data/field.hpp>
-#include <data/export_template.hpp>
-#include <data/word_list.hpp>
-#include <util/reflect.hpp>
-#include <util/platform.hpp>
-#include <util/io/reader.hpp>
-#include <util/io/writer.hpp>
-#include <util/delayed_index_maps.hpp>
+#include "util/prec.hpp"
+#include "data/settings.hpp"
+#include "data/installer.hpp"
+#include "data/game.hpp"
+#include "data/stylesheet.hpp"
+#include "data/field.hpp"
+#include "data/export_template.hpp"
+#include "data/word_list.hpp"
+#include "util/reflect.hpp"
+#include "util/platform.hpp"
+#include "util/io/reader.hpp"
+#include "util/io/writer.hpp"
+#include "util/delayed_index_maps.hpp"
+#include "util/paths.hpp"
 #include <wx/filename.h>
 #include <wx/wfstream.h>
-#include <wx/stdpaths.h>
 
 DECLARE_TYPEOF_COLLECTION(AutoReplaceP);
 
@@ -233,7 +233,7 @@ IndexMap<FieldP,ValueP>& Settings::exportOptionsFor(const ExportTemplate& export
 
 /// Retrieve the directory to use for settings and other data files
 String user_settings_dir() {
-	String dir = wxStandardPaths::Get().GetUserDataDir();
+	String dir = getUserDataDir();
 	if (!wxDirExists(dir)) wxMkdir(dir);
 	return dir + _("/");
 }

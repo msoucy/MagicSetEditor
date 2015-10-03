@@ -19,7 +19,6 @@
 #include <wx/filename.h>
 #include <wx/wfstream.h>
 #include <wx/zipstrm.h>
-#include <wx/stdpaths.h>
 
 DECLARE_TYPEOF_COLLECTION(String);
 DECLARE_TYPEOF_COLLECTION(PackagedP);

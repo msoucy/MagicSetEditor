@@ -6,17 +6,17 @@
 
 // ----------------------------------------------------------------------------- : Includes
 
-#include <util/prec.hpp>
-#include <data/locale.hpp>
-#include <data/game.hpp>
-#include <data/stylesheet.hpp>
-#include <data/symbol_font.hpp>
-#include <util/io/package_manager.hpp>
-#include <util/regex.hpp>
-#include <script/to_value.hpp>
+#include "util/prec.hpp"
+#include "data/locale.hpp"
+#include "data/game.hpp"
+#include "data/stylesheet.hpp"
+#include "data/symbol_font.hpp"
+#include "util/io/package_manager.hpp"
+#include "util/regex.hpp"
+#include "util/paths.hpp"
+#include "script/to_value.hpp"
 #include <wx/wfstream.h>
 
-#include <wx/stdpaths.h>
 #if defined(__WXMSW__)
 	#include <wx/mstream.h>
 #endif
@@ -213,8 +213,8 @@ InputStreamP load_resource_text(const String& name) {
 		int len = ::SizeofResource(wxGetInstance(), hResource);
 		return shared(new wxMemoryInputStream(data, len));
 	#else
-        static String path = wxStandardPaths::Get().GetDataDir() + _("/resource/");
-        static String local_path = wxStandardPaths::Get().GetUserDataDir() + _("/resource/");
+        static String path = getDataDir() + _("/resource/");
+        static String local_path = getUserDataDir() + _("/resource/");
         if (wxFileExists(path + name)) return shared(new wxFileInputStream(path + name));
         else return shared(new wxFileInputStream(local_path + name));
 	#endif
