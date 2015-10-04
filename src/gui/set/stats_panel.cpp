@@ -471,7 +471,7 @@ void StatsPanel::showCategory(const GraphType* prefer_layout) {
 	#endif
 	// create axes
 	GraphDataPre d;
-	FOR_EACH(dim, dims) {
+	for(auto& dim : dims) {
 		d.axes.push_back(intrusive(new GraphAxis(
 			dim->name,
 			dim->colors.empty() ? AUTO_COLOR_EVEN : AUTO_COLOR_NO,
@@ -487,7 +487,7 @@ void StatsPanel::showCategory(const GraphType* prefer_layout) {
 		Context& ctx = set->getContext(set->cards[i]);
 		GraphElementP e(new GraphElement(i));
 		bool show = true;
-		FOR_EACH(dim, dims) {
+		for(auto& dim : dims) {
 			String value = untag(dim->script.invoke(ctx)->toString());
 			e->values.push_back(value);
 			if (value.empty() && !dim->show_empty) {
@@ -502,7 +502,7 @@ void StatsPanel::showCategory(const GraphType* prefer_layout) {
 	}
 	// split lists
 	size_t dim_id = 0;
-	FOR_EACH(dim, dims) {
+	for(auto& dim : dims) {
 		if (dim->split_list) d.splitList(dim_id);
 		++dim_id;
 	}

@@ -166,7 +166,7 @@ SCRIPT_FUNCTION(symbol_variation) {
 		SymbolStyleP style = dynamic_pointer_cast<SymbolStyle>(set->stylesheetForP(card)->styleFor(value->fieldP));
 		if (!style) throw InternalError(_("Symbol value has a style of the wrong type"));
 		// find variation
-		FOR_EACH(v, style->variations) {
+		for(auto& v : style->variations) {
 			if (v->name == variation) {
 				// found it
 				return intrusive(new SymbolToImage(value, filename, v));

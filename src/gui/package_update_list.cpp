@@ -42,14 +42,15 @@ void PackageUpdateList::TreeItem::add(const InstallablePackageP& package, const 
 	String name = path.substr(0,pos);
 	String rest = pos == String::npos ? _("") : path.substr(pos+1);
 	// find/add child
-	FOR_EACH(ti, children) {
+	for(auto ti_IT = children.begin(); ti_IT != children.end(); ++ti_IT) {
+		auto& ti = *ti_IT;
 		if (ti->label == name) {
 			// already have this child
 			if (pos == String::npos && ti->package) {
 				// two packages with the same path
 				TreeItemP ti2(new TreeItem);
 				ti2->label = name;
-				children.insert(ti_IT.first, ti2);
+				children.insert(ti_IT, ti2);
 				ti2->add(package, rest, level + 1);
 			} else {
 				ti->add(package, rest, level + 1);
@@ -74,7 +75,7 @@ bool compare_pos_hint(const PackageUpdateList::TreeItemP& a, const PackageUpdate
 
 void PackageUpdateList::TreeItem::toItems(vector<TreeList::ItemP>& items) {
 	sort(children.begin(), children.end(), compare_pos_hint);
-	FOR_EACH(c, children) {
+	for(auto& c : children) {
 		items.push_back(c);
 		c->toItems(items);
 	}
@@ -216,7 +217,7 @@ void PackageUpdateList::initItems() {
 	items.clear();
 	root.toItems(items);
 	// init image list
-	FOR_EACH(i,items) {
+	for(auto& i :items) {
 		TreeItem& ti = static_cast<TreeItem&>(*i);
 		const InstallablePackageP& p = ti.package;
 		// load icon

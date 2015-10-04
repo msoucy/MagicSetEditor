@@ -94,7 +94,7 @@ ControlPointMoveAction::ControlPointMoveAction(const set<ControlPointP>& points)
 	, snap(0)
 {
 	oldValues.reserve(points.size());
-	FOR_EACH(p, points) {
+	for(auto& p : points) {
 		oldValues.push_back(p->pos);
 	}
 }
@@ -395,7 +395,7 @@ class ControlPointRemoveAction : public Action {
 ControlPointRemoveAction::ControlPointRemoveAction(const SymbolShapeP& shape, const set<ControlPointP>& to_delete) {
 	int index = 0;
 	// find points to remove, in reverse order
-	FOR_EACH(point, shape->points) {
+	for(auto& point : shape->points) {
 		if (to_delete.find(point) != to_delete.end()) {
 			// remove this point
 			removals.push_back(intrusive(new SinglePointRemoveAction(shape, index)));
@@ -410,7 +410,7 @@ String ControlPointRemoveAction::getName(bool to_undo) const {
 
 void ControlPointRemoveAction::perform(bool to_undo) {
 	if (to_undo) {
-		FOR_EACH(r, removals) r->perform(to_undo);
+		for(auto& r : removals) r->perform(to_undo);
 	} else {
 		// in reverse order, because positions of later points will
 		// change after removal of earlier points.

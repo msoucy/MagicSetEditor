@@ -71,7 +71,7 @@ void Game::validate(Version v) {
 	// automatic statistics dimensions
 	{
 		vector<StatsDimensionP> dims;
-		FOR_EACH(f, card_fields) {
+		for(auto& f : card_fields) {
 			if (f->show_statistics) {
 				dims.push_back(intrusive(new StatsDimension(*f)));
 			}
@@ -81,7 +81,7 @@ void Game::validate(Version v) {
 	// automatic statistics categories
 	{
 		vector<StatsCategoryP> cats;
-		FOR_EACH(dim, statistics_dimensions) {
+		for(auto& dim : statistics_dimensions) {
 			cats.push_back(intrusive(new StatsCategory(dim)));
 		}
 		statistics_categories.insert(statistics_categories.begin(), cats.begin(), cats.end()); // push front
@@ -102,7 +102,7 @@ void Game::validate(Version v) {
 void Game::initCardListColorScript() {
 	if (card_list_color_script) return; // already done
 	// find a field with choice_colors_cardlist
-	FOR_EACH(s, card_fields) {
+	for(auto& s : card_fields) {
 		ChoiceFieldP cf = dynamic_pointer_cast<ChoiceField>(s);
 		if (cf && !cf->choice_colors_cardlist.empty()) {
 			// found the field to use

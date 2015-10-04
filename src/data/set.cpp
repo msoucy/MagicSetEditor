@@ -193,7 +193,7 @@ void Set::reflect_cards<Writer> (Writer& reflector) {
 		REFLECT(cards);
 	} else {
 		set<String> used;
-		FOR_EACH(card, cards) {
+		for(auto& card : cards) {
 			// pick a unique filename for this card
 			// can't use Package::newFileName, because then we get conflicts with the previous save of the same card
 			String filename = _("card ") + normalize_internal_filename(clean_filename(card->identification()));

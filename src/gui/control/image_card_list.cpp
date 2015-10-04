@@ -43,7 +43,7 @@ void ImageCardList::onBeforeChangeSet() {
 }
 
 ImageFieldP ImageCardList::findImageField() {
-	FOR_EACH(f, set->game->card_fields) {
+	for(auto& f : set->game->card_fields) {
 		ImageFieldP imgf = dynamic_pointer_cast<ImageField>(f);
 		if (imgf) return imgf;
 	}

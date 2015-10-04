@@ -147,7 +147,7 @@ void GalleryList::RefreshItem(size_t item) {
 	RefreshRect(wxRect(itemPos(item),item_size).Inflate(BORDER,BORDER), false);
 }
 void GalleryList::RefreshSelection() {
-	FOR_EACH(col,subcolumns) RefreshItem(col.selection);
+	for(auto& col :subcolumns) RefreshItem(col.selection);
 }
 
 void GalleryList::onScroll(wxScrollWinEvent& ev) {

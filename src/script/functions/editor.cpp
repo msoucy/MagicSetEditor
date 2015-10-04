@@ -171,9 +171,9 @@ SCRIPT_FUNCTION_DEPENDENCIES(combined_editor) {
 	// Add dependencies, from target_field on field#
 	// For card fields
 	size_t j = 0;
-	FOR_EACH(f, game->card_fields) {
+	for(auto& f : game->card_fields) {
 		Dependency dep(DEP_CARD_COPY_DEP, j++);
-		FOR_EACH(fn, fields) {
+		for(auto& fn : fields) {
 			if (f == fn) {
 				target_field->dependent_scripts.add(dep);
 				break;
@@ -182,9 +182,9 @@ SCRIPT_FUNCTION_DEPENDENCIES(combined_editor) {
 	}
 	// For set fields
 	j = 0;
-	FOR_EACH(f, game->set_fields) {
+	for(auto& f : game->set_fields) {
 		Dependency dep(DEP_SET_COPY_DEP, j++);
-		FOR_EACH(fn, fields) {
+		for(auto& fn : fields) {
 			if (f == fn) {
 				target_field->dependent_scripts.add(dep);
 				break;
@@ -297,11 +297,14 @@ String filter_choices(const String& input, const vector<String>& choices, int mi
 	}
 	// keep less choices
 	if (count > max) {
-		for (size_t i = choices.size() - 1 ; i >= 0 ; --i) {
+		for (size_t i = choices.size(); i > 0 ; --i) {
 			if (count <= max) break;
-			if (seen[i]) {
-				if (max > 0 && choices[i] == prefered) continue; // we would rather not remove prefered choice
-				seen[i] = false; --count;
+			if (seen[i+1]) {
+				// we would rather not remove prefered choice
+				if (max > 0 && choices[i+1] == prefered) {
+					continue;
+				}
+				seen[i+1] = false; --count;
 			}
 		}
 	}
@@ -387,7 +390,11 @@ SCRIPT_FUNCTION(count_chosen) {
 			SCRIPT_RETURN(0);
 		} else {
 			int count = 1;
-			FOR_EACH(c, input) if (c == _(',')) ++count;
+			for(auto& c : input) {
+				if (c == _(' ,')) {
+					++count;
+				}
+			}
 			SCRIPT_RETURN(count);
 		}
 	}

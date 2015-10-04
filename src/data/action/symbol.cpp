@@ -36,7 +36,7 @@ SymbolPartMoveAction::SymbolPartMoveAction(const set<SymbolPartP>& parts, const 
 	, snap(0)
 {
 	// Determine min/max_pos
-	FOR_EACH(p, parts) {
+	for(auto& p : parts) {
 		bounds.update(p->bounds);
 	}
 }
@@ -47,7 +47,7 @@ String SymbolPartMoveAction::getName(bool to_undo) const {
 
 void SymbolPartMoveAction::perform(bool to_undo) {
 	// move the points back
-	FOR_EACH(p, parts) {
+	for(auto& p : parts) {
 		movePart(*p);
 	}
 	moved = -moved;
@@ -56,14 +56,14 @@ void SymbolPartMoveAction::movePart(SymbolPart& part) {
 	part.bounds.min -= moved;
 	part.bounds.max -= moved;
 	if (SymbolShape* s = part.isSymbolShape()) {
-		FOR_EACH(pnt, s->points) {
+		for(auto& pnt : s->points) {
 			pnt->pos -= moved;
 		}
 	} else if (SymbolSymmetry* s = part.isSymbolSymmetry()) {
 		s->center -= moved;
 	}
 	if (SymbolGroup* g = part.isSymbolGroup()) {
-		FOR_EACH(p, g->parts) {
+		for(auto& p : g->parts) {
 			movePart(*p);
 		}
 	}
@@ -89,14 +89,14 @@ SymbolPartMatrixAction::SymbolPartMatrixAction(const set<SymbolPartP>& parts, co
 
 void SymbolPartMatrixAction::transform(const Matrix2D& m) {
 	// Transform each part
-	FOR_EACH(p, parts) {
+	for(auto& p : parts) {
 		transform(*p, m);
 		p->updateBounds();
 	}
 }
 void SymbolPartMatrixAction::transform(SymbolPart& part, const Matrix2D& m) {
 	if (SymbolShape* s = part.isSymbolShape()) {
-		FOR_EACH(pnt, s->points) {
+		for(auto& pnt : s->points) {
 			pnt->pos          = ((pnt->pos - center) * m) + center;
 			pnt->delta_before = pnt->delta_before * m;
 			pnt->delta_after  = pnt->delta_after  * m;
@@ -106,7 +106,7 @@ void SymbolPartMatrixAction::transform(SymbolPart& part, const Matrix2D& m) {
 		s->handle = s->handle * m;
 	}
 	if (SymbolGroup* g = part.isSymbolGroup()) {
-		FOR_EACH(p, g->parts) {
+		for(auto& p : g->parts) {
 			transform(*p, m);
 		}
 	}
@@ -201,7 +201,7 @@ SymbolPartScaleAction::SymbolPartScaleAction(const set<SymbolPartP>& parts, int 
 {
 	// Find min and max coordinates
 	Bounds bounds;
-	FOR_EACH(p, parts) {
+	for(auto& p : parts) {
 		bounds.update(p->bounds);
 	}
 	// new == old
@@ -254,7 +254,7 @@ void SymbolPartScaleAction::update() {
 }
 
 void SymbolPartScaleAction::transformAll() {
-	FOR_EACH(p, parts) {
+	for(auto& p : parts) {
 		transformPart(*p);
 	}
 }
@@ -268,7 +268,7 @@ void SymbolPartScaleAction::transformPart(SymbolPart& part) {
 	if (SymbolShape* s = part.isSymbolShape()) {
 		// scale all points
 		Vector2D scale = new_size.div(old_size);
-		FOR_EACH(pnt, s->points) {
+		for(auto& pnt : s->points) {
 			pnt->pos = transform(pnt->pos);
 			// also scale handles
 			pnt->delta_before = pnt->delta_before.mul(scale);
@@ -279,7 +279,7 @@ void SymbolPartScaleAction::transformPart(SymbolPart& part) {
 		s->handle.mul(new_size.div(old_size));
 	}
 	if (SymbolGroup* g = part.isSymbolGroup()) {
-		FOR_EACH(p, g->parts) {
+		for(auto& p : g->parts) {
 			transformPart(*p);
 		}
 	}
@@ -295,7 +295,7 @@ Vector2D SymbolPartScaleAction::transform(const Vector2D& v) {
 CombiningModeAction::CombiningModeAction(const set<SymbolPartP>& parts, SymbolShapeCombine mode)
 	: SymbolPartsAction(parts)
 {
-	FOR_EACH(p, parts) {
+	for(auto& p : parts) {
 		add(p,mode);
 	}
 }
@@ -303,7 +303,9 @@ void CombiningModeAction::add(const SymbolPartP& part, SymbolShapeCombine mode) 
 	if (part->isSymbolShape()) {
 		this->parts.push_back(make_pair(static_pointer_cast<SymbolShape>(part),mode));
 	} else if (SymbolGroup* g = part->isSymbolGroup()) {
-		FOR_EACH(p, g->parts) add(p, mode);
+		for(auto& p : g->parts) {
+			add(p, mode);
+		}
 	}
 }
 
@@ -312,7 +314,7 @@ String CombiningModeAction::getName(bool to_undo) const {
 }
 
 void CombiningModeAction::perform(bool to_undo) {
-	FOR_EACH(pm, parts) {
+	for(auto& pm : parts) {
 		swap(pm.first->combine, pm.second);
 	}
 }
@@ -373,7 +375,7 @@ RemoveSymbolPartsAction::RemoveSymbolPartsAction(Symbol& symbol, const set<Symbo
 void RemoveSymbolPartsAction::check(SymbolGroup& group, const set<SymbolPartP>& parts) {
 	size_t index = 0;
 	size_t removed = 0;
-	FOR_EACH(p, group.parts) {
+	for(auto& p : group.parts) {
 		if (parts.find(p) != parts.end()) {
 			removals.push_back(Removal(group, index, p)); // remove this part
 			++ removed;
@@ -396,7 +398,7 @@ void RemoveSymbolPartsAction::perform(bool to_undo) {
 	if (to_undo) {
 		// reinsert the parts
 		// ascending order, this is the reverse of removal
-		FOR_EACH(r, removals) {
+		for(auto& r : removals) {
 			assert(r.pos <= r.parent->parts.size());
 			r.parent->parts.insert(r.parent->parts.begin() + r.pos, r.removed);
 		}
@@ -416,7 +418,7 @@ DuplicateSymbolPartsAction::DuplicateSymbolPartsAction(Symbol& symbol, const set
 	: symbol(symbol)
 {
 	UInt index = 0;
-	FOR_EACH(p, symbol.parts) {
+	for(auto& p : symbol.parts) {
 		index += 1;
 		if (parts.find(p) != parts.end()) {
 			// duplicate this part
@@ -440,7 +442,7 @@ void DuplicateSymbolPartsAction::perform(bool to_undo) {
 		}
 	} else {
 		// insert the clones
-		FOR_EACH(d, duplications) {
+		for(auto& d : duplications) {
 			assert(d.second <= symbol.parts.size());
 			symbol.parts.insert(symbol.parts.begin() + d.second, d.first);
 		}
@@ -449,7 +451,7 @@ void DuplicateSymbolPartsAction::perform(bool to_undo) {
 
 void DuplicateSymbolPartsAction::getParts(set<SymbolPartP>& parts) {
 	parts.clear();
-	FOR_EACH(d, duplications) {
+	for(auto& d : duplications) {
 		parts.insert(d.first);
 	}
 }
@@ -517,7 +519,7 @@ GroupSymbolPartsAction::GroupSymbolPartsAction(SymbolGroup& root, const set<Symb
 {
 	// group parts in the old parts list
 	bool done = false;
-	FOR_EACH(p, root.parts) {
+	for(auto& p : root.parts) {
 		assert(p != group);
 		if (parts.find(p) != parts.end()) {
 			// add to group instead
@@ -541,11 +543,11 @@ UngroupSymbolPartsAction::UngroupSymbolPartsAction(SymbolGroup& root, const set<
 	: GroupSymbolPartsActionBase(root)
 {
 	// break up the parts in the old parts list
-	FOR_EACH(p, root.parts) {
+	for(auto& p : root.parts) {
 		if (parts.find(p) != parts.end() && p->isSymbolGroup()) {
 			// break up the group
 			SymbolGroup* g = p->isSymbolGroup();
-			FOR_EACH(p, g->parts) {
+			for(auto& p : g->parts) {
 				old_part_list.push_back(p);
 			}
 		} else {

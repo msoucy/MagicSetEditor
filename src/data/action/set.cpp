@@ -101,7 +101,7 @@ void ChangeSetStyleAction::perform(bool to_undo) {
 	if (!to_undo) {
 		// backup has_styling
 		has_styling.clear();
-		FOR_EACH(card, set.cards) {
+		for(auto& card : set.cards) {
 			has_styling.push_back(card->has_styling);
 			if (!card->stylesheet) {
 				card->has_styling = false; // this card has custom style options for the default stylesheet

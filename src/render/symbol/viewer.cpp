@@ -99,7 +99,7 @@ void SymbolViewer::draw(DC& dc) {
 	MemoryDCP interiorDC;
 	// Check if we can paint directly to the dc
 	// This will fail if there are parts with combine == intersection
-	FOR_EACH(p, symbol->parts) {
+	for(auto& p : symbol->parts) {
 		if (SymbolShape* s = p->isSymbolShape()) {
 			if (s->combine == SYMBOL_COMBINE_INTERSECTION) {
 				paintedSomething = true;

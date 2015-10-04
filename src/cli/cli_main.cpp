@@ -114,7 +114,7 @@ bool CLISetInterface::run_script_string(String const& command, bool multiline) {
 	if (errors.empty()) {
 		return run_script(script);
 	} else {
-		FOR_EACH(error,errors) {
+		for(auto& error :errors) {
 			if (multiline) {
 				cli.show_message(MESSAGE_ERROR, String::Format(_("On line %d:\t"), error.line) + error.what());
 			} else {

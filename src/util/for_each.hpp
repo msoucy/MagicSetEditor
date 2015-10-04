@@ -149,12 +149,6 @@
                 Elem##_IT.second = false)
 
 /// Iterate over a collection whos type must be declared with DECLARE_TYPEOF
-/** Usage: FOR_EACH(e,collect) { body-of-loop }
- */
-#define FOR_EACH(Elem,Collection)                                       \
-        FOR_EACH_T(TYPEOF_IT(Collection), TYPEOF_REF(Collection), Elem, Collection, begin, end)
-
-/// Iterate over a collection whos type must be declared with DECLARE_TYPEOF
 /** Uses a const iterator
  *  Usage: FOR_EACH_CONST(e,collect) { body-of-loop }
  */

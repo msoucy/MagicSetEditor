@@ -23,8 +23,8 @@ ActionStack::ActionStack()
 
 ActionStack::~ActionStack() {
 	// we own the actions, delete them
-	FOR_EACH(a, undo_actions) delete a;
-	FOR_EACH(a, redo_actions) delete a;
+	for(auto& a : undo_actions) delete a;
+	for(auto& a : redo_actions) delete a;
 }
 
 void ActionStack::addAction(Action* action, bool allow_merge) {
@@ -33,7 +33,7 @@ void ActionStack::addAction(Action* action, bool allow_merge) {
 	tellListeners(*action, false);
 	// clear redo list
 	if (!redo_actions.empty()) allow_merge = false; // don't merge after undo
-	FOR_EACH(a, redo_actions) delete a;
+	for(auto& a : redo_actions) delete a;
 	redo_actions.clear();
 	// try to merge?
 	if (allow_merge && !undo_actions.empty() &&
@@ -119,5 +119,7 @@ void ActionStack::removeListener(ActionListener* listener) {
 		);
 }
 void ActionStack::tellListeners(const Action& action, bool undone) {
-	FOR_EACH(l, listeners) l->onAction(action, undone);
+	for(auto& l : listeners) {
+		l->onAction(action, undone);
+	}
 }

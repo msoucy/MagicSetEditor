@@ -216,9 +216,9 @@ PackagesWindow::PackagesWindow(Window* parent, const InstallerP& installer)
 	init(parent, true);
 	// add installer
 	merge(installable_packages, intrusive(new DownloadableInstaller(installer)));
-	FOR_EACH(p, installable_packages) p->determineStatus();
+	for(auto& p : installable_packages) p->determineStatus();
 	// mark all packages in the installer for installation
-	FOR_EACH(ip, installable_packages) {
+	for(auto& ip : installable_packages) {
 		if (ip->can(PACKAGE_ACT_INSTALL)) {
 			set_package_action(installable_packages, ip, PACKAGE_ACT_INSTALL | where);
 		}
@@ -236,7 +236,7 @@ void PackagesWindow::init(Window* parent, bool show_only_installable) {
 	// get packages
 	wxBusyCursor busy;
 	package_manager.findAllInstalledPackages(installable_packages);
-	FOR_EACH(p, installable_packages) p->determineStatus();
+	for(auto& p : installable_packages) p->determineStatus();
 	checkInstallerList(false);
 	
 	// ui elements
@@ -305,7 +305,7 @@ void PackagesWindow::onOk(wxCommandEvent& ev) {
 	int to_download = 0;
 	int to_remove   = 0;
 	int with_modifications = 0;
-	FOR_EACH(ip, installable_packages) {
+	for(auto& ip : installable_packages) {
 		if (!ip->has(PACKAGE_ACT_NOTHING)) ++to_change;
 		if (ip->has(PACKAGE_ACT_INSTALL) && ip->installer && !ip->installer->installer) ++to_download;
 		if (ip->has(PACKAGE_ACT_REMOVE)) {
@@ -338,7 +338,7 @@ void PackagesWindow::onOk(wxCommandEvent& ev) {
 	package_manager.reset();
 	// Download installers
 	int package_pos = 0, step = 0;
-	FOR_EACH(ip, installable_packages) {
+	for(auto& ip : installable_packages) {
 		if (ip->has(PACKAGE_ACT_INSTALL) && ip->installer && !ip->installer->installer) {
 			if (!progress.Update(step++, String::Format(_ERROR_("downloading updates"), ++package_pos, to_download))) {
 				return; // aborted
@@ -361,7 +361,7 @@ void PackagesWindow::onOk(wxCommandEvent& ev) {
 	// Install stuff
 	package_pos = 0;
 	int success = 0, install = 0, remove = 0;
-	FOR_EACH(ip, installable_packages) {
+	for(auto& ip : installable_packages) {
 		if (ip->has(PACKAGE_ACT_NOTHING)) continue; // package unchanged
 		if (!progress.Update(step++, String::Format(_ERROR_("installing updates"), ++package_pos, to_change))) {
 			// don't allow abort.
@@ -421,10 +421,10 @@ bool PackagesWindow::checkInstallerList(bool refresh) {
 	if (!downloadable_installers.download()) return false;
 	waiting_for_list = false;
 	// merge installer lists
-	FOR_EACH(inst, downloadable_installers.installers) {
+	for(auto& inst : downloadable_installers.installers) {
 		merge(installable_packages, inst);
 	}
-	FOR_EACH(p, installable_packages) p->determineStatus();
+	for(auto& p : installable_packages) p->determineStatus();
 	// refresh
 	if (refresh) {
 		package_list->rebuild();

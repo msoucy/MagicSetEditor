@@ -91,7 +91,7 @@ void GameSettings::initDefaults(const Game& game) {
 	FOR_EACH_CONST(ar, game.auto_replaces) {
 		// do we have this one?
 		bool already_have = false;
-		FOR_EACH(ar2, auto_replaces) {
+		for(auto& ar2 : auto_replaces) {
 			if (ar->match == ar2->match) {
 				ar2->custom = false;
 				already_have = true;

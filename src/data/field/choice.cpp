@@ -62,7 +62,7 @@ bool ChoiceField::Choice::hasDefault() const {
 
 int ChoiceField::Choice::initIds() {
 	int id = first_id + (hasDefault() ? 1 : 0);
-	FOR_EACH(c, choices) {
+	for(auto& c : choices) {
 		c->first_id = id;
 		id = c->initIds();
 	}
@@ -186,7 +186,7 @@ void ChoiceStyle::initImage() {
 	//       PUSH_CONST nil
 	//      OR_ELSE
 	ScriptCustomCollectionP lookup(new ScriptCustomCollection());
-	FOR_EACH(ci, choice_images) {
+	for(auto& ci : choice_images) {
 		lookup->key_value[uncanonical_name_form(ci.first)] = 
 			lookup->key_value[ci.first] = ci.second.getValidScriptP();
 	}
@@ -206,7 +206,7 @@ int ChoiceStyle::update(Context& ctx) {
 	if (!choice_images_initialized) {
 		// we only want to do this once because it is rather slow, other updates are handled by dependencies
 		choice_images_initialized = true;
-		FOR_EACH(ci, choice_images) {
+		for(auto& ci : choice_images) {
 			if (ci.second.update(ctx)) {
 				change |= CHANGE_OTHER;
 				// TODO : remove this thumbnail

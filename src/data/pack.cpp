@@ -91,7 +91,7 @@ PackItem::PackItem(const String& name, int amount)
 
 bool PackType::update(Context& ctx) {
 	bool change = enabled.update(ctx);
-	FOR_EACH(item, items) {
+	for(auto& item : items) {
 		change |= item->update(ctx);
 	}
 	return change;
@@ -114,7 +114,7 @@ PackInstance::PackInstance(const PackType& pack_type, PackGenerator& parent)
 {
 	// Filter cards
 	if (pack_type.filter) {
-		FOR_EACH(card, parent.set->cards) {
+		for(auto& card : parent.set->cards) {
 			Context& ctx = parent.set->getContext(card);
 			bool keep = pack_type.filter.invoke(ctx)->toBool();
 			if (keep) {

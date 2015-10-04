@@ -45,7 +45,7 @@ void DataViewer::draw(RotatedDC& dc, const Color& background) {
 	updateStyles(false);
 	// prepare viewers
 	bool changed_content_properties = false;
-	FOR_EACH(v, viewers) { // draw low z index fields first
+	for(auto& v : viewers) { // draw low z index fields first
 		if (v->getStyle()->isVisible()) {
 			Rotater r(dc, v->getRotation());
 			try {
@@ -61,7 +61,7 @@ void DataViewer::draw(RotatedDC& dc, const Color& background) {
 		updateStyles(true);
 	}
 	// draw viewers
-	FOR_EACH(v, viewers) { // draw low z index fields first
+	for(auto& v : viewers) { // draw low z index fields first
 		if (v->getStyle()->isVisible()) {// visible
 			Rotater r(dc, v->getRotation());
 			try {
@@ -82,7 +82,7 @@ void DataViewer::updateStyles(bool only_content_dependent) {
 			set->updateStyles(card, only_content_dependent);
 		} else {
 			Context& ctx = getContext();
-			FOR_EACH(v, viewers) {
+			for(auto& v : viewers) {
 				Style& s = *v->getStyle();
 				if (only_content_dependent && !s.content_dependent) continue;
 				if (s.update(ctx)) {
@@ -173,7 +173,7 @@ void DataViewer::setStyles(const StyleSheetP& stylesheet, IndexMap<FieldP,StyleP
 	onInit();
 }
 void DataViewer::addStyles(IndexMap<FieldP,StyleP>& styles) {
-	FOR_EACH(s, styles) {
+	for(auto& s : styles) {
 		if ((s->visible || s->visible.isScripted()) && (nativeLook() || s->hasSize())) {
 			// no need to make a viewer for things that are always invisible
 			ValueViewerP viewer = makeViewer(s);
@@ -183,7 +183,7 @@ void DataViewer::addStyles(IndexMap<FieldP,StyleP>& styles) {
 }
 
 void DataViewer::setData(IndexMap<FieldP,ValueP>& values, IndexMap<FieldP,ValueP>* extra_values) {
-	FOR_EACH(v, viewers) {
+	for(auto& v : viewers) {
 		// is this field contained in values?
 		ValueP val = values.tryGet(v->getField());
 		if (val) {
@@ -212,7 +212,7 @@ void DataViewer::onAction(const Action& action, bool undone) {
 	}
 	TYPE_CASE(action, ValueAction) {
 		if (action.card == card.get()) {
-			FOR_EACH(v, viewers) {
+			for(auto& v : viewers) {
 				if (v->getValue()->equals( action.valueP.get() )) {
 					// refresh the viewer
 					v->onAction(action, undone);
@@ -224,7 +224,7 @@ void DataViewer::onAction(const Action& action, bool undone) {
 	}
 	TYPE_CASE(action, ScriptValueEvent) {
 		if (action.card == card.get()) {
-			FOR_EACH(v, viewers) {
+			for(auto& v : viewers) {
 				if (v->getValue().get() == action.value) {
 					// refresh the viewer
 					v->onAction(action, undone);
@@ -236,7 +236,7 @@ void DataViewer::onAction(const Action& action, bool undone) {
 	}
 /*//%	TYPE_CASE(action, ScriptStyleEvent) {
 		if (action.stylesheet == stylesheet.get()) {
-			FOR_EACH(v, viewers) {
+			for(auto& v : viewers) {
 				if (v->getStyle().get() == action.style) {
 					// refresh the viewer
 					v->onStyleChange();

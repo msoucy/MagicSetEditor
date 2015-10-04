@@ -485,7 +485,7 @@ void ConsolePanel::exec(String const& command) {
 		// parse command
 		vector<ScriptParseError> errors;
 		ScriptP script = parse(command,nullptr,false,errors);
-		FOR_EACH(error,errors) {
+		for(auto& error :errors) {
 			// TODO: also squiglify the input?
 			messages->add_message(script ? MESSAGE_WARNING : MESSAGE_ERROR,error.what(), true);
 		}

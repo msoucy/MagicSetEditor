@@ -138,7 +138,7 @@ int MSE::OnRun() {
 				} else if (args[0] == _("--create-installer")) {
 					// create an installer
 					Installer inst;
-					FOR_EACH(arg, args) {
+					for(auto& arg : args) {
 						if (!starts_with(arg,_("--"))) {
 							inst.addPackage(arg);
 						}
@@ -237,7 +237,7 @@ int MSE::OnRun() {
 					if (scripts.empty()) {
 						cli_interface.run_interactive();
 					} else {
-						FOR_EACH(script, scripts) {
+						for(auto& script : scripts) {
 							cli_interface.run_script_file(script);
 						}
 					}

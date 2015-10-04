@@ -168,7 +168,7 @@ void fix(Reader& reader, SymbolShape& shape) {
 	if (shape.bounds.max.x < 100 || shape.bounds.max.y < 100) return;
 	// this is a <= 0.1.2 symbol, points range [0...500] instead of [0...1]
 	// adjust it
-	FOR_EACH(p, shape.points) {
+	for(auto& p : shape.points) {
 		p->pos          /= 500.0;
 		p->delta_before /= 500.0;
 		p->delta_after  /= 500.0;
@@ -201,7 +201,7 @@ String SymbolShape::typeName() const {
 SymbolPartP SymbolShape::clone() const {
 	SymbolShapeP part(new SymbolShape(*this));
 	// also clone the control points
-	FOR_EACH(p, part->points) {
+	for(auto& p : part->points) {
 		p = intrusive(new ControlPoint(*p));
 	}
 	return part;
@@ -243,7 +243,7 @@ String SymbolSymmetry::typeName() const {
 SymbolPartP SymbolSymmetry::clone() const {
 	SymbolSymmetryP part(new SymbolSymmetry(*this));
 	// also clone the parts inside
-	FOR_EACH(p, part->parts) {
+	for(auto& p : part->parts) {
 		p = p->clone();
 	}
 	return part;
@@ -302,7 +302,7 @@ String SymbolGroup::typeName() const {
 SymbolPartP SymbolGroup::clone() const {
 	SymbolGroupP part(new SymbolGroup(*this));
 	// also clone the parts inside
-	FOR_EACH(p, part->parts) {
+	for(auto& p : part->parts) {
 		p = p->clone();
 	}
 	return part;
@@ -318,7 +318,7 @@ bool SymbolGroup::isAncestor(const SymbolPart& that) const {
 
 Bounds SymbolGroup::calculateBounds(const Vector2D& origin, const Matrix2D& m, bool is_identity) {
 	Bounds bounds;
-	FOR_EACH(p, parts) {
+	for(auto& p : parts) {
 		bounds.update(p->calculateBounds(origin, m, is_identity));
 	}
 	if (is_identity) this->bounds = bounds;

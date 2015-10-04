@@ -28,7 +28,7 @@ bool SymbolPartsSelection::select(const SymbolPartP& part, SelectMode mode) {
 	if (!part) return false;
 	// make sure part is not the decendent of a part that is already selected
 	if (mode != SELECT_OVERRIDE) {
-		FOR_EACH(s, selection) {
+		for(auto& s : selection) {
 			if (s != part && s->isAncestor(*part)) return false;
 		}
 	}
@@ -58,7 +58,7 @@ bool SymbolPartsSelection::select(const SymbolPartP& part, SelectMode mode) {
 
 void SymbolPartsSelection::clearChildren(SymbolPart* part) {
 	if (SymbolGroup* g = part->isSymbolGroup()) {
-		FOR_EACH(p, g->parts) {
+		for(auto& p : g->parts) {
 			if (selected(p)) selection.erase(p);
 			clearChildren(p.get());
 		}
@@ -66,14 +66,14 @@ void SymbolPartsSelection::clearChildren(SymbolPart* part) {
 }
 
 SymbolShapeP SymbolPartsSelection::getAShape() const {
-	FOR_EACH(s, selection) {
+	for(auto& s : selection) {
 		if (s->isSymbolShape()) return static_pointer_cast<SymbolShape>(s);
 	}
 	return SymbolShapeP();
 }
 
 SymbolSymmetryP SymbolPartsSelection::getASymmetry() const {
-	FOR_EACH(s, selection) {
+	for(auto& s : selection) {
 		if (s->isSymbolSymmetry()) return static_pointer_cast<SymbolSymmetry>(s);
 	}
 	return SymbolSymmetryP();
@@ -87,7 +87,7 @@ SymbolPartP SymbolPartsSelection::find(const SymbolPartP& part, const Vector2D& 
 		if (point_in_shape(pos, *s)) return part;
 	}
 	if (SymbolGroup* g = part->isSymbolGroup()) {
-		FOR_EACH(p, g->parts) {
+		for(auto& p : g->parts) {
 			SymbolPartP found = find(p, pos);
 			if (found) {
 				if (part->isSymbolSymmetry() || selected(found)) {
@@ -102,7 +102,7 @@ SymbolPartP SymbolPartsSelection::find(const SymbolPartP& part, const Vector2D& 
 }
 
 SymbolPartP SymbolPartsSelection::find(const Vector2D& position) const {
-	FOR_EACH(p, root->parts) {
+	for(auto& p : root->parts) {
 		SymbolPartP found = find(p, position);
 		if (found) return found;
 	}

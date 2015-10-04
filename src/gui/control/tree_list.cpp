@@ -69,7 +69,7 @@ void TreeList::calcItemCount() {
 	// item count
 	total_lines = 0;
 	int visible_level = 0;
-	FOR_EACH(i,items) {
+	for(auto& i :items) {
 		if (i->level <= visible_level) {
 			i->position = total_lines;
 			++total_lines;

@@ -186,7 +186,7 @@ bool ThumbnailThread::done(void* owner) {
 		}
 	}
 	// store them
-	FOR_EACH(r, finished) {
+	for(auto& r : finished) {
 		// store image
 		r.first->store(r.second);
 		// remove from name list

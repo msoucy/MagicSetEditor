@@ -97,7 +97,7 @@ GraphData::GraphData(const GraphDataPre& d)
 {
 	// find groups on each axis
 	size_t i = 0;
-	FOR_EACH(a, axes) {
+	for(auto& a : axes) {
 		map<String,UInt,SmartLess> counts; // note: default constructor for UInt() does initialize to 0
 		FOR_EACH_CONST(e, d.elements) {
 			counts[e->values[i]] += 1;
@@ -106,7 +106,7 @@ GraphData::GraphData(const GraphDataPre& d)
 			// Add all values, calculate mean of the numeric ones
 			UInt numeric_count = 0;
 			int prev = 0;
-			FOR_EACH(c, counts) {
+			for(auto& c : counts) {
 				// numeric?
 				double d;
 				if (c.first.ToDouble(&d)) {
@@ -138,14 +138,14 @@ GraphData::GraphData(const GraphDataPre& d)
 				a->addGroup(gn, counts[gn]);
 			}
 		} else {
-			FOR_EACH(c, counts) {
+			for(auto& c : counts) {
 				a->addGroup(c.first, c.second);
 			}
 		}
 		// colors
 		if (a->auto_color == AUTO_COLOR_NO && a->colors) {
 			// use colors from the table
-			FOR_EACH(g, a->groups) {
+			for(auto& g : a->groups) {
 				map<String,Color>::const_iterator it = a->colors->find(g.name);
 				if (it != a->colors->end()) {
 					g.color = it->second;
@@ -155,7 +155,7 @@ GraphData::GraphData(const GraphDataPre& d)
 			// find some nice colors for the groups
 			double step = 0;
 			bool first = true;
-			FOR_EACH(g, a->groups) {
+			for(auto& g : a->groups) {
 				double amount = a->auto_color == AUTO_COLOR_EVEN
 				                  ? 1. / a->groups.size()
 				                  : double(g.size) / a->total; // amount this group takes
@@ -180,7 +180,7 @@ GraphData::GraphData(const GraphDataPre& d)
 		de->original_index = e->original_index;
 		// find index j in elements
 		int i = 0;
-		FOR_EACH(a, axes) {
+		for(auto& a : axes) {
 			String v = e->values[i];
 			de->group_nrs[i] = -1;
 			double d;
@@ -190,7 +190,7 @@ GraphData::GraphData(const GraphDataPre& d)
 			} else {
 				// find group that contains v
 				int j = 0;
-				FOR_EACH(g, a->groups) {
+				for(auto& g : a->groups) {
 					if (v == g.name) {
 						de->group_nrs[i] = j;
 						break;
@@ -636,7 +636,7 @@ void ScatterGraph::setData(const GraphDataP& d) {
 	if (values.empty()) return;
 	// find maximum
 	max_value = 0;
-	FOR_EACH(v, values) {
+	for(auto& v : values) {
 		max_value = max(max_value,v);
 	}
 	// find maximum (x)
@@ -707,7 +707,7 @@ void ScatterPieGraph::draw(RotatedDC& dc, const vector<int>& current, DrawLayer 
 				// draw pie slices
 				Radians angle = 0;
 				size_t j = 0;
-				FOR_EACH(g, axis3.groups) {
+				for(auto& g : axis3.groups) {
 					UInt val = values3D[i * axis3.groups.size() + j++];
 					if (val > 0) {
 						dc.SetBrush(g.color);
@@ -786,7 +786,7 @@ RealSize GraphLegend::determineSize(RotatedDC& dc) const {
 	GraphAxis& axis = axis_data();
 	dc.SetFont(*wxNORMAL_FONT);
 	item_size = RealSize(0,0);
-	FOR_EACH(g, axis.groups) {
+	for(auto& g : axis.groups) {
 		RealSize this_item_size = dc.GetTextExtent(g.name);
 		this_item_size = RealSize(this_item_size.width + 34, this_item_size.height + 5);
 		item_size = piecewise_max(item_size, this_item_size);
@@ -1017,7 +1017,7 @@ bool GraphContainer::findItem(const RealPoint& pos, const RealRect& screen_rect,
 }
 void GraphContainer::setData(const GraphDataP& d) {
 	Graph::setData(d);
-	FOR_EACH(g, items) {
+	for(auto& g : items) {
 		g->setData(d);
 	}
 }

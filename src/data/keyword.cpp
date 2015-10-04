@@ -279,7 +279,7 @@ KeywordTrie::KeywordTrie()
 {}
 
 KeywordTrie::~KeywordTrie() {
-	FOR_EACH(c, children) {
+	for(auto& c : children) {
 		delete c.second;
 	}
 	if (on_any_star != this) delete on_any_star;
@@ -395,7 +395,7 @@ void closure(vector<KeywordTrie*>& state) {
 
 #ifdef _DEBUG
 void dump(int i, KeywordTrie* t) {
-	FOR_EACH(c, t->children) {
+	for(auto& c : t->children) {
 		wxLogDebug(String(i,_(' ')) + c.first + _("     ") + String::Format(_("%p"),c.second));
 		dump(i+2, c.second);
 	}
@@ -476,7 +476,7 @@ String KeywordDatabase::expand(const String& text,
 				++i;
 			}
 			// find 'next' trie node set matching c
-			FOR_EACH(kt, current) {
+			for(auto& kt : current) {
 				map<Char,KeywordTrie*>::const_iterator it = kt->children.find(c);
 				if (it != kt->children.end()) {
 					next.push_back(it->second);
@@ -494,8 +494,8 @@ String KeywordDatabase::expand(const String& text,
 			closure(current);
 			// are we done?
 			for (int set_or_game = 0 ; set_or_game <= 1 ; ++set_or_game) {
-				FOR_EACH(n, current) {
-					FOR_EACH(kw, n->finished) {
+				for(auto& n : current) {
+					for(auto& kw : n->finished) {
 						if (kw->fixed != (bool)set_or_game) {
 							continue; // first try set keywords, try game keywords in the second round
 						}

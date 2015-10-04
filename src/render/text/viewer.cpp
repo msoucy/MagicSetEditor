@@ -83,7 +83,7 @@ void TextViewer::draw(RotatedDC& dc, const TextStyle& style, DrawWhat what) {
 		drawSeparators(dc);
 	}
 	// Draw the text, line by line
-	FOR_EACH(l, lines) {
+	for(auto& l : lines) {
 		if (l.visible(dc)) {
 			if (l.justifying) {
 				// Draw characters separatly
@@ -113,7 +113,7 @@ void TextViewer::drawSelection(RotatedDC& dc, const TextStyle& style, size_t sel
 	dc.SetPen(*wxTRANSPARENT_PEN);
 	dc.SetLogicalFunction(wxINVERT);
 	RealRect prev_rect(0,0,0,0);
-	FOR_EACH(l, lines) {
+	for(auto& l : lines) {
 		RealRect rect = l.selectionRectangle(dc, sel_start, sel_end);
 		if (rect.height > 0) dc.DrawRectangle(rect);
 		// compensate for overlap between lines
@@ -138,7 +138,7 @@ void TextViewer::drawSeparators(RotatedDC& dc) {
 	// separator lines
 	bool separator = false;
 	double y = 0;
-	FOR_EACH(l, lines) {
+	for(auto& l : lines) {
 		double y2 = l.top + l.line_height;
 		if (separator && l.visible(dc)) {
 			// between the two lines
@@ -304,7 +304,7 @@ void TextViewer::scrollTo(size_t line_id) {
 }
 void TextViewer::scrollBy(double delta) {
 	if (delta == 0) return;
-	FOR_EACH(l, lines) {
+	for(auto& l : lines) {
 		l.top += delta;
 	}
 }
@@ -318,7 +318,7 @@ bool TextViewer::ensureVisible(double height, size_t char_id) {
 		return true;
 	} else if (line.bottom() > height) {
 		// scroll down
-		FOR_EACH(l, lines) {
+		for(auto& l : lines) {
 			if (l.top > 0) scrollBy(-l.line_height); // scroll down a single line ...
 			if (line.bottom() <= height) break;      // ... until we can see the current line
 		}
@@ -354,7 +354,7 @@ void TextViewer::prepareLines(RotatedDC& dc, const String& text, TextStyle& styl
 	
 	// store information about the content/layout, allow this to change alignment
 	style.content_width  = 0;
-	FOR_EACH(l, lines) {
+	for(auto& l : lines) {
 		style.content_width = max(style.content_width, l.width());
 	}
 	style.content_height = 0;
@@ -583,7 +583,7 @@ bool TextViewer::prepareLinesScale(RotatedDC& dc, const vector<CharInfo>& chars,
 		// Ending the current word
 		if (accept_word) {
 			// move word pos to line
-			FOR_EACH(p, positions_word) {
+			for(auto& p : positions_word) {
 				line.positions.push_back(line_size.width + p);
 			}
 			if (word_end_or_soft != 0) line.end_or_soft = word_end_or_soft;
@@ -637,7 +637,7 @@ bool TextViewer::prepareLinesScale(RotatedDC& dc, const vector<CharInfo>& chars,
 		}
 	}
 	// the last word
-	FOR_EACH(p, positions_word) {
+	for(auto& p : positions_word) {
 		line.positions.push_back(line_size.width + p);
 	}
 	if (word_end_or_soft != 0) line.end_or_soft = word_end_or_soft;
@@ -778,7 +778,7 @@ void TextViewer::Line::alignHorizontal(const vector<CharInfo>& chars, const Text
 		int count = (int)(end_or_soft - start); // distribute it among this many characters
 		if (count <= 0) count = 1;              // prevent div by 0
 		int i = 0;
-		FOR_EACH(c, positions) {
+		for(auto& c : positions) {
 			c += s.x + hdelta * i++ / count;
 		}
 	} else if ((alignment & ALIGN_JUSTIFY_WORDS) && should_fill) {
@@ -791,7 +791,7 @@ void TextViewer::Line::alignHorizontal(const vector<CharInfo>& chars, const Text
 		}
 		if (count == 0) count = 1;       // prevent div by 0
 		int i = 0; size_t j = start;
-		FOR_EACH(c, positions) {
+		for(auto& c : positions) {
 			c += s.x + hdelta * i / count;
 			if (j < end_or_soft && chars[j++].break_after == BREAK_SPACE) i++;
 		}
@@ -802,7 +802,7 @@ void TextViewer::Line::alignHorizontal(const vector<CharInfo>& chars, const Text
 		// simple alignment
 		justifying = false;
 		double hdelta = s.x + align_delta_x(alignment, s.width, width);
-		FOR_EACH(c, positions) {
+		for(auto& c : positions) {
 			c += hdelta;
 		}
 	}

@@ -100,7 +100,7 @@ void PackTotalsPanel::draw(DC& dc) {
 	dc.SetFont(*wxNORMAL_FONT);
 	int y = 0;
 	int total = 0;
-	FOR_EACH(pack, game->pack_types) {
+	for(auto& pack : game->pack_types) {
 		PackInstance& i = generator.get(pack);
 		if (pack->summary && (show_all || i.has_cards())) {
 			drawItem(dc, y, tr(*game, pack->name, capitalize), i.get_card_copies());
@@ -129,7 +129,7 @@ wxSize PackTotalsPanel::DoGetBestSize() const {
 	// count lines
 	int lines = 0;
   	if (game && generator.set) {
-		FOR_EACH(pack, game->pack_types) {
+		for(auto& pack : game->pack_types) {
 			PackInstance& i = generator.get(pack);
 			if (pack->summary && (show_all || i.has_cards())) {
 				lines++;
@@ -289,13 +289,13 @@ CustomPackDialog::CustomPackDialog(Window* parent, const SetP& set, const PackTy
 			s6->Add(CreateButtonSizer(wxOK | wxCANCEL), 1, wxALL & ~wxTOP, 8);
 		s->Add(s6, 0, wxEXPAND);
 	// add spin controls
-	FOR_EACH(pack, set->game->pack_types) {
+	for(auto& pack : set->game->pack_types) {
 		if (pack->selectable) continue; // this pack is already selectable from the main UI
 		PackAmountPicker pick(this, packsSizer, pack, false);
 		pickers.push_back(pick);
 		// set value if it is nonzero
 		if (edited_pack) {
-			FOR_EACH(i, edited_pack->items) {
+			for(auto& i : edited_pack->items) {
 				if (i->name == pack->name) {
 					pick.value->SetValue(i->amount);
 				}
@@ -314,7 +314,7 @@ CustomPackDialog::CustomPackDialog(Window* parent, const SetP& set, const PackTy
 void CustomPackDialog::updateTotals() {
 	generator.reset(0);
 	int total_packs = 0;
-	FOR_EACH(pick,pickers) {
+	for(auto& pick :pickers) {
 		int copies = pick.value->GetValue();
 		total_packs += copies;
 		generator.get(pick.pack).request_copy(copies);
@@ -330,7 +330,7 @@ void CustomPackDialog::storePack() {
 	edited_pack->selectable = true;
 	edited_pack->select = SELECT_ALL;
 	edited_pack->name = name->GetValue();
-	FOR_EACH(pick,pickers) {
+	for(auto& pick :pickers) {
 		int copies = pick.value->GetValue();
 		if (copies > 0) {
 			edited_pack->items.push_back(intrusive(new PackItem(pick.pack->name, copies)));
@@ -443,16 +443,16 @@ void RandomPackPanel::onChangeSet() {
 	totals   ->setGame(set->game);
 	
 	// remove old pack controls
-	FOR_EACH(pick, pickers) pick.destroy(packsSizer);
+	for(auto& pick : pickers) pick.destroy(packsSizer);
 	pickers.clear();
 	
 	// add pack controls
-	FOR_EACH(pack, set->game->pack_types) {
+	for(auto& pack : set->game->pack_types) {
 		if (pack->selectable) {
 			pickers.push_back(PackAmountPicker(this,packsSizer,pack,false));
 		}
 	}
-	FOR_EACH(pack, set->pack_types) {
+	for(auto& pack : set->pack_types) {
 		if (pack->selectable) {
 			pickers.push_back(PackAmountPicker(this,packsSizer,pack,true));
 		}
@@ -467,7 +467,7 @@ void RandomPackPanel::onChangeSet() {
 	seed->Enable(!gs.pack_seed_random);
 	setSeed(gs.pack_seed);
 	generator.set = SetP(); // prevent spurious events
-	FOR_EACH(pick, pickers) {
+	for(auto& pick : pickers) {
 		pick.value->SetValue(gs.pack_amounts[pick.pack->name]);
 	}
 	
@@ -487,7 +487,7 @@ void RandomPackPanel::storeSettings() {
 	if (!isInitialized()) return;
 	GameSettings& gs = settings.gameSettingsFor(*set->game);
 	gs.pack_seed_random = seed_random->GetValue();
-	FOR_EACH(pick, pickers) {
+	for(auto& pick : pickers) {
 		gs.pack_amounts[pick.pack->name] = pick.value->GetValue();
 	}
 }
@@ -535,7 +535,7 @@ void RandomPackPanel::onCommand(int id) {
 	}
 }
 void RandomPackPanel::onPackTypeClick(wxCommandEvent& ev) {
-	FOR_EACH(pick, pickers) {
+	for(auto& pick : pickers) {
 		if (pick.label == ev.GetEventObject()) {
 			// edit this pack type
 			CustomPackDialog dlg(this, set, pick.pack, true);
@@ -563,7 +563,7 @@ void RandomPackPanel::updateTotals() {
 	if (!generator.set) return; // not initialized
 	generator.reset(last_seed);
 	int total_packs = 0;
-	FOR_EACH(pick,pickers) {
+	for(auto& pick :pickers) {
 		int copies = pick.value->GetValue();
 		total_packs += copies;
 		generator.get(pick.pack).request_copy(copies);
@@ -603,7 +603,7 @@ void RandomPackPanel::generate() {
 	generator.reset(set,last_seed=getSeed());
 	// add packs to card list
 	card_list->reset();
-	FOR_EACH(pick,pickers) {
+	for(auto& pick :pickers) {
 		int copies = pick.value->GetValue();
 		for (int i = 0 ; i < copies ; ++i) {
 			generator.get(pick.pack).request_copy();

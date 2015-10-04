@@ -25,7 +25,7 @@ AddKeywordAction::AddKeywordAction(Set& set)
 {
 	Keyword& keyword = *action.steps.front().item;
 	// find default mode
-	FOR_EACH(mode, set.game->keyword_modes) {
+	for(auto& mode : set.game->keyword_modes) {
 		if (mode->is_default) {
 			keyword.mode = mode->name;
 			break;

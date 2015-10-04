@@ -41,7 +41,7 @@ Variable string_to_variable(const String& s) {
 /** Warning: this function is slow, it should only be used for error messages and such.
  */
 String variable_to_string(Variable v) {
-	FOR_EACH(vi, variables) {
+	for(auto& vi : variables) {
 		if (vi.second == v) return replace_all(vi.first, _(" "), _("_"));
 	}
 	throw InternalError(String(_("Variable not found: ")) << v);

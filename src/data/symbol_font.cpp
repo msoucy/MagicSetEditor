@@ -507,7 +507,7 @@ wxMenuItem* InsertSymbolMenu::makeMenuItem(wxMenu* parent, int first_id, SymbolF
 		if (type == ITEM_CUSTOM) {
 			symbol = font.defaultSymbol();
 		} else {
-			FOR_EACH(sym, font.symbols) {
+			for(auto& sym : font.symbols) {
 				if (!sym->code.empty() && sym->enabled && name == sym->code) { 
 					symbol = sym.get();
 					break;

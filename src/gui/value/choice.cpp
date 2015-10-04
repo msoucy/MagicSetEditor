@@ -106,7 +106,7 @@ DropDownChoiceListBase::DropDownChoiceListBase
 void DropDownChoiceListBase::onShow() {
 	// update 'enabled'
 	Context& ctx = cve.viewer.getContext();
-	FOR_EACH(c, group->choices) {
+	for(auto& c : group->choices) {
 		c->enabled.update(ctx);
 	}
 }
@@ -261,7 +261,7 @@ size_t DropDownChoiceList::selection() const {
 	}
 	// item corresponding to id
 	size_t i = hasDefault();
-	FOR_EACH(c, group->choices) {
+	for(auto& c : group->choices) {
 		if (id >= c->first_id && id < c->lastId()) {
 			return i;
 		}
