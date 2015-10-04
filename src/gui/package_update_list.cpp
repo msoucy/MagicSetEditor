@@ -42,18 +42,17 @@ void PackageUpdateList::TreeItem::add(const InstallablePackageP& package, const 
 	String name = path.substr(0,pos);
 	String rest = pos == String::npos ? _("") : path.substr(pos+1);
 	// find/add child
-	for(auto ti_IT = children.begin(); ti_IT != children.end(); ++ti_IT) {
-		auto& ti = *ti_IT;
-		if (ti->label == name) {
+	for(auto ti = children.begin(); ti != children.end(); ++ti) {
+		if ((*ti)->label == name) {
 			// already have this child
-			if (pos == String::npos && ti->package) {
+			if (pos == String::npos && (*ti)->package) {
 				// two packages with the same path
 				TreeItemP ti2(new TreeItem);
 				ti2->label = name;
-				children.insert(ti_IT, ti2);
+				children.insert(ti, ti2);
 				ti2->add(package, rest, level + 1);
 			} else {
-				ti->add(package, rest, level + 1);
+				(*ti)->add(package, rest, level + 1);
 			}
 			return;
 		}
