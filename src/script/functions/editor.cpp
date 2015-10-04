@@ -18,6 +18,7 @@
 #include <data/field/choice.hpp>
 #include <data/field/multiple_choice.hpp>
 #include <data/action/value.hpp>
+#include <boost/range/adaptor/reversed.hpp>
 
 DECLARE_TYPEOF_COLLECTION(FieldP);
 DECLARE_TYPEOF_COLLECTION(TextValue*);
@@ -29,7 +30,7 @@ DECLARE_TYPEOF_COLLECTION(ChoiceField::ChoiceP);
 
 // Combining multiple (text) values into a single one
 // The combined value is  value1 <sep>something</sep> value2 <sep>something</sep> value3
-// 
+//
 
 SCRIPT_FUNCTION_WITH_DEP(combined_editor) {
 	// read 'field#' arguments
@@ -38,7 +39,7 @@ SCRIPT_FUNCTION_WITH_DEP(combined_editor) {
 		String name = _("field"); if (i > 0) name = name << i;
 		SCRIPT_OPTIONAL_PARAM_N(ValueP, name, value) {
 			TextValue* text_value = dynamic_cast<TextValue*>(value.get());
-			if (!text_value) throw ScriptError(_("Argument '")+name+_("' should be a text field")); 
+			if (!text_value) throw ScriptError(_("Argument '")+name+_("' should be a text field"));
 			values.push_back(text_value);
 		} else if (i > 0) break;
 	}
@@ -201,17 +202,17 @@ SCRIPT_FUNCTION(primary_choice) {
 	SCRIPT_PARAM_C(ValueP,input);
 	ChoiceValueP value = dynamic_pointer_cast<ChoiceValue>(input);
 	if (!value) {
-		throw ScriptError(_("Argument to 'primary_choice' should be a choice value")); 
+		throw ScriptError(_("Argument to 'primary_choice' should be a choice value"));
 	}
 	ChoiceFieldP field = dynamic_pointer_cast<ChoiceField>(value->fieldP);
 	if (!field) {
-		throw ScriptError(_("Argument to 'primary_choice' should be a choice value")); 
+		throw ScriptError(_("Argument to 'primary_choice' should be a choice value"));
 	}
 	// determine choice
 	int id = field->choices->choiceId(value->value->toString());
 	// find the last group that still contains id
 	const vector<ChoiceField::ChoiceP>& choices = field->choices->choices;
-	FOR_EACH_CONST_REVERSE(c, choices) {
+	for(auto const& c : boost::adaptors::reverse(choices)) {
 		if (id >= c->first_id) {
 			SCRIPT_RETURN(c->name);
 		}

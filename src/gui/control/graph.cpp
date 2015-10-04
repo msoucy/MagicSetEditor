@@ -12,6 +12,7 @@
 #include <gfx/gfx.hpp>
 #include <wx/dcbuffer.h>
 #include <wx/tooltip.h>
+#include <boost/range/adaptor/reversed.hpp>
 
 DECLARE_TYPEOF_COLLECTION(GraphAxisP);
 DECLARE_TYPEOF_COLLECTION(GraphElementP);
@@ -1010,7 +1011,7 @@ void GraphContainer::draw(RotatedDC& dc, const vector<int>& current, DrawLayer l
 	}
 }
 bool GraphContainer::findItem(const RealPoint& pos, const RealRect& screen_rect, bool tight, vector<int>& out) const {
-	FOR_EACH_CONST_REVERSE(g, items) {
+	for(auto const& g : boost::adaptors::reverse(items)) {
 		if (g->findItem(pos, screen_rect, tight, out)) return true;
 	}
 	return false;

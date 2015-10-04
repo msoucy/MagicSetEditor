@@ -10,6 +10,7 @@
 #include <render/symbol/viewer.hpp>
 #include <util/error.hpp> // clearDC_black
 #include <gui/util.hpp> // clearDC_black
+#include <boost/range/adaptor/reversed.hpp>
 
 DECLARE_TYPEOF_COLLECTION(SymbolPartP);
 
@@ -155,7 +156,7 @@ void SymbolViewer::combineSymbolPart(DC& dc, const SymbolPart& part, bool& paint
 		Matrix2D old_m = multiply;
 		Vector2D old_o = origin;
 		int copies = s->kind == SYMMETRY_REFLECTION ? s->copies / 2 * 2 : s->copies;
-		FOR_EACH_CONST_REVERSE(p, s->parts) {
+		for(auto const& p : boost::adaptors::reverse(s->parts)) {
 			if (copies > 1) ++in_symmetry;
 			for (int i = copies - 1 ; i >= 0 ; --i) {
 				if (i == 0) --in_symmetry;
@@ -205,7 +206,7 @@ void SymbolViewer::combineSymbolPart(DC& dc, const SymbolPart& part, bool& paint
 		}
 	} else if (const SymbolGroup* g = part.isSymbolGroup()) {
 		// Draw all parts, in reverse order (bottom to top)
-		FOR_EACH_CONST_REVERSE(p, g->parts) {
+		for(auto const& p : boost::adaptors::reverse(g->parts)) {
 			combineSymbolPart(dc, *p, paintedSomething, buffersFilled, allow_overlap, borderDC, interiorDC);
 		}
 	}

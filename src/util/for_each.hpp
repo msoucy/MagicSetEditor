@@ -100,28 +100,6 @@
 
 // ----------------------------------------------------------------------------- : Looping macros
 
-/// Iterate over a collection, with an iterator of type TypeIt, and elements of type TypeElem
-/** Usage: FOR_EACH_T(TypeIt,TypeElem,e,collect,begin,end) { body-of-loop }
- *
- *  We need a hack to be able to declare a local variable without needing braces.
- *  To do this we use a nested for loop that is only executed once, and which is optimized away.
- *  To terminate this loop we need an extra bool, which we set to false after the first iteration.
- */
-#define FOR_EACH_T(TypeIt,TypeElem,Elem,Collection, begin, end)             \
-        for(std::pair<TypeIt,bool> Elem##_IT((Collection).begin(), true) ;  \
-            Elem##_IT.second && Elem##_IT.first != (Collection).end() ;     \
-            ++Elem##_IT.first, Elem##_IT.second = !Elem##_IT.second)        \
-            for(TypeElem Elem = *Elem##_IT.first ;                          \
-                Elem##_IT.second ;                                          \
-                Elem##_IT.second = false)
-
-/// Iterate over a collection whos type must be declared with DECLARE_TYPEOF
-/** Iterates using a const_reverse_iterator
- *  Usage: FOR_EACH_CONST_REVERSE(e,collect) { body-of-loop }
- */
-#define FOR_EACH_CONST_REVERSE(Elem,Collection)                         \
-        FOR_EACH_T(TYPEOF_CRIT(Collection), TYPEOF_CREF(Collection), Elem, Collection, rbegin, rend)
-
 /// Iterate over two collection in parallel
 /** Usage: FOR_EACH_2_T(TypeIt1,TypeElem1,e1,collect1,TypeIt2,TypeElem2,e2,collect2) { body-of-loop }
  *
