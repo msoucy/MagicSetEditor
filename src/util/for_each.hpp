@@ -98,26 +98,6 @@
  */
 #define COMMA ,
 
-// ----------------------------------------------------------------------------- : Looping macros with iterators
-
-/// Iterate over a collection, using an iterator it of type Type
-/** Usage: FOR_EACH_IT_T(Type,it,collect) { body-of-loop }
- */
-#define FOR_EACH_IT_T(Type,Iterator,Collection)                         \
-        for(Type Iterator = (Collection).begin() ;                      \
-            Iterator != (Collection).end() ;                            \
-            ++Iterator)
-
-/// Iterate over a collection in whos type must be declared with DECLARE_TYPEOF
-/** Iterates using a reverse_iterator
- *  Usage: FOR_EACH_REVERSE_IT(it,collect) { body-of-loop }
- */
-#define FOR_EACH_REVERSE_IT(Iterator,Collection)                        \
-        for(TYPEOF_RIT(Collection)                                      \
-            Iterator = (Collection).rbegin() ;                          \
-            Iterator != (Collection).rend() ;                           \
-            ++Iterator)
-
 // ----------------------------------------------------------------------------- : Looping macros
 
 /// Iterate over a collection, with an iterator of type TypeIt, and elements of type TypeElem
