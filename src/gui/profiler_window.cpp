@@ -9,6 +9,7 @@
 #include <util/prec.hpp>
 #include <script/profiler.hpp>
 #include <wx/dcbuffer.h>
+#include <boost/range/adaptor/reversed.hpp>
 
 #if USE_SCRIPT_PROFILING
 
@@ -116,7 +117,7 @@ void ProfilerPanel::draw_profiler(wxDC& dc, int x0, int y0) {
 		draw_right(dc,_("max"),    pos[4], y0 + 2);
 		dc.DrawLine(x0, y0 + line_height + 2, x1, y0 + line_height + 2);
 		int i = 0;
-		FOR_EACH_REVERSE(prof, profiles) {
+		for(auto& prof : boost::adaptors::reverse(profiles)) {
 			// recently changed?
 			if (fancy_effects) {
 				PrevProfiles::iterator prev = prev_profiles.find(prof.get());

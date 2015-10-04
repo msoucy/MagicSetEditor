@@ -116,13 +116,6 @@
                 Elem##_IT.second = false)
 
 /// Iterate over a collection whos type must be declared with DECLARE_TYPEOF
-/** Iterates using a reverse_iterator
- *  Usage: FOR_EACH_REVERSE(e,collect) { body-of-loop }
- */
-#define FOR_EACH_REVERSE(Elem,Collection)                               \
-        FOR_EACH_T(TYPEOF_RIT(Collection), TYPEOF_REF(Collection), Elem, Collection, rbegin, rend)
-
-/// Iterate over a collection whos type must be declared with DECLARE_TYPEOF
 /** Iterates using a const_reverse_iterator
  *  Usage: FOR_EACH_CONST_REVERSE(e,collect) { body-of-loop }
  */

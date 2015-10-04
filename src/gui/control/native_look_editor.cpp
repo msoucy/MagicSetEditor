@@ -13,6 +13,7 @@
 #include <data/stylesheet.hpp>
 #include <data/export_template.hpp>
 #include <data/settings.hpp>
+#include <boost/range/adaptor/reversed.hpp>
 
 DECLARE_TYPEOF_COLLECTION(ValueViewerP);
 DECLARE_TYPEOF_NO_REV(IndexMap<FieldP COMMA StyleP>);
@@ -151,12 +152,15 @@ void NativeLookEditor::onScroll(wxScrollWinEvent& ev) {
 }
 void NativeLookEditor::onMouseWheel(wxMouseEvent& ev) {
 	// send scroll event to field under cursor
-	FOR_EACH_EDITOR_REVERSE { // find high z index fields first
-		RealPoint pos = mousePoint(ev, *v);
-		if (v->containsPoint(pos) && v->getField()->editable) {
-			bool scrolled = e->onMouseWheel(pos, ev);
-			if (scrolled) return;
-			break;
+	// find high z index fields first
+	for(auto& v : boost::adaptors::reverse(viewers)) {
+		if(ValueEditor* e = v->getEditor()) {
+			RealPoint pos = mousePoint(ev, *v);
+			if (v->containsPoint(pos) && v->getField()->editable) {
+				bool scrolled = e->onMouseWheel(pos, ev);
+				if (scrolled) return;
+				break;
+			}
 		}
 	}
 	// scroll entire window

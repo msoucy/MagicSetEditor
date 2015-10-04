@@ -8,6 +8,7 @@
 
 #include <util/prec.hpp>
 #include <render/text/viewer.hpp>
+#include <boost/range/adaptor/reversed.hpp>
 #include <algorithm>
 
 DECLARE_TYPEOF_COLLECTION(TextViewer::Line);
@@ -358,7 +359,7 @@ void TextViewer::prepareLines(RotatedDC& dc, const String& text, TextStyle& styl
 		style.content_width = max(style.content_width, l.width());
 	}
 	style.content_height = 0;
-	FOR_EACH_REVERSE(l, lines) {
+	for(auto& l : boost::adaptors::reverse(lines)) {
 		style.content_height = l.top + l.line_height;
 		if (l.line_height) break; // not an empty line
 	}

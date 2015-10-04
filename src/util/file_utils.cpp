@@ -12,6 +12,7 @@
 #include <wx/dir.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <boost/range/adaptor/reversed.hpp>
 
 DECLARE_TYPEOF_COLLECTION(String);
 
@@ -139,7 +140,7 @@ class RecursiveDeleter : public wxDirTraverser {
 	bool ok;
 	
 	void remove() {
-		FOR_EACH_REVERSE(dir, to_delete) {
+		for(auto& dir : boost::adaptors::reverse(to_delete)) {
 			if (!wxRmdir(dir)) {
 				ok = false;
 				handle_error(_("Cannot delete ") + dir + _("\n")

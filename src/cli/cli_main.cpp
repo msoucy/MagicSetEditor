@@ -6,15 +6,16 @@
 
 // ----------------------------------------------------------------------------- : Includes
 
-#include <util/prec.hpp>
-#include <util/error.hpp>
-#include <cli/cli_main.hpp>
-#include <cli/text_io_handler.hpp>
-#include <script/functions/functions.hpp>
-#include <script/profiler.hpp>
-#include <data/format/formats.hpp>
+#include "util/prec.hpp"
+#include "util/error.hpp"
+#include "cli/cli_main.hpp"
+#include "cli/text_io_handler.hpp"
+#include "script/functions/functions.hpp"
+#include "script/profiler.hpp"
+#include "data/format/formats.hpp"
 #include <wx/process.h>
 #include <wx/wfstream.h>
+#include <boost/range/adaptor/reversed.hpp>
 
 String read_utf8_line(wxInputStream& input, bool eat_bom = true, bool until_eof = false);
 
@@ -267,7 +268,7 @@ void CLISetInterface::handleCommand(const String& command) {
 		// show children
 		vector<FunctionProfileP> children;
 		item.get_children(children);
-		FOR_EACH_REVERSE(c, children) {
+		for(auto& c : boost::adaptors::reverse(children)) {
 			showProfilingStats(*c, level + 1);
 		}
 	}

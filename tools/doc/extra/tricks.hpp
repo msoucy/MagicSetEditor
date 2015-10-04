@@ -23,8 +23,7 @@ Implemented in: util/smart_ptr.hpp
 <h2>Iterating</h2>
 
 To iterate over containers the FOR_EACH_* macros are used:
-There are several variations to this macro, for iterating in reverse (FOR_EACH_REVERSE),
-and for iterating over two collections in parallel (FOR_EACH_2).
+There are several variations to this macro, for iterating over two collections in parallel (FOR_EACH_2).
 
 Each of these macros require that the collection type has been declared using:
 @code

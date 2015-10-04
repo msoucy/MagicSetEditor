@@ -1443,7 +1443,8 @@ void TextValueEditor::drawWordListIndicators(RotatedDC& dc, bool redrawing) {
 		}
 	}
 	// Draw drop down arrows
-	FOR_EACH_REVERSE(wl, word_lists) {
+	for(auto wl_it=word_lists.rbegin(); wl_it != word_lists.rend(); ++wl_it) {
+		auto& wl = *wl_it;
 		RealRect& r = wl->rect;
 		// color
 		bool small = false;

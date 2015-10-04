@@ -10,6 +10,7 @@
 #include <data/action/symbol.hpp>
 #include <data/action/symbol_part.hpp>
 #include <util/error.hpp>
+#include <boost/range/adaptor/reversed.hpp>
 
 DECLARE_TYPEOF_COLLECTION(pair<SymbolShapeP COMMA SymbolShapeCombine>);
 DECLARE_TYPEOF_COLLECTION(pair<SymbolPartP  COMMA size_t            >);
@@ -405,7 +406,7 @@ void RemoveSymbolPartsAction::perform(bool to_undo) {
 	} else {
 		// remove the parts
 		// descending order, because earlier removals shift the rest of the vector
-		FOR_EACH_REVERSE(r, removals) {
+		for(auto& r : boost::adaptors::reverse(removals)) {
 			assert(r.pos < r.parent->parts.size());
 			r.parent->parts.erase(r.parent->parts.begin() + r.pos);
 		}
@@ -436,7 +437,7 @@ void DuplicateSymbolPartsAction::perform(bool to_undo) {
 	if (to_undo) {
 		// remove the clones
 		// walk in reverse order, otherwise we will shift the vector
-		FOR_EACH_REVERSE(d, duplications) {
+		for(auto& d : boost::adaptors::reverse(duplications)) {
 			assert(d.second < symbol.parts.size());
 			symbol.parts.erase(symbol.parts.begin() + d.second);
 		}

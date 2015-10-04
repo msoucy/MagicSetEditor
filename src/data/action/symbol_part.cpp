@@ -9,6 +9,7 @@
 #include <util/prec.hpp>
 #include <data/action/symbol_part.hpp>
 #include <gfx/bezier.hpp>
+#include <boost/range/adaptor/reversed.hpp>
 
 DECLARE_TYPEOF_COLLECTION(Vector2D);
 DECLARE_TYPEOF_COLLECTION(ControlPointP);
@@ -410,11 +411,15 @@ String ControlPointRemoveAction::getName(bool to_undo) const {
 
 void ControlPointRemoveAction::perform(bool to_undo) {
 	if (to_undo) {
-		for(auto& r : removals) r->perform(to_undo);
+		for(auto& r : removals) {
+			r->perform(to_undo);
+		}
 	} else {
 		// in reverse order, because positions of later points will
 		// change after removal of earlier points.
-		FOR_EACH_REVERSE(r, removals) r->perform(to_undo);
+		for(auto& r : boost::adaptors::reverse(removals)) {
+			r->perform(to_undo);
+		}
 	}
 }
 
