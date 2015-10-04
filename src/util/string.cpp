@@ -151,7 +151,7 @@ bool is_substr(const String& s, String::const_iterator it, const Char* cmp) {
 String capitalize(const String& s) {
 	String result = s;
 	bool after_space = true;
-	FOR_EACH_IT(it, result) {
+	for(String::iterator it = result.begin(); it != result.end(); ++it) {
 		if (*it == _(' ') || *it == _('/')) {
 			after_space = true;
 		} else if (after_space) {

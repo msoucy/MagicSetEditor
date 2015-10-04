@@ -109,14 +109,8 @@
             ++Iterator)
 
 /// Iterate over a collection whos type must be declared with DECLARE_TYPEOF
-/** Usage: FOR_EACH_IT(it,collect) { body-of-loop }
- */
-#define FOR_EACH_IT(Iterator,Collection)                                \
-        FOR_EACH_IT_T(TYPEOF_IT(Collection), Iterator, Collection)
-
-/// Iterate over a collection whos type must be declared with DECLARE_TYPEOF
 /** Uses a const_iterator
- *  Usage: FOR_EACH_IT(it,collect) { body-of-loop }
+ *  Usage: FOR_EACH_CONST_IT(it,collect) { body-of-loop }
  */
 #define FOR_EACH_CONST_IT(Iterator,Collection)                          \
         FOR_EACH_IT_T(TYPEOF_CIT(Collection), Iterator, Collection)
