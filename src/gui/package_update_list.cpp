@@ -82,7 +82,7 @@ void PackageUpdateList::TreeItem::toItems(vector<TreeList::ItemP>& items) {
 
 bool PackageUpdateList::TreeItem::highlight() const {
 	if (package && package->willBeInstalled()) return true;
-	FOR_EACH_CONST(c,children) if (c->highlight()) return true;
+	for(const auto& c :children) if (c->highlight()) return true;
 	return false;
 }
 
@@ -205,7 +205,7 @@ PackageUpdateList::~PackageUpdateList() {
 void PackageUpdateList::initItems() {
 	// add packages to tree
 	TreeItem root;
-	FOR_EACH_CONST(ip, packages) {
+	for(const auto& ip : packages) {
 		String group = ip->description->installer_group;
 		if (group.empty()) group = _("custom");
 		if (!show_only_installable || ip->installer) {

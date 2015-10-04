@@ -18,7 +18,7 @@ DECLARE_POINTER_TYPE(FontTextElement);
 // ----------------------------------------------------------------------------- : TextElements
 
 void TextElements::draw(RotatedDC& dc, double scale, const RealRect& rect, const double* xs, DrawWhat what, size_t start, size_t end) const {
-	FOR_EACH_CONST(e, elements) {
+	for(const auto& e : elements) {
 		size_t start_ = max(start, e->start);
 		size_t end_   = min(end,   e->end);
 		if (start_ < end_) {
@@ -32,7 +32,7 @@ void TextElements::draw(RotatedDC& dc, double scale, const RealRect& rect, const
 }
 
 void TextElements::getCharInfo(RotatedDC& dc, double scale, size_t start, size_t end, vector<CharInfo>& out) const {
-	FOR_EACH_CONST(e, elements) {
+	for(const auto& e : elements) {
 		// characters before this element, after the previous
 		while (out.size() < e->start) {
 			out.push_back(CharInfo());
@@ -46,14 +46,14 @@ void TextElements::getCharInfo(RotatedDC& dc, double scale, size_t start, size_t
 
 double TextElements::minScale() const {
 	double m = 0.0001;
-	FOR_EACH_CONST(e, elements) {
+	for(const auto& e : elements) {
 		m = max(m, e->minScale());
 	}
 	return m;
 }
 double TextElements::scaleStep() const {
 	double m = 1;
-	FOR_EACH_CONST(e, elements) {
+	for(const auto& e : elements) {
 		m = min(m, e->scaleStep());
 	}
 	return m;

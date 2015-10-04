@@ -259,7 +259,7 @@ Bounds SymbolSymmetry::calculateBounds(const Vector2D& origin, const Matrix2D& m
 	// See SymbolViewer::draw
 	Radians b = 2 * handle.angle();
 	int copies = kind == SYMMETRY_REFLECTION ? this->copies & ~1 : this->copies;
-	FOR_EACH_CONST(p, parts) {
+	for(const auto& p : parts) {
 		for (int i = 0 ; i < copies ; ++i) {
 			double a = i * 2 * M_PI / copies;
 			if (kind == SYMMETRY_ROTATION || i % 2 == 0) {
@@ -310,7 +310,7 @@ SymbolPartP SymbolGroup::clone() const {
 
 bool SymbolGroup::isAncestor(const SymbolPart& that) const {
 	if (this == &that) return true;
-	FOR_EACH_CONST(p, parts) {
+	for(const auto& p : parts) {
 		if (p->isAncestor(that)) return true;
 	}
 	return false;

@@ -177,7 +177,7 @@ bool TextViewer::prepared() const {
 
 const TextViewer::Line& TextViewer::findLine(size_t index) const {
 	assert(!lines.empty());
-	FOR_EACH_CONST(l, lines) {
+	for(const auto& l : lines) {
 		if (l.end() >= index) return l;
 	}
 	return lines.front();
@@ -284,7 +284,7 @@ size_t TextViewer::lineCount() const {
 }
 size_t TextViewer::visibleLineCount(double height) const {
 	size_t count = 0;
-	FOR_EACH_CONST(l, lines) {
+	for(const auto& l : lines) {
 		if (l.top + l.line_height > height) return count;
 		if (l.top >= 0) ++count;
 	}
@@ -292,7 +292,7 @@ size_t TextViewer::visibleLineCount(double height) const {
 }
 size_t TextViewer::firstVisibleLine() const {
 	size_t i = 0;
-	FOR_EACH_CONST(l, lines) {
+	for(const auto& l : lines) {
 		if (l.top >= 0) return i;
 		i++;
 	}

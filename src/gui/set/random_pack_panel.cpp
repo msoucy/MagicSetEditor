@@ -61,7 +61,7 @@ void RandomCardList::onChangeSet() {
 
 void RandomCardList::getItems(vector<VoidP>& out) const {
 	out.reserve(cards.size());
-	FOR_EACH_CONST(c, cards) {
+	for(const auto& c : cards) {
 		out.push_back(c);
 	}
 }
@@ -339,10 +339,10 @@ void CustomPackDialog::storePack() {
 }
 
 bool CustomPackDialog::isDuplicateName(const String& name) {
-	FOR_EACH_CONST(pack, set->game->pack_types) {
+	for(const auto& pack : set->game->pack_types) {
 		if (pack->name == name) return true;
 	}
-	FOR_EACH_CONST(pack, set->pack_types) {
+	for(const auto& pack : set->pack_types) {
 		if (pack->name == name) return true;
 	}
 	return false;
@@ -584,7 +584,7 @@ int RandomPackPanel::getSeed() {
 	} else {
 		// convert *any* string to a number
 		String s = this->seed->GetValue();
-		FOR_EACH_CONST(c,s) {
+		for(const auto& c :s) {
 			seed *= 10;
 			seed += abs(c - '0') + 123456789*(abs(c - '0')/10);
 		}

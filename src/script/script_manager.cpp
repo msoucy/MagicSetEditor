@@ -182,7 +182,7 @@ void SetScriptManager::onAction(const Action& action, bool undone) {
 	TYPE_CASE(action, AddCardAction) {
 		if (action.action.adding != undone) {
 			// update the added cards specificly
-			FOR_EACH_CONST(step, action.action.steps) {
+			for(const auto& step : action.action.steps) {
 				const CardP& card = step.item;
 				Context& ctx = getContext(card);
 				for(auto& v : card->data) {
@@ -238,7 +238,7 @@ void SetScriptManager::updateStyles(const CardP& card, bool only_content_depende
 	updateStyles(ctx, stylesheet.extra_card_style, only_content_dependent);
 }
 void SetScriptManager::updateStyles(Context& ctx, const IndexMap<FieldP,StyleP>& styles, bool only_content_dependent) {
-	FOR_EACH_CONST(s, styles) {
+	for(const auto& s : styles) {
 		if (only_content_dependent && !s->content_dependent) continue;
 		try {
 			if (int change = s->update(ctx)) {
@@ -357,7 +357,7 @@ void SetScriptManager::updateToUpdate(const ToUpdate& u, deque<ToUpdate>& to_upd
 }
 
 void SetScriptManager::alsoUpdate(deque<ToUpdate>& to_update, const vector<Dependency>& deps, const CardP& card) {
-	FOR_EACH_CONST(d, deps) {
+	for(const auto& d : deps) {
 		switch (d.type) {
 			case DEP_SET_FIELD: {
 				ValueP value = set.data.at(d.index);

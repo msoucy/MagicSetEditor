@@ -47,7 +47,7 @@ StatsDimension::StatsDimension(const Field& field)
 			groups.push_back(choice_field->choices->choiceName(i));
 		}*/
 		// only top level choices
-		FOR_EACH_CONST(g, choice_field->choices->choices) {
+		for(const auto& g : choice_field->choices->choices) {
 			groups.push_back(g->name);
 		}
 		// initialize script: primary_choice(card.{field_name})
@@ -112,9 +112,9 @@ IMPLEMENT_REFLECTION_NO_GET_MEMBER(StatsCategory) {
 
 void StatsCategory::find_dimensions(const vector<StatsDimensionP>& available) {
 	if (!dimensions.empty()) return;
-	FOR_EACH_CONST(n, dimension_names) {
+	for(const auto& n : dimension_names) {
 		StatsDimensionP dim;
-		FOR_EACH_CONST(d, available) {
+		for(const auto& d : available) {
 			if (d->name == n) {
 				dim = d;
 				break;

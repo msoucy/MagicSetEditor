@@ -118,7 +118,7 @@ void cycle_sort(const String& spec, String& input, String& ret) {
 	size_t size = spec.size();
 	vector<UInt> counts;
 	// count occurences of each char in spec
-	FOR_EACH_CONST(s, spec) {
+	for(const auto& s : spec) {
 		UInt c = 0;
 		for(auto& i : input) {
 			if (s == i) {

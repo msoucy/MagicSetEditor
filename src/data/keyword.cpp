@@ -170,13 +170,13 @@ void KeywordParam::eat_separator_after(const String& text, size_t& i) {
 size_t Keyword::findMode(const vector<KeywordModeP>& modes) const {
 	// find
 	size_t id = 0;
-	FOR_EACH_CONST(m, modes) {
+	for(const auto& m : modes) {
 		if (mode == m->name) return id;
 		++id;
 	}
 	// default
 	id = 0;
-	FOR_EACH_CONST(m, modes) {
+	for(const auto& m : modes) {
 		if (m->is_default) return id;
 		++id;
 	}
@@ -205,7 +205,7 @@ void Keyword::prepare(const vector<KeywordParamP>& param_types, bool force) {
 			String type = match.substr(start, end-start);
 			// find parameter type 'type'
 			KeywordParamP param;
-			FOR_EACH_CONST(pt, param_types) {
+			for(const auto& pt : param_types) {
 				if (pt->name == type) {
 					param = pt;
 					break;
@@ -295,7 +295,7 @@ KeywordTrie* KeywordTrie::insert(Char c) {
 }
 KeywordTrie* KeywordTrie::insert(const String& match) {
 	KeywordTrie* cur = this;
-	FOR_EACH_CONST(c, match) {
+	for(const auto& c : match) {
 		cur = cur->insert(static_cast<Char>(c));
 	}
 	return cur;
@@ -326,7 +326,7 @@ void KeywordDatabase::clear() {
 }
 
 void KeywordDatabase::add(const vector<KeywordP>& kws) {
-	FOR_EACH_CONST(kw, kws) {
+	for(const auto& kw : kws) {
 		add(*kw);
 	}
 }
@@ -377,7 +377,7 @@ void KeywordDatabase::add(const Keyword& kw) {
 }
 
 void KeywordDatabase::prepare_parameters(const vector<KeywordParamP>& ps, const vector<KeywordP>& kws) {
-	FOR_EACH_CONST(kw, kws) {
+	for(const auto& kw : kws) {
 		kw->prepare(ps);
 	}
 }

@@ -27,7 +27,7 @@ void ColorValueViewer::draw(RotatedDC& dc) {
 		if (field().default_script && is_default(value().value)) {
 			color_name = field().default_name;
 		} else {
-			FOR_EACH_CONST(c, field().choices) {
+			for(const auto& c : field().choices) {
 				if (value().value->toColor() == c->color) {
 					color_name = capitalize(c->name);
 					break;

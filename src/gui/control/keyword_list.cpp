@@ -92,7 +92,7 @@ void KeywordList::onAction(const Action& action, bool undone) {
 
 void KeywordList::updateUsageStatistics() {
 	usage_statistics.clear();
-	FOR_EACH_CONST(card, set->cards) {
+	for(const auto& card : set->cards) {
 		for (KeywordUsageStatistics::const_iterator it = card->keyword_usage.begin() ; it != card->keyword_usage.end() ; ++it) {
 			usage_statistics[it->second]++;
 		}

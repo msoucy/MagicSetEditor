@@ -335,7 +335,7 @@ void SymbolViewer::highlightPart(DC& dc, const SymbolShape& shape, HighlightStyl
 
 void SymbolViewer::highlightPart(DC& dc, const SymbolSymmetry& sym, HighlightStyle style) {
 	// highlight parts?
-	FOR_EACH_CONST(part, sym.parts) {
+	for(const auto& part : sym.parts) {
 		highlightPart(dc, *part, (HighlightStyle)(style | HIGHLIGHT_LESS));
 	}
 	// Color?
@@ -366,7 +366,7 @@ void SymbolViewer::highlightPart(DC& dc, const SymbolGroup& group, HighlightStyl
 		dc.SetPen  (wxPen(Color(255,0,0), 2));
 		dc.DrawRectangle(rotation.trRectToBB(RealRect(group.bounds)));
 	}
-	FOR_EACH_CONST(part, group.parts) {
+	for(const auto& part : group.parts) {
 		highlightPart(dc, *part, (HighlightStyle)(style | HIGHLIGHT_LESS));
 	}
 }

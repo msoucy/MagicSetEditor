@@ -27,7 +27,7 @@ String image_cache_dir() {
 /// A name that is safe to use as a filename, for the cache
 String safe_filename(const String& str) {
 	String ret; ret.reserve(str.size());
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		if (isAlnum(c)) {
 			ret += c;
 		} else if (c==_(' ') || c==_('-')) {

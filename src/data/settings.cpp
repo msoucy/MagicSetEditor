@@ -88,7 +88,7 @@ void GameSettings::initDefaults(const Game& game) {
 	if (initialized || !game.isFullyLoaded()) return;
 	initialized = true;
 	// init auto_replaces, copy from game file
-	FOR_EACH_CONST(ar, game.auto_replaces) {
+	for(const auto& ar : game.auto_replaces) {
 		// do we have this one?
 		bool already_have = false;
 		for(auto& ar2 : auto_replaces) {

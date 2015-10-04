@@ -99,7 +99,7 @@ GraphData::GraphData(const GraphDataPre& d)
 	size_t i = 0;
 	for(auto& a : axes) {
 		map<String,UInt,SmartLess> counts; // note: default constructor for UInt() does initialize to 0
-		FOR_EACH_CONST(e, d.elements) {
+		for(const auto& e : d.elements) {
 			counts[e->values[i]] += 1;
 		}
 		if (a->numeric) {
@@ -134,7 +134,7 @@ GraphData::GraphData(const GraphDataPre& d)
 			a->mean_value /= numeric_count;
 		} else if (a->order) {
 			// specific group order
-			FOR_EACH_CONST(gn, *a->order) {
+			for(const auto& gn : *a->order) {
 				a->addGroup(gn, counts[gn]);
 			}
 		} else {
@@ -174,7 +174,7 @@ GraphData::GraphData(const GraphDataPre& d)
 	// count elements in each position
 	values.reserve(d.elements.size());
 	size_t de_size = sizeof(GraphDataElement) + sizeof(int) * (axes.size() - 1);
-	FOR_EACH_CONST(e, d.elements) {
+	for(const auto& e : d.elements) {
 		// make the group_nrs large enough
 		GraphDataElement* de = reinterpret_cast<GraphDataElement*>(new char[de_size]);
 		de->original_index = e->original_index;
@@ -205,7 +205,7 @@ GraphData::GraphData(const GraphDataPre& d)
 }
 
 GraphData::~GraphData() {
-	FOR_EACH_CONST(v,values) delete v;
+	for(const auto& v :values) delete v;
 }
 
 void GraphData::crossAxis(size_t axis1, size_t axis2, vector<UInt>& out) const {
@@ -213,7 +213,7 @@ void GraphData::crossAxis(size_t axis1, size_t axis2, vector<UInt>& out) const {
 	size_t a2_size = axes[axis2]->groups.size();
 	out.clear();
 	out.resize(a1_size * a2_size, 0);
-	FOR_EACH_CONST(v, values) {
+	for(const auto& v : values) {
 		int v1 = v->group_nrs[axis1], v2 = v->group_nrs[axis2];
 		if (v1 >= 0 && v2 >= 0) {
 			out[a2_size * v1 + v2]++;
@@ -227,7 +227,7 @@ void GraphData::crossAxis(size_t axis1, size_t axis2, size_t axis3, vector<UInt>
 	size_t a3_size = axes[axis3]->groups.size();
 	out.clear();
 	out.resize(a1_size * a2_size * a3_size, 0);
-	FOR_EACH_CONST(v, values) {
+	for(const auto& v : values) {
 		int v1 = v->group_nrs[axis1], v2 = v->group_nrs[axis2], v3 = v->group_nrs[axis3];
 		if (v1 >= 0 && v2 >= 0 && v3 >= 0) {
 			out[a3_size * (a2_size * v1 + v2) + v3]++;
@@ -248,7 +248,7 @@ UInt GraphData::count(const vector<int>& match) const {
 	if (match.size() != axes.size()) return 0;
 	UInt count = 0;
 	size_t prev_index = (size_t)-1;
-	FOR_EACH_CONST(v, values) {
+	for(const auto& v : values) {
 		if (matches(v, match) && v->original_index != prev_index) {
 			prev_index = v->original_index; // don't count the same index twice
 			count += matches(v, match);
@@ -260,7 +260,7 @@ UInt GraphData::count(const vector<int>& match) const {
 void GraphData::indices(const vector<int>& match, vector<size_t>& out) const {
 	if (match.size() != axes.size()) return;
 	size_t prev_index = (size_t)-1;
-	FOR_EACH_CONST(v, values) {
+	for(const auto& v : values) {
 		if (matches(v, match) && v->original_index != prev_index) {
 			prev_index = v->original_index; // don't select the same index twice
 			out.push_back(v->original_index);
@@ -359,7 +359,7 @@ void BarGraph::draw(RotatedDC& dc, int current, DrawLayer layer) const {
 		// Draw bars
 		Color fg = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT);
 		int i = 0;
-		FOR_EACH_CONST(g, axis.groups) {
+		for(const auto& g : axis.groups) {
 			// draw bar
 			dc.SetPen(i == current ? fg : lerp(fg,g.color,0.5));
 			dc.SetBrush(g.color);
@@ -398,7 +398,7 @@ void BarGraph2D::draw(RotatedDC& dc, const vector<int>& current, DrawLayer layer
 			// draw selected bar
 			int start = 0;
 			int j = 0;
-			FOR_EACH_CONST(g2, axis2.groups) {
+			for(const auto& g2 : axis2.groups) {
 				int end = start + values[j + axis2.groups.size() * cur1];
 				if (j == cur2 || cur2 < 0) {
 					RealRect bar = bar_graph_bar(screen_rect, cur1, count, start, end, axis1.max);
@@ -423,7 +423,7 @@ void BarGraph2D::draw(RotatedDC& dc, const vector<int>& current, DrawLayer layer
 			int j = 0;
 			Color prevColor  = fg;
 			bool  prevActive = true;
-			FOR_EACH_CONST(g2, axis2.groups) {
+			for(const auto& g2 : axis2.groups) {
 				bool active = !(cur1 == -1 && cur2 == -1) && (i == cur1 || cur1 == -1) && (j == cur2 || cur2 == -1);
 				int end = start + values[j + axis2.groups.size() * i];
 				if (start != end) {
@@ -495,7 +495,7 @@ void PieGraph::draw(RotatedDC& dc, int current, DrawLayer layer) const {
 		// draw pies
 		Radians angle = M_PI/2;
 		int i = 0;
-		FOR_EACH_CONST(g, axis.groups) {
+		for(const auto& g : axis.groups) {
 			// draw pie
 			dc.SetBrush(g.color);
 			if (g.size > 0) {
@@ -511,7 +511,7 @@ void PieGraph::draw(RotatedDC& dc, int current, DrawLayer layer) const {
 		if (axis.groups.size() > 1) {
 			int i = 0;
 			Radians angle = M_PI/2;
-			FOR_EACH_CONST(g, axis.groups) {
+			for(const auto& g : axis.groups) {
 				if (true) {
 					int i2 = (i - 1 + (int)axis.groups.size()) % (int)axis.groups.size();
 					bool active = i == current || i2 == current;
@@ -541,7 +541,7 @@ int PieGraph::findItem(const RealPoint& pos, const RealRect& screen_rect, bool t
 	// find angle
 	Radians angle = 2 * M_PI;
 	int i = 0;
-	FOR_EACH_CONST(g, axis.groups) {
+	for(const auto& g : axis.groups) {
 		angle -= 2 * M_PI * (double)g.size / axis.total;
 		if (angle < pos_angle) return i;
 		++i;
@@ -586,9 +586,9 @@ void ScatterGraph::draw(RotatedDC& dc, const vector<int>& current, DrawLayer lay
 		dc.SetPen(fg);
 		size_t i = 0;
 		int x = 0;
-		FOR_EACH_CONST(g1, axis1.groups) {
+		for(const auto& g1 : axis1.groups) {
 			int y = 0;
-			FOR_EACH_CONST(g2, axis2.groups) {
+			for(const auto& g2 : axis2.groups) {
 				UInt value = values[i++];
 				if (value > 0) {
 					Color color = lerp(fg, lerp(g1.color, g2.color, 0.5 - (axis1.auto_color == AUTO_COLOR_NO ? 0.35 : 0.0) + (axis2.auto_color == AUTO_COLOR_NO ? 0.35 : 0.0)), 0.5 + (axis1.auto_color == AUTO_COLOR_NO || axis2.auto_color == AUTO_COLOR_NO ? 0.5 : 0.0));
@@ -743,7 +743,7 @@ RealSize GraphStats::determineSize(RotatedDC& dc) const {
 	dc.SetFont(*wxNORMAL_FONT);
 	item_size = RealSize(0,0);
 	label_width = 0;
-	FOR_EACH_CONST(v, values) {
+	for(const auto& v : values) {
 		RealSize this_item_size = dc.GetTextExtent(v.first);
 		double this_label_width = this_item_size.width + 3;
 		this_item_size = dc.GetTextExtent(v.second);
@@ -771,7 +771,7 @@ void GraphStats::draw(RotatedDC& dc, int current, DrawLayer layer) const {
 		// draw items
 		dc.SetFont(*wxNORMAL_FONT);
 		double y = pos.y + 1;
-		FOR_EACH_CONST(v, values) {
+		for(const auto& v : values) {
 			dc.DrawText(v.first,  RealPoint(pos.x + 3,               y + 2));
 			dc.DrawText(v.second, RealPoint(pos.x + 3 + label_width, y + 2));
 			y += item_size.height;
@@ -868,7 +868,7 @@ void GraphLabelAxis::draw(RotatedDC& dc, int current, DrawLayer layer) const {
 			double width = screen_rect.width / count; // width of an item
 			// Draw labels
 			double x = screen_rect.x;
-			FOR_EACH_CONST(g, axis.groups) {
+			for(const auto& g : axis.groups) {
 				// draw label, aligned bottom center
 				RealSize text_size = dc.GetTextExtent(g.name);
 				dc.SetClippingRegion(RealRect(x + 2, screen_rect.bottom() + 3, width - 4, text_size.height));
@@ -894,7 +894,7 @@ void GraphLabelAxis::draw(RotatedDC& dc, int current, DrawLayer layer) const {
 			double height = screen_rect.height / count;
 			// Draw labels
 			double y = screen_rect.bottom();
-			FOR_EACH_CONST(g, axis.groups) {
+			for(const auto& g : axis.groups) {
 				// draw label, aligned middle right
 				RealSize text_size = dc.GetTextExtent(g.name);
 				//dc.SetClippingRegion(RealRect(x + 2, screen_rect.bottom() + 3, width - 4, text_size.height));
@@ -1005,7 +1005,7 @@ void GraphWithMargins::setData(const GraphDataP& d) {
 // ----------------------------------------------------------------------------- : Graph Container
 
 void GraphContainer::draw(RotatedDC& dc, const vector<int>& current, DrawLayer layer) const {
-	FOR_EACH_CONST(g, items) {
+	for(const auto& g : items) {
 		g->draw(dc, current, layer);
 	}
 }

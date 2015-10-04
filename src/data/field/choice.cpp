@@ -85,13 +85,13 @@ int ChoiceField::Choice::choiceId(const String& search_name) const {
 	if (hasDefault() && search_name == name) {
 		return first_id;
 	} else if (name.empty()) { // no name for this group, forward to all children
-		FOR_EACH_CONST(c, choices) {
+		for(const auto& c : choices) {
 			int sub_id = c->choiceId(search_name);
 			if (sub_id != -1) return sub_id;
 		}
 	} else if (isGroup() && starts_with(search_name, name + _(" "))) {
 		String sub_name = search_name.substr(name.size() + 1);
-		FOR_EACH_CONST(c, choices) {
+		for(const auto& c : choices) {
 			int sub_id = c->choiceId(sub_name);
 			if (sub_id != -1) return sub_id;
 		}
@@ -217,14 +217,14 @@ int ChoiceStyle::update(Context& ctx) {
 }
 void ChoiceStyle::initDependencies(Context& ctx, const Dependency& dep) const {
 	Style::initDependencies(ctx, dep);
-	FOR_EACH_CONST(ci, choice_images) {
+	for(const auto& ci : choice_images) {
 		ci.second.initDependencies(ctx, dep);
 	}
 }
 void ChoiceStyle::checkContentDependencies(Context& ctx, const Dependency& dep) const {
 	Style::checkContentDependencies(ctx, dep);
 	image.initDependencies(ctx, dep);
-	FOR_EACH_CONST(ci, choice_images) {
+	for(const auto& ci : choice_images) {
 		ci.second.initDependencies(ctx, dep);
 	}
 }

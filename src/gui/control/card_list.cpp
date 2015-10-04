@@ -84,7 +84,7 @@ void CardListBase::onAction(const Action& action, bool undone) {
 			focusNone();
 			selectItem(action.action.steps.front().item, false, true);
 			refreshList();
-			FOR_EACH_CONST(s, action.action.steps) focusItem(s.item); // focus all the new cards
+			for(const auto& s : action.action.steps) focusItem(s.item); // focus all the new cards
 		} else {
 			long pos = selected_item_pos;
 			// adjust focus for all the removed cards

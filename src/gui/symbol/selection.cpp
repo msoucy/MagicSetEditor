@@ -118,7 +118,7 @@ bool SymbolPartsSelection::selectRect(const SymbolGroup& parent, const Vector2D&
 	bool changes = false;
 	Bounds ab(a); ab.update(b);
 	Bounds bc(b); bc.update(c);
-	FOR_EACH_CONST(p, parent.parts) {
+	for(const auto& p : parent.parts) {
 		bool in_ab = ab.contains(p->bounds);
 		bool in_bc = bc.contains(p->bounds);
 		if (in_ab != in_bc) {

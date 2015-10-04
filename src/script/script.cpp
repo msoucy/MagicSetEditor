@@ -155,7 +155,7 @@ DECLARE_TYPEOF_COLLECTION(Instruction);
 String Script::dumpScript() const {
 	String ret;
 	int pos = 0;
-	FOR_EACH_CONST(i, instructions) {
+	for(const auto& i : instructions) {
 		wxLogDebug(dumpInstr(pos, i));
 		ret += dumpInstr(pos++, i) + _("\n");
 	}

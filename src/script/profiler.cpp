@@ -47,7 +47,7 @@ inline bool compare_time(const FunctionProfileP& a, const FunctionProfileP& b) {
 	return a->time_ticks < b->time_ticks;
 }
 void FunctionProfile::get_children(vector<FunctionProfileP>& out) const {
-	FOR_EACH_CONST(c,children) {
+	for(const auto& c :children) {
 		out.push_back(c.second);
 	}
 	sort(out.begin(), out.end(), compare_time);
@@ -74,7 +74,7 @@ void profile_aggregate(FunctionProfile& parent, int level, int max_level, size_t
 	}
 }
 void profile_aggregate(FunctionProfile& parent, int level, int max_level, const FunctionProfile& p) {
-	FOR_EACH_CONST(c, p.children) {
+	for(const auto& c : p.children) {
 		profile_aggregate(parent, level, max_level, c.first, *c.second);
 	}
 }

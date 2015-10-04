@@ -42,7 +42,7 @@ Card::Card(const Game& game)
 
 String Card::identification() const {
 	// an identifying field
-	FOR_EACH_CONST(v, data) {
+	for(const auto& v : data) {
 		if (v->fieldP->identifying) {
 			return v->toFriendlyString();
 		}
@@ -56,7 +56,7 @@ String Card::identification() const {
 }
 
 bool Card::contains(String const& query) const {
-	FOR_EACH_CONST(v, data) {
+	for(const auto& v : data) {
 		if (find_i(v->toFriendlyString(),query) != String::npos) return true;
 	}
 	if (find_i(notes,query) != String::npos) return true;

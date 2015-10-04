@@ -74,7 +74,7 @@ bool match_wildcard(const String& wildcard, const String& name) {
 }
 
 SubLocaleP find_wildcard(map<String,SubLocaleP>& items, const String& name) {
-	FOR_EACH_CONST(i, items) {
+	for(const auto& i : items) {
 		if (i.second && match_wildcard(i.first, name)) return i.second;
 	}
 	return intrusive(new SubLocale()); // so we don't search again
@@ -185,7 +185,7 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(LocaleValidator) {
 int string_format_args(const String& str) {
 	int count = 0;
 	bool in_percent = false;
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		if (in_percent) {
 			if (c == _('s')) {
 				count++;
@@ -269,7 +269,7 @@ String SubLocale::validate(const String& name, const SubLocaleValidatorP& v) con
 	}
 	String errors;
 	// 1. keys in v but not in this, check arg count
-	FOR_EACH_CONST(kc, v->keys) {
+	for(const auto& kc : v->keys) {
 		map<String,String>::const_iterator it = translations.find(kc.first);
 		if (it == translations.end()) {
 			if (!kc.second.optional) {
@@ -281,7 +281,7 @@ String SubLocale::validate(const String& name, const SubLocaleValidatorP& v) con
 		}
 	}
 	// 2. keys in this but not in v
-	FOR_EACH_CONST(kv, translations) {
+	for(const auto& kv : translations) {
 		map<String,KeyValidator>::const_iterator it = v->keys.find(kv.first);
 		if (it == v->keys.end() && !kv.second.empty()) {
 			// allow extra keys with empty values as a kind of documentation

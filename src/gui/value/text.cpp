@@ -744,7 +744,7 @@ bool TextValueEditor::containsPoint(const RealPoint& pos) const {
 RealRect TextValueEditor::boundingBox() const {
 	if (word_lists.empty()) return ValueViewer::boundingBox();
 	RealRect r = style().getInternalRect().grow(1);
-	FOR_EACH_CONST(wl, word_lists) {
+	for(const auto& wl : word_lists) {
 		r.width = max(r.width, wl->rect.right() + 9);
 	}
 	return r;
@@ -1482,7 +1482,7 @@ void TextValueEditor::drawWordListIndicators(RotatedDC& dc, bool redrawing) {
 }
 
 WordListPosP TextValueEditor::findWordList(const RealPoint& pos) const {
-	FOR_EACH_CONST(wl, word_lists) {
+	for(const auto& wl : word_lists) {
 		const RealRect& r = wl->rect;
 		if (pos.x >= r.right() - 0.5 && pos.x < r.right() + 9 &&
 		    pos.y >= r.top()         && pos.y < r.bottom()) {
@@ -1492,7 +1492,7 @@ WordListPosP TextValueEditor::findWordList(const RealPoint& pos) const {
 	return WordListPosP();
 }
 WordListPosP TextValueEditor::findWordListBody(const RealPoint& pos) const {
-	FOR_EACH_CONST(wl, word_lists) {
+	for(const auto& wl : word_lists) {
 		const RealRect& r = wl->rect;
 		if (pos.x >= r.left() && pos.x < r.right() &&
 		    pos.y >= r.top()  && pos.y < r.bottom()) {
@@ -1503,7 +1503,7 @@ WordListPosP TextValueEditor::findWordListBody(const RealPoint& pos) const {
 }
 
 WordListPosP TextValueEditor::findWordList(size_t index) const {
-	FOR_EACH_CONST(wl, word_lists) {
+	for(const auto& wl : word_lists) {
 		if (index >= wl->start && index <= wl->end) {
 			return wl;
 		}

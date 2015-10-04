@@ -232,7 +232,7 @@ String MtgEditorFileFormat::filter1(const String& str) {
 
 String MtgEditorFileFormat::filter2(const String& str) {
 	String ret;
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		if (isAlnum(c))                  ret += c;
 		else if (c==_(' ') || c==_('-')) ret += _('_');
 	}

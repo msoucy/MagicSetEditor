@@ -69,7 +69,7 @@ void MultipleChoiceValue::get(vector<String>& out) const {
 	out.clear();
 	bool is_new = true;
 	String val = value->toString();
-	FOR_EACH_CONST(c, val) {
+	for(const auto& c : val) {
 		if (c == _(',')) {
 			is_new = true;
 		} else if (is_new) {

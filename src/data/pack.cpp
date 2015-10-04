@@ -128,7 +128,7 @@ PackInstance::PackInstance(const PackType& pack_type, PackGenerator& parent)
 	} else {
 		total_weight = cards.size();
 	}
-	FOR_EACH_CONST(item, pack_type.items) {
+	for(const auto& item : pack_type.items) {
 		if (pack_type.select == SELECT_PROPORTIONAL || pack_type.select == SELECT_EQUAL_PROPORTIONAL) {
 			total_weight += item->weight * parent.get(item->name).total_weight;
 		} else if (pack_type.select == SELECT_NONEMPTY || pack_type.select == SELECT_EQUAL_NONEMPTY) {
@@ -146,7 +146,7 @@ PackInstance::PackInstance(const PackType& pack_type, PackGenerator& parent)
 	}
 	// Depth
 	depth = 0;
-	FOR_EACH_CONST(item, pack_type.items) {
+	for(const auto& item : pack_type.items) {
 		depth = max(depth, 1 + parent.get(item->name).depth);
 	}
 }
@@ -154,7 +154,7 @@ PackInstance::PackInstance(const PackType& pack_type, PackGenerator& parent)
 void PackInstance::expect_copy(double copies) {
 	this->expected_copies += copies;
 	// propagate
-	FOR_EACH_CONST(item, pack_type.items) {
+	for(const auto& item : pack_type.items) {
 		PackInstance& i = parent.get(item->name);
 		if (pack_type.select == SELECT_ALL) {
 			i.expect_copy(copies * item->amount);
@@ -269,7 +269,7 @@ void PackInstance::generate(vector<CardP>* out) {
 		} else {
 			// 1. the weights of each item, and of the cards
 			vector<WeightedItem> weighted_items;
-			FOR_EACH_CONST(item, pack_type.items) {
+			for(const auto& item : pack_type.items) {
 				WeightedItem wi = {0,0,parent.gen()};
 				if (pack_type.select == SELECT_EQUAL_PROPORTIONAL) {
 					wi.weight = item->weight * parent.get(item->name).total_weight;
@@ -315,7 +315,7 @@ void PackInstance::generate(vector<CardP>* out) {
 			if (out) out->insert(out->end(), requested_copies, cards.front());
 		} else {
 			// pick first nonempty item
-			FOR_EACH_CONST(item, pack_type.items) {
+			for(const auto& item : pack_type.items) {
 				PackInstance& i = parent.get(item->name);
 				if (i.total_weight > 0) {
 					i.request_copy(requested_copies * item->amount);
@@ -335,7 +335,7 @@ void PackInstance::generate_all(vector<CardP>* out, size_t copies) {
 		}
 	}
 	// and all items
-	FOR_EACH_CONST(item, pack_type.items) {
+	for(const auto& item : pack_type.items) {
 		PackInstance& i = parent.get(item->name);
 		i.request_copy(copies * item->amount);
 	}
@@ -353,7 +353,7 @@ void PackInstance::generate_one_random(vector<CardP>* out) {
 	} else {
 		// pick an item
 		r -= cards.size();
-		FOR_EACH_CONST(item, pack_type.items) {
+		for(const auto& item : pack_type.items) {
 			PackInstance& i = parent.get(item->name);
 			if (pack_type.select == SELECT_PROPORTIONAL || pack_type.select == SELECT_EQUAL_PROPORTIONAL) {
 				r -= item->weight * i.total_weight;
@@ -389,14 +389,14 @@ PackInstance& PackGenerator::get(const String& name) {
 	if (instance) {
 		return *instance;
 	} else {
-		FOR_EACH_CONST(type, set->pack_types) {
+		for(const auto& type : set->pack_types) {
 			if (type->name == name) {
 				instance = PackInstanceP(new PackInstance(*type,*this));
 				max_depth = max(max_depth, instance->get_depth());
 				return *instance;
 			}
 		}
-		FOR_EACH_CONST(type, set->game->pack_types) {
+		for(const auto& type : set->game->pack_types) {
 			if (type->name == name) {
 				instance = PackInstanceP(new PackInstance(*type,*this));
 				max_depth = max(max_depth, instance->get_depth());
@@ -417,14 +417,14 @@ void PackGenerator::generate(vector<CardP>& out) {
 	// can change the number of copies of those lower depth instances
 	for (int depth = max_depth ; depth >= 0 ; --depth) {
 		// in game file order
-		FOR_EACH_CONST(type, set->game->pack_types) {
+		for(const auto& type : set->game->pack_types) {
 			PackInstance& i = get(type);
 			if (i.get_depth() == depth) {
 				i.generate(&out);
 			}
 		}
 		// ...and then set file order
-		FOR_EACH_CONST(type, set->pack_types) {
+		for(const auto& type : set->pack_types) {
 			PackInstance& i = get(type);
 			if (i.get_depth() == depth) {
 				i.generate(&out);
@@ -437,7 +437,7 @@ void PackGenerator::update_card_counts() {
 	if (!set) return;
 	// update card_counts by using generate()
 	for (int depth = max_depth ; depth >= 0 ; --depth) {
-		FOR_EACH_CONST(i,instances) {
+		for(const auto& i :instances) {
 			if (i.second->get_depth() == depth) {
 				i.second->generate(nullptr);
 			}

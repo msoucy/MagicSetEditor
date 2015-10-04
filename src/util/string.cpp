@@ -187,7 +187,7 @@ Char canonical_name_form(Char c) {
 String canonical_name_form(const String& str) {
 	String ret;
 	ret.reserve(str.size());
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		ret += canonical_name_form((Char)c);
 	}
 	return ret;
@@ -200,7 +200,7 @@ Char uncanonical_name_form(Char c) {
 String uncanonical_name_form(const String& str) {
 	String ret;
 	ret.reserve(str.size());
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		ret += uncanonical_name_form((Char)c);
 	}
 	return ret;
@@ -210,7 +210,7 @@ String name_to_caption(const String& str) {
 	String ret;
 	ret.reserve(str.size());
 	bool leading = true;
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		if ((c == _('_') || c == _(' '))) {
 			ret += leading ? c : _(' ');
 		} else {
@@ -464,14 +464,14 @@ String regex_escape(Char c) {
 /// Escape a string for use in regular expressions
 String regex_escape(const String& s) {
 	String ret;
-	FOR_EACH_CONST(c,s) ret += regex_escape(static_cast<Char>(c));
+	for(const auto& c :s) ret += regex_escape(static_cast<Char>(c));
 	return ret;
 }
 
 String make_non_capturing(const String& re) {
 	String ret;
 	bool escape = false, bracket = false, capture = false;
-	FOR_EACH_CONST(c, re) {
+	for(const auto& c : re) {
 		if (capture) {
 			if (c != _('?')) {
 				// change this capture into a non-capturing "(" by appending "?:"

@@ -536,7 +536,7 @@ class StatsFilter : public Filter<Card> {
 		data.indices(match, indices);
 	}
 	virtual void getItems(const vector<CardP>& cards, vector<VoidP>& out) const {
-		FOR_EACH_CONST(idx, indices) {
+		for(const auto& idx : indices) {
 			out.push_back(cards.at(idx));
 		}
 	}

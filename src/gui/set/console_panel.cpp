@@ -179,7 +179,7 @@ class MessageCtrl : public wxScrolledWindow {
 	void draw(wxDC& dc) const {
 		clearDC(dc, wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
 		dc.SetFont(*wxNORMAL_FONT);
-		FOR_EACH_CONST(msg, messages) {
+		for(const auto& msg : messages) {
 			draw(dc, *msg);
 		}
 		if (messages.empty()) {
