@@ -21,7 +21,6 @@
 #include <data/action/set.hpp>
 #include <data/action/value.hpp>
 
-DECLARE_TYPEOF_COLLECTION(FieldP);
 
 // ----------------------------------------------------------------------------- : StylePanel : initialization
 

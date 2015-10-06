@@ -15,8 +15,6 @@
 #include <data/settings.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 
-DECLARE_TYPEOF_COLLECTION(ValueViewerP);
-DECLARE_TYPEOF_NO_REV(IndexMap<FieldP COMMA StyleP>);
 
 // ----------------------------------------------------------------------------- : NativeLookEditor
 

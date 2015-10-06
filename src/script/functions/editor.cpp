@@ -21,11 +21,6 @@
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/range/combine.hpp>
 
-DECLARE_TYPEOF_COLLECTION(FieldP);
-DECLARE_TYPEOF_COLLECTION(TextValue*);
-DECLARE_TYPEOF_COLLECTION(String);
-DECLARE_TYPEOF_COLLECTION(pair<String COMMA bool>);
-DECLARE_TYPEOF_COLLECTION(ChoiceField::ChoiceP);
 
 // ----------------------------------------------------------------------------- : Combined editor
 

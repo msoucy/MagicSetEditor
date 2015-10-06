@@ -16,7 +16,6 @@
 
 typedef map<String, Variable> Variables;
 Variables variables;
-DECLARE_TYPEOF(Variables);
 #ifdef _DEBUG
 	vector<String> variable_names;
 #endif
@@ -148,7 +147,6 @@ unsigned int Script::getLabel() const {
 	return (unsigned int)instructions.size();
 }
 
-DECLARE_TYPEOF_COLLECTION(Instruction);
 
 #ifdef _DEBUG // debugging
 

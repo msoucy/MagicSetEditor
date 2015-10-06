@@ -13,7 +13,6 @@
 #include <wx/thread.h>
 
 typedef pair<ThumbnailRequestP,Image> pair_ThumbnailRequestP_Image;
-DECLARE_TYPEOF_COLLECTION(pair_ThumbnailRequestP_Image);
 
 // ----------------------------------------------------------------------------- : Image Cache
 

@@ -12,8 +12,6 @@
 #include <script/to_value.hpp>
 #include <gfx/bezier.hpp>
 
-DECLARE_TYPEOF_COLLECTION(ControlPointP);
-DECLARE_TYPEOF_COLLECTION(SymbolPartP);
 
 // ----------------------------------------------------------------------------- : ControlPoint
 

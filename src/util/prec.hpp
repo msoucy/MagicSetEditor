@@ -89,7 +89,6 @@ typedef unsigned int  UInt;
 // ----------------------------------------------------------------------------- : MSE Headers
 
 // MSE utility headers (ones unlikely to change and used everywhere)
-#include "for_each.hpp"
 #include "string.hpp"
 #include "smart_ptr.hpp"
 #include "index_map.hpp"

@@ -12,7 +12,6 @@
 #include <render/card/viewer.hpp>
 #include <gui/util.hpp>
 
-DECLARE_TYPEOF_COLLECTION(String);
 
 // ----------------------------------------------------------------------------- : MultipleChoiceValueViewer
 

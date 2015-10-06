@@ -13,7 +13,6 @@
 #include <wx/dcbuffer.h>
 #include <boost/range/adaptor/reversed.hpp>
 
-DECLARE_TYPEOF_COLLECTION(TreeList::ItemP);
 
 // ----------------------------------------------------------------------------- : TreeList : item managment
 

@@ -12,7 +12,6 @@
 #include <util/alignment.hpp>
 #include <script/profiler.hpp>
 
-DECLARE_TYPEOF_COLLECTION(PackagedP);
 
 // ----------------------------------------------------------------------------- : PackageList
 

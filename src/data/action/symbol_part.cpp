@@ -12,8 +12,6 @@
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/range/combine.hpp>
 
-DECLARE_TYPEOF_COLLECTION(Vector2D);
-DECLARE_TYPEOF_COLLECTION(ControlPointP);
 
 // ----------------------------------------------------------------------------- : Utility
 
@@ -377,7 +375,6 @@ void SinglePointRemoveAction::perform(bool to_undo) {
 }
 
 DECLARE_POINTER_TYPE(SinglePointRemoveAction);
-DECLARE_TYPEOF_COLLECTION(SinglePointRemoveActionP);
 
 
 // Remove a set of points from a symbol shape.

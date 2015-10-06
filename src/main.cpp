@@ -30,7 +30,6 @@
 
 ScriptValueP export_set(SetP const& set, vector<CardP> const& cards, ExportTemplateP const& exp, String const& outname);
 
-DECLARE_TYPEOF_COLLECTION(String);
 
 // ----------------------------------------------------------------------------- : Main function/class
 

@@ -13,7 +13,6 @@
 #include <data/action/value.hpp>
 #include <wx/colordlg.h>
 
-DECLARE_TYPEOF_COLLECTION(ColorField::ChoiceP);
 
 // ----------------------------------------------------------------------------- : DropDownColorList
 

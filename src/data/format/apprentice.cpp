@@ -21,9 +21,6 @@
 #include <wx/datstrm.h>
 #include <wx/filename.h>
 
-DECLARE_TYPEOF_COLLECTION(String);
-DECLARE_TYPEOF_COLLECTION(CardP);
-DECLARE_TYPEOF(map<String COMMA String>);
 
 String card_rarity_code(const String& rarity);
 
@@ -190,7 +187,6 @@ class ApprFormat {
 	String name, sets;
 };
 
-DECLARE_TYPEOF_COLLECTION(ApprFormat);
 
 /// An Apprentice format database (Format.dat)
 class ApprFormatDatabase : public ApprDatabase {
@@ -276,7 +272,6 @@ class ApprDistro {
 	void writeD(wxTextOutputStream& tout, const String& name, int c, int u, int r);
 };
 
-DECLARE_TYPEOF(map<String COMMA ApprDistro>);
 
 /// An Apprentice distribution database (Distro.dat)
 class ApprDistroDatabase : public ApprDatabase {
@@ -365,7 +360,6 @@ inline String untag_appr(const ScriptValueP& str) {
 }
 
 DECLARE_POINTER_TYPE(ApprCardRecord);
-DECLARE_TYPEOF_COLLECTION(ApprCardRecordP);
 
 /// An Apprentice card database (cardinfo.dat)
 class ApprCardDatabase : public ApprDatabase {

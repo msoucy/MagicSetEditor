@@ -14,7 +14,6 @@
 #include <sys/stat.h>
 #include <boost/range/adaptor/reversed.hpp>
 
-DECLARE_TYPEOF_COLLECTION(String);
 
 // ----------------------------------------------------------------------------- : File names
 

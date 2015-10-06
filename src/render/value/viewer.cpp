@@ -10,7 +10,6 @@
 #include <render/value/viewer.hpp>
 #include <render/card/viewer.hpp>
 
-DECLARE_TYPEOF_COLLECTION(wxPoint);
 
 // ----------------------------------------------------------------------------- : ValueViewer
 

@@ -19,9 +19,6 @@
 #include "data/installer.hpp"
 #include <wx/wfstream.h>
 
-DECLARE_TYPEOF_COLLECTION(InstallablePackageP);
-DECLARE_TYPEOF_COLLECTION(PackageVersionP);
-DECLARE_TYPEOF_COLLECTION(PackageVersion::FileInfo);
 
 // ----------------------------------------------------------------------------- : PackageManager : in memory
 

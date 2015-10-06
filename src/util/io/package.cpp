@@ -17,8 +17,6 @@
 #include <wx/dir.h>
 #include <boost/scoped_ptr.hpp>
 
-DECLARE_TYPEOF(Package::FileInfos);
-DECLARE_TYPEOF_COLLECTION(PackageDependencyP);
 
 // ----------------------------------------------------------------------------- : Package : outside
 

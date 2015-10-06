@@ -12,7 +12,6 @@
 #include <gfx/gfx.hpp>
 #include <wx/dcbuffer.h>
 
-DECLARE_TYPEOF_COLLECTION(GalleryList::SubColumn_for_typeof);
 
 // ----------------------------------------------------------------------------- : Events
 

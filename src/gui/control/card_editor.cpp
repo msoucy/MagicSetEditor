@@ -19,8 +19,6 @@
 #include <boost/iterator/filter_iterator.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 
-DECLARE_TYPEOF_COLLECTION(ValueViewerP);
-DECLARE_TYPEOF_COLLECTION(ValueViewer*);
 
 // ----------------------------------------------------------------------------- : DataEditor
 

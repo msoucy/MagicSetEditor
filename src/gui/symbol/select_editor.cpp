@@ -16,7 +16,6 @@
 #include <util/error.hpp>
 #include <gfx/gfx.hpp>
 
-DECLARE_TYPEOF_COLLECTION(SymbolPartP);
 
 // ----------------------------------------------------------------------------- : SymbolSelectEditor
 

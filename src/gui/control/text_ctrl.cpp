@@ -13,7 +13,6 @@
 #include <data/field/text.hpp>
 #include <data/action/value.hpp>
 
-DECLARE_TYPEOF_COLLECTION(ValueViewerP);
 
 // ----------------------------------------------------------------------------- : TextCtrl
 

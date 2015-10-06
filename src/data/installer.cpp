@@ -20,11 +20,6 @@
 #include <wx/wfstream.h>
 #include <wx/zipstrm.h>
 
-DECLARE_TYPEOF_COLLECTION(String);
-DECLARE_TYPEOF_COLLECTION(PackagedP);
-DECLARE_TYPEOF_COLLECTION(PackageDependencyP);
-DECLARE_TYPEOF_COLLECTION(PackageDescriptionP);
-DECLARE_TYPEOF_COLLECTION(InstallablePackageP);
 DECLARE_POINTER_TYPE(wxFileInputStream);
 DECLARE_POINTER_TYPE(wxZipInputStream);
 

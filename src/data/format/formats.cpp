@@ -11,7 +11,6 @@
 #include <data/set.hpp>
 
 DECLARE_POINTER_TYPE(FileFormat);
-DECLARE_TYPEOF_COLLECTION(FileFormatP);
 
 // ----------------------------------------------------------------------------- : Formats
 

@@ -12,7 +12,6 @@
 #include <gui/util.hpp> // clearDC_black
 #include <boost/range/adaptor/reversed.hpp>
 
-DECLARE_TYPEOF_COLLECTION(SymbolPartP);
 
 // ----------------------------------------------------------------------------- : Simple rendering
 

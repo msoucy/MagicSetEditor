@@ -12,11 +12,6 @@
 #include <util/error.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 
-DECLARE_TYPEOF_COLLECTION(pair<SymbolShapeP COMMA SymbolShapeCombine>);
-DECLARE_TYPEOF_COLLECTION(pair<SymbolPartP  COMMA size_t            >);
-DECLARE_TYPEOF_COLLECTION(RemoveSymbolPartsAction::Removal);
-DECLARE_TYPEOF_COLLECTION(SymbolPartP);
-DECLARE_TYPEOF_COLLECTION(ControlPointP);
 
 // ----------------------------------------------------------------------------- : Utility
 

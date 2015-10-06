@@ -10,8 +10,6 @@
 #include <render/value/package_choice.hpp>
 #include <util/io/package_manager.hpp>
 
-DECLARE_TYPEOF_COLLECTION(PackagedP);
-DECLARE_TYPEOF_COLLECTION(PackageChoiceValueViewer::Item);
 
 // ----------------------------------------------------------------------------- : PackageChoiceValueViewer
 

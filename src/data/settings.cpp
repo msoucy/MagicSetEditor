@@ -23,7 +23,6 @@
 #include <wx/filename.h>
 #include <wx/wfstream.h>
 
-DECLARE_TYPEOF_COLLECTION(AutoReplaceP);
 
 // ----------------------------------------------------------------------------- : Extra types
 

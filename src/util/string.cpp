@@ -8,7 +8,6 @@
 
 #include <util/prec.hpp>
 #include <util/string.hpp>
-#include <util/for_each.hpp>
 #include <wx/txtstrm.h>
 #include <algorithm>
 

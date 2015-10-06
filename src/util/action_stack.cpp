@@ -8,13 +8,10 @@
 
 #include <util/prec.hpp>
 #include <util/action_stack.hpp>
-#include <util/for_each.hpp>
 #include <algorithm>
 
 // ----------------------------------------------------------------------------- : Action stack
 
-DECLARE_TYPEOF_COLLECTION(Action*);
-DECLARE_TYPEOF_COLLECTION(ActionListener*);
 
 ActionStack::ActionStack()
 	: save_point(nullptr)

@@ -11,8 +11,6 @@
 #include <boost/range/adaptor/reversed.hpp>
 #include <algorithm>
 
-DECLARE_TYPEOF_COLLECTION(TextViewer::Line);
-DECLARE_TYPEOF_COLLECTION(double);
 
 // ----------------------------------------------------------------------------- : Line
 

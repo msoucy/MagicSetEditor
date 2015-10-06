@@ -14,9 +14,6 @@
 #include <boost/scoped_ptr.hpp>
 #include <wx/url.h>
 
-DECLARE_TYPEOF_COLLECTION(InstallablePackageP);
-DECLARE_TYPEOF_COLLECTION(PackageUpdateList::TreeItemP);
-DECLARE_TYPEOF_COLLECTION(TreeList::ItemP);
 
 
 // ----------------------------------------------------------------------------- : PackageUpdateList::TreeItem

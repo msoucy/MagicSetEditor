@@ -14,8 +14,6 @@
 #include <wx/imaglist.h>
 #include <boost/range/adaptor/reversed.hpp>
 
-DECLARE_TYPEOF_COLLECTION(ChoiceField::ChoiceP);
-DECLARE_TYPEOF(map<String COMMA ScriptableImage>);
 
 // ----------------------------------------------------------------------------- : ChoiceField
 

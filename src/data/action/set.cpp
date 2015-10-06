@@ -15,10 +15,6 @@
 #include <util/error.hpp>
 #include <boost/range/combine.hpp>
 
-DECLARE_TYPEOF_COLLECTION(IndexMap<FieldP COMMA ValueP>);
-DECLARE_TYPEOF_COLLECTION(CardP);
-DECLARE_TYPEOF_COLLECTION(PackTypeP);
-DECLARE_TYPEOF_COLLECTION(int);
 
 // ----------------------------------------------------------------------------- : Add card
 
