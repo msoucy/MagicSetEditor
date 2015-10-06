@@ -135,11 +135,5 @@ class DataEditor : public CardViewer {
 /// By default a DataEditor edits cards
 typedef DataEditor CardEditor;
 
-// ----------------------------------------------------------------------------- : Utility
-
-#define FOR_EACH_EDITOR							\
-	for(auto& v : viewers)						\
-		if (ValueEditor* e = v->getEditor())
-
 // ----------------------------------------------------------------------------- : EOF
 #endif

@@ -112,8 +112,10 @@ void NativeLookEditor::resizeViewers() {
 void NativeLookEditor::onInit() {
 	DataEditor::onInit();
 	// Give viewers a chance to show/hide controls (scrollbar) when selecting other editors
-	FOR_EACH_EDITOR {
-		e->onShow(true);
+	for(auto& v : viewers) {
+		if (ValueEditor* e = v->getEditor()) {
+			e->onShow(true);
+		}
 	}
 	resizeViewers();
 }
