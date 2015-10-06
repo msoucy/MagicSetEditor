@@ -98,42 +98,5 @@
  */
 #define COMMA ,
 
-// ----------------------------------------------------------------------------- : Looping macros
-
-/// Iterate over two collection in parallel
-/** Usage: FOR_EACH_2_T(TypeIt1,TypeElem1,e1,collect1,TypeIt2,TypeElem2,e2,collect2) { body-of-loop }
- *
- *  Note: This has got to be one of the craziest pieces of code I have ever written :)
- *  It is just an extension of the idea of FOR_EACH_T.
- */
-#define FOR_EACH_2_T(TypeIt1,TypeElem1,Elem1,Coll1,TypeIt2,TypeElem2,Elem2,Coll2)   \
-        for(std::pair<std::pair<TypeIt1,TypeIt2>, bool>                             \
-            Elem1##_IT(make_pair((Coll1).begin(), (Coll2).begin()), true) ;         \
-            Elem1##_IT.first.first  != (Coll1).end() &&                             \
-            Elem1##_IT.first.second != (Coll2).end() ;                              \
-            ++Elem1##_IT.first.first, ++Elem1##_IT.first.second,                    \
-            Elem1##_IT.second = true)                                               \
-            for(TypeElem1 Elem1 = *Elem1##_IT.first.first ;                         \
-                Elem1##_IT.second ;                                                 \
-                Elem1##_IT.second = false)                                          \
-                for(TypeElem2 Elem2 = *Elem1##_IT.first.second ;                    \
-                    Elem1##_IT.second ;                                             \
-                    Elem1##_IT.second = false)
-
-/// Iterate over two collections in parallel, their type must be declared with DECLARE_TYPEOF.
-/** Usage: FOR_EACH_2(e1,collect1, e2,collect2) { body-of-loop }
- */
-#define FOR_EACH_2(Elem1,Collection1, Elem2,Collection2)                                    \
-        FOR_EACH_2_T(TYPEOF_IT(Collection1), TYPEOF_REF(Collection1), Elem1, Collection1,   \
-                     TYPEOF_IT(Collection2), TYPEOF_REF(Collection2), Elem2, Collection2)
-
-/// Iterate over two constants collections in parallel, their type must be declared with DECLARE_TYPEOF.
-/** Usage: FOR_EACH_2_CONST(e1,collect1, e2,collect2) { body-of-loop }
- */
-#define FOR_EACH_2_CONST(Elem1,Collection1, Elem2,Collection2)                              \
-        FOR_EACH_2_T(TYPEOF_CIT(Collection1), TYPEOF_CREF(Collection1), Elem1, Collection1, \
-                     TYPEOF_CIT(Collection2), TYPEOF_CREF(Collection2), Elem2, Collection2)
-
-
 // ----------------------------------------------------------------------------- : EOF
 #endif

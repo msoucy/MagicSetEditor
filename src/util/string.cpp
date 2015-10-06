@@ -10,6 +10,7 @@
 #include <util/string.hpp>
 #include <util/for_each.hpp>
 #include <wx/txtstrm.h>
+#include <algorithm>
 
 // ----------------------------------------------------------------------------- : Unicode
 
@@ -402,11 +403,8 @@ bool smart_equal(const String& sa, const String& sb) {
 }
 
 bool starts_with(const String& str, const String& start) {
-	if (str.size() < start.size()) return false;
-	FOR_EACH_2_CONST(a, str, b, start) {
-		if (a != b) return false;
-	}
-	return true;
+	return (str.size() >= start.size()) &&
+		   std::equal(start.begin(), start.end(), str.begin());
 }
 
 bool is_substr(const String& str, size_t pos, const Char* cmp) {

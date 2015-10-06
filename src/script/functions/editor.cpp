@@ -19,6 +19,7 @@
 #include <data/field/multiple_choice.hpp>
 #include <data/action/value.hpp>
 #include <boost/range/adaptor/reversed.hpp>
+#include <boost/range/combine.hpp>
 
 DECLARE_TYPEOF_COLLECTION(FieldP);
 DECLARE_TYPEOF_COLLECTION(TextValue*);
@@ -82,7 +83,9 @@ SCRIPT_FUNCTION_WITH_DEP(combined_editor) {
 	value_parts.resize(values.size()); // TODO: what if there are more value_parts than values?
 	// update the values if our input value is newer?
 	Age new_value_update = last_update_age();
-	FOR_EACH_2(v, values, nv, value_parts) {
+	for(auto&& vnv : boost::combine(values, value_parts)) {
+		auto& v = get<0>(vnv);
+		auto& nv = get<1>(vnv);
 		if (v->last_modified < new_value_update) {
 			bool changed = v->value->toString() != nv.first;
 			if (changed) v->value = to_script(nv.first);

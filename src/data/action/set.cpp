@@ -13,6 +13,7 @@
 #include <data/pack.hpp>
 #include <data/stylesheet.hpp>
 #include <util/error.hpp>
+#include <boost/range/combine.hpp>
 
 DECLARE_TYPEOF_COLLECTION(IndexMap<FieldP COMMA ValueP>);
 DECLARE_TYPEOF_COLLECTION(CardP);
@@ -114,8 +115,8 @@ void ChangeSetStyleAction::perform(bool to_undo) {
 		card->stylesheet = set.stylesheet;
 		set.stylesheet   = stylesheet;
 		// restore has_styling
-		FOR_EACH_2(card, set.cards, has, has_styling) {
-			card->has_styling = has;
+		for(auto&& ch : boost::combine(set.cards, has_styling)) {
+			get<0>(ch)->has_styling = get<1>(ch);
 		}
 	}
 }

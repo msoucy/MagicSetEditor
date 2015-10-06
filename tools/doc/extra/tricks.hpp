@@ -20,20 +20,6 @@ To create new shared_ptrs the function new_shared# can be used (where # is the n
 Implemented in: util/smart_ptr.hpp
 
 
-<h2>Iterating</h2>
-
-To iterate over containers the FOR_EACH_* macros are used:
-There are several variations to this macro, for iterating over two collections in parallel (FOR_EACH_2).
-
-Each of these macros require that the collection type has been declared using:
-@code
- DECLARE_COLLECTION_TYPE(CardP);
-@endcode
-This allows the calling of TYPEOF(cards) to evaluate to vector<CardP>.
-
-Implemented in: util/for_each.hpp
-
-
 <h2>Reflection</h2>
 
 The io (input/output) system is based on reflection.

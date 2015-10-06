@@ -10,6 +10,7 @@
 #include <data/action/symbol_part.hpp>
 #include <gfx/bezier.hpp>
 #include <boost/range/adaptor/reversed.hpp>
+#include <boost/range/combine.hpp>
 
 DECLARE_TYPEOF_COLLECTION(Vector2D);
 DECLARE_TYPEOF_COLLECTION(ControlPointP);
@@ -105,8 +106,8 @@ String ControlPointMoveAction::getName(bool to_undo) const {
 }
 
 void ControlPointMoveAction::perform(bool to_undo) {
-	FOR_EACH_2(p,points,  op,oldValues) {
-		swap(p->pos, op);
+	for(auto&& pop : boost::combine(points, oldValues)) {
+		swap(get<0>(pop)->pos, get<1>(pop));
 	}
 }
 
