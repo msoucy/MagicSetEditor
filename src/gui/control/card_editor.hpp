@@ -135,14 +135,5 @@ class DataEditor : public CardViewer {
 /// By default a DataEditor edits cards
 typedef DataEditor CardEditor;
 
-// ----------------------------------------------------------------------------- : Utility
-
-#define FOR_EACH_EDITOR							\
-	FOR_EACH(v, viewers)						\
-		if (ValueEditor* e = v->getEditor())
-#define FOR_EACH_EDITOR_REVERSE					\
-	FOR_EACH_REVERSE(v, viewers)				\
-		if (ValueEditor* e = v->getEditor())
-
 // ----------------------------------------------------------------------------- : EOF
 #endif

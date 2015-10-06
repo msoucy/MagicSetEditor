@@ -17,7 +17,6 @@
 #include <util/tagged_string.hpp>
 #include <wx/wfstream.h>
 
-DECLARE_TYPEOF_COLLECTION(CardP);
 
 // ----------------------------------------------------------------------------- : Utilities
 
@@ -82,7 +81,7 @@ void export_mws(Window* parent, const SetP& set) {
 	file.WriteString(_("\n\n"));
 	
 	// Write cards
-	FOR_EACH(card, set->cards) {
+	for(auto& card : set->cards) {
 		file.WriteString(_("Card Name:\t"));
 		file.WriteString(untag_mws(card->value(_("name"))));
 		file.WriteString(_("\nCard Color:\t"));

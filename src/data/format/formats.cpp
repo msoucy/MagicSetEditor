@@ -11,7 +11,6 @@
 #include <data/set.hpp>
 
 DECLARE_POINTER_TYPE(FileFormat);
-DECLARE_TYPEOF_COLLECTION(FileFormatP);
 
 // ----------------------------------------------------------------------------- : Formats
 
@@ -27,7 +26,7 @@ void init_file_formats() {
 String import_formats() {
 	String all_extensions; // type1;type2
 	String type_strings;   // |name1|type1|name2|type2
-	FOR_EACH(f, file_formats) {
+	for(auto& f : file_formats) {
 		if (f->canImport()) {
 			if (!all_extensions.empty()) all_extensions += _(";");
 			all_extensions += f->matches();
@@ -39,7 +38,7 @@ String import_formats() {
 
 String export_formats(const Game& game) {
 	String type_strings; // name1|type1|name2|type2
-	FOR_EACH(f, file_formats) {
+	for(auto& f : file_formats) {
 		if (f->canExport(game)) {
 			if (!type_strings.empty()) type_strings += _("|");
 			type_strings += f->name() + _("|") + f->matches();
@@ -60,7 +59,7 @@ SetP import_set(String name) {
 	size_t pos = name.find_last_of(_('.'));
 	String extension = pos==String::npos ? _("") : name.substr(pos + 1);
 	// determine format
-	FOR_EACH(f, file_formats) {
+	for(auto& f : file_formats) {
 		if (f->extension() == extension) {
 			return f->importSet(name);
 		}

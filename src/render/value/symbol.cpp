@@ -14,7 +14,6 @@
 #include <gui/util.hpp> // draw_checker
 #include <util/error.hpp>
 
-DECLARE_TYPEOF_COLLECTION(SymbolVariationP);
 
 // ----------------------------------------------------------------------------- : SymbolValueViewer
 
@@ -35,7 +34,7 @@ void SymbolValueViewer::draw(RotatedDC& dc) {
 			double ar = symbol->aspectRatio();
 			ar = min(style().max_aspect_ratio, max(style().min_aspect_ratio, ar));
 			// render and filter variations
-			FOR_EACH(variation, style().variations) {
+			for(auto& variation : style().variations) {
 				Image img = render_symbol(symbol, *variation->filter, variation->border_radius, int(200 * ar), 200);
 				Image resampled(int(wh * ar), int(wh), false);
 				resample(img, resampled);

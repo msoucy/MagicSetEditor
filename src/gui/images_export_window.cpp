@@ -17,7 +17,6 @@
 #include <util/tagged_string.hpp>
 #include <wx/filename.h>
 
-DECLARE_TYPEOF_COLLECTION(CardP);
 
 // ----------------------------------------------------------------------------- : ImagesExportWindow
 

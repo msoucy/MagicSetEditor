@@ -17,8 +17,6 @@
 #include <wx/dir.h>
 #include <boost/scoped_ptr.hpp>
 
-DECLARE_TYPEOF(Package::FileInfos);
-DECLARE_TYPEOF_COLLECTION(PackageDependencyP);
 
 // ----------------------------------------------------------------------------- : Package : outside
 
@@ -34,7 +32,7 @@ Package::~Package() {
 	delete zipStream;
 	delete fileStream;
 	// remove any remaining temporary files
-	FOR_EACH(f, files) {
+	for(auto& f : files) {
 		if (f.second.wasWritten()) {
 			wxRemoveFile(f.second.tempName);
 		}
@@ -147,7 +145,7 @@ void Package::removeTempFiles(bool remove_unused) {
 }
 
 void Package::clearKeepFlag() {
-	FOR_EACH(f, files) {
+	for(auto& f : files) {
 		f.second.keep = false;
 	}
 }
@@ -421,7 +419,7 @@ void Package::openZipfile() {
 void Package::saveToDirectory(const String& saveAs, bool remove_unused, bool is_copy) {
 	// write to a directory
 	VCSP vcs = getVCS();
-	FOR_EACH(f, files) {
+	for(auto& f : files) {
 		if (!f.second.keep && remove_unused) {
 			// remove files that are not to be kept
 			// ignore failure (new file that is not kept)
@@ -461,7 +459,7 @@ void Package::saveToZipfile(const String& saveAs, bool remove_unused, bool is_co
 		if (!newZip->IsOk())  throw PackageError(_ERROR_("unable to open output file"));
 		// copy everything to a new zip file, unless it's updated or removed
 		if (zipStream) newZip->CopyArchiveMetaData(*zipStream);
-		FOR_EACH(f, files) {
+		for(auto& f : files) {
 			if (!f.second.keep && remove_unused) {
 				// to remove a file simply don't copy it
 			} else if (!is_copy && f.second.zipEntry && !f.second.wasWritten()) {
@@ -628,7 +626,7 @@ void Packaged::validate(Version) {
 		short_name = name();
 	}
 	// check dependencies
-	FOR_EACH(dep, dependencies) {
+	for(auto& dep : dependencies) {
 		package_manager.checkDependency(*dep, true);
 	}
 }
@@ -636,7 +634,7 @@ void Packaged::validate(Version) {
 void Packaged::requireDependency(Packaged* package) {
 	if (package == this) return; // dependency on self
 	String n = package->relativeFilename();
-	FOR_EACH(dep, dependencies) {
+	for(auto& dep : dependencies) {
 		if (dep->package == n) {
 			if (package->version < dep->version) {
 				queue_message(MESSAGE_WARNING,_ERROR_3_("package out of date", n, package->version.toString(), dep->version.toString()));

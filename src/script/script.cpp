@@ -16,7 +16,6 @@
 
 typedef map<String, Variable> Variables;
 Variables variables;
-DECLARE_TYPEOF(Variables);
 #ifdef _DEBUG
 	vector<String> variable_names;
 #endif
@@ -41,7 +40,7 @@ Variable string_to_variable(const String& s) {
 /** Warning: this function is slow, it should only be used for error messages and such.
  */
 String variable_to_string(Variable v) {
-	FOR_EACH(vi, variables) {
+	for(auto& vi : variables) {
 		if (vi.second == v) return replace_all(vi.first, _(" "), _("_"));
 	}
 	throw InternalError(String(_("Variable not found: ")) << v);
@@ -148,14 +147,13 @@ unsigned int Script::getLabel() const {
 	return (unsigned int)instructions.size();
 }
 
-DECLARE_TYPEOF_COLLECTION(Instruction);
 
 #ifdef _DEBUG // debugging
 
 String Script::dumpScript() const {
 	String ret;
 	int pos = 0;
-	FOR_EACH_CONST(i, instructions) {
+	for(const auto& i : instructions) {
 		wxLogDebug(dumpInstr(pos, i));
 		ret += dumpInstr(pos++, i) + _("\n");
 	}

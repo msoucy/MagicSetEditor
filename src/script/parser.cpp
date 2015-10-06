@@ -14,7 +14,6 @@
 #include <util/io/package_manager.hpp> // for "include file" semi hack
 #include <stack>
 
-DECLARE_TYPEOF_COLLECTION(Variable);
 
 #ifdef __WXMSW__
 #define TokenType TokenType_ // some stupid windows header uses our name
@@ -773,7 +772,7 @@ ExprType parseOper(TokenIterator& input, Script& script, Precedence minPrec, Ins
 			expectToken(input, _(")"), &token);
 			// generate instruction
 			script.addInstruction(I_CALL, (unsigned int)arguments.size());
-			FOR_EACH(arg,arguments) {
+			for(auto& arg :arguments) {
 				script.addInstruction(I_NOP, arg);
 			}
 		} else if (minPrec <= PREC_FUN && token==_("@")) {
@@ -784,7 +783,7 @@ ExprType parseOper(TokenIterator& input, Script& script, Precedence minPrec, Ins
 			expectToken(input, _(")"), &token);
 			// generate instruction
 			script.addInstruction(I_CLOSURE, (unsigned int)arguments.size());
-			FOR_EACH(arg,arguments) {
+			for(auto& arg :arguments) {
 				script.addInstruction(I_NOP, arg);
 			}
 		} else if (minPrec <= PREC_STRING && token==_("\"{")) {

@@ -20,36 +20,6 @@ To create new shared_ptrs the function new_shared# can be used (where # is the n
 Implemented in: util/smart_ptr.hpp
 
 
-<h2>Iterating</h2>
-
-To iterate over containers the FOR_EACH macro is used:
-@code
- vector<CardP> cards;
- FOR_EACH(card, cards) {
-     doSomething(card);
- }
-@endcode
-Is equivalent to:
-@code
- vector<CardP> cards;
- for(vector<CardP>::iterator it = cards.begin() ; it != cards.end() ; ++it) {
-     CardP& card = *it;
-     doSomething(card);
- }
-@endcode
-The iterators are completely hidden!
-There are several veriations to this macro, for using const iterators (FOR_EACH_CONST), iterating in reverse (FOR_EACH_REVERSE),
-for iterating over two collections in parallel (FOR_EACH_2), and for getting access to the iterator (FOR_EACH_IT).
-
-Each of these macros require that the collection type has been declared using:
-@code
- DECLARE_COLLECTION_TYPE(CardP);
-@endcode
-This allows the calling of TYPEOF(cards) to evaluate to vector<CardP>.
-
-Implemented in: util/for_each.hpp
-
-
 <h2>Reflection</h2>
 
 The io (input/output) system is based on reflection.

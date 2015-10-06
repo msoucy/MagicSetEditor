@@ -13,8 +13,6 @@
 #include <util/io/package_manager.hpp>
 #include <gui/new_window.hpp> // for selecting stylesheets on load error
 
-DECLARE_TYPEOF_COLLECTION(StyleSheet*);
-DECLARE_TYPEOF_COLLECTION(FieldP);
 
 // ----------------------------------------------------------------------------- : StyleSheet
 
@@ -119,7 +117,7 @@ IMPLEMENT_REFLECTION(StyleSheet) {
 	REFLECT_IF_READING {
 		if (extra_card_style.init(extra_card_fields)) {
 			// if a value is not editable, don't save it
-			FOR_EACH(f, extra_card_fields) {
+			for(auto& f : extra_card_fields) {
 				if (!f->editable) f->save_value = false;
 			}
 		}

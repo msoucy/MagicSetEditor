@@ -15,7 +15,6 @@
 #endif
 #include <queue>
 
-DECLARE_TYPEOF_COLLECTION(ScriptParseError);
 
 // ----------------------------------------------------------------------------- : Debug utilities
 
@@ -147,7 +146,7 @@ String ScriptParseError::what() const {
 
 String concat(const vector<ScriptParseError>& errors) {
 	String total;
-	FOR_EACH_CONST(e, errors) {
+	for(const auto& e : errors) {
 		if (!total.empty()) total += _("\n");
 		total += e.what();
 	}

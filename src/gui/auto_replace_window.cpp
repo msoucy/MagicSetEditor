@@ -17,7 +17,6 @@
 #include <util/window_id.hpp>
 #include <util/error.hpp>
 
-DECLARE_TYPEOF_COLLECTION(AutoReplaceP);
 
 // ----------------------------------------------------------------------------- : AutoReplaceList
 
@@ -77,7 +76,7 @@ AutoReplaceList::AutoReplaceList(Window* parent, int id, const Game& game)
 	, gs(settings.gameSettingsFor(game))
 {
 	// clone items
-	FOR_EACH_CONST(ar, gs.auto_replaces) {
+	for(const auto& ar : gs.auto_replaces) {
 		items.push_back(ar->clone());
 	}
 	// Add columns
@@ -114,14 +113,14 @@ void AutoReplaceList::removeSelected() {
 void AutoReplaceList::reset() {
 	// reset to list from game
 	items.clear();
-	FOR_EACH_CONST(ar, game.auto_replaces) {
+	for(const auto& ar : game.auto_replaces) {
 		items.push_back(ar->clone());
 	}
 	refreshList();
 }
 
 void AutoReplaceList::getItems(vector<VoidP>& out) const {
-	FOR_EACH_CONST(i, items) out.push_back(i);
+	for(const auto& i : items) out.push_back(i);
 }
 
 void AutoReplaceList::sendEvent() {

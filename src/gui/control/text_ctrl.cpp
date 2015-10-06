@@ -13,7 +13,6 @@
 #include <data/field/text.hpp>
 #include <data/action/value.hpp>
 
-DECLARE_TYPEOF_COLLECTION(ValueViewerP);
 
 // ----------------------------------------------------------------------------- : TextCtrl
 
@@ -106,8 +105,10 @@ void TextCtrl::onChangeSet() {
 
 void TextCtrl::onInit() {
 	// Give viewers a chance to show/hide controls (scrollbar) when selecting other editors
-	FOR_EACH_EDITOR {
-		e->onShow(true);
+	for(auto& v : viewers) {
+		if (ValueEditor* e = v->getEditor()) {
+			e->onShow(true);
+		}
 	}
 	// also init the DataEditor
 	DataEditor::onInit();

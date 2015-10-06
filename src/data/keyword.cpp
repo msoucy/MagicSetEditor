@@ -11,12 +11,6 @@
 #include <util/tagged_string.hpp>
 
 class KeywordTrie;
-DECLARE_TYPEOF(map<Char COMMA KeywordTrie*>);
-DECLARE_TYPEOF_COLLECTION(KeywordTrie*);
-DECLARE_TYPEOF_COLLECTION(KeywordP);
-DECLARE_TYPEOF_COLLECTION(KeywordModeP);
-DECLARE_TYPEOF_COLLECTION(KeywordParamP);
-DECLARE_TYPEOF_COLLECTION(const Keyword*);
 DECLARE_POINTER_TYPE(KeywordParamValue);
 class Value;
 DECLARE_DYNAMIC_ARG(Value*, value_being_updated);
@@ -170,13 +164,13 @@ void KeywordParam::eat_separator_after(const String& text, size_t& i) {
 size_t Keyword::findMode(const vector<KeywordModeP>& modes) const {
 	// find
 	size_t id = 0;
-	FOR_EACH_CONST(m, modes) {
+	for(const auto& m : modes) {
 		if (mode == m->name) return id;
 		++id;
 	}
 	// default
 	id = 0;
-	FOR_EACH_CONST(m, modes) {
+	for(const auto& m : modes) {
 		if (m->is_default) return id;
 		++id;
 	}
@@ -205,7 +199,7 @@ void Keyword::prepare(const vector<KeywordParamP>& param_types, bool force) {
 			String type = match.substr(start, end-start);
 			// find parameter type 'type'
 			KeywordParamP param;
-			FOR_EACH_CONST(pt, param_types) {
+			for(const auto& pt : param_types) {
 				if (pt->name == type) {
 					param = pt;
 					break;
@@ -279,7 +273,7 @@ KeywordTrie::KeywordTrie()
 {}
 
 KeywordTrie::~KeywordTrie() {
-	FOR_EACH(c, children) {
+	for(auto& c : children) {
 		delete c.second;
 	}
 	if (on_any_star != this) delete on_any_star;
@@ -295,7 +289,7 @@ KeywordTrie* KeywordTrie::insert(Char c) {
 }
 KeywordTrie* KeywordTrie::insert(const String& match) {
 	KeywordTrie* cur = this;
-	FOR_EACH_CONST(c, match) {
+	for(const auto& c : match) {
 		cur = cur->insert(static_cast<Char>(c));
 	}
 	return cur;
@@ -326,7 +320,7 @@ void KeywordDatabase::clear() {
 }
 
 void KeywordDatabase::add(const vector<KeywordP>& kws) {
-	FOR_EACH_CONST(kw, kws) {
+	for(const auto& kw : kws) {
 		add(*kw);
 	}
 }
@@ -377,7 +371,7 @@ void KeywordDatabase::add(const Keyword& kw) {
 }
 
 void KeywordDatabase::prepare_parameters(const vector<KeywordParamP>& ps, const vector<KeywordP>& kws) {
-	FOR_EACH_CONST(kw, kws) {
+	for(const auto& kw : kws) {
 		kw->prepare(ps);
 	}
 }
@@ -395,7 +389,7 @@ void closure(vector<KeywordTrie*>& state) {
 
 #ifdef _DEBUG
 void dump(int i, KeywordTrie* t) {
-	FOR_EACH(c, t->children) {
+	for(auto& c : t->children) {
 		wxLogDebug(String(i,_(' ')) + c.first + _("     ") + String::Format(_("%p"),c.second));
 		dump(i+2, c.second);
 	}
@@ -476,7 +470,7 @@ String KeywordDatabase::expand(const String& text,
 				++i;
 			}
 			// find 'next' trie node set matching c
-			FOR_EACH(kt, current) {
+			for(auto& kt : current) {
 				map<Char,KeywordTrie*>::const_iterator it = kt->children.find(c);
 				if (it != kt->children.end()) {
 					next.push_back(it->second);
@@ -494,8 +488,8 @@ String KeywordDatabase::expand(const String& text,
 			closure(current);
 			// are we done?
 			for (int set_or_game = 0 ; set_or_game <= 1 ; ++set_or_game) {
-				FOR_EACH(n, current) {
-					FOR_EACH(kw, n->finished) {
+				for(auto& n : current) {
+					for(auto& kw : n->finished) {
 						if (kw->fixed != (bool)set_or_game) {
 							continue; // first try set keywords, try game keywords in the second round
 						}

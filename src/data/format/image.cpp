@@ -16,7 +16,6 @@
 #include <render/card/viewer.hpp>
 #include <wx/filename.h>
 
-DECLARE_TYPEOF_COLLECTION(CardP);
 
 // ----------------------------------------------------------------------------- : Single card export
 
@@ -76,7 +75,7 @@ void export_images(const SetP& set, const vector<CardP>& cards,
 	wxFileName fn(path);
 	// Export
 	std::set<String> used; // for CONFLICT_NUMBER_OVERWRITE
-	FOR_EACH_CONST(card, cards) {
+	for(const auto& card : cards) {
 		// filename for this card
 		Context& ctx = set->getContext(card);
 		String filename = clean_filename(untag(ctx.eval(*filename_script)->toString()));

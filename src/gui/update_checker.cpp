@@ -20,7 +20,6 @@
 #include <wx/url.h>
 
 DECLARE_POINTER_TYPE(VersionData);
-DECLARE_TYPEOF_COLLECTION(PackageDependencyP);
 
 // ----------------------------------------------------------------------------- : Update data
 
@@ -72,7 +71,7 @@ bool update_available()  {
 	if (!update_version_data) return false;
 	#if !USE_OLD_STYLE_UPDATE_CHECKER
 		// updates to any installed package?
-		FOR_EACH_CONST(p, update_version_data->packages) {
+		for(const auto& p : update_version_data->packages) {
 			if (!settings.check_updates_all && p->package != mse_package) continue;
 			Version v;
 			if (package_manager.installedVersion(p->package, v) && v < p->version) {

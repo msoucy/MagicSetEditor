@@ -454,7 +454,6 @@ set(UTIL_FILES
 	src/util/file_utils.cpp
 	src/util/file_utils.hpp
 	src/util/find_replace.hpp
-	src/util/for_each.hpp
 	src/util/index_map.hpp
 	src/util/locale.hpp
 	src/util/order_cache.hpp

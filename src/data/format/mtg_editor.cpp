@@ -18,7 +18,6 @@
 #include <util/tagged_string.hpp>
 #include <wx/wfstream.h>
 
-DECLARE_TYPEOF_COLLECTION(CardP);
 ScriptValueP script_local_image_file(LocalFileName const& filename);
 
 // ----------------------------------------------------------------------------- : MtgEditorFileFormat
@@ -186,7 +185,7 @@ SetP MtgEditorFileFormat::importSet(const String& filename) {
 		set->value(_("artist")) = artist;
 		set->value(_("copyright")) = copyright;
 		// which cards have this value?
-		FOR_EACH(card, set->cards) {
+		for(auto& card : set->cards) {
 			ScriptValueP& card_artist    = card->value(_("illustrator"));
 			ScriptValueP& card_copyright = card->value(_("copyright"));
 			if (equal(card_artist   , artist))    card_artist = make_default(artist);
@@ -223,7 +222,7 @@ String MtgEditorFileFormat::filter1(const String& str) {
 		after  = str.substr(pos + 1);
 	}
 	// filter
-	FOR_EACH(c, after) {
+	for(auto& c : after) {
 		if (isAlnum(c)) ret += c;
 		else            ret += _('_');
 	}
@@ -232,7 +231,7 @@ String MtgEditorFileFormat::filter1(const String& str) {
 
 String MtgEditorFileFormat::filter2(const String& str) {
 	String ret;
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		if (isAlnum(c))                  ret += c;
 		else if (c==_(' ') || c==_('-')) ret += _('_');
 	}

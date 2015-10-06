@@ -25,13 +25,7 @@
 #undef small // some evil windows header defines this
 
 DECLARE_SHARED_POINTER_TYPE(DropDownList);
-DECLARE_TYPEOF_COLLECTION(WordListP);
-DECLARE_TYPEOF_COLLECTION(WordListWordP);
-DECLARE_TYPEOF_COLLECTION(WordListPosP);
-DECLARE_TYPEOF_COLLECTION(AutoReplaceP);
 struct DropDownWordListItem;
-DECLARE_TYPEOF_COLLECTION(DropDownWordListItem);
-DECLARE_TYPEOF_COLLECTION(String);
 
 // ----------------------------------------------------------------------------- : TextValueEditorScrollBar
 
@@ -164,14 +158,14 @@ void DropDownWordList::setWords(const WordListWordP& words2) {
 	// init items; do we need checkboxes?
 	// do we need checkboxes?
 	has_checkboxes = false;
-	FOR_EACH(w, words->words) {
+	for(auto& w : words->words) {
 		if (w->is_prefix) has_checkboxes = true;
 		if (w->script) {
 			addWordsFromScript(w);
 		} else {
 			// only if not duplicating
 			bool already_added = false;
-			FOR_EACH(i,items) {
+			for(auto& i :items) {
 				if (i.name == w->name) {
 					already_added = true;
 					break;
@@ -207,7 +201,7 @@ void DropDownWordList::addWordsFromScript(const WordListWordP& w) {
 	}
 	// add to menu
 	size_t prev = items.size();
-	FOR_EACH(s, strings) {
+	for(auto& s : strings) {
 		if (prev >= items.size() || s != items[prev].name) {
 			// no line below prev
 			if (prev < items.size() && !items[prev].name.empty()) {
@@ -262,7 +256,7 @@ size_t DropDownWordList::selection() const {
 	size_t selected = NO_SELECTION;
 	bool prefix_selected = true;
 	size_t n = 0;
-	FOR_EACH(item, items) {
+	for(auto& item : items) {
 		if (item.word->is_prefix) {
 			if (starts_with(current, item.name)) {
 				item.setActive(true);
@@ -586,7 +580,7 @@ bool TextValueEditor::onContextMenu(IconMenu& m, wxContextMenuEvent& ev) {
 			m.Insert(0,ID_SPELLING_NO_SUGGEST, _MENU_("no spelling suggestions"), _HELP_("no spelling suggestions"));
 		} else {
 			int i = 0;
-			FOR_EACH(s,suggestions) {
+			for(auto& s :suggestions) {
 				m.Insert(i, ID_SPELLING_SUGGEST + i, s, wxEmptyString);
 				i++;
 			}
@@ -744,7 +738,7 @@ bool TextValueEditor::containsPoint(const RealPoint& pos) const {
 RealRect TextValueEditor::boundingBox() const {
 	if (word_lists.empty()) return ValueViewer::boundingBox();
 	RealRect r = style().getInternalRect().grow(1);
-	FOR_EACH_CONST(wl, word_lists) {
+	for(const auto& wl : word_lists) {
 		r.width = max(r.width, wl->rect.right() + 9);
 	}
 	return r;
@@ -1051,7 +1045,7 @@ void TextValueEditor::tryAutoReplace() {
 	GameSettings& gs = settings.gameSettingsFor(viewer.getGame());
 	if (!gs.use_auto_replace) return;
 	String val = value().value->toString();
-	FOR_EACH(ar, gs.auto_replaces) {
+	for(auto& ar : gs.auto_replaces) {
 		if (ar->enabled && ar->match.size() <= end) {
 			size_t start = end - ar->match.size();
 			if (is_substr(val, start, ar->match) &&
@@ -1367,7 +1361,7 @@ void TextValueEditor::findWordLists() {
 		String name = str.substr(pos + 11, type_end - pos - 11);
 		WordListP word_list;
 		// find word list type
-		FOR_EACH(wl, viewer.getGame().word_lists) {
+		for(auto& wl : viewer.getGame().word_lists) {
 			if (wl->name == name) {
 				word_list = wl;
 				break;
@@ -1387,7 +1381,7 @@ void TextValueEditor::findWordLists() {
 void TextValueEditor::clearWordListIndicators(RotatedDC& dc) {
 	if (word_lists.empty()) return;
 	bool current = isCurrent();
-	FOR_EACH(wl, word_lists) {
+	for(auto& wl : word_lists) {
 		if (current && drop_down && drop_down->IsShown() && drop_down->getPos() == wl) {
 			continue;
 		} else if (current && selection_end_i >= wl->start && selection_end_i <= wl->end && !dropDownShown()) {
@@ -1411,7 +1405,7 @@ void TextValueEditor::drawWordListIndicators(RotatedDC& dc, bool redrawing) {
 	DrawWhat what = viewer.drawWhat(this);
 	bool current = what & DRAW_ACTIVE;
 	// Draw lines around fields
-	FOR_EACH(wl, word_lists) {
+	for(auto& wl : word_lists) {
 		RealRect& r = wl->rect;
 		if (r.height < 0) {
 			// find the rectangle for this indicator
@@ -1443,7 +1437,8 @@ void TextValueEditor::drawWordListIndicators(RotatedDC& dc, bool redrawing) {
 		}
 	}
 	// Draw drop down arrows
-	FOR_EACH_REVERSE(wl, word_lists) {
+	for(auto wl_it=word_lists.rbegin(); wl_it != word_lists.rend(); ++wl_it) {
+		auto& wl = *wl_it;
 		RealRect& r = wl->rect;
 		// color
 		bool small = false;
@@ -1482,7 +1477,7 @@ void TextValueEditor::drawWordListIndicators(RotatedDC& dc, bool redrawing) {
 }
 
 WordListPosP TextValueEditor::findWordList(const RealPoint& pos) const {
-	FOR_EACH_CONST(wl, word_lists) {
+	for(const auto& wl : word_lists) {
 		const RealRect& r = wl->rect;
 		if (pos.x >= r.right() - 0.5 && pos.x < r.right() + 9 &&
 		    pos.y >= r.top()         && pos.y < r.bottom()) {
@@ -1492,7 +1487,7 @@ WordListPosP TextValueEditor::findWordList(const RealPoint& pos) const {
 	return WordListPosP();
 }
 WordListPosP TextValueEditor::findWordListBody(const RealPoint& pos) const {
-	FOR_EACH_CONST(wl, word_lists) {
+	for(const auto& wl : word_lists) {
 		const RealRect& r = wl->rect;
 		if (pos.x >= r.left() && pos.x < r.right() &&
 		    pos.y >= r.top()  && pos.y < r.bottom()) {
@@ -1503,7 +1498,7 @@ WordListPosP TextValueEditor::findWordListBody(const RealPoint& pos) const {
 }
 
 WordListPosP TextValueEditor::findWordList(size_t index) const {
-	FOR_EACH_CONST(wl, word_lists) {
+	for(const auto& wl : word_lists) {
 		if (index >= wl->start && index <= wl->end) {
 			return wl;
 		}

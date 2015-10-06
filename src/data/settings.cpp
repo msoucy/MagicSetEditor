@@ -23,7 +23,6 @@
 #include <wx/filename.h>
 #include <wx/wfstream.h>
 
-DECLARE_TYPEOF_COLLECTION(AutoReplaceP);
 
 // ----------------------------------------------------------------------------- : Extra types
 
@@ -88,10 +87,10 @@ void GameSettings::initDefaults(const Game& game) {
 	if (initialized || !game.isFullyLoaded()) return;
 	initialized = true;
 	// init auto_replaces, copy from game file
-	FOR_EACH_CONST(ar, game.auto_replaces) {
+	for(const auto& ar : game.auto_replaces) {
 		// do we have this one?
 		bool already_have = false;
-		FOR_EACH(ar2, auto_replaces) {
+		for(auto& ar2 : auto_replaces) {
 			if (ar->match == ar2->match) {
 				ar2->custom = false;
 				already_have = true;

@@ -12,8 +12,8 @@
 #include <wx/dir.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <boost/range/adaptor/reversed.hpp>
 
-DECLARE_TYPEOF_COLLECTION(String);
 
 // ----------------------------------------------------------------------------- : File names
 
@@ -25,7 +25,7 @@ String normalize_filename(const String& name) {
 
 String normalize_internal_filename(const String& name) {
 	String ret;
-	FOR_EACH_CONST(c, name) {
+	for(const auto& c : name) {
 		if (c==_('\\')) ret += _('/');
 		else            ret += toLower(c);
 	}
@@ -54,7 +54,7 @@ String clean_filename(const String& name) {
 	String clean;
 	// allow only valid characters, and remove leading whitespace
 	bool start = true;
-	FOR_EACH_CONST(c, name) {
+	for(const auto& c : name) {
 		if (is_filename_char(c) && !(start && c == _(' '))) {
 			start = false;
 			clean += c;
@@ -139,7 +139,7 @@ class RecursiveDeleter : public wxDirTraverser {
 	bool ok;
 	
 	void remove() {
-		FOR_EACH_REVERSE(dir, to_delete) {
+		for(auto& dir : boost::adaptors::reverse(to_delete)) {
 			if (!wxRmdir(dir)) {
 				ok = false;
 				handle_error(_("Cannot delete ") + dir + _("\n")

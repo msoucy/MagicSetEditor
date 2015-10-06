@@ -21,7 +21,6 @@
 #include <data/action/set.hpp>
 #include <data/action/value.hpp>
 
-DECLARE_TYPEOF_COLLECTION(FieldP);
 
 // ----------------------------------------------------------------------------- : StylePanel : initialization
 
@@ -115,7 +114,7 @@ void StylePanel::onAction(const Action& action, bool undone) {
 		// is it a styling action?
 		if (!action.card) {
 			const StyleSheet& s = set->stylesheetFor(card);
-			FOR_EACH_CONST(f, s.styling_fields) {
+			for(const auto& f : s.styling_fields) {
 				if (action.valueP->fieldP == f) {
 					// refresh the viewer
 					preview->redraw();

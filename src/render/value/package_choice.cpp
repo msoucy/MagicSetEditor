@@ -10,8 +10,6 @@
 #include <render/value/package_choice.hpp>
 #include <util/io/package_manager.hpp>
 
-DECLARE_TYPEOF_COLLECTION(PackagedP);
-DECLARE_TYPEOF_COLLECTION(PackageChoiceValueViewer::Item);
 
 // ----------------------------------------------------------------------------- : PackageChoiceValueViewer
 
@@ -31,7 +29,7 @@ void PackageChoiceValueViewer::initItems() {
 	vector<PackagedP> choices;
 	package_manager.findMatching(field().match, choices);
 	sort(choices.begin(), choices.end(), ComparePackagePosHint());
-	FOR_EACH(p, choices) {
+	for(auto& p : choices) {
 		Item i;
 		i.package_name = p->relativeFilename();
 		i.name = capitalize_sentence(p->short_name);
@@ -52,7 +50,7 @@ void PackageChoiceValueViewer::draw(RotatedDC& dc) {
 	if (text.empty()) {
 		text = field().empty_name;
 	} else {
-		FOR_EACH(i, items) {
+		for(auto& i : items) {
 			if (i.package_name == text) {
 				text = i.name;
 				image = i.image;

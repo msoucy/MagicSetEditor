@@ -20,11 +20,6 @@
 #include <wx/wfstream.h>
 #include <wx/zipstrm.h>
 
-DECLARE_TYPEOF_COLLECTION(String);
-DECLARE_TYPEOF_COLLECTION(PackagedP);
-DECLARE_TYPEOF_COLLECTION(PackageDependencyP);
-DECLARE_TYPEOF_COLLECTION(PackageDescriptionP);
-DECLARE_TYPEOF_COLLECTION(InstallablePackageP);
 DECLARE_POINTER_TYPE(wxFileInputStream);
 DECLARE_POINTER_TYPE(wxZipInputStream);
 
@@ -44,7 +39,7 @@ IMPLEMENT_REFLECTION(Installer) {
 void Installer::validate(Version file_app_version) {
 	Packaged::validate(file_app_version);
 	// load icons where possible
-	FOR_EACH(p,packages) {
+	for(auto& p :packages) {
 		if (!p->icon_url.empty() && !starts_with(p->icon_url,_("http:"))) {
 			// TODO: support absolute icon names
 			try{
@@ -98,7 +93,7 @@ void Installer::install(bool local, bool check_dependencies) {
 	// All the packages we're installing.
 	vector<PackagedP> new_packages;
 
-	FOR_EACH(p, packages) {
+	for(auto& p : packages) {
 		if (wxDirExists(install_dir + _("/") + p) || wxFileExists(install_dir + _("/") + p)) {
 			throw PackageError(_("Package ") + p + _(" is already installed. Overwriting currently not supported."));
 		}
@@ -120,8 +115,8 @@ void Installer::install(bool local, bool check_dependencies) {
 	
 	if (check_dependencies) {
 		// Check dependencies for each and every package.
-		FOR_EACH(p, new_packages) {
-			FOR_EACH(d, p->dependencies) {
+		for(auto& p : new_packages) {
+			for(auto& d : p->dependencies) {
 				if (find_if(new_packages.begin(), new_packages.end(), dependency_check(d)) == new_packages.end() &&
 					!::packages.checkDependency(*d, false)) {
 					throw PackageError(_("Unmet dependency for package ") + p->relativeFilename() + _(": ") + d->package + _(", version ") + d->version.toString() + _(" or higher."));
@@ -180,7 +175,7 @@ void Installer::addPackage(const String& package) {
 void Installer::addPackage(Packaged& package) {
 	// Add to list of packages
 	String name = package.relativeFilename();
-	FOR_EACH(p, packages) {
+	for(auto& p : packages) {
 		if (p->name == name) {
 			return; // already added
 		}
@@ -385,7 +380,7 @@ void merge(InstallablePackages& list1, const InstallablePackages& list2) {
 
 void merge(InstallablePackages& installed, const DownloadableInstallerP& installer) {
 	InstallablePackages ips;
-	FOR_EACH(p, installer->packages) {
+	for(auto& p : installer->packages) {
 		ips.push_back(intrusive(new InstallablePackage(p,installer)));
 	}
 	sort(ips);
@@ -397,7 +392,7 @@ void merge(InstallablePackages& installed, const DownloadableInstallerP& install
 
 InstallablePackage* find_package(InstallablePackages& packages, const String& name) {
 	// TODO: The packages are sorted, so we could use a binary search.
-	FOR_EACH(p,packages) {
+	for(auto& p :packages) {
 		if (p->description->name == name) return p.get();
 	}
 	return nullptr;
@@ -418,7 +413,7 @@ void for_each_dependency(DependencyFun fun, InstallablePackages& packages, Dep p
 		= pdep.new_version
 			? pdep.package->installed->dependencies
 			: pdep.package->description->dependencies;
-	FOR_EACH(dep_,deps) {
+	for(auto& dep_ :deps) {
 		// NOTE: an old version will never depend on a new version
 		Dep d = {find_package(packages, dep_->package), pdep.new_version};
 		if (d.package && d.package->installed && d.package->installed->version >= dep_->version) {
@@ -429,9 +424,9 @@ void for_each_dependency(DependencyFun fun, InstallablePackages& packages, Dep p
 }
 /// All packages that depend on a package(version)
 void for_each_backwards_dependency(DependencyFun fun, InstallablePackages& packages, Dep pdep, PackageAction where) {
-	FOR_EACH(p,packages) {
+	for(auto& p :packages) {
 		if (p->installed)
-		FOR_EACH(dep_,p->installed->dependencies) {
+		for(auto& dep_ :p->installed->dependencies) {
 			if (pdep.package->description->name != dep_->package) {
 				continue; // no dependency on p
 			}
@@ -442,7 +437,7 @@ void for_each_backwards_dependency(DependencyFun fun, InstallablePackages& packa
 			fun(packages,d,where);
 		}
 		if (p->installer)
-		FOR_EACH(dep_,p->description->dependencies) {
+		for(auto& dep_ :p->description->dependencies) {
 			if (pdep.package->description->name != dep_->package) {
 				continue; // no dependency on p
 			}
@@ -506,7 +501,7 @@ void remove_package_dependency(InstallablePackages& packages, Dep dep, PackageAc
 // ----------------------------------------------------------------------------- : Installable package : dependency stuff (OLD)
 
 bool add_package_dependency(InstallablePackages& packages, const PackageDependency& dep, PackageAction where, bool set) {
-	FOR_EACH(p, packages) {
+	for(auto& p : packages) {
 		if (p->description->name == dep.package) {
 			// Some package depends on this package, so install it if needed
 			// Mark the installation as "automatically needed for X packages"
@@ -530,7 +525,7 @@ bool add_package_dependency(InstallablePackages& packages, const PackageDependen
 					change = true;
 				}
 				// recursively add/remove dependencies
-				FOR_EACH(dep, p->description->dependencies) {
+				for(auto& dep : p->description->dependencies) {
 					if (!add_package_dependency(packages, *dep, where, set)) {
 						return false; // failed
 					}
@@ -543,8 +538,8 @@ bool add_package_dependency(InstallablePackages& packages, const PackageDependen
 }
 
 void remove_package_dependency(InstallablePackages& packages, const PackageDescription& ver, PackageAction where, bool set) {
-	FOR_EACH(p, packages) {
-		FOR_EACH(dep, p->description->dependencies) {
+	for(auto& p : packages) {
+		for(auto& dep : p->description->dependencies) {
 			if (dep->package == ver.name) {
 				// we can no longer use package p
 				if (p->action & PACKAGE_ACT_REMOVE) {
@@ -574,7 +569,7 @@ bool set_package_action_unsafe(InstallablePackages& packages, const InstallableP
 		package->automatic = 0;
 		package->action    = action;
 		// check dependencies
-		FOR_EACH(dep, package->description->dependencies) {
+		for(auto& dep : package->description->dependencies) {
 			if (!add_package_dependency(packages, *dep, where, !(action & PACKAGE_ACT_NOTHING))) return false;
 		}
 		return true;
@@ -591,14 +586,14 @@ bool set_package_action_unsafe(InstallablePackages& packages, const InstallableP
 bool set_package_action(InstallablePackages& packages, const InstallablePackageP& package, PackageAction action) {
 	if (package->has(action)) return false;
 	// backup
-	FOR_EACH(p,packages) {
+	for(auto& p :packages) {
 		p->old_action    = p->action;
 		p->old_automatic = p->automatic;
 	}
 	// set
 	if (set_package_action_unsafe(packages, package, action)) return true;
 	// undo
-	FOR_EACH(p,packages) {
+	for(auto& p :packages) {
 		p->action    = p->old_action;
 		p->automatic = p->old_automatic;
 	}

@@ -12,8 +12,6 @@
 #include <util/error.hpp>
 #include <queue>
 
-DECLARE_TYPEOF_COLLECTION(ScriptValueP);
-DECLARE_TYPEOF_COLLECTION(Context::Binding);
 
 // NOTE: dependency.cpp has nothing to do with dependency.hpp, the latter defines the dependency
 // type, which is used here as an abstract type. The header for this source file is context.hpp
@@ -160,7 +158,7 @@ ScriptValueP Context::dependencies(const Dependency& dep, const Script& script) 
 					unify(stack[stack_size + i], j->stack_top[i]);
 				}
 				// unify bindings
-				FOR_EACH(v, j->bindings) {
+				for(auto& v : j->bindings) {
 					ScriptValueP old_value = variables[v.variable].value;
 					if (old_value) {
 						setVariable(v.variable, unified(old_value, v.value.value) );
@@ -196,8 +194,12 @@ ScriptValueP Context::dependencies(const Dependency& dep, const Script& script) 
 						// we don't follow this jump just yet, there may be jumps that point to earlier positions
 						Jump* jumpTo = jumps.top(); jumps.pop();
 						instr = jumpTo->target;
-						FOR_EACH(s, jumpTo->stack_top) stack.push_back(s);
-						FOR_EACH(b, jumpTo->bindings)  setVariable(b.variable, b.value.value);
+						for(auto& s : jumpTo->stack_top) {
+							stack.push_back(s);
+						}
+						for(auto& b : jumpTo->bindings) {
+							setVariable(b.variable, b.value.value);
+						}
 						delete jumpTo;
 					} else {
 						// backward jump: just follow it, someone else (I_LOOP) will make sure

@@ -16,6 +16,7 @@
 
 #include <util/prec.hpp>
 #include <util/action_stack.hpp>
+#include <boost/range/adaptor/reversed.hpp>
 
 // ----------------------------------------------------------------------------- : Generic add/remove action
 
@@ -98,14 +99,14 @@ void GenericAddAction<T>::perform(vector<T>& container, bool to_undo) const {
 	if (adding != to_undo) {
 		// (re)insert the items
 		// ascending order, this is the reverse of removal
-		FOR_EACH_CONST(s, steps) {
+		for(const auto& s : steps) {
 			assert(s.pos <= container.size());
 			container.insert(container.begin() + s.pos, s.item);
 		}
 	} else {
 		// remove the items
 		// descending order, because earlier removals shift the rest of the vector
-		FOR_EACH_CONST_REVERSE(s, steps) {
+		for(auto const& s : boost::adaptors::reverse(steps)) {
 			assert(s.pos < container.size());
 			container.erase(container.begin() + s.pos);
 		}

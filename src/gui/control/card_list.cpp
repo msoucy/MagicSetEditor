@@ -23,11 +23,6 @@
 #include <util/window_id.hpp>
 #include <wx/clipbrd.h>
 
-DECLARE_TYPEOF_COLLECTION(CardP);
-DECLARE_TYPEOF_COLLECTION(FieldP);
-DECLARE_TYPEOF(map<int COMMA FieldP>);
-DECLARE_TYPEOF_NO_REV(IndexMap<FieldP COMMA StyleP>);
-DECLARE_TYPEOF_COLLECTION(CardListBase*);
 
 // ----------------------------------------------------------------------------- : Events
 
@@ -84,7 +79,7 @@ void CardListBase::onAction(const Action& action, bool undone) {
 			focusNone();
 			selectItem(action.action.steps.front().item, false, true);
 			refreshList();
-			FOR_EACH_CONST(s, action.action.steps) focusItem(s.item); // focus all the new cards
+			for(const auto& s : action.action.steps) focusItem(s.item); // focus all the new cards
 		} else {
 			long pos = selected_item_pos;
 			// adjust focus for all the removed cards
@@ -123,7 +118,7 @@ void CardListBase::onAction(const Action& action, bool undone) {
 }
 
 void CardListBase::getItems(vector<VoidP>& out) const {
-	FOR_EACH(c, set->cards) {
+	for(auto& c : set->cards) {
 		out.push_back(c);
 	}
 }
@@ -222,14 +217,14 @@ void CardListBase::rebuild() {
 	set->game->initCardListColorScript();
 	// determine column order
 	map<int,FieldP> new_column_fields;
-	FOR_EACH(f, set->game->card_fields) {
+	for(auto& f : set->game->card_fields) {
 		ColumnSettings& cs = settings.columnSettingsFor(*set->game, *f);
 		if (cs.visible && f->card_list_allow) {
 			new_column_fields[cs.position] = f;
 		}
 	}
 	// add columns
-	FOR_EACH(f, new_column_fields) {
+	for(auto& f : new_column_fields) {
 		ColumnSettings& cs = settings.columnSettingsFor(*set->game, *f.second);
 		int align;
 		if      (f.second->card_list_align & ALIGN_RIGHT)  align = wxLIST_FORMAT_RIGHT;
@@ -245,7 +240,7 @@ void CardListBase::rebuild() {
 	sort_ascending = gs.sort_cards_ascending;
 	sort_by_column = -1;
 	long i = 0;
-	FOR_EACH(f, column_fields) {
+	for(auto& f : column_fields) {
 		if (f->name == gs.sort_cards_by) {
 			// we are sorting by this column
 			sort_by_column = i;
@@ -256,7 +251,7 @@ void CardListBase::rebuild() {
 	}
 	// determine alternate sortImageFieldP ImageCardList::findImageField() {
 	alternate_sort_field = FieldP();
-	FOR_EACH(f, set->game->card_fields) {
+	for(auto& f : set->game->card_fields) {
 		if (f->identifying) {
 			alternate_sort_field = f;
 			break;
@@ -268,7 +263,7 @@ void CardListBase::rebuild() {
 
 void CardListBase::sortBy(long column, bool ascending) {
 	// sort all card lists for this game
-	FOR_EACH(card_list, card_lists) {
+	for(auto& card_list : card_lists) {
 		if (card_list->set && card_list->set->game == set->game) {
 			card_list->ItemList::sortBy(column, ascending);
 		}
@@ -281,7 +276,7 @@ void CardListBase::storeColumns() {
 	if (!set) return;
 	// store column widths
 	int i = 0;
-	FOR_EACH(f, column_fields) {
+	for(auto& f : column_fields) {
 		ColumnSettings& cs = settings.columnSettingsFor(*set->game, *f);
 		cs.width = GetColumnWidth(i++);
 	}
@@ -296,7 +291,7 @@ void CardListBase::selectColumns() {
 	if (wnd.ShowModal() == wxID_OK) {
 		// rebuild all card lists for this game
 		storeColumns();
-		FOR_EACH(card_list, card_lists) {
+		for(auto& card_list : card_lists) {
 			if (card_list->set && card_list->set->game == set->game) {
 				card_list->rebuild();
 			}
@@ -339,7 +334,7 @@ void CardListBase::onColumnResize(wxListEvent& ev) {
 	storeColumns();
 	int col = ev.GetColumn();
 	int width = GetColumnWidth(col);
-	FOR_EACH(card_list, card_lists) {
+	for(auto& card_list : card_lists) {
 		if (card_list != this && card_list->set && card_list->set->game == set->game) {
 			card_list->SetColumnWidth(col, width);
 		}

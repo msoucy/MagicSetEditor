@@ -12,8 +12,6 @@
 #include <util/window_id.hpp>
 #include <wx/statline.h>
 
-DECLARE_TYPEOF_COLLECTION(CardP);
-DECLARE_TYPEOF_COLLECTION(ExportCardSelectionChoiceP);
 
 // ----------------------------------------------------------------------------- : ExportCardSelectionChoice
 
@@ -55,7 +53,7 @@ wxSizer* ExportWindowBase::Create() {
 	// create choice radio buttons
 	int i = 0;
 	bool any_custom = false;
-	FOR_EACH(choice, cards_choices) {
+	for(auto& choice : cards_choices) {
 		wxRadioButton* btn = new wxRadioButton(this, ID_SELECTION_CHOICE + i, choice->label);
 		btn->SetValue(i == 0);
 		btn->Enable(!choice->the_cards->empty() || choice->type == EXPORT_SEL_CUSTOM);

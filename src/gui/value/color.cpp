@@ -13,7 +13,6 @@
 #include <data/action/value.hpp>
 #include <wx/colordlg.h>
 
-DECLARE_TYPEOF_COLLECTION(ColorField::ChoiceP);
 
 // ----------------------------------------------------------------------------- : DropDownColorList
 
@@ -95,7 +94,7 @@ size_t DropDownColorList::selection() const {
 	// find selected color
 	size_t selection = hasCustom() ? itemCount() - 1 : NO_SELECTION;
 	size_t i = 0;
-	FOR_EACH_CONST(c, field().choices) {
+	for(const auto& c : field().choices) {
 		if (c->color == cve.value().value->toColor()) {
 			selection = i + hasDefault();
 			break;

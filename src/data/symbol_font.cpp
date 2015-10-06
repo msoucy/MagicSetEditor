@@ -17,9 +17,6 @@
 #include <render/text/element.hpp> // fot CharInfo
 #include <script/image.hpp>
 
-DECLARE_TYPEOF_COLLECTION(SymbolFont::DrawableSymbol);
-DECLARE_TYPEOF_COLLECTION(SymbolInFontP);
-DECLARE_TYPEOF_COLLECTION(InsertSymbolMenuP);
 
 // ----------------------------------------------------------------------------- : SymbolFont
 
@@ -167,7 +164,7 @@ void SymbolInFont::update(Context& ctx) {
 }
 void SymbolFont::update(Context& ctx) const {
 	// update all symbol-in-fonts
-	FOR_EACH_CONST(sym, symbols) {
+	for(const auto& sym : symbols) {
 		sym->update(ctx);
 	}
 }
@@ -197,7 +194,7 @@ void SymbolFont::split(const String& text, SplitSymbols& out) const {
 	// read a single symbol until we are done with the text
 	for (size_t pos = 0 ; pos < text.size() ; ) {
 		// check symbol list
-		FOR_EACH_CONST(sym, symbols) {
+		for(const auto& sym : symbols) {
 			if (!sym->code.empty() && sym->enabled) {
 				if (sym->regex) {
 					if (sym->code_regex.empty()) {
@@ -240,7 +237,7 @@ size_t SymbolFont::recognizePrefix(const String& text, size_t start) const {
 	size_t pos;
 	for (pos = start ; pos < text.size() ; ) {
 		// check symbol list
-		FOR_EACH_CONST(sym, symbols) {
+		for(const auto& sym : symbols) {
 			if (!sym->code.empty() && sym->enabled) {
 				if (sym->regex) {
 					Regex::Results results;
@@ -265,7 +262,7 @@ next_symbol:;
 }
 
 SymbolInFont* SymbolFont::defaultSymbol() const {
-	FOR_EACH_CONST(sym, symbols) {
+	for(const auto& sym : symbols) {
 		if (sym->enabled && sym->regex && sym->code_regex.matches(_("0"))) return sym.get();
 	}
 	return nullptr;
@@ -281,7 +278,7 @@ void SymbolFont::draw(RotatedDC& dc, Context& ctx, const RealRect& rect, double 
 }
 
 void SymbolFont::draw(RotatedDC& dc, RealRect rect, double font_size, const Alignment& align, const SplitSymbols& text) {
-	FOR_EACH_CONST(sym, text) {
+	for(const auto& sym : text) {
 		RealSize size = dc.trInvS(symbolSize(dc.trS(font_size), sym));
 		RealRect sym_rect = split_left(rect, size);
 		drawSymbol(dc, sym_rect, font_size, align, *sym.symbol, sym.draw_text);
@@ -386,7 +383,7 @@ void SymbolFont::getCharInfo(RotatedDC& dc, Context& ctx, double font_size, cons
 }
 
 void SymbolFont::getCharInfo(RotatedDC& dc, double font_size, const SplitSymbols& text, vector<CharInfo>& out) {
-	FOR_EACH_CONST(sym, text) {
+	for(const auto& sym : text) {
 		size_t count = sym.text.size();
 		RealSize size = dc.trInvS(symbolSize(dc.trS(font_size), sym));
 		size.width /= count; // divide into count parts
@@ -444,7 +441,7 @@ int InsertSymbolMenu::size() const {
 		return 1;
 	} else if (type == ITEM_SUBMENU) {
 		int count = 0;
-		FOR_EACH_CONST(i, items) {
+		for(const auto& i : items) {
 			count += i->size();
 		}
 		return count;
@@ -454,7 +451,7 @@ int InsertSymbolMenu::size() const {
 }
 String InsertSymbolMenu::getCode(int id, const SymbolFont& font) const {
 	if (type == ITEM_SUBMENU) {
-		FOR_EACH_CONST(i, items) {
+		for(const auto& i : items) {
 			int id2 = id - i->size();
 			if (id2 < 0) {
 				return i->getCode(id, font);
@@ -474,7 +471,7 @@ String InsertSymbolMenu::getCode(int id, const SymbolFont& font) const {
 wxMenu* InsertSymbolMenu::makeMenu(int id, SymbolFont& font) const {
 	if (type == ITEM_SUBMENU) {
 		wxMenu* menu = new wxMenu();
-		FOR_EACH_CONST(i, items) {
+		for(const auto& i : items) {
 			menu->Append(i->makeMenuItem(menu, id, font));
 			id += i->size();
 		}
@@ -507,7 +504,7 @@ wxMenuItem* InsertSymbolMenu::makeMenuItem(wxMenu* parent, int first_id, SymbolF
 		if (type == ITEM_CUSTOM) {
 			symbol = font.defaultSymbol();
 		} else {
-			FOR_EACH(sym, font.symbols) {
+			for(auto& sym : font.symbols) {
 				if (!sym->code.empty() && sym->enabled && name == sym->code) { 
 					symbol = sym.get();
 					break;

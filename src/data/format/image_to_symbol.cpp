@@ -19,8 +19,6 @@
 #include <util/error.hpp>
 #include <util/platform.hpp>
 
-DECLARE_TYPEOF_COLLECTION(ControlPointP);
-DECLARE_TYPEOF_COLLECTION(SymbolPartP);
 
 // ----------------------------------------------------------------------------- : Image preprocessing
 
@@ -324,7 +322,7 @@ void merge_corners(SymbolShape& shape) {
 void avarage(SymbolShape& shape) {
 	// create a copy of the points
 	vector<Vector2D> old_points;
-	FOR_EACH(p, shape.points) {
+	for(auto& p : shape.points) {
 		old_points.push_back(p->pos);
 	}
 	// avarage points
@@ -350,7 +348,7 @@ void convert_to_curves(SymbolShape& shape) {
 		next.delta_before = (cur.pos  - next.pos) / 3.0;
 	}
 	// make the curves smooth by enforcing direction constraints
-	FOR_EACH(p, shape.points) {
+	for(auto& p : shape.points) {
 		p->onUpdateLock();
 	}
 }
@@ -474,7 +472,7 @@ void simplify_symbol_shape(SymbolShape& shape) {
 }
 
 void simplify_symbol(Symbol& symbol) {
-	FOR_EACH(pb, symbol.parts) {
+	for(auto& pb : symbol.parts) {
 		if (SymbolShape* p = pb->isSymbolShape()) {
 			simplify_symbol_shape(*p);
 		}

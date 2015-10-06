@@ -27,7 +27,6 @@
 #include <util/window_id.hpp>
 #include <wx/splitter.h>
 
-DECLARE_TYPEOF_COLLECTION(AddCardsScriptP);
 
 #ifdef EVT_TOOL_DROPDOWN
 	// This is only available after patching wx or in version 2.10
@@ -182,7 +181,7 @@ wxMenu* CardsPanel::makeAddCardsSubmenu(bool add_single_card_option) {
 	if (set && set->game && !set->game->add_cards_scripts.empty()) {
 		int id = ID_ADD_CARDS_MENU_MIN;
 		if (!cards_scripts_menu) cards_scripts_menu = new IconMenu;
-		FOR_EACH(cs, set->game->add_cards_scripts) {
+		for(auto& cs : set->game->add_cards_scripts) {
 			cards_scripts_menu->Append(id++, cs->name, cs->description);
 		}
 	}

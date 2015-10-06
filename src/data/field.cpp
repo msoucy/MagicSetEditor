@@ -19,7 +19,6 @@
 #include <data/field/package_choice.hpp>
 #include <util/error.hpp>
 
-DECLARE_TYPEOF_COLLECTION(StyleListener*);
 
 DECLARE_DYNAMIC_ARG(Field const*, field_for_reading);
 IMPLEMENT_DYNAMIC_ARG(Field const*, field_for_reading, nullptr);
@@ -265,7 +264,7 @@ void Style::removeListener(StyleListener* listener) {
 		);
 }
 void Style::tellListeners(int changes) {
-	FOR_EACH(l, listeners) l->onStyleChange(changes);
+	for(auto& l : listeners) l->onStyleChange(changes);
 }
 
 StyleListener::StyleListener(const StyleP& style)

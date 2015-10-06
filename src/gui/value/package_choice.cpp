@@ -12,7 +12,6 @@
 #include <gui/util.hpp>
 #include <data/action/value.hpp>
 
-DECLARE_TYPEOF_COLLECTION(PackageChoiceValueViewer::Item);
 
 // ----------------------------------------------------------------------------- : DropDownPackageChoiceList
 
@@ -76,7 +75,7 @@ void DropDownPackageChoiceList::select(size_t item) {
 size_t DropDownPackageChoiceList::selection() const {
 	size_t n = 0;
 	String package_name = editor.value().value->toString();
-	FOR_EACH(i, editor.items) {
+	for(auto& i : editor.items) {
 		if (package_name == i.package_name) {
 			return n + !editor.field().required;
 		}

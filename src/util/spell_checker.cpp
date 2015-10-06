@@ -74,7 +74,7 @@ void SpellChecker::destroyAll() {
 bool SpellChecker::convert_encoding(const String& word, CharBuffer& out) {
 	// fix curly quotes, especially apstrophes
 	String fixed;
-	FOR_EACH_CONST(c,word) {
+	for(const auto& c :word) {
 		if (c == LEFT_SINGLE_QUOTE || c == RIGHT_SINGLE_QUOTE) {
 			fixed += _('\'');
 		} else if (c == LEFT_DOUBLE_QUOTE || c == RIGHT_DOUBLE_QUOTE) {

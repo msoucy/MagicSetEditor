@@ -18,18 +18,15 @@
 #include <data/field/choice.hpp>
 #include <data/field/multiple_choice.hpp>
 #include <data/action/value.hpp>
+#include <boost/range/adaptor/reversed.hpp>
+#include <boost/range/combine.hpp>
 
-DECLARE_TYPEOF_COLLECTION(FieldP);
-DECLARE_TYPEOF_COLLECTION(TextValue*);
-DECLARE_TYPEOF_COLLECTION(String);
-DECLARE_TYPEOF_COLLECTION(pair<String COMMA bool>);
-DECLARE_TYPEOF_COLLECTION(ChoiceField::ChoiceP);
 
 // ----------------------------------------------------------------------------- : Combined editor
 
 // Combining multiple (text) values into a single one
 // The combined value is  value1 <sep>something</sep> value2 <sep>something</sep> value3
-// 
+//
 
 SCRIPT_FUNCTION_WITH_DEP(combined_editor) {
 	// read 'field#' arguments
@@ -38,7 +35,7 @@ SCRIPT_FUNCTION_WITH_DEP(combined_editor) {
 		String name = _("field"); if (i > 0) name = name << i;
 		SCRIPT_OPTIONAL_PARAM_N(ValueP, name, value) {
 			TextValue* text_value = dynamic_cast<TextValue*>(value.get());
-			if (!text_value) throw ScriptError(_("Argument '")+name+_("' should be a text field")); 
+			if (!text_value) throw ScriptError(_("Argument '")+name+_("' should be a text field"));
 			values.push_back(text_value);
 		} else if (i > 0) break;
 	}
@@ -81,7 +78,9 @@ SCRIPT_FUNCTION_WITH_DEP(combined_editor) {
 	value_parts.resize(values.size()); // TODO: what if there are more value_parts than values?
 	// update the values if our input value is newer?
 	Age new_value_update = last_update_age();
-	FOR_EACH_2(v, values, nv, value_parts) {
+	for(auto&& vnv : boost::combine(values, value_parts)) {
+		auto& v = get<0>(vnv);
+		auto& nv = get<1>(vnv);
 		if (v->last_modified < new_value_update) {
 			bool changed = v->value->toString() != nv.first;
 			if (changed) v->value = to_script(nv.first);
@@ -171,9 +170,9 @@ SCRIPT_FUNCTION_DEPENDENCIES(combined_editor) {
 	// Add dependencies, from target_field on field#
 	// For card fields
 	size_t j = 0;
-	FOR_EACH(f, game->card_fields) {
+	for(auto& f : game->card_fields) {
 		Dependency dep(DEP_CARD_COPY_DEP, j++);
-		FOR_EACH(fn, fields) {
+		for(auto& fn : fields) {
 			if (f == fn) {
 				target_field->dependent_scripts.add(dep);
 				break;
@@ -182,9 +181,9 @@ SCRIPT_FUNCTION_DEPENDENCIES(combined_editor) {
 	}
 	// For set fields
 	j = 0;
-	FOR_EACH(f, game->set_fields) {
+	for(auto& f : game->set_fields) {
 		Dependency dep(DEP_SET_COPY_DEP, j++);
-		FOR_EACH(fn, fields) {
+		for(auto& fn : fields) {
 			if (f == fn) {
 				target_field->dependent_scripts.add(dep);
 				break;
@@ -201,17 +200,17 @@ SCRIPT_FUNCTION(primary_choice) {
 	SCRIPT_PARAM_C(ValueP,input);
 	ChoiceValueP value = dynamic_pointer_cast<ChoiceValue>(input);
 	if (!value) {
-		throw ScriptError(_("Argument to 'primary_choice' should be a choice value")); 
+		throw ScriptError(_("Argument to 'primary_choice' should be a choice value"));
 	}
 	ChoiceFieldP field = dynamic_pointer_cast<ChoiceField>(value->fieldP);
 	if (!field) {
-		throw ScriptError(_("Argument to 'primary_choice' should be a choice value")); 
+		throw ScriptError(_("Argument to 'primary_choice' should be a choice value"));
 	}
 	// determine choice
 	int id = field->choices->choiceId(value->value->toString());
 	// find the last group that still contains id
 	const vector<ChoiceField::ChoiceP>& choices = field->choices->choices;
-	FOR_EACH_CONST_REVERSE(c, choices) {
+	for(auto const& c : boost::adaptors::reverse(choices)) {
 		if (id >= c->first_id) {
 			SCRIPT_RETURN(c->name);
 		}
@@ -297,11 +296,14 @@ String filter_choices(const String& input, const vector<String>& choices, int mi
 	}
 	// keep less choices
 	if (count > max) {
-		for (size_t i = choices.size() - 1 ; i >= 0 ; --i) {
+		for (size_t i = choices.size(); i > 0 ; --i) {
 			if (count <= max) break;
-			if (seen[i]) {
-				if (max > 0 && choices[i] == prefered) continue; // we would rather not remove prefered choice
-				seen[i] = false; --count;
+			if (seen[i+1]) {
+				// we would rather not remove prefered choice
+				if (max > 0 && choices[i+1] == prefered) {
+					continue;
+				}
+				seen[i+1] = false; --count;
 			}
 		}
 	}
@@ -387,7 +389,11 @@ SCRIPT_FUNCTION(count_chosen) {
 			SCRIPT_RETURN(0);
 		} else {
 			int count = 1;
-			FOR_EACH(c, input) if (c == _(',')) ++count;
+			for(auto& c : input) {
+				if (c == _(' ,')) {
+					++count;
+				}
+			}
 			SCRIPT_RETURN(count);
 		}
 	}

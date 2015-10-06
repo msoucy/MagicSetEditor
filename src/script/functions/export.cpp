@@ -21,7 +21,6 @@
 #include <wx/wfstream.h>
 #include <wx/filename.h>
 
-DECLARE_TYPEOF_COLLECTION(SymbolFont::DrawableSymbol);
 
 // ----------------------------------------------------------------------------- : Utility
 
@@ -87,7 +86,6 @@ struct NegTag {
 	NegTag(Tag* tag, bool neg) : tag(tag), neg(neg) {}
 };
 
-DECLARE_TYPEOF_COLLECTION(NegTag);
 
 /// A stack of opened HTML tags
 class TagStack {
@@ -110,7 +108,7 @@ class TagStack {
 	}
 	// Write all pending tags, should be called before non-tag output
 	void write_pending_tags(String& ret) {
-		FOR_EACH(t, pending_tags) {
+		for(auto& t : pending_tags) {
 			t.tag->write(ret, t.neg);
 			if (!t.neg) tags.push_back(t.tag);
 		}
@@ -163,7 +161,7 @@ class TagStack {
 // html-escape a string
 String html_escape(const String& str) {
 	String ret;
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		if (c == _('\1') || c == _('<')) { // escape <
 			ret += _("&lt;");
 		} else if (c == _('>')) {  // escape >
@@ -190,7 +188,7 @@ String symbols_to_html(const String& str, SymbolFont& symbol_font, double size) 
 	vector<SymbolFont::DrawableSymbol> symbols;
 	symbol_font.split(str, symbols);
 	String html;
-	FOR_EACH(sym, symbols) {
+	for(auto& sym : symbols) {
 		String filename = symbol_font.name() + _("-") + clean_filename(sym.text) + _(".png");
 		map<String,wxSize>::iterator it = ei.exported_images.find(filename);
 		if (it == ei.exported_images.end()) {

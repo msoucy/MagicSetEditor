@@ -21,8 +21,6 @@
 #include <gfx/color.hpp>
 #include <wx/clipbrd.h>
 
-DECLARE_TYPEOF_COLLECTION(KeywordP);
-DECLARE_TYPEOF_COLLECTION(CardP);
 
 // ----------------------------------------------------------------------------- : Events
 
@@ -92,7 +90,7 @@ void KeywordList::onAction(const Action& action, bool undone) {
 
 void KeywordList::updateUsageStatistics() {
 	usage_statistics.clear();
-	FOR_EACH_CONST(card, set->cards) {
+	for(const auto& card : set->cards) {
 		for (KeywordUsageStatistics::const_iterator it = card->keyword_usage.begin() ; it != card->keyword_usage.end() ; ++it) {
 			usage_statistics[it->second]++;
 		}
@@ -154,13 +152,13 @@ String match_string(const Keyword& a) {
 }
 
 void KeywordList::getItems(vector<VoidP>& out) const {
-	FOR_EACH(k, set->keywords) {
+	for(auto& k : set->keywords) {
 		k->fixed = false;
 		if (!filter || filter->keep(*k)) {
 			out.push_back(k);
 		}
 	}
-	FOR_EACH(k, set->game->keywords) {
+	for(auto& k : set->game->keywords) {
 		k->fixed = true;
 		if (!filter || filter->keep(*k)) {
 			out.push_back(k);

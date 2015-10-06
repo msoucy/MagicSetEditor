@@ -17,7 +17,6 @@
 #include <data/card.hpp>
 #include <data/game.hpp>
 
-DECLARE_TYPEOF_COLLECTION(pair<String COMMA ScriptValueP>);
 
 // ----------------------------------------------------------------------------- : Debugging
 
@@ -509,7 +508,7 @@ ScriptValueP sort_script(Context& ctx, const ScriptValueP& list, ScriptValue& or
 		}
 		// return collection
 		ScriptCustomCollectionP ret(new ScriptCustomCollection());
-		FOR_EACH(v, values) {
+		for(auto& v : values) {
 			ret->value.push_back(v.second);
 		}
 		return ret;

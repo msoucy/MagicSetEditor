@@ -9,9 +9,9 @@
 #include <util/prec.hpp>
 #include <data/action/symbol_part.hpp>
 #include <gfx/bezier.hpp>
+#include <boost/range/adaptor/reversed.hpp>
+#include <boost/range/combine.hpp>
 
-DECLARE_TYPEOF_COLLECTION(Vector2D);
-DECLARE_TYPEOF_COLLECTION(ControlPointP);
 
 // ----------------------------------------------------------------------------- : Utility
 
@@ -94,7 +94,7 @@ ControlPointMoveAction::ControlPointMoveAction(const set<ControlPointP>& points)
 	, snap(0)
 {
 	oldValues.reserve(points.size());
-	FOR_EACH(p, points) {
+	for(auto& p : points) {
 		oldValues.push_back(p->pos);
 	}
 }
@@ -104,8 +104,8 @@ String ControlPointMoveAction::getName(bool to_undo) const {
 }
 
 void ControlPointMoveAction::perform(bool to_undo) {
-	FOR_EACH_2(p,points,  op,oldValues) {
-		swap(p->pos, op);
+	for(auto&& pop : boost::combine(points, oldValues)) {
+		swap(get<0>(pop)->pos, get<1>(pop));
 	}
 }
 
@@ -375,7 +375,6 @@ void SinglePointRemoveAction::perform(bool to_undo) {
 }
 
 DECLARE_POINTER_TYPE(SinglePointRemoveAction);
-DECLARE_TYPEOF_COLLECTION(SinglePointRemoveActionP);
 
 
 // Remove a set of points from a symbol shape.
@@ -395,7 +394,7 @@ class ControlPointRemoveAction : public Action {
 ControlPointRemoveAction::ControlPointRemoveAction(const SymbolShapeP& shape, const set<ControlPointP>& to_delete) {
 	int index = 0;
 	// find points to remove, in reverse order
-	FOR_EACH(point, shape->points) {
+	for(auto& point : shape->points) {
 		if (to_delete.find(point) != to_delete.end()) {
 			// remove this point
 			removals.push_back(intrusive(new SinglePointRemoveAction(shape, index)));
@@ -410,11 +409,15 @@ String ControlPointRemoveAction::getName(bool to_undo) const {
 
 void ControlPointRemoveAction::perform(bool to_undo) {
 	if (to_undo) {
-		FOR_EACH(r, removals) r->perform(to_undo);
+		for(auto& r : removals) {
+			r->perform(to_undo);
+		}
 	} else {
 		// in reverse order, because positions of later points will
 		// change after removal of earlier points.
-		FOR_EACH_REVERSE(r, removals) r->perform(to_undo);
+		for(auto& r : boost::adaptors::reverse(removals)) {
+			r->perform(to_undo);
+		}
 	}
 }
 

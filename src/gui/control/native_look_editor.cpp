@@ -13,9 +13,8 @@
 #include <data/stylesheet.hpp>
 #include <data/export_template.hpp>
 #include <data/settings.hpp>
+#include <boost/range/adaptor/reversed.hpp>
 
-DECLARE_TYPEOF_COLLECTION(ValueViewerP);
-DECLARE_TYPEOF_NO_REV(IndexMap<FieldP COMMA StyleP>);
 
 // ----------------------------------------------------------------------------- : NativeLookEditor
 
@@ -61,7 +60,7 @@ void NativeLookEditor::resizeViewers() {
 		label_width = 0;
 		wxClientDC dc(this);
 		dc.SetFont(*wxNORMAL_FONT);
-		FOR_EACH(v, viewers) {
+		for(auto& v : viewers) {
 			ValueEditor* e = v->getEditor();
 			if (!e || e->drawLabel()) {
 				// width of the label string
@@ -74,7 +73,7 @@ void NativeLookEditor::resizeViewers() {
 		}
 	}
 	// Set editor sizes
-	FOR_EACH(v, viewers) {
+	for(auto& v : viewers) {
 		StyleP s = v->getStyle();
 		ValueEditor* e = v->getEditor();
 		if (!e || e->drawLabel()) {
@@ -95,7 +94,7 @@ void NativeLookEditor::resizeViewers() {
 		// Doesn't fit vertically, add scrollbar and resize
 		/*
 		y = margin;
-		FOR_EACH(v, viewers) {
+		for(auto& v : viewers) {
 			StyleP s = v->getStyle();
 			ValueEditor* e = v->getEditor();
 			s->top  = y;
@@ -111,8 +110,10 @@ void NativeLookEditor::resizeViewers() {
 void NativeLookEditor::onInit() {
 	DataEditor::onInit();
 	// Give viewers a chance to show/hide controls (scrollbar) when selecting other editors
-	FOR_EACH_EDITOR {
-		e->onShow(true);
+	for(auto& v : viewers) {
+		if (ValueEditor* e = v->getEditor()) {
+			e->onShow(true);
+		}
 	}
 	resizeViewers();
 }
@@ -151,12 +152,15 @@ void NativeLookEditor::onScroll(wxScrollWinEvent& ev) {
 }
 void NativeLookEditor::onMouseWheel(wxMouseEvent& ev) {
 	// send scroll event to field under cursor
-	FOR_EACH_EDITOR_REVERSE { // find high z index fields first
-		RealPoint pos = mousePoint(ev, *v);
-		if (v->containsPoint(pos) && v->getField()->editable) {
-			bool scrolled = e->onMouseWheel(pos, ev);
-			if (scrolled) return;
-			break;
+	// find high z index fields first
+	for(auto& v : boost::adaptors::reverse(viewers)) {
+		if(ValueEditor* e = v->getEditor()) {
+			RealPoint pos = mousePoint(ev, *v);
+			if (v->containsPoint(pos) && v->getField()->editable) {
+				bool scrolled = e->onMouseWheel(pos, ev);
+				if (scrolled) return;
+				break;
+			}
 		}
 	}
 	// scroll entire window
@@ -176,7 +180,7 @@ void NativeLookEditor::scrollTo(int direction, int pos) {
 			SetScrollPos(wxVERTICAL, pos);
 
 			// move child controls
-			FOR_EACH(v, viewers) {
+			for(auto& v : viewers) {
 				ValueEditor* e = v->getEditor();
 				if (e) e->determineSize();
 			}

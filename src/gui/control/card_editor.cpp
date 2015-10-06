@@ -17,9 +17,8 @@
 #include <util/window_id.hpp>
 #include <wx/caret.h>
 #include <boost/iterator/filter_iterator.hpp>
+#include <boost/range/adaptor/reversed.hpp>
 
-DECLARE_TYPEOF_COLLECTION(ValueViewerP);
-DECLARE_TYPEOF_COLLECTION(ValueViewer*);
 
 // ----------------------------------------------------------------------------- : DataEditor
 
@@ -306,7 +305,8 @@ void DataEditor::onMotion(wxMouseEvent& ev) {
 	if (!HasCapture()) {
 		// find editor under mouse
 		ValueViewer* new_hovered_viewer = nullptr;
-		FOR_EACH_REVERSE(v,viewers) { // find high z index fields first
+		// find high z index fields first
+		for(auto& v : boost::adaptors::reverse(viewers)) {
 			RealPoint pos = mousePoint(ev, *v);
 			if (v->containsPoint(pos) && v->getField()->editable) {
 				new_hovered_viewer = v.get();
@@ -376,14 +376,17 @@ void DataEditor::selectField(wxMouseEvent& ev, bool (ValueEditor::*event)(const 
 	}
 }
 void DataEditor::selectFieldNoEvents(const wxMouseEvent& ev) {
-	FOR_EACH_EDITOR_REVERSE { // find high z index fields first
-		int y;
-		if (v->getField()->editable && (v->containsPoint(mousePoint(ev,*v)) ||
-		        (nativeLook() && (y = ev.GetY() + GetScrollPos(wxVERTICAL)) >= v->getStyle()->top
-		                      && y < v->getStyle()->bottom) )) {
-			current_viewer = v.get();
-			current_editor = e;
-			return;
+	// find high z index fields first
+	for(auto& v : boost::adaptors::reverse(viewers)) {
+		if(ValueEditor* e = v->getEditor()) {
+			int y;
+			if (v->getField()->editable && (v->containsPoint(mousePoint(ev,*v)) ||
+					(nativeLook() && (y = ev.GetY() + GetScrollPos(wxVERTICAL)) >= v->getStyle()->top
+								  && y < v->getStyle()->bottom) )) {
+				current_viewer = v.get();
+				current_editor = e;
+				return;
+			}
 		}
 	}
 }

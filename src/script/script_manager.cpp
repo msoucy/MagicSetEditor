@@ -22,12 +22,6 @@
 #include <util/error.hpp>
 
 typedef map<const StyleSheet*,Context*> Contexts;
-DECLARE_TYPEOF(Contexts);
-DECLARE_TYPEOF_COLLECTION(CardP);
-DECLARE_TYPEOF_COLLECTION(FieldP);
-DECLARE_TYPEOF_COLLECTION(Dependency);
-DECLARE_TYPEOF_NO_REV(IndexMap<FieldP COMMA StyleP>);
-DECLARE_TYPEOF_NO_REV(IndexMap<FieldP COMMA ValueP>);
 
 //#define LOG_UPDATES
 
@@ -39,7 +33,7 @@ SetScriptContext::SetScriptContext(Set& set)
 
 SetScriptContext::~SetScriptContext() {
 	// destroy contexts
-	FOR_EACH(sc, contexts) {
+	for(auto& sc : contexts) {
 		delete sc.second;
 	}
 }
@@ -116,11 +110,11 @@ void SetScriptManager::initDependencies(Context& ctx, Game& game) {
 	if (game.dependencies_initialized) return;
 	game.dependencies_initialized = true;
 	// find dependencies of card fields
-	FOR_EACH(f, game.card_fields) {
+	for(auto& f : game.card_fields) {
 		f->initDependencies(ctx, Dependency(DEP_CARD_FIELD, f->index));
 	}
 	// find dependencies of set fields
-	FOR_EACH(f, game.set_fields) {
+	for(auto& f : game.set_fields) {
 		f->initDependencies(ctx, Dependency(DEP_SET_FIELD, f->index));
 	}
 }
@@ -130,18 +124,18 @@ void SetScriptManager::initDependencies(Context& ctx, StyleSheet& stylesheet) {
 	if (stylesheet.dependencies_initialized) return;
 	stylesheet.dependencies_initialized = true;
 	// find dependencies of extra card fields
-	FOR_EACH(f, stylesheet.extra_card_fields) {
+	for(auto& f : stylesheet.extra_card_fields) {
 		f->initDependencies(ctx, Dependency(DEP_EXTRA_CARD_FIELD, f->index, &stylesheet));
 	}
 	// find dependencies of choice images and other style stuff
-	FOR_EACH(s, stylesheet.card_style) {
+	for(auto& s : stylesheet.card_style) {
 		s->initDependencies(ctx, Dependency(DEP_CARD_STYLE, s->fieldP->index, &stylesheet));
 		// are there dependencies of this style on other style properties?
 		Dependency test(DEP_DUMMY, false);
 		s->checkContentDependencies(ctx, test);
 		if (test.index) s->content_dependent = true;
 	}
-	FOR_EACH(s, stylesheet.extra_card_style) {
+	for(auto& s : stylesheet.extra_card_style) {
 		// are there dependencies of this style on other style properties?
 		Dependency test(DEP_DUMMY, false);
 		s->checkContentDependencies(ctx, test);
@@ -182,10 +176,10 @@ void SetScriptManager::onAction(const Action& action, bool undone) {
 	TYPE_CASE(action, AddCardAction) {
 		if (action.action.adding != undone) {
 			// update the added cards specificly
-			FOR_EACH_CONST(step, action.action.steps) {
+			for(const auto& step : action.action.steps) {
 				const CardP& card = step.item;
 				Context& ctx = getContext(card);
-				FOR_EACH(v, card->data) {
+				for(auto& v : card->data) {
 					v->update(ctx,&action);
 				}
 			}
@@ -225,7 +219,7 @@ void SetScriptManager::updateStyles(const CardP& card, bool only_content_depende
 	if (!only_content_dependent) {
 		// update extra card fields
 		IndexMap<FieldP,ValueP>& extra_data = card->extraDataFor(stylesheet);
-		FOR_EACH(v, extra_data) {
+		for(auto& v : extra_data) {
 			if (v->update(ctx)) {
 				// changed, send event
 				ScriptValueEvent change(card.get(), v.get());
@@ -238,7 +232,7 @@ void SetScriptManager::updateStyles(const CardP& card, bool only_content_depende
 	updateStyles(ctx, stylesheet.extra_card_style, only_content_dependent);
 }
 void SetScriptManager::updateStyles(Context& ctx, const IndexMap<FieldP,StyleP>& styles, bool only_content_dependent) {
-	FOR_EACH_CONST(s, styles) {
+	for(const auto& s : styles) {
 		if (only_content_dependent && !s->content_dependent) continue;
 		try {
 			if (int change = s->update(ctx)) {
@@ -283,7 +277,7 @@ void SetScriptManager::updateAll() {
 	wxBusyCursor busy;
 	// update set data
 	Context& ctx = getContext(set.stylesheet);
-	FOR_EACH(v, set.data) {
+	for(auto& v : set.data) {
 		try {
 			PROFILER2( v->fieldP.get(), _("update set.") + v->fieldP->name );
 			v->update(ctx);
@@ -292,9 +286,9 @@ void SetScriptManager::updateAll() {
 		}
 	}
 	// update card data of all cards
-	FOR_EACH(card, set.cards) {
+	for(auto& card : set.cards) {
 		Context& ctx = getContext(card);
-		FOR_EACH(v, card->data) {
+		for(auto& v : card->data) {
 			try {
 				#if USE_SCRIPT_PROFILING
 					Timer t;
@@ -357,7 +351,7 @@ void SetScriptManager::updateToUpdate(const ToUpdate& u, deque<ToUpdate>& to_upd
 }
 
 void SetScriptManager::alsoUpdate(deque<ToUpdate>& to_update, const vector<Dependency>& deps, const CardP& card) {
-	FOR_EACH_CONST(d, deps) {
+	for(const auto& d : deps) {
 		switch (d.type) {
 			case DEP_SET_FIELD: {
 				ValueP value = set.data.at(d.index);
@@ -373,7 +367,7 @@ void SetScriptManager::alsoUpdate(deque<ToUpdate>& to_update, const vector<Depen
 				}
 			} case DEP_CARDS_FIELD: {
 				// something invalidates a card value for all cards, so all cards need updating
-				FOR_EACH(card, set.cards) {
+				for(auto& card : set.cards) {
 					ValueP value = card->data.at(d.index);
 					to_update.push_back(ToUpdate(value.get(), card));
 				}

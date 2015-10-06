@@ -12,7 +12,6 @@
 #include <data/card.hpp>
 #include <wx/imaglist.h>
 
-DECLARE_TYPEOF_COLLECTION(CardP);
 
 // ----------------------------------------------------------------------------- : SelectCardList
 
@@ -30,7 +29,7 @@ SelectCardList::SelectCardList(Window* parent, int id, long additional_style)
 SelectCardList::~SelectCardList() {}
 
 void SelectCardList::selectAll() {
-	FOR_EACH_CONST(c, set->cards) {
+	for(const auto& c : set->cards) {
 		selected.insert(c);
 	}
 	Refresh(false);
@@ -44,7 +43,7 @@ bool SelectCardList::isSelected(const CardP& card) const {
 }
 
 void SelectCardList::getSelection(vector<CardP>& out) const {
-	FOR_EACH_CONST(card, set->cards) {
+	for(const auto& card : set->cards) {
 		if (isSelected(card)) out.push_back(card);
 	}
 }

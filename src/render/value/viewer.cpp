@@ -10,7 +10,6 @@
 #include <render/value/viewer.hpp>
 #include <render/card/viewer.hpp>
 
-DECLARE_TYPEOF_COLLECTION(wxPoint);
 
 // ----------------------------------------------------------------------------- : ValueViewer
 
@@ -76,7 +75,9 @@ void ValueViewer::drawFieldBorder(RotatedDC& dc) {
 			vector<wxPoint> points;
 			alpha_mask.convexHull(points);
 			if (points.size() < 3) return;
-			FOR_EACH(p, points) p = dc.trPixelNoZoom(RealPoint(p.x,p.y));
+			for(auto& p : points) {
+				p = dc.trPixelNoZoom(RealPoint(p.x, p.y));
+			}
 			dc.getDC().DrawPolygon((int)points.size(), &points[0]);
 		} else {
 			// simple rectangle

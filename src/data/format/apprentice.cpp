@@ -21,9 +21,6 @@
 #include <wx/datstrm.h>
 #include <wx/filename.h>
 
-DECLARE_TYPEOF_COLLECTION(String);
-DECLARE_TYPEOF_COLLECTION(CardP);
-DECLARE_TYPEOF(map<String COMMA String>);
 
 String card_rarity_code(const String& rarity);
 
@@ -158,7 +155,7 @@ void ApprExpansionDatabase::doRead(wxInputStream& in) {
 void ApprExpansionDatabase::doWrite(wxOutputStream& out) {
 	wxTextOutputStream tout(out, wxEOL_DOS);
 	// write in order first
-	FOR_EACH(c, order) {
+	for(auto& c : order) {
 		String code = c;
 		if (code.GetChar(0) != _('-')) {
 			// but not the rarities
@@ -167,14 +164,14 @@ void ApprExpansionDatabase::doWrite(wxOutputStream& out) {
 		}
 	}
 	// the remaing expansions (our new set)
-	FOR_EACH(e, expansions) {
+	for(auto& e : expansions) {
 		String code = e.first;
 		if (code.GetChar(0) != _('-')) {
 			tout << code << _("-") << e.second << _("\n");
 		}
 	}
 	// and at last the rarities
-	FOR_EACH(c, order) {
+	for(auto& c : order) {
 		String code = c;
 		if (code.GetChar(0) == _('-')) {
 			tout << c << _("-") << expansions[c] << _("\n");
@@ -190,7 +187,6 @@ class ApprFormat {
 	String name, sets;
 };
 
-DECLARE_TYPEOF_COLLECTION(ApprFormat);
 
 /// An Apprentice format database (Format.dat)
 class ApprFormatDatabase : public ApprDatabase {
@@ -244,12 +240,12 @@ void ApprFormatDatabase::doWrite(wxOutputStream& out) {
 	wxTextOutputStream tout(out, wxEOL_DOS);
 	tout << _("<Titles>\n");
 	int i = 1;
-	FOR_EACH(f, formats) {
+	for(auto& f : formats) {
 		tout << i++ << _("=") << f.name << _("\n");
 	}
 	tout << _("\n<Format>\n");
 	i = 1;
-	FOR_EACH(f, formats) {
+	for(auto& f : formats) {
 		tout << i++ << _("=") << f.sets << _("\n");
 	}
 }
@@ -276,7 +272,6 @@ class ApprDistro {
 	void writeD(wxTextOutputStream& tout, const String& name, int c, int u, int r);
 };
 
-DECLARE_TYPEOF(map<String COMMA ApprDistro>);
 
 /// An Apprentice distribution database (Distro.dat)
 class ApprDistroDatabase : public ApprDatabase {
@@ -324,12 +319,12 @@ void ApprDistroDatabase::doRead(InputStream& in) {
 void ApprDistroDatabase::doWrite(wxOutputStream& out) {
 	wxTextOutputStream tout(out, wxEOL_DOS);
 	// write in order
-	FOR_EACH(c, order) {
+	for(auto& c : order) {
 		distros[c].write(c, tout);
 		distros.erase(c);
 	}
 	// remaining distros (the newly added one)
-	FOR_EACH(d, distros) {
+	for(auto& d : distros) {
 		d.second.write(d.first, tout);
 	}
 }
@@ -365,7 +360,6 @@ inline String untag_appr(const ScriptValueP& str) {
 }
 
 DECLARE_POINTER_TYPE(ApprCardRecord);
-DECLARE_TYPEOF_COLLECTION(ApprCardRecordP);
 
 /// An Apprentice card database (cardinfo.dat)
 class ApprCardDatabase : public ApprDatabase {
@@ -494,7 +488,7 @@ String ApprCardRecord::readString(wxDataInputStream& strm) {
 
 void ApprCardRecord::writeString(wxDataOutputStream& strm, const String& out) {
 	strm.Write16(UInt(out.size()));
-	FOR_EACH_CONST(c, out) {
+	for(const auto& c : out) {
 		strm.Write8(c);
 	}
 }
@@ -520,7 +514,7 @@ bool unused_appr_card_record(const ApprCardRecordP& rec) {
 
 
 void ApprCardDatabase::removeSet(const String& code) {
-	FOR_EACH(c, cards) {
+	for(auto& c : cards) {
 		c->removeSet(code);
 	}
 	// cleanup
@@ -535,7 +529,7 @@ void ApprCardDatabase::doRead(wxInputStream& in) {
 	cards.resize(card_count);
 	// read cards
 	int i = 0;
-	FOR_EACH(card, cards) {
+	for(auto& card : cards) {
 		if (++i % 100 == 0) {
 			// report progress sometimes
 			progress_target->onProgress(0.4f * float(i) / cards.size(),
@@ -555,7 +549,7 @@ void ApprCardDatabase::doWrite(wxOutputStream& out) {
 	data.Write32(0); // replaced with header pos
 	// write card data
 	int i = 0;
-	FOR_EACH(card, cards) {
+	for(auto& card : cards) {
 		if (++i % 100 == 0) {
 			// report progress sometimes
 			progress_target->onProgress(0.4f + 0.4f * float(i) / cards.size(),
@@ -573,7 +567,7 @@ void ApprCardDatabase::doWrite(wxOutputStream& out) {
 	data.Write32((UInt)cards.size());
 	// write card heads
 	i = 0;
-	FOR_EACH(card, cards) {
+	for(auto& card : cards) {
 		if (++i % 100 == 0) {
 			// report progress sometimes
 			progress_target->onProgress(0.8f + 0.2f * float(i) / cards.size(),
@@ -755,7 +749,7 @@ bool ApprenticeExportWindow::exportSet() {
 	// remove old cards with same code
 	cardlist.removeSet(set->apprentice_code);
 	// add cards from set
-	FOR_EACH(card, set->cards) {
+	for(auto& card : set->cards) {
 		ApprCardRecordP rec = intrusive(new ApprCardRecord(*card, set->apprentice_code));
 		cardlist.cards.push_back(rec);
 	}

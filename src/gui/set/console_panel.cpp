@@ -18,8 +18,6 @@
 #include <wx/clipbrd.h>
 
 DECLARE_POINTER_TYPE(ConsoleMessage);
-DECLARE_TYPEOF_COLLECTION(ScriptParseError);
-DECLARE_TYPEOF_COLLECTION(ConsoleMessageP);
 
 // ----------------------------------------------------------------------------- : MessageControl
 
@@ -179,7 +177,7 @@ class MessageCtrl : public wxScrolledWindow {
 	void draw(wxDC& dc) const {
 		clearDC(dc, wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
 		dc.SetFont(*wxNORMAL_FONT);
-		FOR_EACH_CONST(msg, messages) {
+		for(const auto& msg : messages) {
 			draw(dc, *msg);
 		}
 		if (messages.empty()) {
@@ -485,7 +483,7 @@ void ConsolePanel::exec(String const& command) {
 		// parse command
 		vector<ScriptParseError> errors;
 		ScriptP script = parse(command,nullptr,false,errors);
-		FOR_EACH(error,errors) {
+		for(auto& error :errors) {
 			// TODO: also squiglify the input?
 			messages->add_message(script ? MESSAGE_WARNING : MESSAGE_ERROR,error.what(), true);
 		}

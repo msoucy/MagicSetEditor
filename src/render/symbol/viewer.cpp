@@ -10,8 +10,8 @@
 #include <render/symbol/viewer.hpp>
 #include <util/error.hpp> // clearDC_black
 #include <gui/util.hpp> // clearDC_black
+#include <boost/range/adaptor/reversed.hpp>
 
-DECLARE_TYPEOF_COLLECTION(SymbolPartP);
 
 // ----------------------------------------------------------------------------- : Simple rendering
 
@@ -99,7 +99,7 @@ void SymbolViewer::draw(DC& dc) {
 	MemoryDCP interiorDC;
 	// Check if we can paint directly to the dc
 	// This will fail if there are parts with combine == intersection
-	FOR_EACH(p, symbol->parts) {
+	for(auto& p : symbol->parts) {
 		if (SymbolShape* s = p->isSymbolShape()) {
 			if (s->combine == SYMBOL_COMBINE_INTERSECTION) {
 				paintedSomething = true;
@@ -155,7 +155,7 @@ void SymbolViewer::combineSymbolPart(DC& dc, const SymbolPart& part, bool& paint
 		Matrix2D old_m = multiply;
 		Vector2D old_o = origin;
 		int copies = s->kind == SYMMETRY_REFLECTION ? s->copies / 2 * 2 : s->copies;
-		FOR_EACH_CONST_REVERSE(p, s->parts) {
+		for(auto const& p : boost::adaptors::reverse(s->parts)) {
 			if (copies > 1) ++in_symmetry;
 			for (int i = copies - 1 ; i >= 0 ; --i) {
 				if (i == 0) --in_symmetry;
@@ -205,7 +205,7 @@ void SymbolViewer::combineSymbolPart(DC& dc, const SymbolPart& part, bool& paint
 		}
 	} else if (const SymbolGroup* g = part.isSymbolGroup()) {
 		// Draw all parts, in reverse order (bottom to top)
-		FOR_EACH_CONST_REVERSE(p, g->parts) {
+		for(auto const& p : boost::adaptors::reverse(g->parts)) {
 			combineSymbolPart(dc, *p, paintedSomething, buffersFilled, allow_overlap, borderDC, interiorDC);
 		}
 	}
@@ -335,7 +335,7 @@ void SymbolViewer::highlightPart(DC& dc, const SymbolShape& shape, HighlightStyl
 
 void SymbolViewer::highlightPart(DC& dc, const SymbolSymmetry& sym, HighlightStyle style) {
 	// highlight parts?
-	FOR_EACH_CONST(part, sym.parts) {
+	for(const auto& part : sym.parts) {
 		highlightPart(dc, *part, (HighlightStyle)(style | HIGHLIGHT_LESS));
 	}
 	// Color?
@@ -366,7 +366,7 @@ void SymbolViewer::highlightPart(DC& dc, const SymbolGroup& group, HighlightStyl
 		dc.SetPen  (wxPen(Color(255,0,0), 2));
 		dc.DrawRectangle(rotation.trRectToBB(RealRect(group.bounds)));
 	}
-	FOR_EACH_CONST(part, group.parts) {
+	for(const auto& part : group.parts) {
 		highlightPart(dc, *part, (HighlightStyle)(style | HIGHLIGHT_LESS));
 	}
 }

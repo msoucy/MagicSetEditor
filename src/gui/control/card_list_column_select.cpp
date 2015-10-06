@@ -12,8 +12,6 @@
 #include <data/field.hpp>
 #include <util/window_id.hpp>
 
-DECLARE_TYPEOF_COLLECTION(FieldP);
-DECLARE_TYPEOF_COLLECTION(CardListColumnSelectDialog::ColumnSettingsF);
 
 // ----------------------------------------------------------------------------- : CardListColumnSelectDialog
 
@@ -57,7 +55,7 @@ struct SortByPosition {
 
 void CardListColumnSelectDialog::initColumns() {
 	// order is a list of all columns that may be shown
-	FOR_EACH(f, game->card_fields) {
+	for(auto& f : game->card_fields) {
 		if (f->card_list_allow) {
 			columns.push_back(ColumnSettingsF(f, settings.columnSettingsFor(*game, *f)));
 		}
@@ -66,7 +64,7 @@ void CardListColumnSelectDialog::initColumns() {
 	sort(columns.begin(), columns.end(), SortByPosition(*game));
 	// force unique position
 	int min = 0;
-	FOR_EACH(c, columns) {
+	for(auto& c : columns) {
 		if (c.settings.position < min) c.settings.position = min;
 		min = c.settings.position + 1;
 	}
@@ -75,7 +73,7 @@ void CardListColumnSelectDialog::initColumns() {
 void CardListColumnSelectDialog::initList() {
 	// Init items
 	Color window_color = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW);
-	FOR_EACH(c, columns) {
+	for(auto& c : columns) {
 		list->Append(tr(*game, c.field->card_list_name, identity));
 		// check
 		int i = list->GetCount() - 1;
@@ -127,7 +125,7 @@ void CardListColumnSelectDialog::onShowHide(wxCommandEvent& ev) {
 
 void CardListColumnSelectDialog::onOk(wxCommandEvent&) {
 	// store column settings
-	FOR_EACH(c, columns) {
+	for(auto& c : columns) {
 		settings.columnSettingsFor(*game, *c.field) = c.settings;
 	}
 	// close dialog

@@ -8,8 +8,8 @@
 
 #include <util/prec.hpp>
 #include <util/string.hpp>
-#include <util/for_each.hpp>
 #include <wx/txtstrm.h>
+#include <algorithm>
 
 // ----------------------------------------------------------------------------- : Unicode
 
@@ -151,7 +151,7 @@ bool is_substr(const String& s, String::const_iterator it, const Char* cmp) {
 String capitalize(const String& s) {
 	String result = s;
 	bool after_space = true;
-	FOR_EACH_IT(it, result) {
+	for(String::iterator it = result.begin(); it != result.end(); ++it) {
 		if (*it == _(' ') || *it == _('/')) {
 			after_space = true;
 		} else if (after_space) {
@@ -187,7 +187,7 @@ Char canonical_name_form(Char c) {
 String canonical_name_form(const String& str) {
 	String ret;
 	ret.reserve(str.size());
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		ret += canonical_name_form((Char)c);
 	}
 	return ret;
@@ -200,7 +200,7 @@ Char uncanonical_name_form(Char c) {
 String uncanonical_name_form(const String& str) {
 	String ret;
 	ret.reserve(str.size());
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		ret += uncanonical_name_form((Char)c);
 	}
 	return ret;
@@ -210,7 +210,7 @@ String name_to_caption(const String& str) {
 	String ret;
 	ret.reserve(str.size());
 	bool leading = true;
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		if ((c == _('_') || c == _(' '))) {
 			ret += leading ? c : _(' ');
 		} else {
@@ -402,11 +402,8 @@ bool smart_equal(const String& sa, const String& sb) {
 }
 
 bool starts_with(const String& str, const String& start) {
-	if (str.size() < start.size()) return false;
-	FOR_EACH_2_CONST(a, str, b, start) {
-		if (a != b) return false;
-	}
-	return true;
+	return (str.size() >= start.size()) &&
+		   std::equal(start.begin(), start.end(), str.begin());
 }
 
 bool is_substr(const String& str, size_t pos, const Char* cmp) {
@@ -464,14 +461,14 @@ String regex_escape(Char c) {
 /// Escape a string for use in regular expressions
 String regex_escape(const String& s) {
 	String ret;
-	FOR_EACH_CONST(c,s) ret += regex_escape(static_cast<Char>(c));
+	for(const auto& c :s) ret += regex_escape(static_cast<Char>(c));
 	return ret;
 }
 
 String make_non_capturing(const String& re) {
 	String ret;
 	bool escape = false, bracket = false, capture = false;
-	FOR_EACH_CONST(c, re) {
+	for(const auto& c : re) {
 		if (capture) {
 			if (c != _('?')) {
 				// change this capture into a non-capturing "(" by appending "?:"

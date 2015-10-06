@@ -12,7 +12,6 @@
 #include <render/card/viewer.hpp>
 #include <gui/util.hpp>
 
-DECLARE_TYPEOF_COLLECTION(String);
 
 // ----------------------------------------------------------------------------- : MultipleChoiceValueViewer
 
@@ -42,7 +41,7 @@ void MultipleChoiceValueViewer::draw(RotatedDC& dc) {
 		}
 	} else if (style().render_style & RENDER_LIST) {
 		// render only selected choices
-		FOR_EACH(choice, selected) {
+		for(auto& choice : selected) {
 			drawChoice(dc, pos, choice);
 		}
 	} else {

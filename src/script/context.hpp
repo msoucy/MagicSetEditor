@@ -84,7 +84,6 @@ class Context {
 	void closeScope(size_t scope);
 	friend class LocalScope;
 	
-  public:// public for FOR_EACH
 	/// Record of a variable
 	struct VariableValue {
 		VariableValue() : level(0) {}

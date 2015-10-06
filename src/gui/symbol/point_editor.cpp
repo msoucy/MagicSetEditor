@@ -16,7 +16,6 @@
 #include <util/window_id.hpp>
 #include <util/error.hpp>
 
-DECLARE_TYPEOF_COLLECTION(ControlPointP);
 
 // ----------------------------------------------------------------------------- : SymbolPointEditor
 
@@ -435,7 +434,7 @@ bool SymbolPointEditor::pointSelected(const ControlPointP& pnt) {
 	return selected_points.find(pnt) != selected_points.end();
 }
 bool SymbolPointEditor::pointSelected(const ControlPoint& pnt) {
-	FOR_EACH(s, selected_points) {
+	for(auto& s : selected_points) {
 		if (s.get() == &pnt) return true;
 	}
 	return false;
@@ -536,7 +535,7 @@ bool SymbolPointEditor::checkPosOnCurve(const Vector2D& pos) {
 SelectedHandle SymbolPointEditor::findHandle(const Vector2D& pos) {
 	double range = control.rotation.trInvS(3); // less then 3 pixels away is still a hit
 	// Is there a main handle there?
-	FOR_EACH(p, part->points) {
+	for(auto& p : part->points) {
 		if (inRange(p->pos, pos, range)) {
 			// point is at pos
 			return SelectedHandle(p, HANDLE_MAIN);

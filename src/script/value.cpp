@@ -15,7 +15,6 @@
 #include <util/tagged_string.hpp>
 #include <boost/pool/singleton_pool.hpp>
 
-DECLARE_TYPEOF_COLLECTION(pair<Variable COMMA ScriptValueP>);
 
 // ----------------------------------------------------------------------------- : ScriptValue
 // Base cases
@@ -230,7 +229,7 @@ String quote_string(String const& str) {
 	String out;
 	out.reserve(str.size() + 2);
 	out += _('"');
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		if      (c == _('"') || c == _('\\')) { out += _('\\'); out += c; }
 		else if (c == _('\1')) out += _("\\<");
 		else if (c == _('\n')) out += _("\\n");
@@ -516,7 +515,7 @@ void ScriptClosure::addBinding(Variable v, const ScriptValueP& value) {
 	bindings.push_back(make_pair(v,value));
 }
 ScriptValueP ScriptClosure::getBinding(Variable v) const {
-	FOR_EACH_CONST(b, bindings) {
+	for(const auto& b : bindings) {
 		if (b.first == v) return b.second;
 	}
 	return ScriptValueP();
@@ -537,7 +536,7 @@ ScriptValueP ScriptClosure::dependencies(Context& ctx, const Dependency& dep) co
 	return fun->dependencies(ctx, dep);
 }
 void ScriptClosure::applyBindings(Context& ctx) const {
-	FOR_EACH_CONST(b, bindings) {
+	for(const auto& b : bindings) {
 		if (ctx.getVariableScope(b.first) != 0) {
 			// variables passed as arguments (i.e. in scope 0) override these default bindings
 			ctx.setVariable(b.first, b.second);

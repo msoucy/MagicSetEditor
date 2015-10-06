@@ -11,8 +11,8 @@
 #include <gfx/gfx.hpp>
 #include <wx/renderer.h>
 #include <wx/dcbuffer.h>
+#include <boost/range/adaptor/reversed.hpp>
 
-DECLARE_TYPEOF_COLLECTION(TreeList::ItemP);
 
 // ----------------------------------------------------------------------------- : TreeList : item managment
 
@@ -69,7 +69,7 @@ void TreeList::calcItemCount() {
 	// item count
 	total_lines = 0;
 	int visible_level = 0;
-	FOR_EACH(i,items) {
+	for(auto& i :items) {
 		if (i->level <= visible_level) {
 			i->position = total_lines;
 			++total_lines;
@@ -81,7 +81,7 @@ void TreeList::calcItemCount() {
 	}
 	// update lines
 	UInt lines = 0;
-	FOR_EACH_REVERSE(i,items) {
+	for(auto& i : boost::adaptors::reverse(items)) {
 		if (i->visible()) {
 			i->lines = lines;
 			lines &= (1 << i->level) - 1;

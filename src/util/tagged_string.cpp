@@ -27,7 +27,7 @@ Char tag_char(Char c) {
 String untag(const String& str) {
 	bool intag = false;
 	String ret; ret.reserve(str.size());
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		if (c==_('<')) intag = true;
 		if (!intag) ret += untag_char(c);
 		if (c==_('>')) intag = false;
@@ -38,7 +38,7 @@ String untag(const String& str) {
 String untag_no_escape(const String& str) {
 	bool intag = false;
 	String ret; ret.reserve(str.size());
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		if (c==_('<')) intag = true;
 		if (!intag) ret += c;
 		if (c==_('>')) intag = false;
@@ -52,7 +52,7 @@ String untag_hide_sep(const String& str) {
 
 String escape(const String& str) {
 	String ret; ret.reserve(str.size());
-	FOR_EACH_CONST(c, str) {
+	for(const auto& c : str) {
 		ret += tag_char(c);
 	}
 	return ret;
@@ -633,7 +633,7 @@ bool is_space_like(Char c) {
 
 String curly_quotes(String str, bool curl) {
 	bool open = true, in_tag = false;
-	FOR_EACH(c, str) {
+	for(auto& c : str) {
 		if (c == _('\'') || c == LEFT_SINGLE_QUOTE || c == RIGHT_SINGLE_QUOTE) {
 			c = curl ? (open ? LEFT_SINGLE_QUOTE : RIGHT_SINGLE_QUOTE) : _('\'');
 		} else if (c == _('\"') || c == LEFT_DOUBLE_QUOTE || c == RIGHT_DOUBLE_QUOTE) {

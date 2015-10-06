@@ -19,9 +19,6 @@
 #include "data/installer.hpp"
 #include <wx/wfstream.h>
 
-DECLARE_TYPEOF_COLLECTION(InstallablePackageP);
-DECLARE_TYPEOF_COLLECTION(PackageVersionP);
-DECLARE_TYPEOF_COLLECTION(PackageVersion::FileInfo);
 
 // ----------------------------------------------------------------------------- : PackageManager : in memory
 
@@ -297,7 +294,7 @@ void PackageDirectory::installedPackages(vector<InstallablePackageP>& packages_o
 	// has the database of installed packages changed?
 	if (db_changed) {
 		packages.clear();
-		FOR_EACH(p, packages_out) {
+		for(auto& p : packages_out) {
 			if (p->installed) packages.push_back(p->installed);
 		}
 		saveDatabase();
@@ -307,7 +304,7 @@ void PackageDirectory::installedPackages(vector<InstallablePackageP>& packages_o
 void PackageDirectory::bless(const String& package_name) {
 	PackagedP pack = package_manager.openAny(package_name, true);
 	// already have this package?
-	FOR_EACH(ver, packages) {
+	for(auto& ver : packages) {
 		if (ver->name == package_name) {
 			ver->check_status(*pack);
 			ver->bless();
@@ -495,7 +492,7 @@ inline bool is_deleted(PackageVersion::FileInfo f) {
 }
 void PackageVersion::bless() {
 	files.erase(remove_if(files.begin(),files.end(),is_deleted),files.end());
-	FOR_EACH(f,files) {
+	for(auto& f :files) {
 		f.status = FILE_UNCHANGED;
 	}
 	status &= ~STATUS_MODIFIED;

@@ -12,7 +12,6 @@
 #include <util/alignment.hpp>
 #include <script/profiler.hpp>
 
-DECLARE_TYPEOF_COLLECTION(PackagedP);
 
 // ----------------------------------------------------------------------------- : PackageList
 
@@ -69,7 +68,7 @@ void PackageList::showData(const String& pattern) {
 		PROFILER(_("find matching packages"));
 		package_manager.findMatching(pattern, matching);
 	}
-	FOR_EACH(p, matching) {
+	for(auto& p : matching) {
 		// open image
 		PROFILER(_("load package image"));
 		InputStreamP stream = p->openIconFile();

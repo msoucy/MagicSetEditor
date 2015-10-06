@@ -23,8 +23,6 @@
 #include <script/profiler.hpp>
 #include <wx/sstream.h>
 
-DECLARE_TYPEOF_COLLECTION(CardP);
-DECLARE_TYPEOF_NO_REV(IndexMap<FieldP COMMA ValueP>);
 
 // ----------------------------------------------------------------------------- : Set
 
@@ -109,13 +107,13 @@ IndexMap<FieldP, ValueP>& Set::stylingDataFor(const CardP& card) {
 
 String Set::identification() const {
 	// an identifying field
-	FOR_EACH_CONST(v, data) {
+	for(const auto& v : data) {
 		if (v->fieldP->identifying) {
 			return v->toFriendlyString();
 		}
 	}
 	// otherwise the first non-information field
-	FOR_EACH_CONST(v, data) {
+	for(const auto& v : data) {
 		if (!dynamic_pointer_cast<InfoValue>(v)) {
 			return v->toFriendlyString();
 		}
@@ -193,7 +191,7 @@ void Set::reflect_cards<Writer> (Writer& reflector) {
 		REFLECT(cards);
 	} else {
 		set<String> used;
-		FOR_EACH(card, cards) {
+		for(auto& card : cards) {
 			// pick a unique filename for this card
 			// can't use Package::newFileName, because then we get conflicts with the previous save of the same card
 			String filename = _("card ") + normalize_internal_filename(clean_filename(card->identification()));
@@ -255,7 +253,7 @@ int Set::positionOfCard(const CardP& card, const ScriptValueP& order_by, const S
 		// 1. make a list of the order value for each card
 		vector<String> values; values.reserve(cards.size());
 		vector<int>    keep;   if(filter) keep.reserve(cards.size());
-		FOR_EACH_CONST(c, cards) {
+		for(const auto& c : cards) {
 			Context& ctx = getContext(c);
 			values.push_back(order_by->eval(ctx)->toString());
 			if (filter) {
@@ -278,7 +276,7 @@ int Set::numberOfCards(const ScriptValueP& filter) {
 		return it->second;
 	} else {
 		int n = 0;
-		FOR_EACH_CONST(c, cards) {
+		for(const auto& c : cards) {
 			if (filter->eval(getContext(c))->toBool()) ++n;
 		}
 		filter_cache.insert(make_pair(filter,n));
