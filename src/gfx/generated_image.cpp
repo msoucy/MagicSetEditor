@@ -15,6 +15,9 @@
 #include <render/symbol/filter.hpp>
 #include <gui/util.hpp> // load_resource_image
 
+using std::max;
+using std::min;
+
 // ----------------------------------------------------------------------------- : GeneratedImage
 
 ScriptType GeneratedImage::type() const { return SCRIPT_IMAGE; }

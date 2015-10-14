@@ -12,6 +12,9 @@
 #include <gfx/gfx.hpp>
 #include <util/error.hpp>
 
+using std::max;
+using std::min;
+
 // ----------------------------------------------------------------------------- : Symbol filtering
 
 void filter_symbol(Image& symbol, const SymbolFilter& filter) {

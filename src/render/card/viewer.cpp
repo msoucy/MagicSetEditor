@@ -18,6 +18,7 @@
 #include <data/action/set.hpp>
 #include <gui/util.hpp> // clearDC
 
+using std::pair;
 
 // ----------------------------------------------------------------------------- : DataViewer
 

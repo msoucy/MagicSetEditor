@@ -10,6 +10,8 @@
 #include <data/keyword.hpp>
 #include <util/tagged_string.hpp>
 
+using std::make_pair;
+
 class KeywordTrie;
 DECLARE_POINTER_TYPE(KeywordParamValue);
 class Value;

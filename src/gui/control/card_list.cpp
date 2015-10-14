@@ -23,6 +23,8 @@
 #include <util/window_id.hpp>
 #include <wx/clipbrd.h>
 
+using std::min;
+using std::pair;
 
 // ----------------------------------------------------------------------------- : Events
 

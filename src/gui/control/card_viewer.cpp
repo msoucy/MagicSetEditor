@@ -13,6 +13,8 @@
 #include <render/value/viewer.hpp>
 #include <wx/dcbuffer.h>
 
+using std::swap;
+
 // ----------------------------------------------------------------------------- : Events
 
 DEFINE_EVENT_TYPE(EVENT_SIZE_CHANGE);

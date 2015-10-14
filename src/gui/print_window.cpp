@@ -16,6 +16,9 @@
 #include <render/card/viewer.hpp>
 #include <wx/print.h>
 
+using std::min;
+using std::swap;
+
 DECLARE_POINTER_TYPE(PageLayout);
 
 // ----------------------------------------------------------------------------- : Layout
@@ -174,8 +177,8 @@ PrintJobP make_print_job(Window* parent, const SetP& set, const ExportCardSelect
 			wxSizer* s3 = wnd.Create();
 			s2->Add(s3, 1, wxEXPAND | wxALL, 8);
 			wxSizer* s4 = new wxStaticBoxSizer(wxVERTICAL, &wnd, L"Settings");
-				s4->Add(space, 1, wxALL | wxALIGN_TOP, 8);
-			s2->Add(s4, 1, wxEXPAND | wxALL & ~wxLEFT, 8);
+			s4->Add(space, 1, wxALL | wxALIGN_TOP, 8);
+			s2->Add(s4, 1, wxEXPAND | (wxALL & ~wxLEFT), 8);
 		s->Add(s2, 1, wxEXPAND);
 		s->Add(wnd.CreateButtonSizer(wxOK | wxCANCEL) , 0, wxEXPAND | wxALL, 8);
 	s->SetSizeHints(&wnd);

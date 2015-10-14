@@ -10,6 +10,9 @@
 #include <gfx/gfx.hpp>
 #include <util/error.hpp>
 
+using std::max;
+using std::min;
+
 // ----------------------------------------------------------------------------- : Saturation
 
 void saturate(Image& image, double amount) {

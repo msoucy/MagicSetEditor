@@ -16,6 +16,8 @@
 #include <wx/filename.h>
 #include <wx/notebook.h>
 
+using std::max;
+using std::min;
 
 // use a combo box for the zoom choices instead of a spin control
 #define USE_ZOOM_COMBOBOX 1

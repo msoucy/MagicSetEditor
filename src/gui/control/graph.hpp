@@ -58,7 +58,7 @@ class GraphAxis : public IntrusivePtrBase<GraphAxis> {
 		, numeric(numeric), bin_size(bin_size)
 		, max(0)
 		, total(0)
-		, mean_value(0), max_value(-numeric_limits<double>::infinity())
+		, mean_value(0), max_value(-std::numeric_limits<double>::infinity())
 		, colors(colors)
 		, order(order)
 	{}
@@ -264,7 +264,7 @@ class GraphStats : public Graph1D {
 	mutable RealSize size, item_size;
 	mutable double label_width;
 	Alignment alignment;
-	vector<pair<String,String> > values;
+	vector<std::pair<String,String> > values;
 };
 
 //class GraphTable {

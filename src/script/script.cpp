@@ -12,6 +12,8 @@
 #include <script/to_value.hpp>
 #include <util/error.hpp>
 
+using std::make_pair;
+
 // ----------------------------------------------------------------------------- : Variables
 
 typedef map<String, Variable> Variables;

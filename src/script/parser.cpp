@@ -14,6 +14,10 @@
 #include <util/io/package_manager.hpp> // for "include file" semi hack
 #include <stack>
 
+using std::max;
+using std::min;
+using std::stack;
+using std::swap;
 
 #ifdef __WXMSW__
 #define TokenType TokenType_ // some stupid windows header uses our name

@@ -10,6 +10,9 @@
 #include <render/text/element.hpp>
 #include <data/symbol_font.hpp>
 
+using std::max;
+using std::min;
+
 // ----------------------------------------------------------------------------- : SymbolTextElement
 
 void SymbolTextElement::draw(RotatedDC& dc, double scale, const RealRect& rect, const double* xs, DrawWhat what, size_t start, size_t end) const {

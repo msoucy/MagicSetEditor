@@ -48,9 +48,11 @@ using boost::dynamic_pointer_cast;
 	*    return shared(new T(stuff)));
 	*/
 template <typename T>
-inline shared_ptr<T> shared(T* ptr) {
-	return shared_ptr<T>(ptr);
+inline std::shared_ptr<T> shared(T* ptr) {
+	return std::shared_ptr<T>(ptr);
 }
+
+using std::shared_ptr;
 
 // ----------------------------------------------------------------------------- : Intrusive pointers
 

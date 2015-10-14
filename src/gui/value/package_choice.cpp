@@ -12,6 +12,7 @@
 #include <gui/util.hpp>
 #include <data/action/value.hpp>
 
+using std::max;
 
 // ----------------------------------------------------------------------------- : DropDownPackageChoiceList
 

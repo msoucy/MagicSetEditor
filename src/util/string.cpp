@@ -11,6 +11,8 @@
 #include <wx/txtstrm.h>
 #include <algorithm>
 
+using std::min;
+
 // ----------------------------------------------------------------------------- : Unicode
 
 String decodeUTF8BOM(const String& s) {

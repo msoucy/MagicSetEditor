@@ -13,6 +13,8 @@
 #include <wx/dcbuffer.h>
 #include <boost/range/adaptor/reversed.hpp>
 
+using std::max;
+using std::min;
 
 // ----------------------------------------------------------------------------- : TreeList : item managment
 

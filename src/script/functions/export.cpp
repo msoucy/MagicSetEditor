@@ -21,6 +21,7 @@
 #include <wx/wfstream.h>
 #include <wx/filename.h>
 
+using std::make_pair;
 
 // ----------------------------------------------------------------------------- : Utility
 

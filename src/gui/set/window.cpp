@@ -40,6 +40,7 @@
 #include <data/action/value.hpp>
 #include <data/action/set.hpp>
 
+using std::pair;
 
 // ----------------------------------------------------------------------------- : Constructor
 

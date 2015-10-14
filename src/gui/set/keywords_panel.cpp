@@ -23,6 +23,7 @@
 #include <wx/statline.h>
 #include <wx/artprov.h>
 
+using std::pair;
 
 // ----------------------------------------------------------------------------- : KeywordsPanel
 

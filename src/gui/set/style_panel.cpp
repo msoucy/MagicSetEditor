@@ -21,6 +21,9 @@
 #include <data/action/set.hpp>
 #include <data/action/value.hpp>
 
+using std::max;
+using std::min;
+using std::pair;
 
 // ----------------------------------------------------------------------------- : StylePanel : initialization
 

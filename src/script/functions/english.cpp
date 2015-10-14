@@ -12,6 +12,8 @@
 #include <util/tagged_string.hpp>
 #include <util/error.hpp>
 
+using std::min;
+
 // ----------------------------------------------------------------------------- : Util
 
 bool is_vowel(Char c) {

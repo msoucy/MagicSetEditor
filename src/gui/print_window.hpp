@@ -54,7 +54,7 @@ class PrintJob : public IntrusivePtrBase<PrintJob> {
 	PageLayout layout;
 	
 	inline int num_pages() const {
-		int cards_per_page = max(1,layout.cards_per_page());
+		int cards_per_page = std::max(1,layout.cards_per_page());
 		return ((int)cards.size() + cards_per_page - 1) / cards_per_page;
 	}
 };

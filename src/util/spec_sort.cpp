@@ -10,6 +10,8 @@
 #include <util/spec_sort.hpp>
 #include <util/error.hpp>
 
+using std::reverse;
+
 const Char REMOVED     = _('\2');
 const Char PLACEHOLDER = _('\3');
 

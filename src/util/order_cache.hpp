@@ -30,7 +30,7 @@ class OrderCache : public IntrusivePtrBase<OrderCache<T> > {
   private:
 	struct CompareKeys;
 	struct CompareValues;
-	typedef pair<void*,int> KV;
+	typedef std::pair<void*,int> KV;
 	vector<KV> positions;
 };
 

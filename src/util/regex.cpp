@@ -10,6 +10,8 @@
 #include <util/regex.hpp>
 #include <util/error.hpp>
 
+using std::insert_iterator;
+
 #if USE_BOOST_REGEX
 // ----------------------------------------------------------------------------- : Regex : boost
 

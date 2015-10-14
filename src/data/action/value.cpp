@@ -20,6 +20,9 @@
 #include <util/tagged_string.hpp>
 #include <data/set.hpp> // for ValueActionPerformer
 
+using std::swap;
+using std::pair;
+
 // ----------------------------------------------------------------------------- : ValueAction
 
 String ValueAction::getName(bool to_undo) const {

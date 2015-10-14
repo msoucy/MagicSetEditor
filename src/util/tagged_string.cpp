@@ -10,6 +10,10 @@
 #include <util/tagged_string.hpp>
 #include <stack>
 
+using std::max;
+using std::min;
+using std::stack;
+
 // ----------------------------------------------------------------------------- : Conversion to/from normal string
 
 Char untag_char(Char c) {

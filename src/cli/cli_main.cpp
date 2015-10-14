@@ -17,6 +17,8 @@
 #include <wx/wfstream.h>
 #include <boost/range/adaptor/reversed.hpp>
 
+using std::min;
+
 String read_utf8_line(wxInputStream& input, bool eat_bom = true, bool until_eof = false);
 
 

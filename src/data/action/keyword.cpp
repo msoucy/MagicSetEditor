@@ -15,6 +15,7 @@
 #include <util/tagged_string.hpp>
 #include <util/error.hpp>
 
+using std::swap;
 
 // ----------------------------------------------------------------------------- : Add Keyword
 

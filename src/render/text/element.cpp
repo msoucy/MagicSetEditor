@@ -12,6 +12,9 @@
 #include <data/field/text.hpp>
 #include <gfx/color.hpp>
 
+using std::max;
+using std::min;
+
 DECLARE_POINTER_TYPE(FontTextElement);
 
 // ----------------------------------------------------------------------------- : TextElements

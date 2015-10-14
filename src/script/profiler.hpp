@@ -52,7 +52,7 @@ DECLARE_POINTER_TYPE(FunctionProfile);
 		return CLOCKS_PER_SEC;
 	}
 
-	inline const char * mangled_name(const type_info& t) {
+	inline const char * mangled_name(const std::type_info& t) {
 		return t.name();
 	}
 #endif

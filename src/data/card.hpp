@@ -56,7 +56,7 @@ class Card : public IntrusivePtrVirtualBase {
 	IndexMap<FieldP, ValueP>& extraDataFor(const StyleSheet& stylesheet);
 	
 	/// Keyword usage statistics
-	vector<pair<Value*,const Keyword*> > keyword_usage;
+	vector<std::pair<Value*,const Keyword*> > keyword_usage;
 	
 	/// Get the identification of this card, an identification is something like a name, title, etc.
 	/** May return "" */

@@ -13,6 +13,9 @@
 #include <util/error.hpp>
 #include <iostream>
 
+using std::max;
+using std::min;
+
 // ----------------------------------------------------------------------------- : Context
 
 Context::Context()

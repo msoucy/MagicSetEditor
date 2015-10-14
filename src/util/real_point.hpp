@@ -82,7 +82,7 @@ class RealSize {
  *   ####          ####...
  */
 inline RealSize add_horizontal(const RealSize& a, const RealSize& b) {
-	return RealSize(a.width + b.width, max(a.height, b.height));
+	return RealSize(a.width + b.width, std::max(a.height, b.height));
 }
 
 /// Add two sizes vertically
@@ -93,7 +93,7 @@ inline RealSize add_horizontal(const RealSize& a, const RealSize& b) {
  *                 $$$.
  */
 inline RealSize add_vertical(const RealSize& a, const RealSize& b) {
-	return RealSize(max(a.width, b.width), a.height + b.height);
+	return RealSize(std::max(a.width, b.width), a.height + b.height);
 }
 
 /// Add two sizes diagonally

@@ -163,7 +163,7 @@ class CombiningModeAction : public SymbolPartsAction {
 	
   private:
 	void add(const SymbolPartP&, SymbolShapeCombine mode);
-	vector<pair<SymbolShapeP,SymbolShapeCombine> > parts;	///< Affected parts with new combining modes
+	vector<std::pair<SymbolShapeP,SymbolShapeCombine> > parts;	///< Affected parts with new combining modes
 };
 
 // ----------------------------------------------------------------------------- : Change name
@@ -244,7 +244,7 @@ class DuplicateSymbolPartsAction : public SymbolPartListAction {
   private:
 	Symbol& symbol;
 	/// Duplicates of parts and their positions, sorted by ascending pos
-	vector<pair<SymbolPartP, size_t> > duplications;
+	vector<std::pair<SymbolPartP, size_t> > duplications;
 };
 
 

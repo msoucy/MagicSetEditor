@@ -229,7 +229,7 @@ class Package : public IntrusivePtrVirtualBase {
 	typedef map<String, FileInfo> FileInfos;
 	inline const FileInfos& getFileInfos() const { return files; }
 	/// When was a file last modified?
-	DateTime modificationTime(const pair<String, FileInfo>& fi) const;
+	DateTime modificationTime(const std::pair<String, FileInfo>& fi) const;
   private:
 	/// All files in the package
 	FileInfos files;

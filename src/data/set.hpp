@@ -127,7 +127,7 @@ class Set : public Packaged {
 	/// Object for executing scripts from the thumbnail thread
 	scoped_ptr<SetScriptContext> thumbnail_script_context;
 	/// Cache of cards ordered by some criterion
-	map<pair<ScriptValueP,ScriptValueP>,OrderCacheP> order_cache;
+	map<std::pair<ScriptValueP,ScriptValueP>,OrderCacheP> order_cache;
 	map<ScriptValueP,int>                            filter_cache;
 };
 

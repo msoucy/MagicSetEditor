@@ -111,7 +111,7 @@ class Vector2D {
 	
 	// Vector at infinity
 	static inline Vector2D infinity() {
-		double inf = numeric_limits<double>::infinity();
+		double inf = std::numeric_limits<double>::infinity();
 		return Vector2D(inf, inf);
 	}
 };

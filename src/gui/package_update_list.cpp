@@ -14,7 +14,8 @@
 #include <boost/scoped_ptr.hpp>
 #include <wx/url.h>
 
-
+using std::max;
+using std::min;
 
 // ----------------------------------------------------------------------------- : PackageUpdateList::TreeItem
 

@@ -11,6 +11,9 @@
 #include <gui/about_window.hpp> // for HoverButton
 #include <gui/drop_down_list.hpp>
 
+using std::max;
+using std::min;
+
 // ----------------------------------------------------------------------------- : DropDownMRUList
 
 /// A drop down list of recent choices, for autocomplete

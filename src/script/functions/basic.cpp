@@ -17,6 +17,11 @@
 #include <data/card.hpp>
 #include <data/game.hpp>
 
+using std::make_pair;
+using std::pair;
+using std::reverse;
+using std::sort;
+using std::unique;
 
 // ----------------------------------------------------------------------------- : Debugging
 

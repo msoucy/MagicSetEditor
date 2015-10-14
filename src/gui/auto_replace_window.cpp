@@ -17,6 +17,7 @@
 #include <util/window_id.hpp>
 #include <util/error.hpp>
 
+using std::min;
 
 // ----------------------------------------------------------------------------- : AutoReplaceList
 

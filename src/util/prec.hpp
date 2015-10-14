@@ -29,13 +29,14 @@
 #include <wx/wx.h>
 #include <wx/image.h>
 #include <wx/datetime.h>
-#include <wx/regex.h> // TODO : remove, see regex.hpp
 
 // Std headers
 #include <vector>
 #include <map>
 #include <set>
-using namespace std;
+using std::vector;
+using std::map;
+using std::set;
 
 #undef RGB
 

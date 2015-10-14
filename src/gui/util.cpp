@@ -20,6 +20,8 @@
 	#include <wx/mstream.h>
 #endif
 
+using std::min;
+
 // ----------------------------------------------------------------------------- : Window related
 
 // Id of the control that has the focus, or -1 if no control has the focus
