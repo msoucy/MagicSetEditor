@@ -24,6 +24,11 @@
 
 #undef small // some evil windows header defines this
 
+using std::max;
+using std::min;
+using std::swap;
+using std::pair;
+
 DECLARE_SHARED_POINTER_TYPE(DropDownList);
 struct DropDownWordListItem;
 

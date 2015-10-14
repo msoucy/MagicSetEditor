@@ -10,6 +10,9 @@
 #include <gfx/polynomial.hpp>
 #include <complex>
 
+using std::abs;
+using std::complex;
+
 // ----------------------------------------------------------------------------- : Solving
 
 UInt solve_linear(double a, double b, double* root) {

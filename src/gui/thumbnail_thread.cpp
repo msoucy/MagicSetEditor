@@ -12,7 +12,8 @@
 #include <util/error.hpp>
 #include <wx/thread.h>
 
-typedef pair<ThumbnailRequestP,Image> pair_ThumbnailRequestP_Image;
+using std::make_pair;
+using std::pair;
 
 // ----------------------------------------------------------------------------- : Image Cache
 

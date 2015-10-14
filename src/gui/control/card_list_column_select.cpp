@@ -12,6 +12,7 @@
 #include <data/field.hpp>
 #include <util/window_id.hpp>
 
+using std::swap;
 
 // ----------------------------------------------------------------------------- : CardListColumnSelectDialog
 

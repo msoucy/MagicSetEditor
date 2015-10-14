@@ -17,6 +17,9 @@
 #include <wx/dir.h>
 #include <boost/scoped_ptr.hpp>
 
+using std::make_pair;
+using std::max;
+using std::pair;
 
 // ----------------------------------------------------------------------------- : Package : outside
 

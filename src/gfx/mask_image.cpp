@@ -10,6 +10,8 @@
 #include <gfx/gfx.hpp>
 #include <util/error.hpp>
 
+using std::min;
+
 // ----------------------------------------------------------------------------- : AlphaMask
 
 AlphaMask::AlphaMask()                 : alpha(nullptr), lefts(nullptr), rights(nullptr) {}

@@ -15,6 +15,9 @@
 #endif
 #include <queue>
 
+using std::deque;
+using std::make_pair;
+using std::pair;
 
 // ----------------------------------------------------------------------------- : Debug utilities
 

@@ -92,9 +92,9 @@ String format_acolor(AColor col);
 
 // ----------------------------------------------------------------------------- : Color utility functions
 
-inline int bot(int x) { return max(0,   x); } ///< bottom range check for color values
-inline int top(int x) { return min(255, x); } ///< top    range check for color values
-inline int col(int x) { return top(bot(x)); } ///< top and bottom range check for color values
+inline int bot(int x) { return std::max(0,   x); } ///< bottom range check for color values
+inline int top(int x) { return std::min(255, x); } ///< top    range check for color values
+inline int col(int x) { return top(bot(x)); }      ///< top and bottom range check for color values
 
 /// Linear interpolation between colors
 Color lerp(const Color& a, const Color& b, double t);

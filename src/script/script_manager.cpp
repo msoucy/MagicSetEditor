@@ -21,6 +21,10 @@
 #include <data/action/keyword.hpp>
 #include <util/error.hpp>
 
+using std::deque;
+using std::pair;
+using std::make_pair;
+
 typedef map<const StyleSheet*,Context*> Contexts;
 
 //#define LOG_UPDATES

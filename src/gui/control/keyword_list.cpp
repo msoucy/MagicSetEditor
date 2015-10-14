@@ -21,6 +21,7 @@
 #include <gfx/color.hpp>
 #include <wx/clipbrd.h>
 
+using std::pair;
 
 // ----------------------------------------------------------------------------- : Events
 

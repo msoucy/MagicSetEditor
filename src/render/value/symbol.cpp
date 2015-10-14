@@ -14,6 +14,8 @@
 #include <gui/util.hpp> // draw_checker
 #include <util/error.hpp>
 
+using std::max;
+using std::min;
 
 // ----------------------------------------------------------------------------- : SymbolValueViewer
 

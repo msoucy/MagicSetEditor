@@ -9,6 +9,8 @@
 #include <util/prec.hpp>
 #include <script/profiler.hpp>
 
+using std::max;
+
 #if USE_SCRIPT_PROFILING
 
 // don't use script profiling in final build

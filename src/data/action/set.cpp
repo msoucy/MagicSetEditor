@@ -15,6 +15,8 @@
 #include <util/error.hpp>
 #include <boost/range/combine.hpp>
 
+using std::get;
+using std::swap;
 
 // ----------------------------------------------------------------------------- : Add card
 

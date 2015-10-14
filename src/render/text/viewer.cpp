@@ -11,6 +11,10 @@
 #include <boost/range/adaptor/reversed.hpp>
 #include <algorithm>
 
+using std::max;
+using std::min;
+using std::swap;
+using std::sort;
 
 // ----------------------------------------------------------------------------- : Line
 

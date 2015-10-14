@@ -13,6 +13,9 @@
 #include <data/card.hpp>
 #include <queue>
 using boost::indeterminate;
+using std::max;
+using std::min;
+using std::priority_queue;
 
 
 // ----------------------------------------------------------------------------- : PackType

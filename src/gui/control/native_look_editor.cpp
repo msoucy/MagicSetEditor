@@ -15,6 +15,9 @@
 #include <data/settings.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 
+using std::max;
+using std::min;
+using std::numeric_limits;
 
 // ----------------------------------------------------------------------------- : NativeLookEditor
 

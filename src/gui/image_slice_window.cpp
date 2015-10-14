@@ -15,6 +15,9 @@
 #include <wx/spinctrl.h>
 #include <wx/dcbuffer.h>
 
+using std::max;
+using std::min;
+
 // ----------------------------------------------------------------------------- : ImageSlice
 
 ImageSlice::ImageSlice(const Image& source, const wxSize& target_size)

@@ -24,9 +24,9 @@ class ThumbnailRequest : public IntrusivePtrVirtualBase {
   public:
 	ThumbnailRequest(void* owner, const String& cache_name, const wxDateTime& modified)
 		: owner(owner), cache_name(cache_name), modified(modified) {}
-	
+
 	virtual ~ThumbnailRequest() {}
-	
+
 	/// Generate the thumbnail, called in another thread
 	virtual Image generate() = 0;
 	/// Store the thumbnail, called from the main thread
@@ -34,7 +34,7 @@ class ThumbnailRequest : public IntrusivePtrVirtualBase {
 
 	/// Can the thumbnail safely be generated from another thread?
 	virtual bool threadSafe() const { return true; }
-	
+
 	/// Object that requested the thumbnail
 	void* const owner;
 	/// Name under which this object will be stored in the image cache
@@ -54,7 +54,7 @@ class ThumbnailRequest : public IntrusivePtrVirtualBase {
 class ThumbnailThread {
   public:
 	ThumbnailThread();
-	
+
 	/// Request a thumbnail, it may be store()d immediatly if the thumbnail is cached
 	void request(const ThumbnailRequestP& request);
 	/// Is one or more thumbnail for the given owner finished?
@@ -65,16 +65,20 @@ class ThumbnailThread {
 	/// Abort all computations
 	/** *must* be called at application exit */
 	void abortAll();
-	
+
   private:
 	wxMutex     mutex;  ///< Mutex used by the worker when accessing the request lists or the thread pointer
 	wxCondition completed; ///< Event signaled when a request is completed
-	
-	deque<ThumbnailRequestP>                open_requests;		///< Requests on which work hasn't finished
-	vector<pair<ThumbnailRequestP,Image> >  closed_requests;	///< Requests for which work is completed
-	set<ThumbnailRequestP>                  request_names;		///< Requests that haven't been stored yet, to prevent duplicates
+
+	/// Requests on which work hasn't finished
+	std::deque<ThumbnailRequestP>           open_requests;
+	/// Requests for which work is completed
+	vector<std::pair<ThumbnailRequestP,Image> >  closed_requests;
+	/// Requests that haven't been stored yet, to prevent duplicates
+	set<ThumbnailRequestP>                  request_names;
+	/// The worker thread. invariant: no requests ==> worker==nullptr
 	friend class ThumbnailThreadWorker;
-	ThumbnailThreadWorker* worker;								///< The worker thread. invariant: no requests ==> worker==nullptr
+	ThumbnailThreadWorker* worker;
 };
 
 /// The global thumbnail generator thread

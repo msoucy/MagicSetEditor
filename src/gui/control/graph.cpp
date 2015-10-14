@@ -14,6 +14,10 @@
 #include <wx/tooltip.h>
 #include <boost/range/adaptor/reversed.hpp>
 
+using std::max;
+using std::min;
+using std::make_pair;
+using std::swap;
 
 template <typename T> inline T sgn(T v) { return v < 0 ? -1 : 1; }
 

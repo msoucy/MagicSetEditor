@@ -49,7 +49,8 @@
 				std::basic_string<Char> fmt(format.begin(),format.end());
 				String output;
 				boost::match_results<String::const_iterator>::format(
-					insert_iterator<String>(output, output.end()), fmt, boost::format_sed);
+					std::insert_iterator<String>(output, output.end()),
+					fmt, boost::format_sed);
 				return output;
 			}
 		};

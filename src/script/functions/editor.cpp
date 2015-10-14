@@ -21,6 +21,10 @@
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/range/combine.hpp>
 
+using std::get;
+using std::make_pair;
+using std::min;
+using std::pair;
 
 // ----------------------------------------------------------------------------- : Combined editor
 

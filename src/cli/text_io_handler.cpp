@@ -10,6 +10,8 @@
 #include <cli/text_io_handler.hpp>
 #include <util/error.hpp>
 
+using std::max;
+
 // ----------------------------------------------------------------------------- : Text I/O handler
 
 const Char* BRIGHT   = _("\x1B[1m");
@@ -175,7 +177,9 @@ void TextIOHandler::show_message(MessageType type, String const& message) {
 	}
 	flush();
 	stream = stdout;
-	if (raw_mode) raw_mode_status = max(raw_mode_status, type == MESSAGE_WARNING ? 1 : 2);
+	if (raw_mode) {
+		raw_mode_status = max(raw_mode_status, type == MESSAGE_WARNING ? 1 : 2);
+	}
 }
 
 void TextIOHandler::print_pending_errors() {

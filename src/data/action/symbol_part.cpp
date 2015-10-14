@@ -12,6 +12,8 @@
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/range/combine.hpp>
 
+using std::get;
+using std::swap;
 
 // ----------------------------------------------------------------------------- : Utility
 
@@ -73,7 +75,8 @@ void constrain_snap_vector_offset_(const Vector2D& off, const Vector2D& d, bool 
 	}
 }
 Vector2D constrain_snap_vector_offset(const Vector2D& off1, const Vector2D& off2, const Vector2D& d, bool constrain, int steps) {
-	Vector2D dd; double l = numeric_limits<double>::infinity();
+	Vector2D dd;
+	double l = std::numeric_limits<double>::infinity();
 	constrain_snap_vector_offset_(off1,                    d, constrain, steps, dd, l);
 	constrain_snap_vector_offset_(off2,                    d, constrain, steps, dd, l);
 	constrain_snap_vector_offset_(Vector2D(off1.x,off2.y), d, constrain, steps, dd, l);

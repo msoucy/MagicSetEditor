@@ -15,6 +15,8 @@
 #include <util/tagged_string.hpp>
 #include <boost/pool/singleton_pool.hpp>
 
+using std::make_pair;
+
 
 // ----------------------------------------------------------------------------- : ScriptValue
 // Base cases

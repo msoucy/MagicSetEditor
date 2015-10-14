@@ -17,6 +17,7 @@
 #include <gfx/gfx.hpp>
 #include <wx/imaglist.h>
 
+using std::make_pair;
 
 // ----------------------------------------------------------------------------- : ImageCardList
 

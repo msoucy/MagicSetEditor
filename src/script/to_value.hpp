@@ -48,7 +48,7 @@ template <typename T> inline String type_name(const T&) {
 template <typename T> inline String type_name(const intrusive_ptr<T>& p) {
 	return type_name(*p.get());
 }
-template <typename K, typename V> inline String type_name(const pair<K,V>& p) {
+template <typename K, typename V> inline String type_name(const std::pair<K,V>& p) {
 	return type_name(p.second); // for maps
 }
 
@@ -424,7 +424,7 @@ class ScriptClosure : public ScriptValue {
 	/// The wrapped function
 	ScriptValueP                          fun;
 	/// The default argument bindings
-	vector<pair<Variable,ScriptValueP> >  bindings;
+	vector<std::pair<Variable,ScriptValueP> >  bindings;
 
   protected:
 	virtual ScriptValueP do_eval(Context& ctx, bool openScope) const;

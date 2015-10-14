@@ -14,6 +14,8 @@
 #include <script/image.hpp>
 #include <wx/imaglist.h>
 
+using std::max;
+using std::make_pair;
 
 // ----------------------------------------------------------------------------- : ChoiceThumbnailRequest
 

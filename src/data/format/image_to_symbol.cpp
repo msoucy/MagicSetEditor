@@ -19,6 +19,9 @@
 #include <util/error.hpp>
 #include <util/platform.hpp>
 
+using std::fill_n;
+using std::max;
+
 
 // ----------------------------------------------------------------------------- : Image preprocessing
 

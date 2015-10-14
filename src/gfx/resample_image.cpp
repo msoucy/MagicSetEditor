@@ -10,6 +10,8 @@
 #include <gfx/gfx.hpp>
 #include <util/error.hpp>
 
+using std::min;
+
 // ----------------------------------------------------------------------------- : Resample passes
 
 // bitshift for fixed point numbers

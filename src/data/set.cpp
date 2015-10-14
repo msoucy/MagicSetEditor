@@ -22,6 +22,7 @@
 #include <script/script_manager.hpp>
 #include <script/profiler.hpp>
 #include <wx/sstream.h>
+using std::make_pair;
 
 
 // ----------------------------------------------------------------------------- : Set

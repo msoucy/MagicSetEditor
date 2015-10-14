@@ -20,6 +20,8 @@
 #include <util/window_id.hpp>
 #include <wx/dcbuffer.h>
 
+using std::min;
+
 // ----------------------------------------------------------------------------- : SymbolControl
 
 SymbolControl::SymbolControl(SymbolWindow* parent, int id, const SymbolP& symbol)

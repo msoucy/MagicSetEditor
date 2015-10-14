@@ -12,6 +12,7 @@
 #include <util/alignment.hpp>
 #include <script/profiler.hpp>
 
+using std::max;
 
 // ----------------------------------------------------------------------------- : PackageList
 

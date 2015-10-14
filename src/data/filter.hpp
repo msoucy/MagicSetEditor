@@ -55,7 +55,7 @@ bool match_quicksearch_query(String const& query, T const& object) {
 				// quoted string, match exactly
 				i++;
 				end =query.find_first_of(_('"'),i);
-				next = min(end,query.size()) + 1;
+				next = std::min(end,query.size()) + 1;
 			} else {
 				// single word
 				next = end = query.find_first_of(_(' '),i);

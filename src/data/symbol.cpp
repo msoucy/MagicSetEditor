@@ -12,6 +12,8 @@
 #include <script/to_value.hpp>
 #include <gfx/bezier.hpp>
 
+using std::max;
+using std::min;
 
 // ----------------------------------------------------------------------------- : ControlPoint
 

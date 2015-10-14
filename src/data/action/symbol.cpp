@@ -12,6 +12,9 @@
 #include <util/error.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 
+using std::swap;
+using std::make_pair;
+using std::pair;
 
 // ----------------------------------------------------------------------------- : Utility
 

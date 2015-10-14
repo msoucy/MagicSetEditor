@@ -18,6 +18,8 @@
 #include <wx/dcbuffer.h>
 #include <wx/caret.h>
 
+using std::min;
+using std::pair;
 
 // ----------------------------------------------------------------------------- : Events
 

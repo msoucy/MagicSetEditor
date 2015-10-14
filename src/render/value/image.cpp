@@ -11,6 +11,8 @@
 #include <render/card/viewer.hpp>
 #include <gui/util.hpp>
 
+using std::max;
+
 // ----------------------------------------------------------------------------- : ImageValueViewer
 
 IMPLEMENT_VALUE_VIEWER(Image);

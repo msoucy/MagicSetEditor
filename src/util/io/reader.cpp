@@ -14,6 +14,7 @@
 #include <boost/logic/tribool.hpp>
 #undef small
 using boost::tribool;
+using std::abs;
 
 typedef void (*ReaderPragmaHandler)(String&);
 DECLARE_DYNAMIC_ARG  (ReaderPragmaHandler,reader_pragma_handler);

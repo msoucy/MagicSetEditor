@@ -23,6 +23,9 @@
 #include <wx/progdlg.h>
 #include <wx/tglbtn.h>
 
+using std::max;
+using std::min;
+
 DECLARE_POINTER_TYPE(Installer);
 
 

@@ -17,6 +17,8 @@
 #include <wx/dcbuffer.h>
 #include <wx/clipbrd.h>
 
+using std::max;
+
 DECLARE_POINTER_TYPE(ConsoleMessage);
 
 // ----------------------------------------------------------------------------- : MessageControl

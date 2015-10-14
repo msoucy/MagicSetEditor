@@ -19,6 +19,7 @@
 #include <boost/iterator/filter_iterator.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 
+using std::min;
 
 // ----------------------------------------------------------------------------- : DataEditor
 

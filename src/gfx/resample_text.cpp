@@ -14,6 +14,8 @@
 	#include <wx/msw/dib.h>
 #endif
 
+using std::min;
+
 void blur_image(const Image& img_in, Image& img_out);
 
 // ----------------------------------------------------------------------------- : Resampled text

@@ -16,6 +16,9 @@
 #include <gfx/gfx.hpp>
 #include <wx/dcbuffer.h>
 
+using std::max;
+using std::min;
+
 // ----------------------------------------------------------------------------- : DropDownHider
 
 // Class that intercepts all events not directed to a DropDownList, and closes the list

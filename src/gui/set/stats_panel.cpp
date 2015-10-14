@@ -22,7 +22,8 @@
 #include <gfx/gfx.hpp>
 #include <wx/splitter.h>
 
-typedef pair<StatsDimensionP,String> pair_StatsDimensionP_String;
+using std::min;
+using std::pair;
 
 // ----------------------------------------------------------------------------- : StatCategoryList
 #if !USE_DIMENSION_LISTS
