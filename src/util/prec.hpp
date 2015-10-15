@@ -12,15 +12,6 @@
  *  @brief Precompiled header, and aliasses for common types
  */
 
-// ----------------------------------------------------------------------------- : Compiler specific
-
-#ifdef _MSC_VER
-#	pragma warning (disable: 4100) // unreferenced formal parameter
-#	pragma warning (disable: 4355) // 'this' : used in base member initializer list
-#	pragma warning (disable: 4800) // 'int' : forcing value to bool 'true' or 'false' (performance warning)
-#	pragma warning (disable: 4675) // resolved overload was found by argument-dependent lookup (occurs in some boost header)
-#endif
-
 // ----------------------------------------------------------------------------- : Includes
 
 // Wx headers
