@@ -380,7 +380,7 @@ template <> void Reader::handle(LocalFileName& f) {
 
 String EnumReader::notDoneErrorMessage() const {
 	if (!first) throw InternalError(_("No first value in EnumReader"));
-	return _ERROR_2_("unrecognized value", read, first);
+	return _ERROR_2_("unrecognized value", read.c_str(), first);
 }
 
 void EnumReader::warnIfNotDone(Reader* errors_to) {

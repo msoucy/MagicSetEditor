@@ -114,23 +114,24 @@ String tr(const Package&, const String& subcat, const String& key, DefaultLocale
 /// Format a string
 /** Equivalent to sprintf / String::Format, but allows strings to be passed as arguments (gcc)
  */
-inline String format_string(const String& format, ...) {
-	va_list args;
-	va_start(args, format);
-	String res = String::Format(format, args);
-	va_end(args);
-	return res;
+template<typename... Arguments>
+inline String format_string(const String& format, Arguments... args) {
+	return String::Format(format, args...);
 }
-inline String format_string(const String& format, const String& a0) {
+inline String format_string(const String& format, const String& a0)
+{
 	return String::Format(format, a0.c_str());
 }
-inline String format_string(const String& format, const String& a0, const String& a1) {
+inline String format_string(const String& format, const String& a0, const String& a1)
+{
 	return String::Format(format, a0.c_str(), a1.c_str());
 }
-inline String format_string(const String& format, const String& a0, const String& a1, const String& a2) {
+inline String format_string(const String& format, const String& a0, const String& a1, const String& a2)
+{
 	return String::Format(format, a0.c_str(), a1.c_str(), a2.c_str());
 }
-inline String format_string(const String& format, const String& a0, const String& a1, const String& a2, const String& a3) {
+inline String format_string(const String& format, const String& a0, const String& a1, const String& a2, const String& a3)
+{
 	return String::Format(format, a0.c_str(), a1.c_str(), a2.c_str(), a3.c_str());
 }
 

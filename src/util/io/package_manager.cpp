@@ -153,7 +153,10 @@ bool PackageManager::checkDependency(const PackageDependency& dep, bool report_e
 	// mse package?
 	if (dep.package == mse_package) {
 		if (app_version < dep.version) {
-			queue_message(MESSAGE_WARNING, _ERROR_3_("package out of date", _("Magic Set Editor"), app_version.toString(), dep.version.toString()));
+			queue_message(
+					MESSAGE_WARNING,
+					_ERROR_3_("package out of date", _("Magic Set Editor"),
+							  app_version.toString().c_str(), dep.version.toString().c_str()));
 		}
 		return true;
 	}
@@ -414,8 +417,8 @@ template <> void Writer::handle(const PackageVersion::FileInfo& f) {
 		handle(format_string(_("%s%s %s"),
 			  f.status == PackageVersion::FILE_ADDED    ? _("A")
 			: f.status == PackageVersion::FILE_MODIFIED ? _("M") : _(""),
-			f.time.Format(_("%Y%m%dT%H%M%S")),
-			f.file));
+			f.time.Format(_("%Y%m%dT%H%M%S")).c_str(),
+			f.file.c_str()));
 	}
 }
 template <> void Reader::handle(PackageVersion::FileInfo& f) {

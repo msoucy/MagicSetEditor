@@ -670,7 +670,7 @@ SCRIPT_FUNCTION_WITH_DEP(expand_keywords) {
 	try {
 		SCRIPT_RETURN(db.expand(input, match_condition, default_expand, combine, ctx));
 	} catch (const Error& e) {
-		throw ScriptError(_ERROR_2_("in function", e.what(), _("expand_keywords")));
+		throw ScriptError(_ERROR_2_("in function", e.what().c_str(), _("expand_keywords")));
 	}
 }
 SCRIPT_FUNCTION_DEPENDENCIES(expand_keywords) {
