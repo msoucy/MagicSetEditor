@@ -4,11 +4,11 @@ The source code uses several macro/preprocessor and template tricks to make the 
 
 <h2>Smart pointers</h2>
 
-MSE makes extensive use of boost::shared_ptr. To make the code more readable there are typedefs for these pointer types, using a suffix P.
+MSE makes extensive use of std::shared_ptr. To make the code more readable there are typedefs for these pointer types, using a suffix P.
 These are defined using a macro:
 @code
  DECLARE_POINTER_TYPE(MyClass);
- MyClassP someObject; // the same as boost::shared_ptr<MyClass> someObject
+ MyClassP someObject; // the same as std::shared_ptr<MyClass> someObject
 @endcode
 
 To create new shared_ptrs the function new_shared# can be used (where # is the number of arguments):

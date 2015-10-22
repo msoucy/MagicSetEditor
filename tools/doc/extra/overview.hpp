@@ -33,7 +33,7 @@ See <a href="dirs.html">the directory list</a> for details.
 
 MSE depends on the following libraries:
  - <a href="http://wxwidgets.org">wxWidgets</a> for the GUI.
- - <a href="http://boost.org">boost</a>, just for shared_ptr and some preprocessor tricks.
+ - <a href="http://boost.org">boost</a>, for preprocessor tricks
 
 Additional tools (not needed for building MSE) also depend on:
  - <a href="http://doxygen.org">doxygen</a> for generating the documentation.
