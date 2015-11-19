@@ -192,7 +192,7 @@ size_t TextViewer::moveLine(size_t index, int delta) const {
 	const Line* line2 = line1 + delta;
 	if (line2 >= &lines.front() && line2 <= &lines.back()) {
 		size_t idx = index - line1->start;
-		if (idx < 0 || idx >= line1->positions.size()) return index; // can't move
+		if (idx >= line1->positions.size()) return index; // can't move
 		return line2->posToIndex(line1->positions[idx]); // character at the same position
 	} else {
 		return index; // can't move
