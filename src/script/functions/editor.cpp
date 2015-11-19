@@ -394,7 +394,7 @@ SCRIPT_FUNCTION(count_chosen) {
 		} else {
 			int count = 1;
 			for(auto& c : input) {
-				if (c == _(' ,')) {
+				if (c == _(',')) {
 					++count;
 				}
 			}
