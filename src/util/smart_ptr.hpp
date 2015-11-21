@@ -15,10 +15,6 @@
 // ----------------------------------------------------------------------------- : Includes
 
 #include <util/atomic.hpp>
-#ifndef HAVE_FAST_ATOMIC
-	/// Using intrusive_ptr where possible? (as opposed to smart_ptr)
-	#error Need fast atomic type for intrusive_ptr
-#endif
 
 // Use slightly less fancy template stuff, so msvc7.1 doesn't crash with an internal compiler error
 #define BOOST_SP_NO_SP_CONVERTIBLE
