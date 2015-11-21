@@ -38,6 +38,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 		"/wd4355" # 'this' : used in base member initializer list
 		"/wd4800" # 'int' : forcing value to bool 'true' or 'false'
 		"/wd4675" # resolved overload was found by argument-dependent lookup (occurs in some boost header)
+		"/wd4996" # Ignore function "deprecations" (by Microsoft)
 	)
 endif()
 
@@ -565,8 +566,8 @@ add_executable(magicseteditor
 	${FILES}
 )
 
-target_include_directories(magicseteditor PUBLIC
-	src
+target_include_directories(magicseteditor PUBLIC src)
+target_include_directories(magicseteditor SYSTEM PUBLIC
 	${HUNSPELL_INCLUDE_DIR}
 	${Boost_INCLUDE_DIRS}
 	${wxWidgets_INCLUDE_DIRS}
