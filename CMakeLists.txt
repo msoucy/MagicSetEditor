@@ -41,6 +41,11 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 		"/wd4996" # Ignore function "deprecations" (by Microsoft)
 	)
 endif()
+if(UNIX)
+	add_compile_options(
+		"-fPIC" # Position Independant Code
+	)
+endif()
 
 # Force unicode builds - no reason to keep ASCII-only around
 add_definitions("-DUNICODE" "-D_UNICODE")

@@ -24,6 +24,18 @@
 
 using std::min;
 using std::pair;
+template<typename StatType>
+struct StatsComparator {
+	int operator()(const StatType& a, const StatType& b)
+	{
+		//return a->position_hint < b->position_hint;
+		int rval = (a->position_hint - b->position_hint);
+		if(rval == 0) {
+			rval = a->name - b->name;
+		}
+		return rval < 0;
+	}
+};
 
 // ----------------------------------------------------------------------------- : StatCategoryList
 #if !USE_DIMENSION_LISTS
@@ -36,33 +48,29 @@ class StatCategoryList : public GalleryList {
 	{
 		item_size = subcolumns[0].size = wxSize(150, 23);
 	}
-	
+
 	void show(const GameP&);
-	
+
 	/// The selected category
 	inline StatsCategory& getSelection() {
 		return *categories.at(subcolumns[0].selection);
 	}
-	
+
   protected:
 	virtual size_t itemCount() const;
 	virtual void drawItem(DC& dc, int x, int y, size_t item);
-	
+
   private:
 	GameP game;
 	vector<StatsCategoryP> categories; ///< Categories, sorted by position_hint
 };
 
-struct ComparePositionHint{
-	inline bool operator () (const StatsCategoryP& a, const StatsCategoryP& b) {
-		return a->position_hint < b->position_hint;
-	}
-};
-
 void StatCategoryList::show(const GameP& game) {
 	this->game = game;
-	categories = game->statistics_categories;
-	stable_sort(categories.begin(), categories.end(), ComparePositionHint());
+	set<StatsCategoryP, StatComparator<StatsCategoryP>> sorted(
+			game->statistics_categories.begin(),
+			game->statistics_categories.end());
+	categories = vector<StatsCategoryP>(sorted.begin(), sorted.end());
 	update();
 	// select first item
 	subcolumns[0].selection = itemCount() > 0 ? 0 : NO_SELECTION;
@@ -129,34 +137,34 @@ class StatDimensionList : public GalleryList {
 		// total
 		item_size = wxSize(col.offset.x - SPACING, 23);
 	}
-	
+
 	void show(const GameP&);
-	
+
 	/// The selected category
 	StatsDimensionP getSelection(size_t subcol=(size_t)-1) {
 		size_t sel = subcolumns[subcol+1].selection - show_empty;
 		if (sel >= itemCount()) return StatsDimensionP();
 		else                    return dimensions.at(sel);
 	}
-	
+
 	/// The number of dimensions shown
 	const int dimension_count;
 	size_t prefered_dimension_count;
-	
+
 	void restrictDimensions(size_t dims) {
 		prefered_dimension_count = dims;
 		active_subcolumn = min(active_subcolumn, dims);
 		RefreshSelection();
 	}
-	
+
   protected:
 	virtual size_t itemCount() const;
 	virtual void drawItem(DC& dc, int x, int y, size_t item);
-	
+
 	virtual double subcolumnActivity(size_t col) const {
 		return col-1 >= prefered_dimension_count ? 0.2 : 0.7;
 	}
-	
+
 	virtual void onSelect(size_t item, size_t old_col, bool& changes) {
 		// swap selection with another subcolumn?
 		for (size_t j = 1 ; j < subcolumns.size() ; ++j) {
@@ -186,23 +194,19 @@ class StatDimensionList : public GalleryList {
 			}
 		}
 	}
-	
+
   private:
 	GameP game;
 	bool show_empty;
 	vector<StatsDimensionP> dimensions; ///< Dimensions, sorted by position_hint
 };
 
-struct ComparePositionHint2{
-	inline bool operator () (const StatsDimensionP& a, const StatsDimensionP& b) {
-		return a->position_hint < b->position_hint;
-	}
-};
-
 void StatDimensionList::show(const GameP& game) {
 	this->game = game;
-	dimensions = game->statistics_dimensions;
-	stable_sort(dimensions.begin(), dimensions.end(), ComparePositionHint2());
+	set<StatsDimensionP, StatsComparator<StatsDimensionP>> sorted(
+			game->statistics_dimensions.begin(),
+			game->statistics_dimensions.end());
+	dimensions = vector<StatsDimensionP>(sorted.begin(), sorted.end());
 	update();
 	// select first item
 	if (dimension_count > 0) {
@@ -316,7 +320,7 @@ void StatsPanel::initControls() {
 	s->Add(splitter,   1, wxEXPAND);
 	s->SetSizeHints(this);
 	SetSizer(s);
-	
+
 	// init menu
 	menuGraph = new IconMenu();
 		menuGraph->Append(ID_GRAPH_PIE,         _("graph_pie"),         _MENU_("pie"),         _HELP_("pie"),         wxITEM_CHECK);
@@ -536,7 +540,7 @@ class StatsFilter : public Filter<Card> {
 			out.push_back(cards.at(idx));
 		}
 	}
-	
+
 	vector<size_t> indices; ///< Indices of cards to select
 };
 
@@ -561,5 +565,5 @@ void StatsPanel::selectCard(const CardP& card) {
 	this->card = card;
 	if (!isInitialized()) return;
 	card_list->setCard(card);
-	
+
 }
