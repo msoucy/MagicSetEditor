@@ -88,7 +88,7 @@ bool TextIOHandler::haveConsole() const {
 TextIOHandler& TextIOHandler::operator << (const Char* str) {
 	if ((escapes && !raw_mode) || str[0] != 27) {
 		if (have_console && !raw_mode) {
-			IF_UNICODE(fwprintf,fprintf)(stream,str);
+			fwprintf(stream,str);
 		} else {
 			buffer += str;
 		}
@@ -117,7 +117,7 @@ String TextIOHandler::getLine() {
 	String result;
 	Char buffer[2048];
 	while (!feof(stdin)) {
-		if (!IF_UNICODE(fgetws,fgets)(buffer, 2048, stdin)) {
+		if (!fgetws(buffer, 2048, stdin)) {
 			return result; // error
 		}
 		result += buffer;

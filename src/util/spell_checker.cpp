@@ -62,7 +62,7 @@ SpellChecker& SpellChecker::get(const String& filename, const String& language) 
 
 SpellChecker::SpellChecker(const char* aff_path, const char* dic_path)
 	: Hunspell(aff_path,dic_path)
-	, encoding(String(get_dic_encoding(), IF_UNICODE(wxConvLibc, wxSTRING_MAXLEN)))
+	, encoding(String(get_dic_encoding(), wxConvLibc))
 {}
 
 void SpellChecker::destroyAll() {

@@ -52,7 +52,7 @@ Char toLower(Char c) {
 		if (c >= _('A') && c <= _('Z')) return c + (_('a') - _('A'));
 		else                            return c;
 	} else {
-		return IF_UNICODE( towlower(c) , tolower(c) );
+		return towlower(c);
 	}
 }
 
@@ -61,7 +61,7 @@ Char toUpper(Char c) {
 		if (c >= _('a') && c <= _('z')) return c + (_('A') - _('a'));
 		else                            return c;
 	} else {
-		return IF_UNICODE( towupper(c) , toupper(c) );
+		return towupper(c);
 	}
 }
 
