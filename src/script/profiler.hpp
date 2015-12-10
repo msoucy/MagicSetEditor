@@ -13,10 +13,6 @@
 #include <script/script.hpp>
 #include <script/context.hpp>
 
-#ifndef USE_SCRIPT_PROFILING
-#define USE_SCRIPT_PROFILING 1
-#endif
-
 #if USE_SCRIPT_PROFILING
 
 DECLARE_POINTER_TYPE(FunctionProfile);
@@ -83,7 +79,7 @@ class FunctionProfile : public IntrusivePtrBase<FunctionProfile> {
 	ProfileTime time_ticks;
 	ProfileTime time_ticks_max;
 	int         calls;
-	
+
 	/// for each id, called children
 	/** we (ab)use the fact that all pointers are even to store both pointers and ids */
 	map<size_t,FunctionProfileP> children;
