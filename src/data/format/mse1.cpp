@@ -42,14 +42,10 @@ void read_mse1_card(Set& set, wxFileInputStream& f, wxTextInputStream& file);
 
 SetP MSE1FileFormat::importSet(const String& filename) {
 	wxFileInputStream f(filename);
-	#ifdef UNICODE
-		wxTextInputStream file(f, _('\n'), wxConvLibc);
-	#else
-		wxTextInputStream file(f);
-	#endif
+    wxTextInputStream file(f, _('\n'), wxConvLibc);
 	// create set
 	SetP set(new Set(Game::byName(_("magic"))));
-	
+
 	// file version check
 	String format = file.ReadLine();
 	if (format.substr(0,8) != _("MTG Set8")) {
@@ -73,7 +69,7 @@ SetP MSE1FileFormat::importSet(const String& filename) {
 		desc += line;
 	}
 	set->value(_("description")) = to_script(desc);
-	
+
 	// load stylesheet
 	if (stylesheet.substr(0,3) == _("old")) {
 		try {
@@ -85,13 +81,13 @@ SetP MSE1FileFormat::importSet(const String& filename) {
 	} else {
 		set->stylesheet = StyleSheet::byGameAndName(*set->game, _("new"));
 	}
-	
+
 	// read cards
 	CardP current_card;
 	while (!f.Eof()) {
 		read_mse1_card(*set, f, file);
 	}
-	
+
 	// done
 	set->validate();
 	return set;

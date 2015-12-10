@@ -14,7 +14,7 @@ using std::max;
 #if USE_SCRIPT_PROFILING
 
 // don't use script profiling in final build
-#if !defined(UNICODE) && !defined(_DEBUG)
+#if !defined(_DEBUG)
 	#error "It looks like you are building the final release; disable USE_SCRIPT_PROFILING!"
 #endif
 

@@ -275,11 +275,7 @@ void SymbolPartList::onChar(wxKeyEvent& ev) {
 			  #else
 				if (ev.GetKeyCode() >= _(' ') /*&& ev.GetKeyCode() == (int)ev.GetRawKeyCode()*/) {
 			  #endif
-					#ifdef UNICODE
-						Char key = ev.GetUnicodeKey();
-					#else
-						Char key = (Char)ev.GetKeyCode();
-					#endif
+                    Char key = ev.GetUnicodeKey();
 					String new_name = typing_in->name;
 					new_name.insert(cursor, 1, key);
 					symbol->actions.addAction(new SymbolPartNameAction(typing_in, new_name, cursor, cursor + 1));

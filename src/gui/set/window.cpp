@@ -52,7 +52,7 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
 	, number_of_recent_sets(0)
 {
 	SetIcon(load_resource_icon(_("app")));
-	
+
 	// initialize menu bar
 	wxMenuBar* menuBar = new wxMenuBar();
 	IconMenu* menuFile = new IconMenu();
@@ -83,7 +83,7 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
 		menuFile->AppendSeparator();
 		menuFile->Append(ID_FILE_EXIT,						_MENU_("exit"),				_HELP_("exit"));
 	menuBar->Append(menuFile, _MENU_("file"));
-	
+
 	IconMenu* menuEdit = new IconMenu();
 		menuEdit->Append(ID_EDIT_UNDO,		_("undo"),		_MENU_1_("undo",wxEmptyString),	_HELP_("undo"));
 		menuEdit->Append(ID_EDIT_REDO,		_("redo"),		_MENU_1_("redo",wxEmptyString),	_HELP_("redo"));
@@ -99,25 +99,25 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
 		menuEdit->AppendSeparator();
 		menuEdit->Append(ID_EDIT_PREFERENCES,				_MENU_("preferences"),		_HELP_("preferences"));
 	menuBar->Append(menuEdit, _MENU_("edit"));
-	
+
 	IconMenu* menuWindow = new IconMenu();
 		menuWindow->Append(ID_WINDOW_NEW,					_MENU_("new window"),		_HELP_("new window"));
 		menuWindow->AppendSeparator();
 	menuBar->Append(menuWindow, _MENU_("window"));
-	
+
 	IconMenu* menuHelp = new IconMenu();
 		menuHelp->Append(ID_HELP_INDEX,		_("help"),		_MENU_("index"),			_HELP_("index"));
 		menuHelp->Append(ID_HELP_WEBSITE,					_MENU_("website"),			_HELP_("website"));
 		menuHelp->AppendSeparator();
 		menuHelp->Append(ID_HELP_ABOUT,						_MENU_("about"),			_HELP_("about"));
 	menuBar->Append(menuHelp, _MENU_("help"));
-	
+
 	SetMenuBar(menuBar);
-	
+
 	// status bar
 	CreateStatusBar();
 	SetStatusText(_HELP_("welcome"));
-	
+
 	// tool bar
 	wxToolBar* tb = CreateToolBar(wxTB_FLAT | wxNO_BORDER | wxTB_HORIZONTAL);
 	tb->SetToolBitmapSize(wxSize(18,18));
@@ -135,7 +135,7 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
 	tb->AddTool(ID_EDIT_REDO,	_(""),	load_resource_tool_image(_("redo")),	wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_1_("redo",wxEmptyString));
 	tb->AddSeparator();
 	tb->Realize();
-	
+
 	// tab bar, sizer
 	wxToolBar* tabBar = new wxToolBar(this, ID_TAB_BAR, wxDefaultPosition, wxDefaultSize, wxTB_FLAT | wxNO_BORDER | wxTB_HORIZONTAL | wxTB_HORZ_TEXT | wxTB_NOALIGN);
 	wxSizer* s = new wxBoxSizer(wxVERTICAL);
@@ -147,7 +147,7 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
 		int style = ::SendMessage(hWND, TB_GETEXTENDEDSTYLE, 0, 0);
 		::SendMessage(hWND, TB_SETEXTENDEDSTYLE, style | LVS_EX_DOUBLEBUFFER, 0);
 	#endif
-	
+
 	// panels
 	addPanel(menuWindow, tabBar, new CardsPanel     (this, wxID_ANY), 0, _("window_cards"),      _("cards tab"));
 	addPanel(menuWindow, tabBar, new StylePanel     (this, wxID_ANY), 1, _("window_style"),      _("style tab"));
@@ -157,7 +157,7 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
 	addPanel(menuWindow, tabBar, new RandomPackPanel(this, wxID_ANY), 5, _("window_random_pack"),_("random pack tab"));
 	addPanel(menuWindow, tabBar, new ConsolePanel   (this, wxID_ANY), 6, _("window_console"),    _("console tab"));
 	selectPanel(ID_WINDOW_CARDS); // select cards panel
-	
+
 	// loose ends
 	tabBar->Realize();
 	SetSize(settings.set_window_width, settings.set_window_height);
@@ -170,7 +170,7 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
 	wxUpdateUIEvent::SetMode(wxUPDATE_UI_PROCESS_SPECIFIED);
 	SetExtraStyle(wxWS_EX_PROCESS_UI_UPDATES);
 	tabBar->SetExtraStyle(wxWS_EX_PROCESS_UI_UPDATES);
-	
+
 	try {
 		setSet(set);
 	} catch (...) {
@@ -395,14 +395,14 @@ void SetWindow::onClose(wxCloseEvent& ev) {
 
 
 int ask_save_changes_impl(wxWindow* parent, String const& message, String const& title) {
-	#if defined(__WXMSW__) && defined(UNICODE) && defined(TD_WARNING_ICON) // the last one is a hack to test for precense of TASKDIALOG stuff
+	#if defined(__WXMSW__) && defined(TD_WARNING_ICON) // the last one is a hack to test for precense of TASKDIALOG stuff
 		// Do we have the TaskDialogIndirect function?
 		HMODULE h = ::LoadLibrary(L"comctl32.dll");
 		if (!h) return 0;
 		typedef HRESULT (WINAPI *type_TaskDialogIndirect)(const TASKDIALOGCONFIG *pTaskConfig, int *pnButton, int *pnRadioButton, BOOL *pfVerificationFlagChecked);
 		type_TaskDialogIndirect func_TaskDialogIndirect = !h ? nullptr : (type_TaskDialogIndirect)::GetProcAddress(h, "TaskDialogIndirect" );
 		if (!func_TaskDialogIndirect) return 0;
-		
+
 		int nButtonPressed                  = 0;
 		TASKDIALOGCONFIG config             = {0};
 		const TASKDIALOG_BUTTON buttons[]   = { { IDYES, L"&Save" }, { IDNO, L"Do&n't Save" } };
@@ -413,11 +413,11 @@ int ask_save_changes_impl(wxWindow* parent, String const& message, String const&
 		config.pButtons                     = buttons;
 		config.cButtons                     = ARRAYSIZE(buttons);
 		config.hwndParent                   = (HWND)(parent->GetHWND()); // without this the dialog is not modal
-		
+
 		func_TaskDialogIndirect(&config, &nButtonPressed, NULL, NULL);
-		
+
 		FreeLibrary(h);
-		
+
 		switch (nButtonPressed) {
 			case IDYES: return wxYES;
 			case IDNO:  return wxNO;
@@ -866,7 +866,7 @@ BEGIN_EVENT_TABLE(SetWindow, wxFrame)
 	EVT_COMMAND_RANGE	(ID_CHILD_MIN, ID_CHILD_MAX, wxEVT_COMMAND_RADIOBUTTON_SELECTED, SetWindow::onChildMenu)
 	EVT_COMMAND_RANGE	(ID_CHILD_MIN, ID_CHILD_MAX, wxEVT_COMMAND_TEXT_UPDATED, SetWindow::onChildMenu)
 	EVT_GALLERY_SELECT  (ID_FIELD_LIST,                SetWindow::onChildMenu) // for StatsPanel, because it is not a EVT_TOOL
-	
+
 	EVT_UPDATE_UI		(wxID_ANY,				SetWindow::onUpdateUI)
 	EVT_FIND			(wxID_ANY,				SetWindow::onFind)
 	EVT_FIND_NEXT		(wxID_ANY,				SetWindow::onFindNext)

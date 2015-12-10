@@ -52,27 +52,15 @@ const Char BYTE_ORDER_MARK[] = L"\xFEFF";
 void writeUTF8(wxTextOutputStream& stream, const String& str);
 
 /// Some constants we like to use
-#ifdef UNICODE
-	#define  LEFT_ANGLE_BRACKET _("\x2039")
-	#define RIGHT_ANGLE_BRACKET _("\x203A")
-	#define  LEFT_SINGLE_QUOTE  _('\x2018')
-	#define RIGHT_SINGLE_QUOTE  _('\x2019')
-	#define  LEFT_DOUBLE_QUOTE  _('\x201C')
-	#define RIGHT_DOUBLE_QUOTE  _('\x201D')
-	#define EN_DASH             _('\x2013')
-	#define EM_DASH             _('\x2014')
-	#define CONNECTION_SPACE    _('\xEB00') // in private use area, untags to ' '
-#else
-	#define  LEFT_ANGLE_BRACKET _("<")
-	#define RIGHT_ANGLE_BRACKET _(">")
-	#define  LEFT_SINGLE_QUOTE  _('\'')
-	#define RIGHT_SINGLE_QUOTE  _('\'')
-	#define  LEFT_DOUBLE_QUOTE  _('\"')
-	#define RIGHT_DOUBLE_QUOTE  _('\"')
-	#define EN_DASH             _('-') // 150?
-	#define EM_DASH             _('-') // 151?
-	#define CONNECTION_SPACE    _(' ') // too bad
-#endif
+constexpr auto  LEFT_ANGLE_BRACKET = L"\x2039"; // <
+constexpr auto RIGHT_ANGLE_BRACKET = L"\x203A"; // >
+constexpr auto  LEFT_SINGLE_QUOTE  = L'\x2018'; // '
+constexpr auto RIGHT_SINGLE_QUOTE  = L'\x2019'; // '
+constexpr auto  LEFT_DOUBLE_QUOTE  = L'\x201C'; // "
+constexpr auto RIGHT_DOUBLE_QUOTE  = L'\x201D'; // "
+constexpr auto EN_DASH             = L'\x2013'; // -
+constexpr auto EM_DASH             = L'\x2014'; // -
+constexpr auto CONNECTION_SPACE    = L'\xEB00'; // in private use area, untags to ' '
 
 // ----------------------------------------------------------------------------- : Char functions
 

@@ -137,13 +137,13 @@ Image load_resource_image(const String& name) {
 		// The image can be in an IMAGE resource, in any file format
 		HRSRC hResource = ::FindResource(wxGetInstance(), name, _("IMAGE"));
 		if ( hResource == 0 ) throw InternalError(String::Format(_("Resource not found: %s"), name));
-		
+
 		HGLOBAL hData = ::LoadResource(wxGetInstance(), hResource);
 		if ( hData == 0 ) throw InternalError(String::Format(_("Resource not an image: %s"), name));
-		
+
 		char* data = (char *)::LockResource(hData);
 		if ( !data ) throw InternalError(String::Format(_("Resource cannot be locked: %s"), name));
-		
+
 		int len = ::SizeofResource(wxGetInstance(), hResource);
 		wxMemoryInputStream stream(data, len);
 		return wxImage(stream);
@@ -197,7 +197,7 @@ wxBitmap load_resource_tool_image(const String& name) {
 }
 
 
-#if defined(_UNICODE) && defined(_MSC_VER) && _MSC_VER >= 1400
+#if defined(_MSC_VER) && _MSC_VER >= 1400
 // manifest to use new-style controls in Windows Vista / Windows 7
 #if defined _M_IX86
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
@@ -306,7 +306,7 @@ void draw_drop_down_arrow(Window* win, DC& dc, const wxRect& rect, bool active) 
 	if (w == -1) {
 		w = wxSystemSettings::GetMetric(wxSYS_VSCROLL_X); // Try just the scrollbar, then.
 	}
-	rn.DrawComboBoxDropButton(win, dc, 
+	rn.DrawComboBoxDropButton(win, dc,
 		wxRect(rect.x + rect.width - w, rect.y, w, rect.height)
 		, active ? wxCONTROL_PRESSED : 0);
 }

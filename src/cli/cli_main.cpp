@@ -219,16 +219,12 @@ void CLISetInterface::handleCommand(const String& command) {
 				if (arg.empty()) {
 					cli.show_message(MESSAGE_ERROR,_("Give a shell command to execute."));
 				} else {
-					#ifdef UNICODE
-						#ifdef __WXMSW__
-							_wsystem(arg.c_str()); // TODO: is this function available on other platforms?
-						#else
-							wxCharBuffer buf = arg.fn_str();
-							system(buf);
-						#endif
-					#else
-						system(arg.c_str());
-					#endif
+                    #ifdef __WXMSW__
+                        _wsystem(arg.c_str()); // TODO: is this function available on other platforms?
+                    #else
+                        wxCharBuffer buf = arg.fn_str();
+                        system(buf);
+                    #endif
 				}
 			#if USE_SCRIPT_PROFILING
 				} else if (before == _(":profile")) {

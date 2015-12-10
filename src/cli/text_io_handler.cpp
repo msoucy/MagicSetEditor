@@ -152,12 +152,8 @@ void TextIOHandler::flushRaw() {
 	// write record
 	printf("%d\n%d\n", raw_mode_status, newline_count);
 	if (!buffer.empty()) {
-		#ifdef UNICODE
-			wxCharBuffer buf = buffer.mb_str(wxConvUTF8);
-			fputs(buf,stream);
-		#else
-			fputs(buffer.c_str(),stream);
-		#endif
+        wxCharBuffer buf = buffer.mb_str(wxConvUTF8);
+        fputs(buf,stream);
 	}
 	fflush(stream);
 	// clear

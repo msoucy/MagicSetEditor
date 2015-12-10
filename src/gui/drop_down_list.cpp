@@ -25,10 +25,10 @@ using std::min;
 class DropDownHider : public wxEvtHandler {
   public:
 	DropDownHider(DropDownList& list) : list(list) {}
-	
+
   private:
 	DropDownList& list;
-	
+
 	virtual bool ProcessEvent(wxEvent& ev) {
 		int t = ev.GetEventType();
 		if ( t == wxEVT_LEFT_DOWN      || t == wxEVT_RIGHT_DOWN
@@ -341,7 +341,7 @@ void DropDownList::drawItem(DC& dc, int y, size_t item) {
 		dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
 	}
 	// draw text and icon
-	drawIcon(dc, marginW, y, item, item == selected_item);	
+	drawIcon(dc, marginW, y, item, item == selected_item);
 	dc.DrawText(capitalize(itemText(item)), marginW + (int)icon_size.width + 1, y + text_offset);
 	// draw popup icon
 	if (submenu(item)) {
@@ -481,11 +481,7 @@ bool DropDownList::onCharInParent(wxKeyEvent& ev) {
 						size_t index = (si + i) % count;
 						if (!itemEnabled(index)) continue;
 						String c = itemText(index);
-#ifdef UNICODE
 						if (!c.empty() && toUpper(c.GetChar(0)) == toUpper(ev.GetUnicodeKey())) {
-#else
-						if (!c.empty() && toUpper(c.GetChar(0)) == toUpper(ev.GetKeyCode())) {
-#endif
 							// first character matches
 							selected_item = index;
 							showSubMenu();

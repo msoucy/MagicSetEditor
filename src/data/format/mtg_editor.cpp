@@ -54,21 +54,17 @@ void append_line(ScriptValueP& target, String const& line);
 
 SetP MtgEditorFileFormat::importSet(const String& filename) {
 	wxFileInputStream f(filename);
-	#ifdef UNICODE
-		wxTextInputStream file(f, _('\n'), wxConvLibc);
-	#else
-		wxTextInputStream file(f);
-	#endif
+    wxTextInputStream file(f, _('\n'), wxConvLibc);
 	// create set
 	SetP set(new Set(Game::byName(_("magic"))));
-	
+
 	// parsing state
 	CardP current_card;
 	ScriptValueP* target = nullptr; // value we are currently reading
 	String layout = _("8e");
 	String set_date, card_date;
 	bool first = true;
-	
+
 	// read file
 	while (!f.Eof()) {
 		// read a line
@@ -177,7 +173,7 @@ SetP MtgEditorFileFormat::importSet(const String& filename) {
 			}
 		}
 	}
-	
+
 	// set defaults for artist and copyright to that of the first card
 	if (!set->cards.empty()) {
 		ScriptValueP& artist    = set->cards[0]->value(_("illustrator"));
@@ -192,7 +188,7 @@ SetP MtgEditorFileFormat::importSet(const String& filename) {
 			if (equal(card_copyright, copyright)) card_copyright = make_default(card_copyright);
 		}
 	}
-	
+
 	// Load stylesheet
 	if (layout != _("8e")) {
 		try {
@@ -204,7 +200,7 @@ SetP MtgEditorFileFormat::importSet(const String& filename) {
 	} else {
 		set->stylesheet = StyleSheet::byGameAndName(*set->game, _("new"));
 	}
-	
+
 	set->validate();
 	return set;
 }

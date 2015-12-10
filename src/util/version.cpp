@@ -51,11 +51,7 @@ template <> void GetDefaultMember::handle(const Version& v) {
 
 // NOTE: Don't use leading zeroes, they mean octal
 const Version app_version  = 20001; // 2.0.1
-#ifdef UNICODE
 const Char* version_suffix = _("");
-#else
-const Char* version_suffix = _(" (ascii build)");
-#endif
 
 /// Which version of MSE are the files we write out compatible with?
 /*  The saved files will have these version numbers attached.

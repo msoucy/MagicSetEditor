@@ -157,7 +157,7 @@ String read_utf8_line(wxInputStream& input, bool eat_bom, bool until_eof) {
 				if (c != '\n') {
 					input.Ungetch(c); // \r but not \r\n
 				}
-				break; 
+				break;
 			}
 		}
 		buffer.push_back(c);
@@ -170,47 +170,17 @@ String read_utf8_line(wxInputStream& input, bool eat_bom, bool until_eof) {
 	} else if (size == 0) {
 		return _("");
 	}
-	#ifdef UNICODE
-		#if wxVERSION_NUMBER >= 2900
-			String result = wxString::FromUTF8(buffer.get(), buffer.size());
-			return eat_bom ? decodeUTF8BOM(result) : result;
-		#else
-			// NOTE: wx doc is wrong, parameter to GetWritableChar is number of characters, not bytes
-			String result;
-			Char* result_buf = result.GetWriteBuf(size + 1);
-			wxConvUTF8.MB2WC(result_buf, buffer.get(), size + 1);
-			result.UngetWriteBuf(size);
-			return eat_bom ? decodeUTF8BOM(result) : result;
-		#endif
-	#else
-		String result;
-		// first to wchar, then back to local
-		vector<wchar_t> buf2; buf2.resize(size+1);
-		wxConvUTF8.MB2WC(&buf2[0], buffer.get(), size + 1);
-		// eat BOM?
-		if (eat_bom && buf2[0]==0xFEFF ) {
-			buf2.erase(buf2.begin()); // remove BOM
-		}
-		// convert
-		#ifdef __WXMSW__
-			// size includes null terminator
-			size = ::WideCharToMultiByte(CP_ACP, 0, &buf2[0], -1, nullptr, 0, nullptr, nullptr);
-			Char* result_buf = result.GetWriteBuf(size);
-			::WideCharToMultiByte(CP_ACP, 0, &buf2[0], -1, result_buf, (int)size, nullptr, nullptr);
-			result.UngetWriteBuf(size - 1);
-		#else
-			for (size_t i = 0 ; i < size ; ++i) {
-				wchar_t wc = buf2[i];
-				if (wc < 0xFF) {
-					result += (Char)wc;
-				} else {
-					// not valid in Latin1
-					result += '?';
-				}
-			}
-		#endif
-		return result;
-	#endif
+    #if wxVERSION_NUMBER >= 2900
+        String result = wxString::FromUTF8(buffer.get(), buffer.size());
+        return eat_bom ? decodeUTF8BOM(result) : result;
+    #else
+        // NOTE: wx doc is wrong, parameter to GetWritableChar is number of characters, not bytes
+        String result;
+        Char* result_buf = result.GetWriteBuf(size + 1);
+        wxConvUTF8.MB2WC(result_buf, buffer.get(), size + 1);
+        result.UngetWriteBuf(size);
+        return eat_bom ? decodeUTF8BOM(result) : result;
+    #endif
 }
 
 void Reader::readLine(bool in_string) {

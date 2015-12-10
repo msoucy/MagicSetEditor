@@ -61,21 +61,6 @@ class MSE : public wxApp {
 
 IMPLEMENT_APP(MSE)
 
-// ----------------------------------------------------------------------------- : Checks
-
-void nag_about_ascii_version() {
-	#if !defined(UNICODE) && defined(__WXMSW__)
-		// windows 2000/XP/Vista/... users shouldn't use the 9x version
-		OSVERSIONINFO info;
-		info.dwOSVersionInfoSize = sizeof(info);
-		GetVersionEx(&info);
-		if (info.dwMajorVersion >= 5) {
-			queue_message(MESSAGE_WARNING,
-				_("This build of Magic Set Editor is intended for Windows 95/98/ME systems.\n")
-				_("It is recommended that you download the appropriate MSE version for your Windows version."));
-		}
-	#endif
-}
 
 // ----------------------------------------------------------------------------- : Initialization
 
@@ -96,8 +81,7 @@ int MSE::OnRun() {
 		package_manager.init();
 		settings.read();
 		the_locale = Locale::byName(settings.locale);
-		nag_about_ascii_version();
-		
+
 		// interpret command line
 		{
 			vector<String> args;
@@ -281,11 +265,11 @@ int MSE::OnRun() {
 				}
 			}
 		}
-		
+
 		// no command line arguments, or error, show welcome window
 		(new WelcomeWindow())->Show();
 		return runGUI();
-		
+
 	} CATCH_ALL_ERRORS(true);
 	cli.print_pending_errors();
 	return EXIT_FAILURE;
@@ -322,14 +306,7 @@ void MSE::HandleEvent(wxEvtHandler *handler, wxEventFunction func, wxEvent& even
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(_CRT_WIDE)
 	// Print assert failures to debug output
 	void MSE::OnAssert(const wxChar *file, int line, const wxChar *cond, const wxChar *msg) {
-		#ifdef UNICODE
-			msvc_assert(msg, cond, file, line);
-		#else
-			wchar_t file_[1024]; mbstowcs(file_,file,1023);
-			wchar_t cond_[1024]; mbstowcs(cond_,cond,1023);
-			wchar_t msg_ [1024]; mbstowcs(msg_, msg, 1023);
-			msvc_assert(msg_, cond_, file_, line);
-		#endif
+        msvc_assert(msg, cond, file, line);
 	}
 #endif
 

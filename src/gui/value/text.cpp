@@ -42,7 +42,7 @@ class TextValueEditorScrollBar : public wxWindow {
   private:
 	DECLARE_EVENT_TABLE();
 	TextValueEditor& tve;
-	
+
 	void onScroll(wxScrollWinEvent&);
 	void onMotion(wxMouseEvent&);
 };
@@ -78,7 +78,7 @@ class WordListPos : public IntrusivePtrBase<WordListPos> {
 		, rect(-1,-1,-1,-1)
 		, word_list(word_list)
 	{}
-	
+
 	const size_t start, end; ///< Start and ending indices
 	RealRect  rect;          ///< Rectangle around word list text
 	WordListP word_list;     ///< Word list to use
@@ -103,12 +103,12 @@ struct DropDownWordListItem {
 		, name(name)
 		, flags(flags)
 	{}
-	
+
 	WordListWordP word;
 	String        name;
 	int           flags;
 	DropDownWordListP submenu;
-	
+
 	inline bool active() const { return flags & FLAG_ACTIVE; }
 	inline void setActive(bool a) { flags = (flags & ~FLAG_ACTIVE) | a * FLAG_ACTIVE; }
 };
@@ -116,12 +116,12 @@ struct DropDownWordListItem {
 class DropDownWordList : public DropDownList {
   public:
 	DropDownWordList(Window* parent, bool is_submenu, TextValueEditor& tve, const WordListPosP& pos, const WordListWordP& list);
-	
+
 	void setWords(const WordListWordP& words2);
 	void setWords(const WordListPosP& pos2);
-	
+
 	inline WordListPosP getPos() const { return pos; }
-	
+
   protected:
 	virtual void          redrawArrowOnParent();
 	virtual size_t        itemCount() const             { return items.size(); }
@@ -138,7 +138,7 @@ class DropDownWordList : public DropDownList {
 	WordListWordP words; ///< The words we are listing
 	bool has_checkboxes; ///< Do we need checkboxes?
 	mutable vector <DropDownWordListItem> items;
-	
+
 	void addWordsFromScript(const WordListWordP& w);
 };
 
@@ -504,11 +504,7 @@ bool TextValueEditor::onChar(wxKeyEvent& ev) {
 				// TODO: Find a more correct way to determine normal characters,
 				//       this might not work for internationalized input.
 				//       It might also not be portable!
-				#ifdef UNICODE
-					replaceSelection(escape(String(ev.GetUnicodeKey(),    1)), _ACTION_("typing"), true);
-				#else
-					replaceSelection(escape(String((Char)ev.GetKeyCode(), 1)), _ACTION_("typing"), true);
-				#endif
+                replaceSelection(escape(String(ev.GetUnicodeKey(),    1)), _ACTION_("typing"), true);
 			} else {
 				return false;
 			}
