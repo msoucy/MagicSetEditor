@@ -4,21 +4,27 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// -----------------------------------------------------------------------------
-// : Includes
-
-#include <util/prec.hpp>
-#include <util/error.hpp>
-#include <cli/text_io_handler.hpp>
-#include <cli/text_io_handler.hpp>
+// Includes {{{
+#include "error.hpp"
+#include <wx/defs.h>                // for wxICON_ERROR, wxOK
+#include <wx/msgdlg.h>              // for wxMessageBox
+#include <wx/setup.h>               // for wxUSE_STACKWALKER
+#include <wx/thread.h>              // for wxMutexLocker, wxThread, wxMutex
 #if wxUSE_STACKWALKER
-#include <wx/stackwalk.h>
+#  include <wx/stackwalk.h>         // for wxStackFrame, wxStackWalker
 #endif
-#include <queue>
+#include <wx/wxchar.h>              // for wxT
+#include <cli/text_io_handler.hpp>  // for TextIOHandler, cli
+#include <deque>                    // for deque
+#include <util/error.hpp>           // for MessageType, Error, etc
+#include <utility>                  // for make_pair, pair
+#include "util/string.hpp"          // for String
 
 using std::deque;
 using std::make_pair;
 using std::pair;
+
+// Includes }}}
 
 // -----------------------------------------------------------------------------
 // : Debug utilities

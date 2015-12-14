@@ -49,9 +49,6 @@ typedef wxDateTime DateTime;
 // -----------------------------------------------------------------------------
 // : Compatability fixes
 
-#if wxVERSION_NUMBER < 2805
-#define wxBORDER_THEME wxSUNKEN_BORDER
-#endif
 #if wxVERSION_NUMBER < 2900 && defined(__WXMSW__)
 // see http://docs.wxwidgets.org/2.8.11/wx_wxmswport.html
 #define wxBORDER_THEME_FIX(x)                                                  \
@@ -65,16 +62,6 @@ typedef wxDateTime DateTime;
 // wx >= 2.9 requires the use of HandleWindowEvent on windows, instead of
 // ProcessEvent
 #define HandleWindowEvent ProcessEvent
-#endif
-#if wxVERSION_NUMBER < 2700
-// is it worth it to still support wx2.6?
-#define wxFD_SAVE wxSAVE
-#define wxFD_OPEN wxOPEN
-#define wxFD_OVERWRITE_PROMPT wxOVERWRITE_PROMPT
-typedef wxEvent wxMouseCaptureLostEvent;
-#define EVT_MOUSE_CAPTURE_LOST(handler)   // ignore
-#define wxEVT_MOUSE_CAPTURE_LOST 12345678 // not an actual event type
-#define wxAutoBufferedPaintDC wxBufferedPaintDC
 #endif
 #if wxVERSION_NUMBER < 2811
 #define SetDeviceClippingRegion SetClippingRegion

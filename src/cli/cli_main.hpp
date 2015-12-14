@@ -7,13 +7,15 @@
 #ifndef HEADER_CLI_MAIN
 #define HEADER_CLI_MAIN
 
-// -----------------------------------------------------------------------------
-// : Includes
-
-#include <util/prec.hpp>
-#include <data/set.hpp>
-#include <data/export_template.hpp>
-#include <script/profiler.hpp>
+// Includes {{{
+#include <stddef.h>                  // for size_t
+#include <data/export_template.hpp>  // for ExportInfo, SetP
+#include <data/set.hpp>              // for SetView
+#include "script/scriptable.hpp"     // for ScriptP
+#include "util/string.hpp"           // for String
+class Action;
+class Context;
+// Includes }}}
 
 // -----------------------------------------------------------------------------
 // : Command line interface
@@ -55,6 +57,4 @@ class CLISetInterface : public SetView {
     void setExportInfoCwd();
 };
 
-// -----------------------------------------------------------------------------
-// : EOF
 #endif

@@ -12,7 +12,7 @@
 
 #include <vector>
 #include <map>
-#include <util/string.hpp>
+#include "string.hpp"
 
 // -----------------------------------------------------------------------------
 // : IndexMap
@@ -33,18 +33,18 @@
  *  Values know their keys, so there is no need to store them separately.
  */
 template <typename Key, typename Value>
-class IndexMap : private vector<Value> {
+class IndexMap : private std::vector<Value> {
   public:
-    using typename vector<Value>::iterator;
-    using typename vector<Value>::const_iterator;
-    using typename vector<Value>::reference;
-    using typename vector<Value>::const_reference;
-    using vector<Value>::empty;
-    using vector<Value>::size;
-    using vector<Value>::begin;
-    using vector<Value>::end;
-    using vector<Value>::clear;
-    using vector<Value>::at; // for using numeric indices directly
+    using typename std::vector<Value>::iterator;
+    using typename std::vector<Value>::const_iterator;
+    using typename std::vector<Value>::reference;
+    using typename std::vector<Value>::const_reference;
+    using std::vector<Value>::empty;
+    using std::vector<Value>::size;
+    using std::vector<Value>::begin;
+    using std::vector<Value>::end;
+    using std::vector<Value>::clear;
+    using std::vector<Value>::at; // for using numeric indices directly
 
     /// Initialize this map with default values given a list of keys
     /** has no effect if already initialized with the given keys */
@@ -165,7 +165,7 @@ class DelayedIndexMaps {
     void clear();
 
   private:
-    map<String, intrusive_ptr<DelayedIndexMapsData<Key, Value>>> data;
+    std::map<String, intrusive_ptr<DelayedIndexMapsData<Key, Value>>> data;
     friend class Reader;
     friend class Writer;
     friend class GetDefaultMember;
