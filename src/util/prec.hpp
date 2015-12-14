@@ -9,31 +9,33 @@
 
 /** @file util/prec.hpp
  *
- *  @brief Precompiled header, and aliasses for common types
+ *  @brief Precompiled header, and aliases for common types
  */
 
-// -----------------------------------------------------------------------------
-// : Includes
+// Includes {{{
 
-// Wx headers
+// Wx headers {{{
 #include <wx/setup.h>
 #include <wx/wxprec.h>
-#include <wx/wx.h>
-#include <wx/image.h>
-#include <wx/datetime.h>
+#ifndef WX_PRECOMP
+    #include <wx/wx.h>
+#endif
+// }}}
 
-// Std headers
+// STL headers {{{
 #include <vector>
 #include <map>
 #include <set>
 using std::vector;
 using std::map;
 using std::set;
+// }}}
+
+// Includes }}}
 
 #undef RGB
 
-// -----------------------------------------------------------------------------
-// : Wx Aliasses
+// Wx Aliases {{{
 
 // Remove some of the wxUglyness
 
@@ -45,9 +47,9 @@ typedef wxColour Color;
 typedef wxDC DC;
 
 typedef wxDateTime DateTime;
+// }}}
 
-// -----------------------------------------------------------------------------
-// : Compatability fixes
+// Compatability fixes {{{
 
 #if wxVERSION_NUMBER < 2900 && defined(__WXMSW__)
 // see http://docs.wxwidgets.org/2.8.11/wx_wxmswport.html
@@ -66,29 +68,26 @@ typedef wxDateTime DateTime;
 #if wxVERSION_NUMBER < 2811
 #define SetDeviceClippingRegion SetClippingRegion
 #endif
+// }}}
 
-// -----------------------------------------------------------------------------
-// : Other aliasses
-
+// Other aliases {{{
 typedef unsigned char Byte;
 typedef unsigned int UInt;
+// }}}
 
-// -----------------------------------------------------------------------------
-// : MSE Headers
-
-// MSE utility headers (ones unlikely to change and used everywhere)
+// MSE Headers {{{
+// MSE utility headers unlikely to change and used everywhere
 #include "string.hpp"
 #include "smart_ptr.hpp"
 #include "index_map.hpp"
 #include "locale.hpp"
 #include "error.hpp"
 #include "reflect.hpp"
+// }}}
 
-// -----------------------------------------------------------------------------
-// : Debugging fixes
+// Debugging fixes {{{
 
-#ifdef _MSC_VER
-#if defined(_DEBUG) && defined(_CRT_WIDE)
+#if defined(_MSC_VER) && defined(_DEBUG) && defined(_CRT_WIDE)
 // Use OutputDebugString/DebugBreak for assertions if in debug mode
 void msvc_assert(const wchar_t *, const wchar_t *, const wchar_t *, unsigned);
 #undef assert
@@ -97,8 +96,6 @@ void msvc_assert(const wchar_t *, const wchar_t *, const wchar_t *, unsigned);
                                  _CRT_WIDE(__FILE__), __LINE__),               \
                      0))
 #endif
-#endif
 
-// -----------------------------------------------------------------------------
-// : EOF
+// }}}
 #endif
