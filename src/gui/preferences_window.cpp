@@ -16,7 +16,7 @@
 #include <wx/spinctrl.h>
 #include <wx/filename.h>
 #include <wx/notebook.h>
-
+#include <algorithm>
 using std::max;
 using std::min;
 

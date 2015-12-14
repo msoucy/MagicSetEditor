@@ -11,6 +11,7 @@
 // : Includes
 
 #include <util/prec.hpp>
+#include <algorithm>
 
 // -----------------------------------------------------------------------------
 // : Dependency

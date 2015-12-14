@@ -15,8 +15,9 @@
 #include <util/rotation.hpp>
 #include <util/error.hpp>
 #include <util/window_id.hpp>
-#include <render/text/element.hpp> // fot CharInfo
+#include <render/text/element.hpp> // for CharInfo
 #include <script/image.hpp>
+#include "util/regex.hpp"
 
 // -----------------------------------------------------------------------------
 // : SymbolFont

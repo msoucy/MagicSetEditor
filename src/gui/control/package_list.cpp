@@ -13,6 +13,8 @@
 #include <util/alignment.hpp>
 #include <script/profiler.hpp>
 
+#include <algorithm>
+
 using std::max;
 
 // -----------------------------------------------------------------------------

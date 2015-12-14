@@ -10,7 +10,7 @@
 #include <util/prec.hpp>
 #include <util/spec_sort.hpp>
 #include <util/error.hpp>
-
+#include <algorithm>
 using std::reverse;
 
 const Char REMOVED = (L'\2');

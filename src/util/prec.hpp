@@ -96,7 +96,6 @@ typedef unsigned int UInt;
 #include "locale.hpp"
 #include "error.hpp"
 #include "reflect.hpp"
-#include "regex.hpp"
 
 // -----------------------------------------------------------------------------
 // : Debugging fixes

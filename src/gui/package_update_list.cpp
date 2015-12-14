@@ -14,6 +14,7 @@
 #include <gfx/gfx.hpp>
 #include <boost/scoped_ptr.hpp>
 #include <wx/url.h>
+#include <algorithm>
 
 using std::max;
 using std::min;
@@ -80,7 +81,7 @@ bool compare_pos_hint(const PackageUpdateList::TreeItemP &a,
 }
 
 void PackageUpdateList::TreeItem::toItems(vector<TreeList::ItemP> &items) {
-    sort(children.begin(), children.end(), compare_pos_hint);
+    std::sort(children.begin(), children.end(), compare_pos_hint);
     for (auto &c : children) {
         items.push_back(c);
         c->toItems(items);
