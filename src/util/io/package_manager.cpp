@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include "util/prec.hpp"
 #include "util/io/package_manager.hpp"
@@ -19,484 +20,559 @@
 #include "data/installer.hpp"
 #include <wx/wfstream.h>
 
-
-// ----------------------------------------------------------------------------- : PackageManager : in memory
+// -----------------------------------------------------------------------------
+// : PackageManager : in memory
 
 PackageManager package_manager;
 
-
 void PackageManager::init() {
-	local.init(true);
-	global.init(false);
-	if (!(local.valid() || global.valid()))
-		throw Error(L"The MSE data files can not be found, there should be a directory called 'data' with these files. "
-                    L"The expected place to find it in was either " + getDataDir() + L" or " +
-                    getUserDataDir());
+    local.init(true);
+    global.init(false);
+    if (!(local.valid() || global.valid()))
+        throw Error(L"The MSE data files can not be found, there should be a "
+                    L"directory called 'data' with these files. "
+                    L"The expected place to find it in was either " +
+                    getDataDir() + L" or " + getUserDataDir());
 }
-void PackageManager::destroy() {
-	loaded_packages.clear();
-}
-void PackageManager::reset() {
-	loaded_packages.clear();
+void PackageManager::destroy() { loaded_packages.clear(); }
+void PackageManager::reset() { loaded_packages.clear(); }
+
+PackagedP PackageManager::openAny(const String &name_, bool just_header) {
+    String name = trim(name_);
+    if (starts_with(name, (L"/:NO-WARN-DEP:")))
+        name = name.substr(14);
+    // Attempt to load local data first.
+    String filename;
+    if (wxFileName(name).IsRelative()) {
+        // local data dir?
+        filename = normalize_filename(local.name(name));
+        if (!wxFileExists(filename) && !wxDirExists(filename)) {
+            // global data dir
+            filename = normalize_filename(global.name(name));
+        }
+        if (!wxFileExists(filename) && !wxDirExists(filename)) {
+            throw PackageNotFoundError((L"Package not found: '") + name +
+                                       (L"'"));
+        }
+    } else { // Absolute filename
+        filename = normalize_filename(name);
+    }
+
+    // Is this package already loaded?
+    PackagedP &p = loaded_packages[filename];
+    if (!p) {
+        // load with the right type, based on extension
+        wxFileName fn(filename);
+        if (fn.GetExt() == (L"mse-game"))
+            p = intrusive(new Game);
+        else if (fn.GetExt() == (L"mse-style"))
+            p = intrusive(new StyleSheet);
+        else if (fn.GetExt() == (L"mse-locale"))
+            p = intrusive(new Locale);
+        else if (fn.GetExt() == (L"mse-include"))
+            p = intrusive(new IncludePackage);
+        else if (fn.GetExt() == (L"mse-symbol-font"))
+            p = intrusive(new SymbolFont);
+        else if (fn.GetExt() == (L"mse-export-template"))
+            p = intrusive(new ExportTemplate);
+        else {
+            throw PackageError((L"Unrecognized package type: '") + fn.GetExt() +
+                               (L"'\nwhile trying to open: ") + name);
+        }
+        p->open(filename, just_header);
+    } else if (!just_header) {
+        p->loadFully();
+    }
+    return p;
 }
 
-PackagedP PackageManager::openAny(const String& name_, bool just_header) {
-	String name = trim(name_);
-	if (starts_with(name,(L"/:NO-WARN-DEP:"))) name = name.substr(14);
-	// Attempt to load local data first.
-	String filename;
-	if (wxFileName(name).IsRelative()) {
-		// local data dir?
-		filename = normalize_filename(local.name(name));
-		if (!wxFileExists(filename) && !wxDirExists(filename)) {
-			// global data dir
-			filename = normalize_filename(global.name(name));
-		}
-		if (!wxFileExists(filename) && !wxDirExists(filename)) {
-			throw PackageNotFoundError((L"Package not found: '") + name + (L"'"));
-		}
-	} else { // Absolute filename
-		filename = normalize_filename(name);
-	}
-
-	// Is this package already loaded?
-	PackagedP& p = loaded_packages[filename];
-	if (!p) {
-		// load with the right type, based on extension
-		wxFileName fn(filename);
-		if      (fn.GetExt() == (L"mse-game"))            p = intrusive(new Game);
-		else if (fn.GetExt() == (L"mse-style"))           p = intrusive(new StyleSheet);
-		else if (fn.GetExt() == (L"mse-locale"))          p = intrusive(new Locale);
-		else if (fn.GetExt() == (L"mse-include"))         p = intrusive(new IncludePackage);
-		else if (fn.GetExt() == (L"mse-symbol-font"))     p = intrusive(new SymbolFont);
-		else if (fn.GetExt() == (L"mse-export-template")) p = intrusive(new ExportTemplate);
-		else {
-			throw PackageError((L"Unrecognized package type: '") + fn.GetExt() + (L"'\nwhile trying to open: ") + name);
-		}
-		p->open(filename, just_header);
-	} else if (!just_header) {
-		p->loadFully();
-	}
-	return p;
+void PackageManager::findMatching(const String &pattern,
+                                  vector<PackagedP> &out) {
+    // first find local packages
+    String file = local.findFirstMatching(pattern);
+    while (!file.empty()) {
+        out.push_back(openAny(file, true));
+        file = wxFindNextFile();
+    }
+    // then global packages not already in the list
+    file = global.findFirstMatching(pattern);
+    while (!file.empty()) {
+        PackagedP p = openAny(file, true);
+        if (find(out.begin(), out.end(), p) == out.end()) {
+            out.push_back(p);
+        }
+        file = wxFindNextFile();
+    }
 }
 
-void PackageManager::findMatching(const String& pattern, vector<PackagedP>& out) {
-	// first find local packages
-	String file = local.findFirstMatching(pattern);
-	while (!file.empty()) {
-		out.push_back(openAny(file, true));
-		file = wxFindNextFile();
-	}
-	// then global packages not already in the list
-	file = global.findFirstMatching(pattern);
-	while (!file.empty()) {
-		PackagedP p = openAny(file, true);
-		if (find(out.begin(), out.end(), p) == out.end()) {
-			out.push_back(p);
-		}
-		file = wxFindNextFile();
-	}
+InputStreamP PackageManager::openFileFromPackage(Packaged *&package,
+                                                 const String &name) {
+    if (!name.empty() && name.GetChar(0) == (L'/')) {
+        // absolute name; break name
+        size_t start = name.find_first_not_of(
+            (L"/\\"), 1); // allow "//package/name" from incorrect scripts
+        size_t pos = name.find_first_of((L"/\\"), start);
+        if (start < pos && pos != String::npos) {
+            // open package
+            PackagedP p = openAny(name.substr(start, pos - start));
+            if (package && !is_substr(name, start, (L":NO-WARN-DEP:"))) {
+                package->requireDependency(p.get());
+            }
+            package = p.get();
+            return p->openIn(name.substr(pos + 1));
+        }
+    } else if (package) {
+        // relative name
+        return package->openIn(name);
+    }
+    throw FileNotFoundError(
+        name, (L"No package name specified, use '/package/filename'"));
 }
 
-InputStreamP PackageManager::openFileFromPackage(Packaged*& package, const String& name) {
-	if (!name.empty() && name.GetChar(0) == (L'/')) {
-		// absolute name; break name
-		size_t start = name.find_first_not_of((L"/\\"), 1); // allow "//package/name" from incorrect scripts
-		size_t pos   = name.find_first_of((L"/\\"), start);
-		if (start < pos && pos != String::npos) {
-			// open package
-			PackagedP p = openAny(name.substr(start, pos-start));
-			if (package && !is_substr(name,start,(L":NO-WARN-DEP:"))) {
-				package->requireDependency(p.get());
-			}
-			package = p.get();
-			return p->openIn(name.substr(pos + 1));
-		}
-	} else if (package) {
-		// relative name
-		return package->openIn(name);
-	}
-	throw FileNotFoundError(name, (L"No package name specified, use '/package/filename'"));
-}
-
-String PackageManager::openFilenameFromPackage(Packaged*& package, const String& name) {
-	if (!name.empty() && name.GetChar(0) == (L'/')) {
-		// absolute name; break name
-		size_t start = name.find_first_not_of((L"/\\"), 1); // allow "//package/name" from incorrect scripts
-		size_t pos   = name.find_first_of((L"/\\"), start);
-		if (start < pos && pos != String::npos) {
-			// open package
-			PackagedP p = openAny(name.substr(start, pos-start));
-			if (package && !is_substr(name,start,(L":NO-WARN-DEP:"))) {
-				package->requireDependency(p.get());
-			}
-			package = p.get();
-			return p->absoluteFilename() + (L"/") + name.substr(pos + 1);
-		}
-	} else if (package) {
-		// relative name
-		return package->absoluteFilename() + (L"/") + name;
-	}
-	throw FileNotFoundError(name, (L"No package name specified, use '/package/filename'"));
+String PackageManager::openFilenameFromPackage(Packaged *&package,
+                                               const String &name) {
+    if (!name.empty() && name.GetChar(0) == (L'/')) {
+        // absolute name; break name
+        size_t start = name.find_first_not_of(
+            (L"/\\"), 1); // allow "//package/name" from incorrect scripts
+        size_t pos = name.find_first_of((L"/\\"), start);
+        if (start < pos && pos != String::npos) {
+            // open package
+            PackagedP p = openAny(name.substr(start, pos - start));
+            if (package && !is_substr(name, start, (L":NO-WARN-DEP:"))) {
+                package->requireDependency(p.get());
+            }
+            package = p.get();
+            return p->absoluteFilename() + (L"/") + name.substr(pos + 1);
+        }
+    } else if (package) {
+        // relative name
+        return package->absoluteFilename() + (L"/") + name;
+    }
+    throw FileNotFoundError(
+        name, (L"No package name specified, use '/package/filename'"));
 }
 
 String PackageManager::getDictionaryDir(bool l) const {
-	String dir = (l ? local : global).getDirectory();
-	if (dir.empty()) return wxEmptyString;
-	else             return dir + (L"/dictionaries/");
+    String dir = (l ? local : global).getDirectory();
+    if (dir.empty())
+        return wxEmptyString;
+    else
+        return dir + (L"/dictionaries/");
 }
 
-// ----------------------------------------------------------------------------- : PackageManager : on disk
+// -----------------------------------------------------------------------------
+// : PackageManager : on disk
 
-bool PackageManager::checkDependency(const PackageDependency& dep, bool report_errors) {
-	// mse package?
-	if (dep.package == mse_package) {
-		if (app_version < dep.version) {
-			queue_message(
-					MESSAGE_WARNING,
-					_ERROR_3_("package out of date", (L"Magic Set Editor"),
-							  app_version.toString().c_str(), dep.version.toString().c_str()));
-		}
-		return true;
-	}
-	// does the package exist?
-	if (!local.exists(dep.package) && !global.exists(dep.package)) {
-		if (report_errors)
-			queue_message(MESSAGE_WARNING, _ERROR_1_("package not found", dep.package));
-		return false;
-	}
-	PackagedP package = openAny(dep.package, true);
-	if (package->version < dep.version) {
-		if (report_errors)
-			queue_message(MESSAGE_WARNING, _ERROR_3_("package out of date", dep.package, package->version.toString(), dep.version.toString()));
-		return false;
-	}
-	return true;
+bool PackageManager::checkDependency(const PackageDependency &dep,
+                                     bool report_errors) {
+    // mse package?
+    if (dep.package == mse_package) {
+        if (app_version < dep.version) {
+            queue_message(MESSAGE_WARNING,
+                          _ERROR_3_("package out of date",
+                                    (L"Magic Set Editor"),
+                                    app_version.toString().c_str(),
+                                    dep.version.toString().c_str()));
+        }
+        return true;
+    }
+    // does the package exist?
+    if (!local.exists(dep.package) && !global.exists(dep.package)) {
+        if (report_errors)
+            queue_message(MESSAGE_WARNING,
+                          _ERROR_1_("package not found", dep.package));
+        return false;
+    }
+    PackagedP package = openAny(dep.package, true);
+    if (package->version < dep.version) {
+        if (report_errors)
+            queue_message(MESSAGE_WARNING,
+                          _ERROR_3_("package out of date", dep.package,
+                                    package->version.toString(),
+                                    dep.version.toString()));
+        return false;
+    }
+    return true;
 }
-bool PackageManager::installedVersion(const String& package_name, Version& version_out) {
-	if (package_name == mse_package) {
-		version_out = app_version;
-		return true;
-	} else {
-		if (!local.exists(package_name) && !global.exists(package_name)) return false;
-		PackagedP package = openAny(package_name, true);
-		version_out = package->version;
-		return true;
-	}
-}
-
-void PackageManager::findAllInstalledPackages(vector<InstallablePackageP>& packages) {
-	// from directories
-	vector<InstallablePackageP> more_packages;
-	global.installedPackages(packages);
-	local.installedPackages(more_packages);
-	merge(packages, more_packages);
-	// the magic appliation package
-	packages.push_back(mse_installable_package());
-	// invariant: sorted:
-	sort(packages);
+bool PackageManager::installedVersion(const String &package_name,
+                                      Version &version_out) {
+    if (package_name == mse_package) {
+        version_out = app_version;
+        return true;
+    } else {
+        if (!local.exists(package_name) && !global.exists(package_name))
+            return false;
+        PackagedP package = openAny(package_name, true);
+        version_out = package->version;
+        return true;
+    }
 }
 
-bool PackageManager::install(const InstallablePackage& package) {
-	bool install_local = package.has(PACKAGE_ACT_LOCAL);
-	return (install_local ? local : global).install(package);
+void PackageManager::findAllInstalledPackages(
+    vector<InstallablePackageP> &packages) {
+    // from directories
+    vector<InstallablePackageP> more_packages;
+    global.installedPackages(packages);
+    local.installedPackages(more_packages);
+    merge(packages, more_packages);
+    // the magic appliation package
+    packages.push_back(mse_installable_package());
+    // invariant: sorted:
+    sort(packages);
 }
 
-// ----------------------------------------------------------------------------- : PackageDirectory
+bool PackageManager::install(const InstallablePackage &package) {
+    bool install_local = package.has(PACKAGE_ACT_LOCAL);
+    return (install_local ? local : global).install(package);
+}
+
+// -----------------------------------------------------------------------------
+// : PackageDirectory
 
 void PackageDirectory::init(bool local) {
-	is_local = local;
-	if (local) {
-		init(getUserDataDir() + (L"/data"));
-	} else {
-		// determine data directory
-		String dir = getDataDir();
-		// check if this is the actual data directory, especially during debugging,
-		// the data may be higher up:
-		//  exe path  = mse/build/debug/mse.exe
-		//  data path = mse/data
-		while (!wxDirExists(dir + (L"/data"))) {
-			String d = dir;
-			dir = wxPathOnly(dir);
-			if (d == dir) {
-				// we are at the root -> 'data' not found anywhere in the path
-				dir = getDataDir();
-				break;
-			}
-		}
-		init(dir + (L"/data"));
-	}
+    is_local = local;
+    if (local) {
+        init(getUserDataDir() + (L"/data"));
+    } else {
+        // determine data directory
+        String dir = getDataDir();
+        // check if this is the actual data directory, especially during
+        // debugging,
+        // the data may be higher up:
+        //  exe path  = mse/build/debug/mse.exe
+        //  data path = mse/data
+        while (!wxDirExists(dir + (L"/data"))) {
+            String d = dir;
+            dir = wxPathOnly(dir);
+            if (d == dir) {
+                // we are at the root -> 'data' not found anywhere in the path
+                dir = getDataDir();
+                break;
+            }
+        }
+        init(dir + (L"/data"));
+    }
 }
-void PackageDirectory::init(const String& dir) {
-	if (wxDirExists(dir))
-		directory = dir;
-	else
-		directory.clear();
-}
-
-String PackageDirectory::name(const String& name) const {
-	return directory + (L"/") + name;
-}
-bool PackageDirectory::exists(const String& filename) const {
-	String fn = name(filename);
-	return wxFileExists(fn) || wxDirExists(fn);
+void PackageDirectory::init(const String &dir) {
+    if (wxDirExists(dir))
+        directory = dir;
+    else
+        directory.clear();
 }
 
-String PackageDirectory::findFirstMatching(const String& pattern) const {
-	if (!wxDirExists(directory)) return String();
-	return wxFindFirstFile(directory + (L"/") + pattern, 0);
+String PackageDirectory::name(const String &name) const {
+    return directory + (L"/") + name;
+}
+bool PackageDirectory::exists(const String &filename) const {
+    String fn = name(filename);
+    return wxFileExists(fn) || wxDirExists(fn);
 }
 
-bool compare_name(const PackageVersionP& a, const PackageVersionP& b) {
-	return a->name < b->name;
+String PackageDirectory::findFirstMatching(const String &pattern) const {
+    if (!wxDirExists(directory))
+        return String();
+    return wxFindFirstFile(directory + (L"/") + pattern, 0);
 }
 
-void PackageDirectory::installedPackages(vector<InstallablePackageP>& packages_out) {
-	loadDatabase();
-	// find all package files
-	vector<String> in_dir;
-	for (String s = findFirstMatching((L"*.mse-*")) ; !s.empty() ; s = wxFindNextFile()) {
-		size_t pos = s.find_last_of((L"/\\"));
-		if (pos != String::npos) s = s.substr(pos+1);
-		// TODO : check for valid package names
-		in_dir.push_back(s);
-	}
-	sort(in_dir.begin(), in_dir.end());
-	// merge with package database
-	bool db_changed = false;
-	vector<PackageVersionP>::const_iterator it1 = packages.begin();
-	vector<String>::const_iterator          it2 = in_dir.begin();
-	while (it2 != in_dir.end()) {
-		if (it1 == packages.end() || (*it1)->name > *it2) {
-			// add new package to db
-			try {
-				PackagedP pack = package_manager.openAny(*it2, true);
-				db_changed = true;
-				PackageVersionP ver(new PackageVersion(
-					is_local ? PackageVersion::STATUS_LOCAL : PackageVersion::STATUS_GLOBAL));
-				ver->check_status(*pack);
-				packages_out.push_back(intrusive(new InstallablePackage(intrusive(new PackageDescription(*pack)), ver)));
-			} catch (const Error&) {}
-			++it2;
-		} else if ((*it1)->name < *it2) {
-			// delete package from db
-			db_changed = true;
-			++it1;
-		} else {
-			// ok, a package already in the db
-			try {
-				PackagedP pack = package_manager.openAny(*it2, true);
-				(*it1)->check_status(*pack);
-				packages_out.push_back(intrusive(new InstallablePackage(intrusive(new PackageDescription(*pack)), *it1)));
-			} catch (const Error&) { db_changed = true; }
-			++it1, ++it2;
-		}
-	}
-	if (it1 != packages.end()) db_changed = true;
-	// has the database of installed packages changed?
-	if (db_changed) {
-		packages.clear();
-		for(auto& p : packages_out) {
-			if (p->installed) packages.push_back(p->installed);
-		}
-		saveDatabase();
-	}
+bool compare_name(const PackageVersionP &a, const PackageVersionP &b) {
+    return a->name < b->name;
 }
 
-void PackageDirectory::bless(const String& package_name) {
-	PackagedP pack = package_manager.openAny(package_name, true);
-	// already have this package?
-	for(auto& ver : packages) {
-		if (ver->name == package_name) {
-			ver->check_status(*pack);
-			ver->bless();
-			return;
-		}
-	}
-	// a new package
-	PackageVersionP ver(new PackageVersion(
-		is_local ? PackageVersion::STATUS_LOCAL : PackageVersion::STATUS_GLOBAL));
-	ver->check_status(*pack);
-	ver->bless();
-	packages.push_back(ver);
-	sort(packages.begin(), packages.end(), compare_name);
+void PackageDirectory::installedPackages(
+    vector<InstallablePackageP> &packages_out) {
+    loadDatabase();
+    // find all package files
+    vector<String> in_dir;
+    for (String s = findFirstMatching((L"*.mse-*")); !s.empty();
+         s = wxFindNextFile()) {
+        size_t pos = s.find_last_of((L"/\\"));
+        if (pos != String::npos)
+            s = s.substr(pos + 1);
+        // TODO : check for valid package names
+        in_dir.push_back(s);
+    }
+    sort(in_dir.begin(), in_dir.end());
+    // merge with package database
+    bool db_changed = false;
+    vector<PackageVersionP>::const_iterator it1 = packages.begin();
+    vector<String>::const_iterator it2 = in_dir.begin();
+    while (it2 != in_dir.end()) {
+        if (it1 == packages.end() || (*it1)->name > *it2) {
+            // add new package to db
+            try {
+                PackagedP pack = package_manager.openAny(*it2, true);
+                db_changed = true;
+                PackageVersionP ver(new PackageVersion(
+                    is_local ? PackageVersion::STATUS_LOCAL
+                             : PackageVersion::STATUS_GLOBAL));
+                ver->check_status(*pack);
+                packages_out.push_back(intrusive(new InstallablePackage(
+                    intrusive(new PackageDescription(*pack)), ver)));
+            } catch (const Error &) {
+            }
+            ++it2;
+        } else if ((*it1)->name < *it2) {
+            // delete package from db
+            db_changed = true;
+            ++it1;
+        } else {
+            // ok, a package already in the db
+            try {
+                PackagedP pack = package_manager.openAny(*it2, true);
+                (*it1)->check_status(*pack);
+                packages_out.push_back(intrusive(new InstallablePackage(
+                    intrusive(new PackageDescription(*pack)), *it1)));
+            } catch (const Error &) {
+                db_changed = true;
+            }
+            ++it1, ++it2;
+        }
+    }
+    if (it1 != packages.end())
+        db_changed = true;
+    // has the database of installed packages changed?
+    if (db_changed) {
+        packages.clear();
+        for (auto &p : packages_out) {
+            if (p->installed)
+                packages.push_back(p->installed);
+        }
+        saveDatabase();
+    }
 }
 
-void PackageDirectory::removeFromDatabase(const String& package_name) {
-	size_t i = 0, j = 0;
-	for ( ; i < packages.size() ; ++i) {
-		if (packages[i]->name != package_name) {
-			packages[j++] = packages[i];
-		}
-	}
-	packages.resize(j);
+void PackageDirectory::bless(const String &package_name) {
+    PackagedP pack = package_manager.openAny(package_name, true);
+    // already have this package?
+    for (auto &ver : packages) {
+        if (ver->name == package_name) {
+            ver->check_status(*pack);
+            ver->bless();
+            return;
+        }
+    }
+    // a new package
+    PackageVersionP ver(
+        new PackageVersion(is_local ? PackageVersion::STATUS_LOCAL
+                                    : PackageVersion::STATUS_GLOBAL));
+    ver->check_status(*pack);
+    ver->bless();
+    packages.push_back(ver);
+    sort(packages.begin(), packages.end(), compare_name);
 }
 
-IMPLEMENT_REFLECTION(PackageDirectory) {
-	REFLECT(packages);
+void PackageDirectory::removeFromDatabase(const String &package_name) {
+    size_t i = 0, j = 0;
+    for (; i < packages.size(); ++i) {
+        if (packages[i]->name != package_name) {
+            packages[j++] = packages[i];
+        }
+    }
+    packages.resize(j);
 }
+
+IMPLEMENT_REFLECTION(PackageDirectory) { REFLECT(packages); }
 
 void PackageDirectory::loadDatabase() {
-	if (!packages.empty()) return;
-	String filename = databaseFile();
-	if (wxFileExists(filename)) {
-		// packages file not existing is not an error
-		wxFileInputStream file(filename);
-		if (!file.Ok()) return; // failure is not an error
-		Reader reader(file, nullptr, filename);
-		reader.handle_greedy(*this);
-		sort(packages.begin(), packages.end(), compare_name);
-	}
+    if (!packages.empty())
+        return;
+    String filename = databaseFile();
+    if (wxFileExists(filename)) {
+        // packages file not existing is not an error
+        wxFileInputStream file(filename);
+        if (!file.Ok())
+            return; // failure is not an error
+        Reader reader(file, nullptr, filename);
+        reader.handle_greedy(*this);
+        sort(packages.begin(), packages.end(), compare_name);
+    }
 }
 
 void PackageDirectory::saveDatabase() {
-	wxFileOutputStream stream(databaseFile());
-	Writer writer(stream, app_version);
-	writer.handle(*this);
+    wxFileOutputStream stream(databaseFile());
+    Writer writer(stream, app_version);
+    writer.handle(*this);
 }
-String PackageDirectory::databaseFile() {
-	return name((L"packages"));
-}
+String PackageDirectory::databaseFile() { return name((L"packages")); }
 
-// ----------------------------------------------------------------------------- : PackageDirectory : installing
+// -----------------------------------------------------------------------------
+// : PackageDirectory : installing
 
-bool PackageDirectory::install(const InstallablePackage& package) {
-	String n = name(package.description->name);
-	if (package.action & PACKAGE_ACT_REMOVE) {
-		if (!remove_file_or_dir(n)) return false;
-		removeFromDatabase(package.description->name);
-	} else if (package.action & PACKAGE_ACT_INSTALL) {
-		if (!remove_file_or_dir(n + (L".new"))) return false;
-		bool ok = actual_install(package, n + (L".new"));
-		if (!ok) return false;
-		move_ignored_files(n, n + (L".new")); // copy over files from the old installed version to the new one
-		if (!remove_file_or_dir(n)) return false;
-		if (!rename_file_or_dir(n + (L".new"), n)) return false;
-		bless(package.description->name);
-	}
-	saveDatabase();
-	return true;
-}
-
-bool PackageDirectory::actual_install(const InstallablePackage& package, const String& install_dir) {
-	String name = package.description->name;
-	if (!package.installer->installer) {
-		queue_message(MESSAGE_ERROR, (L"Installer not found for package: ") + name);
-		return false;
-	}
-	Installer& installer = *package.installer->installer;
-	// install files
-	const Packaged::FileInfos& file_infos = installer.getFileInfos();
-	for (Packaged::FileInfos::const_iterator it = file_infos.begin() ; it != file_infos.end() ; ++it) {
-		String file = it->first;
-		if (!is_substr_i(file,0,name)) continue; // not the right package
-		// correct filename
-		String local_file = install_dir + file.substr(name.length());
-		create_parent_dirs(local_file);
-		// copy file
-		InputStreamP is = installer.openIn(file);
-		wxFileOutputStream os (local_file);
-		if (!os.IsOk()) {
-			int act = wxMessageBox(_ERROR_1_("cannot create file", file), _TITLE_("cannot create file"), wxICON_ERROR | wxYES_NO);
-			if (act == wxNO) return false;
-		}
-		os.Write(*is);
-	}
-	// update package database
-	// TODO: bless the package?
-	return true;
+bool PackageDirectory::install(const InstallablePackage &package) {
+    String n = name(package.description->name);
+    if (package.action & PACKAGE_ACT_REMOVE) {
+        if (!remove_file_or_dir(n))
+            return false;
+        removeFromDatabase(package.description->name);
+    } else if (package.action & PACKAGE_ACT_INSTALL) {
+        if (!remove_file_or_dir(n + (L".new")))
+            return false;
+        bool ok = actual_install(package, n + (L".new"));
+        if (!ok)
+            return false;
+        move_ignored_files(n, n + (L".new")); // copy over files from the old
+                                              // installed version to the new
+                                              // one
+        if (!remove_file_or_dir(n))
+            return false;
+        if (!rename_file_or_dir(n + (L".new"), n))
+            return false;
+        bless(package.description->name);
+    }
+    saveDatabase();
+    return true;
 }
 
-// ----------------------------------------------------------------------------- : PackageVersion
-
-template <> void Writer::handle(const PackageVersion::FileInfo& f) {
-	if (f.status == PackageVersion::FILE_DELETED) {
-		handle((L"D ") + f.file);
-	} else {
-		handle(format_string((L"%s%s %s"),
-			  f.status == PackageVersion::FILE_ADDED    ? (L"A")
-			: f.status == PackageVersion::FILE_MODIFIED ? (L"M") : (L""),
-			f.time.Format((L"%Y%m%dT%H%M%S")).c_str(),
-			f.file.c_str()));
-	}
+bool PackageDirectory::actual_install(const InstallablePackage &package,
+                                      const String &install_dir) {
+    String name = package.description->name;
+    if (!package.installer->installer) {
+        queue_message(MESSAGE_ERROR,
+                      (L"Installer not found for package: ") + name);
+        return false;
+    }
+    Installer &installer = *package.installer->installer;
+    // install files
+    const Packaged::FileInfos &file_infos = installer.getFileInfos();
+    for (Packaged::FileInfos::const_iterator it = file_infos.begin();
+         it != file_infos.end(); ++it) {
+        String file = it->first;
+        if (!is_substr_i(file, 0, name))
+            continue; // not the right package
+        // correct filename
+        String local_file = install_dir + file.substr(name.length());
+        create_parent_dirs(local_file);
+        // copy file
+        InputStreamP is = installer.openIn(file);
+        wxFileOutputStream os(local_file);
+        if (!os.IsOk()) {
+            int act = wxMessageBox(_ERROR_1_("cannot create file", file),
+                                   _TITLE_("cannot create file"),
+                                   wxICON_ERROR | wxYES_NO);
+            if (act == wxNO)
+                return false;
+        }
+        os.Write(*is);
+    }
+    // update package database
+    // TODO: bless the package?
+    return true;
 }
-template <> void Reader::handle(PackageVersion::FileInfo& f) {
-	String s; handle(s);
-	// read status
-	if (s.size() < 2) {f.status = PackageVersion::FILE_ADDED; return; }
-	f.status = s.GetChar(0) == (L'M') ? PackageVersion::FILE_MODIFIED
-	         : s.GetChar(0) == (L'A') ? PackageVersion::FILE_ADDED
-	         : s.GetChar(0) == (L'D') ? PackageVersion::FILE_DELETED
-	         :                          PackageVersion::FILE_UNCHANGED;
-	if (f.status == PackageVersion::FILE_DELETED) {
-		if (s.GetChar(1) != (L' ')) {f.status = PackageVersion::FILE_ADDED; return; }
-		f.file = s.substr(2);
-		return;
-	} else if (f.status != PackageVersion::FILE_UNCHANGED) {
-		s = s.substr(1);
-	}
-	if (s.size() < 8+1+6+1)         {f.status = PackageVersion::FILE_ADDED; return; }
-	if (s.GetChar(8+1+6) != (L' ')) {f.status = PackageVersion::FILE_ADDED; return; } // invalid format
-	// read time, filename
-	f.time.ParseFormat(s, (L"%Y%m%dT%H%M%S"));
-	f.file = s.substr(8+1+6+1);
+
+// -----------------------------------------------------------------------------
+// : PackageVersion
+
+template <>
+void Writer::handle(const PackageVersion::FileInfo &f) {
+    if (f.status == PackageVersion::FILE_DELETED) {
+        handle((L"D ") + f.file);
+    } else {
+        handle(format_string(
+            (L"%s%s %s"),
+            f.status == PackageVersion::FILE_ADDED
+                ? (L"A")
+                : f.status == PackageVersion::FILE_MODIFIED ? (L"M") : (L""),
+            f.time.Format((L"%Y%m%dT%H%M%S")).c_str(), f.file.c_str()));
+    }
+}
+template <>
+void Reader::handle(PackageVersion::FileInfo &f) {
+    String s;
+    handle(s);
+    // read status
+    if (s.size() < 2) {
+        f.status = PackageVersion::FILE_ADDED;
+        return;
+    }
+    f.status = s.GetChar(0) == (L'M')
+                   ? PackageVersion::FILE_MODIFIED
+                   : s.GetChar(0) == (L'A')
+                         ? PackageVersion::FILE_ADDED
+                         : s.GetChar(0) == (L'D')
+                               ? PackageVersion::FILE_DELETED
+                               : PackageVersion::FILE_UNCHANGED;
+    if (f.status == PackageVersion::FILE_DELETED) {
+        if (s.GetChar(1) != (L' ')) {
+            f.status = PackageVersion::FILE_ADDED;
+            return;
+        }
+        f.file = s.substr(2);
+        return;
+    } else if (f.status != PackageVersion::FILE_UNCHANGED) {
+        s = s.substr(1);
+    }
+    if (s.size() < 8 + 1 + 6 + 1) {
+        f.status = PackageVersion::FILE_ADDED;
+        return;
+    }
+    if (s.GetChar(8 + 1 + 6) != (L' ')) {
+        f.status = PackageVersion::FILE_ADDED;
+        return;
+    } // invalid format
+    // read time, filename
+    f.time.ParseFormat(s, (L"%Y%m%dT%H%M%S"));
+    f.file = s.substr(8 + 1 + 6 + 1);
 }
 IMPLEMENT_REFLECTION_NO_SCRIPT(PackageVersion) {
-	REFLECT_NO_SCRIPT(name);
-	REFLECT_NO_SCRIPT(version);
-	REFLECT_NO_SCRIPT(status);
-	REFLECT_NO_SCRIPT(files);
+    REFLECT_NO_SCRIPT(name);
+    REFLECT_NO_SCRIPT(version);
+    REFLECT_NO_SCRIPT(status);
+    REFLECT_NO_SCRIPT(files);
 }
 
-void PackageVersion::check_status(Packaged& package) {
-	status &= ~STATUS_MODIFIED;
-	if (!(status & STATUS_BLESSED)) status |= STATUS_MODIFIED;
-	name    = package.relativeFilename();
-	version = package.version;
-	// Merge our files list with the list from the package
-	vector<FileInfo> new_files;
-	Package::FileInfos fis = package.getFileInfos();
-	Package::FileInfos::const_iterator it1 = fis.begin();
-	vector<FileInfo>::iterator it2 = files.begin();
-//%	size_t it2 = 0, size = files.size();
-//%	bool need_sort = false;
-	while(it1 != fis.end() || it2 != files.end()) {
-		if (it1 != fis.end() && it2 != files.end() && it1->first == it2->file) {
-			DateTime mtime = package.modificationTime(*it1);
-			if (mtime != it2->time) {
-				it2->time   = mtime;
-				it2->status = FILE_MODIFIED;
-				new_files.push_back(*it2);
-				status |= STATUS_MODIFIED;
-			}
-			++it1; ++it2;
-		} else if (it1 != fis.end() && (it2 == files.end() || it1->first < it2->file)) {
-			// this is a new file
-			DateTime mtime = package.modificationTime(*it1);
-			new_files.push_back(FileInfo(it1->first, mtime, FILE_ADDED));
-			status |= STATUS_MODIFIED;
-			++it1;
-		} else {
-			// this file is no longer in the package, it was deleted
-			if (it2->status != FILE_ADDED) {
-				it2->status = FILE_DELETED;
-				new_files.push_back(*it2);
-				status |= STATUS_MODIFIED;
-			}
-			++it2;
-		}
-	}
-	swap(files,new_files);
+void PackageVersion::check_status(Packaged &package) {
+    status &= ~STATUS_MODIFIED;
+    if (!(status & STATUS_BLESSED))
+        status |= STATUS_MODIFIED;
+    name = package.relativeFilename();
+    version = package.version;
+    // Merge our files list with the list from the package
+    vector<FileInfo> new_files;
+    Package::FileInfos fis = package.getFileInfos();
+    Package::FileInfos::const_iterator it1 = fis.begin();
+    vector<FileInfo>::iterator it2 = files.begin();
+    //%	size_t it2 = 0, size = files.size();
+    //%	bool need_sort = false;
+    while (it1 != fis.end() || it2 != files.end()) {
+        if (it1 != fis.end() && it2 != files.end() && it1->first == it2->file) {
+            DateTime mtime = package.modificationTime(*it1);
+            if (mtime != it2->time) {
+                it2->time = mtime;
+                it2->status = FILE_MODIFIED;
+                new_files.push_back(*it2);
+                status |= STATUS_MODIFIED;
+            }
+            ++it1;
+            ++it2;
+        } else if (it1 != fis.end() &&
+                   (it2 == files.end() || it1->first < it2->file)) {
+            // this is a new file
+            DateTime mtime = package.modificationTime(*it1);
+            new_files.push_back(FileInfo(it1->first, mtime, FILE_ADDED));
+            status |= STATUS_MODIFIED;
+            ++it1;
+        } else {
+            // this file is no longer in the package, it was deleted
+            if (it2->status != FILE_ADDED) {
+                it2->status = FILE_DELETED;
+                new_files.push_back(*it2);
+                status |= STATUS_MODIFIED;
+            }
+            ++it2;
+        }
+    }
+    swap(files, new_files);
 }
 
 inline bool is_deleted(PackageVersion::FileInfo f) {
-	return f.status == PackageVersion::FILE_DELETED;
+    return f.status == PackageVersion::FILE_DELETED;
 }
 void PackageVersion::bless() {
-	files.erase(remove_if(files.begin(),files.end(),is_deleted),files.end());
-	for(auto& f :files) {
-		f.status = FILE_UNCHANGED;
-	}
-	status &= ~STATUS_MODIFIED;
-	status |= STATUS_BLESSED;
+    files.erase(remove_if(files.begin(), files.end(), is_deleted), files.end());
+    for (auto &f : files) {
+        f.status = FILE_UNCHANGED;
+    }
+    status &= ~STATUS_MODIFIED;
+    status |= STATUS_BLESSED;
 }

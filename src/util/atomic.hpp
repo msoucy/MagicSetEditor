@@ -9,20 +9,25 @@
 
 /** @file util/atomic.hpp
  *
- *  @brief Provides the type AtomicInt, which is an integer that can be incremented and decremented atomicly
+ *  @brief Provides the type AtomicInt, which is an integer that can be
+ * incremented and decremented atomicly
  */
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <atomic>
 
-// ----------------------------------------------------------------------------- : AtomicInt : portable
+// -----------------------------------------------------------------------------
+// : AtomicInt : portable
 
-/// An integer which is equivalent to an AtomicInt, but which doesn't support atomic operations
+/// An integer which is equivalent to an AtomicInt, but which doesn't support
+/// atomic operations
 typedef long AtomicIntEquiv;
 
 /// An integer that can be incremented and decremented atomicly
 typedef std::atomic<AtomicIntEquiv> AtomicInt;
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

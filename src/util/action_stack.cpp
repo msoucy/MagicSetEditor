@@ -4,119 +4,115 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <util/action_stack.hpp>
 #include <algorithm>
 
-// ----------------------------------------------------------------------------- : Action stack
+// -----------------------------------------------------------------------------
+// : Action stack
 
-
-ActionStack::ActionStack()
-	: save_point(nullptr)
-	, last_was_add(false)
-{}
+ActionStack::ActionStack() : save_point(nullptr), last_was_add(false) {}
 
 ActionStack::~ActionStack() {
-	// we own the actions, delete them
-	for(auto& a : undo_actions) delete a;
-	for(auto& a : redo_actions) delete a;
+    // we own the actions, delete them
+    for (auto &a : undo_actions)
+        delete a;
+    for (auto &a : redo_actions)
+        delete a;
 }
 
-void ActionStack::addAction(Action* action, bool allow_merge) {
-	if (!action) return; // no action
-	action->perform(false); // TODO: delete action if perform throws
-	tellListeners(*action, false);
-	// clear redo list
-	if (!redo_actions.empty()) allow_merge = false; // don't merge after undo
-	for(auto& a : redo_actions) delete a;
-	redo_actions.clear();
-	// try to merge?
-	if (allow_merge && !undo_actions.empty() &&
-	    last_was_add                         && // never merge with something that was redone once already
-	    undo_actions.back() != save_point    && // never merge with the save point
-	    undo_actions.back()->merge(*action) // merged with top undo action
-	    ) {
-		delete action;
-	} else {
-		undo_actions.push_back(action);
-	}
-	last_was_add = true;
+void ActionStack::addAction(Action *action, bool allow_merge) {
+    if (!action)
+        return;             // no action
+    action->perform(false); // TODO: delete action if perform throws
+    tellListeners(*action, false);
+    // clear redo list
+    if (!redo_actions.empty())
+        allow_merge = false; // don't merge after undo
+    for (auto &a : redo_actions)
+        delete a;
+    redo_actions.clear();
+    // try to merge?
+    if (allow_merge && !undo_actions.empty() &&
+        last_was_add && // never merge with something that was redone once
+                        // already
+        undo_actions.back() != save_point && // never merge with the save point
+        undo_actions.back()->merge(*action)  // merged with top undo action
+        ) {
+        delete action;
+    } else {
+        undo_actions.push_back(action);
+    }
+    last_was_add = true;
 }
 
 void ActionStack::undo() {
-	assert(canUndo());
-	if (!canUndo()) return;
-	Action* action = undo_actions.back();
-	action->perform(true);
-	tellListeners(*action, true);
-	// move to redo stack
-	undo_actions.pop_back();
-	redo_actions.push_back(action);
-	last_was_add = false;
+    assert(canUndo());
+    if (!canUndo())
+        return;
+    Action *action = undo_actions.back();
+    action->perform(true);
+    tellListeners(*action, true);
+    // move to redo stack
+    undo_actions.pop_back();
+    redo_actions.push_back(action);
+    last_was_add = false;
 }
 void ActionStack::redo() {
-	assert(canRedo());
-	if (!canRedo()) return;
-	Action* action = redo_actions.back();
-	action->perform(false);
-	tellListeners(*action, false);
-	// move to undo stack
-	redo_actions.pop_back();
-	undo_actions.push_back(action);
-	last_was_add = false;
+    assert(canRedo());
+    if (!canRedo())
+        return;
+    Action *action = redo_actions.back();
+    action->perform(false);
+    tellListeners(*action, false);
+    // move to undo stack
+    redo_actions.pop_back();
+    undo_actions.push_back(action);
+    last_was_add = false;
 }
 
-bool ActionStack::canUndo() const {
-	return !undo_actions.empty();
-}
-bool ActionStack::canRedo() const {
-	return !redo_actions.empty();
-}
+bool ActionStack::canUndo() const { return !undo_actions.empty(); }
+bool ActionStack::canRedo() const { return !redo_actions.empty(); }
 
 String ActionStack::undoName() const {
-	if (canUndo()) {
-		return (L" ") + capitalize(undo_actions.back()->getName(true));
-	} else {
-		return wxEmptyString;
-	}
+    if (canUndo()) {
+        return (L" ") + capitalize(undo_actions.back()->getName(true));
+    } else {
+        return wxEmptyString;
+    }
 }
 String ActionStack::redoName() const {
-	if (canRedo()) {
-		return (L" ") + capitalize(redo_actions.back()->getName(false));
-	} else {
-		return wxEmptyString;
-	}
+    if (canRedo()) {
+        return (L" ") + capitalize(redo_actions.back()->getName(false));
+    } else {
+        return wxEmptyString;
+    }
 }
 
 bool ActionStack::atSavePoint() const {
-	return (undo_actions.empty() && save_point == nullptr)
-	    || (undo_actions.back() == save_point);
+    return (undo_actions.empty() && save_point == nullptr) ||
+           (undo_actions.back() == save_point);
 }
 void ActionStack::setSavePoint() {
-	if (undo_actions.empty()) {
-		save_point = nullptr;
-	} else {
-		save_point = undo_actions.back();
-	}
+    if (undo_actions.empty()) {
+        save_point = nullptr;
+    } else {
+        save_point = undo_actions.back();
+    }
 }
 
-void ActionStack::addListener(ActionListener* listener) {
-	listeners.push_back(listener);
+void ActionStack::addListener(ActionListener *listener) {
+    listeners.push_back(listener);
 }
-void ActionStack::removeListener(ActionListener* listener) {
-	listeners.erase(
-		std::remove(
-			listeners.begin(),
-			listeners.end(),
-			listener
-			),
-		listeners.end()
-		);
+void ActionStack::removeListener(ActionListener *listener) {
+    listeners.erase(std::remove(listeners.begin(), listeners.end(), listener),
+                    listeners.end());
 }
-void ActionStack::tellListeners(const Action& action, bool undone) {
-	for(auto& l : listeners) {
-		l->onAction(action, undone);
-	}
+void ActionStack::tellListeners(const Action &action, bool undone) {
+    for (auto &l : listeners) {
+        l->onAction(action, undone);
+    }
 }

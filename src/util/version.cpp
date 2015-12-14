@@ -4,54 +4,56 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <util/version.hpp>
 #include <util/reflect.hpp>
 
-// ----------------------------------------------------------------------------- : Version
+// -----------------------------------------------------------------------------
+// : Version
 
 UInt Version::toNumber() const { return version; }
 
 String Version::toString() const {
-	if (version > 20000000) {
-		// major > 2000, the version is a date, use ISO notation
-		return String::Format((L"%04d-%02d-%02d"),
-					(version / 10000)      ,
-					(version / 100)   % 100,
-					(version / 1)     % 100);
-	} else {
-		return String::Format((L"%d.%d.%d"),
-					(version / 10000)      ,
-					(version / 100)   % 100,
-					(version / 1)     % 100);
-	}
+    if (version > 20000000) {
+        // major > 2000, the version is a date, use ISO notation
+        return String::Format((L"%04d-%02d-%02d"), (version / 10000),
+                              (version / 100) % 100, (version / 1) % 100);
+    } else {
+        return String::Format((L"%d.%d.%d"), (version / 10000),
+                              (version / 100) % 100, (version / 1) % 100);
+    }
 }
 
-Version Version::fromString(const String& version) {
-	UInt major = 0, minor = 0, build = 0;
-	if (wxSscanf(version, (L"%u.%u.%u"), &major, &minor, &build)<=1)  // a.b.c style
-	    wxSscanf(version, (L"%u-%u-%u"), &major, &minor, &build);  // date style
-	return Version(major * 10000 + minor * 100 + build);
+Version Version::fromString(const String &version) {
+    UInt major = 0, minor = 0, build = 0;
+    if (wxSscanf(version, (L"%u.%u.%u"), &major, &minor, &build) <=
+        1)                                                        // a.b.c style
+        wxSscanf(version, (L"%u-%u-%u"), &major, &minor, &build); // date style
+    return Version(major * 10000 + minor * 100 + build);
 }
 
+template <>
+void Reader::handle(Version &v) {
+    v = Version::fromString(getValue());
+}
+template <>
+void Writer::handle(const Version &v) {
+    handle(v.toString());
+}
+template <>
+void GetDefaultMember::handle(const Version &v) {
+    handle(v.toNumber());
+}
 
-template <> void Reader::handle(Version& v) {
-	v = Version::fromString(getValue());
-}
-template <> void Writer::handle(const Version& v) {
-	handle(v.toString());
-}
-template <> void GetDefaultMember::handle(const Version& v) {
-	handle(v.toNumber());
-}
-
-// ----------------------------------------------------------------------------- : Versions
+// -----------------------------------------------------------------------------
+// : Versions
 
 // NOTE: Don't use leading zeroes, they mean octal
-const Version app_version  = 20001; // 2.0.1
-const Char* version_suffix = (L"");
+const Version app_version = 20001; // 2.0.1
+const Char *version_suffix = (L"");
 
 /// Which version of MSE are the files we write out compatible with?
 /*  The saved files will have these version numbers attached.
@@ -69,24 +71,27 @@ const Char* version_suffix = (L"");
  *     0.3.4 : html export; choice rendering based on scripted 'image'
  *     0.3.5 : word lists, symbol font 'as text'
  *     0.3.6 : free rotation, rotation behaviour changed.
- *     0.3.7 : scripting language changes (@ operator, stricter type conversion).
+ *     0.3.7 : scripting language changes (@ operator, stricter type
+ * conversion).
  *     0.3.8 : - check_spelling function
  *             - tag_contents function fixed
  *             - alignment:justify behavior changed
  *             - more scriptable fields.
- *             - store time created,modified for cards -> changes set and clipboard format
+ *             - store time created,modified for cards -> changes set and
+ * clipboard format
  *     0.3.9 : bugfix release mostly, a few new script functions
  *     2.0.0 : bugfix release mostly, added error console
  *     2.0.1 : values are stored as ScriptValues, i.e. as parsable code.
- *             previously they were stored as unescaped strings, where the field type determined how the value would be parsed.
+ *             previously they were stored as unescaped strings, where the field
+ * type determined how the value would be parsed.
  */
-const Version file_version_locale          = 20000; // 2.0.0
-const Version file_version_set             = 20001; // 2.0.1
-const Version file_version_game            = 20001; // 2.0.1
-const Version file_version_stylesheet      = 20001; // 2.0.1
-const Version file_version_symbol_font     = 20001; // 2.0.1
+const Version file_version_locale = 20000;          // 2.0.0
+const Version file_version_set = 20001;             // 2.0.1
+const Version file_version_game = 20001;            // 2.0.1
+const Version file_version_stylesheet = 20001;      // 2.0.1
+const Version file_version_symbol_font = 20001;     // 2.0.1
 const Version file_version_export_template = 20001; // 2.0.1
-const Version file_version_installer       =   307; // 0.3.7
-const Version file_version_symbol          =   305; // 0.3.5
-const Version file_version_clipboard       = 20001; // 2.0.1
-const Version file_version_script          = 20001; // 2.0.1
+const Version file_version_installer = 307;         // 0.3.7
+const Version file_version_symbol = 305;            // 0.3.5
+const Version file_version_clipboard = 20001;       // 2.0.1
+const Version file_version_script = 20001;          // 2.0.1

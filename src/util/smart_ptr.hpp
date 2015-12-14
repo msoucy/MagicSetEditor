@@ -12,11 +12,13 @@
  *  @brief Utilities related to boost smart pointers
  */
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/atomic.hpp>
 
-// Use slightly less fancy template stuff, so msvc7.1 doesn't crash with an internal compiler error
+// Use slightly less fancy template stuff, so msvc7.1 doesn't crash with an
+// internal compiler error
 #define BOOST_SP_NO_SP_CONVERTIBLE
 
 #include <boost/intrusive_ptr.hpp>
@@ -29,44 +31,47 @@ using boost::intrusive_ptr;
 using std::static_pointer_cast;
 using std::dynamic_pointer_cast;
 
-template<typename T>
+template <typename T>
 using scoped_ptr = std::unique_ptr<T>;
 
-// ----------------------------------------------------------------------------- : Declaring
+// -----------------------------------------------------------------------------
+// : Declaring
 
 /// Declares the type TypeP as a shared_ptr<Type>
-#define DECLARE_SHARED_POINTER_TYPE(Type)	\
-	class Type;								\
-	typedef shared_ptr<Type> Type##P;
+#define DECLARE_SHARED_POINTER_TYPE(Type)                                      \
+    class Type;                                                                \
+    typedef shared_ptr<Type> Type##P;
 
-// ----------------------------------------------------------------------------- : Creating
+// -----------------------------------------------------------------------------
+// : Creating
 
 /// Wrap a newly allocated pointer in an shared_ptr
 /** Usage:
-	*    return shared(new T(stuff)));
-	*/
+    *    return shared(new T(stuff)));
+    */
 template <typename T>
-inline std::shared_ptr<T> shared(T* ptr) {
-	return std::shared_ptr<T>(ptr);
+inline std::shared_ptr<T> shared(T *ptr) {
+    return std::shared_ptr<T>(ptr);
 }
 
 using std::shared_ptr;
 
-// ----------------------------------------------------------------------------- : Intrusive pointers
+// -----------------------------------------------------------------------------
+// : Intrusive pointers
 
 /// Declares the type TypeP as a intrusive_ptr<Type>
-#define DECLARE_POINTER_TYPE(Type)			\
-	class Type;								\
-	typedef intrusive_ptr<Type> Type##P;
+#define DECLARE_POINTER_TYPE(Type)                                             \
+    class Type;                                                                \
+    typedef intrusive_ptr<Type> Type##P;
 
 /// Wrap a newly allocated pointer in an intrusive_ptr
 /** Usage:
  *    return intrusive(new T(stuff)));
  */
 template <typename T>
-inline intrusive_ptr<T> intrusive(T* ptr) {
-	assert(ptr && ptr->ref_count == 0);
-	return intrusive_ptr<T>(ptr);
+inline intrusive_ptr<T> intrusive(T *ptr) {
+    assert(ptr && ptr->ref_count == 0);
+    return intrusive_ptr<T>(ptr);
 }
 
 /// Wrap an existing pointer in an intrusive_ptr
@@ -74,16 +79,20 @@ inline intrusive_ptr<T> intrusive(T* ptr) {
  *    return intrusive_from_existing(this);
  */
 template <typename T>
-inline intrusive_ptr<T> intrusive_from_existing(T* ptr) {
-	assert(ptr && ptr->ref_count > 0);
-	return intrusive_ptr<T>(ptr);
+inline intrusive_ptr<T> intrusive_from_existing(T *ptr) {
+    assert(ptr && ptr->ref_count > 0);
+    return intrusive_ptr<T>(ptr);
 }
 
-// ----------------------------------------------------------------------------- : Intrusive pointer base
+// -----------------------------------------------------------------------------
+// : Intrusive pointer base
 
-template <typename T> class IntrusivePtrBase;
-template <typename T> void intrusive_ptr_add_ref(IntrusivePtrBase<T>*);
-template <typename T> void intrusive_ptr_release(IntrusivePtrBase<T>*);
+template <typename T>
+class IntrusivePtrBase;
+template <typename T>
+void intrusive_ptr_add_ref(IntrusivePtrBase<T> *);
+template <typename T>
+void intrusive_ptr_release(IntrusivePtrBase<T> *);
 /// Base class for objects wishing to use intrusive_ptrs.
 /** There is no implicit virtual destructor, objects are destructed as type T
 *   Usage:
@@ -92,60 +101,70 @@ template <typename T> void intrusive_ptr_release(IntrusivePtrBase<T>*);
  *    class MyClass : public IntrusivePtrBase<MyClass> { ... }
  *  @endcode
  */
-template <typename T> class IntrusivePtrBase {
+template <typename T>
+class IntrusivePtrBase {
   public:
-	inline IntrusivePtrBase()                        : ref_count(0) {}
-	// don't copy construct the reference count!
-	inline IntrusivePtrBase(const IntrusivePtrBase&) : ref_count(0) {}
-	// don't assign the reference count!
-	inline void operator = (const IntrusivePtrBase&) { }
+    inline IntrusivePtrBase() : ref_count(0) {}
+    // don't copy construct the reference count!
+    inline IntrusivePtrBase(const IntrusivePtrBase &) : ref_count(0) {}
+    // don't assign the reference count!
+    inline void operator=(const IntrusivePtrBase &) {}
+
   protected:
-	/// Delete this object, can be overloaded
-	inline void destroy() {
-		delete static_cast<T*>(this);
-	}
+    /// Delete this object, can be overloaded
+    inline void destroy() { delete static_cast<T *>(this); }
+
   private:
-	AtomicInt ref_count;
-	friend void intrusive_ptr_add_ref <> (IntrusivePtrBase*);
-	friend void intrusive_ptr_release <> (IntrusivePtrBase*);
-	template <typename U> friend intrusive_ptr<U> intrusive(U*);
-	template <typename U> friend intrusive_ptr<U> intrusive_from_existing(U*);
+    AtomicInt ref_count;
+    friend void intrusive_ptr_add_ref<>(IntrusivePtrBase *);
+    friend void intrusive_ptr_release<>(IntrusivePtrBase *);
+    template <typename U>
+    friend intrusive_ptr<U> intrusive(U *);
+    template <typename U>
+    friend intrusive_ptr<U> intrusive_from_existing(U *);
 };
 
-template <typename T> void intrusive_ptr_add_ref(IntrusivePtrBase<T>* p) {
-	++(p->ref_count);
+template <typename T>
+void intrusive_ptr_add_ref(IntrusivePtrBase<T> *p) {
+    ++(p->ref_count);
 }
 
-template <typename T> void intrusive_ptr_release(IntrusivePtrBase<T>* p) {
-	if (--p->ref_count == 0) {
-		static_cast<T*>(p)->destroy();
-	}
+template <typename T>
+void intrusive_ptr_release(IntrusivePtrBase<T> *p) {
+    if (--p->ref_count == 0) {
+        static_cast<T *>(p)->destroy();
+    }
 }
-// ----------------------------------------------------------------------------- : Intrusive pointer base : virtual
+// -----------------------------------------------------------------------------
+// : Intrusive pointer base : virtual
 
 /// IntrusivePtrBase with a virtual destructor
-class IntrusivePtrVirtualBase : public IntrusivePtrBase<IntrusivePtrVirtualBase> {
+class IntrusivePtrVirtualBase
+    : public IntrusivePtrBase<IntrusivePtrVirtualBase> {
   public:
-	virtual ~IntrusivePtrVirtualBase() {}
+    virtual ~IntrusivePtrVirtualBase() {}
 };
 
-// ----------------------------------------------------------------------------- : Intrusive pointer base : with delete
+// -----------------------------------------------------------------------------
+// : Intrusive pointer base : with delete
 
-/// Base class for objects wishing to use intrusive_ptrs, using a manual delete function
-class IntrusivePtrBaseWithDelete : public IntrusivePtrBase<IntrusivePtrBaseWithDelete> {
+/// Base class for objects wishing to use intrusive_ptrs, using a manual delete
+/// function
+class IntrusivePtrBaseWithDelete
+    : public IntrusivePtrBase<IntrusivePtrBaseWithDelete> {
   public:
-	virtual ~IntrusivePtrBaseWithDelete() {}
+    virtual ~IntrusivePtrBaseWithDelete() {}
+
   protected:
-	/// Delete this object
-	virtual void destroy() {
-		delete this;
-	}
-	template <typename T> friend void intrusive_ptr_release(IntrusivePtrBase<T>*);
+    /// Delete this object
+    virtual void destroy() { delete this; }
+    template <typename T>
+    friend void intrusive_ptr_release(IntrusivePtrBase<T> *);
 };
-
 
 /// Pointer to 'anything'
 typedef intrusive_ptr<IntrusivePtrVirtualBase> VoidP;
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

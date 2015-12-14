@@ -7,22 +7,25 @@
 #ifndef HEADER_GUI_VALUE_INFORMATION
 #define HEADER_GUI_VALUE_INFORMATION
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/value/editor.hpp>
 #include <render/value/information.hpp>
 
-// ----------------------------------------------------------------------------- : InfoValueEditor
+// -----------------------------------------------------------------------------
+// : InfoValueEditor
 
 /// An editor 'control' for editing InfoValues
 class InfoValueEditor : public InfoValueViewer, public ValueEditor {
   public:
-	DECLARE_VALUE_EDITOR(Info);
-	
-	virtual void determineSize(bool);
-	virtual bool drawLabel() const { return false; }
+    DECLARE_VALUE_EDITOR(Info);
+
+    virtual void determineSize(bool);
+    virtual bool drawLabel() const { return false; }
 };
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

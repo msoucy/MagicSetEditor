@@ -7,11 +7,13 @@
 #ifndef HEADER_UTIL_UPDATE_CHECKER
 #define HEADER_UTIL_UPDATE_CHECKER
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 
-// ----------------------------------------------------------------------------- : Update checking
+// -----------------------------------------------------------------------------
+// : Update checking
 
 // Checks for updates if the settings say so
 void check_updates();
@@ -21,15 +23,17 @@ void check_updates();
  */
 void check_updates_now(bool async = true);
 
-/// Show a dialog to inform the user that updates are available (if there are any)
+/// Show a dialog to inform the user that updates are available (if there are
+/// any)
 /** Call check_updates first.
  *  Call this function from an onIdle loop */
-void show_update_dialog(Window* parent);
+void show_update_dialog(Window *parent);
 
 /// Was update data found?
 bool update_data_found();
 /// Is there an update?
 bool update_available();
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

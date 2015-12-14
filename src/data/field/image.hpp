@@ -7,14 +7,16 @@
 #ifndef HEADER_DATA_FIELD_IMAGE
 #define HEADER_DATA_FIELD_IMAGE
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/field.hpp>
 #include <script/scriptable.hpp>
 #include <script/image.hpp>
 
-// ----------------------------------------------------------------------------- : ImageField
+// -----------------------------------------------------------------------------
+// : ImageField
 
 DECLARE_POINTER_TYPE(ImageField);
 DECLARE_POINTER_TYPE(ImageStyle);
@@ -22,27 +24,30 @@ DECLARE_POINTER_TYPE(ImageStyle);
 /// A field for image values
 class ImageField : public Field {
   public:
-	// no extra data
-	DECLARE_FIELD_TYPE();
+    // no extra data
+    DECLARE_FIELD_TYPE();
 };
 
-// ----------------------------------------------------------------------------- : ImageStyle
+// -----------------------------------------------------------------------------
+// : ImageStyle
 
 /// The Style for a ImageField
 class ImageStyle : public Style {
   public:
-	inline ImageStyle(const ImageFieldP& field) : Style(field) {}
-	DECLARE_STYLE_TYPE(Image);
-	
-	ScriptableImage default_image; ///< Placeholder
-	
-	virtual int update(Context&);
+    inline ImageStyle(const ImageFieldP &field) : Style(field) {}
+    DECLARE_STYLE_TYPE(Image);
+
+    ScriptableImage default_image; ///< Placeholder
+
+    virtual int update(Context &);
 };
 
-// ----------------------------------------------------------------------------- : ImageValue
+// -----------------------------------------------------------------------------
+// : ImageValue
 
 typedef Value ImageValue;
 typedef ValueP ImageValueP;
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

@@ -4,15 +4,15 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/value/information.hpp>
 
-// ----------------------------------------------------------------------------- : InfoValueEditor
+// -----------------------------------------------------------------------------
+// : InfoValueEditor
 
 IMPLEMENT_VALUE_EDITOR(Info) {}
 
-void InfoValueEditor::determineSize(bool) {
-	style().height = 26;
-}
+void InfoValueEditor::determineSize(bool) { style().height = 26; }

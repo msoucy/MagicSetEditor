@@ -7,7 +7,8 @@
 #ifndef HEADER_GUI_SET_STATS_PANEL
 #define HEADER_GUI_SET_STATS_PANEL
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/set/panel.hpp>
@@ -23,55 +24,57 @@ class IconMenu;
 #define USE_DIMENSION_LISTS 1
 #define USE_SEPARATE_DIMENSION_LISTS 0
 
-// ----------------------------------------------------------------------------- : StatsPanel
+// -----------------------------------------------------------------------------
+// : StatsPanel
 
 /// A panel for showing statistics on cards
 class StatsPanel : public SetWindowPanel {
   public:
-	StatsPanel(Window* parent, int id);
-	~StatsPanel();
-	
-	// --------------------------------------------------- : UI
-	
-	virtual void onChangeSet();
-	virtual void onAction(const Action&, bool undone);
-	
-	virtual void initUI   (wxToolBar*, wxMenuBar*);
-	virtual void destroyUI(wxToolBar*, wxMenuBar*);
-	virtual void onUpdateUI(wxUpdateUIEvent&);
-	virtual void onCommand(int id);
-	
-	// --------------------------------------------------- : Selection
-	virtual CardP selectedCard() const;
-	virtual void selectCard(const CardP& card);
-	
-	// --------------------------------------------------- : Data
+    StatsPanel(Window *parent, int id);
+    ~StatsPanel();
+
+    // --------------------------------------------------- : UI
+
+    virtual void onChangeSet();
+    virtual void onAction(const Action &, bool undone);
+
+    virtual void initUI(wxToolBar *, wxMenuBar *);
+    virtual void destroyUI(wxToolBar *, wxMenuBar *);
+    virtual void onUpdateUI(wxUpdateUIEvent &);
+    virtual void onCommand(int id);
+
+    // --------------------------------------------------- : Selection
+    virtual CardP selectedCard() const;
+    virtual void selectCard(const CardP &card);
+
+    // --------------------------------------------------- : Data
   private:
-	DECLARE_EVENT_TABLE();
-	
-	#if USE_SEPARATE_DIMENSION_LISTS
-		StatDimensionList* dimensions[3];
-	#elif USE_DIMENSION_LISTS
-		StatDimensionList* dimensions;
-	#else
-		StatCategoryList* categories;
-	#endif
-	GraphControl*     graph;
-	FilteredCardList* card_list;
-	IconMenu*         menuGraph;
-	
-	CardP card;      ///< Selected card
-	bool up_to_date; ///< Are the graph and card list up to date?
-	bool active;     ///< Is this panel selected?
-	
-	void initControls();
-	
-	void onChange();
-	void onGraphSelect(wxCommandEvent&);
-	void showCategory(const GraphType* prefer_layout = nullptr);
-	void showLayout(GraphType);
-	void filterCards();
+    DECLARE_EVENT_TABLE();
+
+#if USE_SEPARATE_DIMENSION_LISTS
+    StatDimensionList *dimensions[3];
+#elif USE_DIMENSION_LISTS
+    StatDimensionList *dimensions;
+#else
+    StatCategoryList *categories;
+#endif
+    GraphControl *graph;
+    FilteredCardList *card_list;
+    IconMenu *menuGraph;
+
+    CardP card;      ///< Selected card
+    bool up_to_date; ///< Are the graph and card list up to date?
+    bool active;     ///< Is this panel selected?
+
+    void initControls();
+
+    void onChange();
+    void onGraphSelect(wxCommandEvent &);
+    void showCategory(const GraphType *prefer_layout = nullptr);
+    void showLayout(GraphType);
+    void filterCards();
 };
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

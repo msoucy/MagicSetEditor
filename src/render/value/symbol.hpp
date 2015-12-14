@@ -7,25 +7,28 @@
 #ifndef HEADER_RENDER_VALUE_SYMBOL
 #define HEADER_RENDER_VALUE_SYMBOL
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <render/value/viewer.hpp>
 #include <data/field/symbol.hpp>
 
-// ----------------------------------------------------------------------------- : SymbolValueViewer
+// -----------------------------------------------------------------------------
+// : SymbolValueViewer
 
 /// Viewer that displays a symbol value
 class SymbolValueViewer : public ValueViewer {
   public:
-	DECLARE_VALUE_VIEWER(Symbol) : ValueViewer(parent,style) {}
-	
-	virtual void draw(RotatedDC& dc);
-	void onValueChange();
-	
+    DECLARE_VALUE_VIEWER(Symbol) : ValueViewer(parent, style) {}
+
+    virtual void draw(RotatedDC &dc);
+    void onValueChange();
+
   protected:
-	vector<Bitmap> symbols;	///< Cached images
+    vector<Bitmap> symbols; ///< Cached images
 };
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

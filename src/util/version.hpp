@@ -13,42 +13,46 @@
  *  This header also stores the MSE version number.
  */
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 
-// ----------------------------------------------------------------------------- : Version datatype
+// -----------------------------------------------------------------------------
+// : Version datatype
 
 /// A version number
 struct Version {
   public:
-	Version()             : version(0)       {}
-	Version(UInt version) : version(version) {}
-	
-	inline bool operator == (Version v) const { return version == v.version; }
-	inline bool operator != (Version v) const { return version != v.version; }
-	inline bool operator <  (Version v) const { return version <  v.version; }
-	inline bool operator <= (Version v) const { return version <= v.version; }
-	inline bool operator >  (Version v) const { return version >  v.version; }
-	inline bool operator >= (Version v) const { return version >= v.version; }
-	
-	/// Convert a version number to a string
-	String toString() const;
-	/// Get the version number as an integer number
-	UInt   toNumber() const;
-	
-	/// Convert a string to a version number
-	static Version fromString(const String& version);
-	
+    Version() : version(0) {}
+    Version(UInt version) : version(version) {}
+
+    inline bool operator==(Version v) const { return version == v.version; }
+    inline bool operator!=(Version v) const { return version != v.version; }
+    inline bool operator<(Version v) const { return version < v.version; }
+    inline bool operator<=(Version v) const { return version <= v.version; }
+    inline bool operator>(Version v) const { return version > v.version; }
+    inline bool operator>=(Version v) const { return version >= v.version; }
+
+    /// Convert a version number to a string
+    String toString() const;
+    /// Get the version number as an integer number
+    UInt toNumber() const;
+
+    /// Convert a string to a version number
+    static Version fromString(const String &version);
+
   private:
-	UInt version; ///< Version number encoded as aabbcc, where a=major, b=minor, c=revision
+    UInt version; ///< Version number encoded as aabbcc, where a=major, b=minor,
+                  ///c=revision
 };
 
-// ----------------------------------------------------------------------------- : Versions
+// -----------------------------------------------------------------------------
+// : Versions
 
 /// The version number of MSE
 extern const Version app_version;
-extern const Char* version_suffix;
+extern const Char *version_suffix;
 
 /// Which version of MSE are the files we write out compatible with?
 /** When no files are changed the file version is not incremented
@@ -64,5 +68,6 @@ extern const Version file_version_symbol;
 extern const Version file_version_clipboard;
 extern const Version file_version_script;
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

@@ -4,65 +4,62 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/field/symbol.hpp>
 #include <render/symbol/filter.hpp>
 
-// ----------------------------------------------------------------------------- : SymbolField
+// -----------------------------------------------------------------------------
+// : SymbolField
 
 IMPLEMENT_FIELD_TYPE(Symbol, "symbol");
 
-IMPLEMENT_REFLECTION(SymbolField) {
-	REFLECT_BASE(Field);
-}
+IMPLEMENT_REFLECTION(SymbolField) { REFLECT_BASE(Field); }
 
-
-// ----------------------------------------------------------------------------- : SymbolStyle
+// -----------------------------------------------------------------------------
+// : SymbolStyle
 
 IMPLEMENT_REFLECTION(SymbolStyle) {
-	REFLECT_BASE(Style);
-	REFLECT(min_aspect_ratio);
-	REFLECT(max_aspect_ratio);
-	REFLECT(variations);
+    REFLECT_BASE(Style);
+    REFLECT(min_aspect_ratio);
+    REFLECT(max_aspect_ratio);
+    REFLECT(variations);
 }
 
-SymbolVariation::SymbolVariation()
-	: border_radius(0.05)
-{}
+SymbolVariation::SymbolVariation() : border_radius(0.05) {}
 SymbolVariation::~SymbolVariation() {}
 
-bool SymbolVariation::operator == (const SymbolVariation& that) const {
-	return name          == that.name
-	    && border_radius == that.border_radius
-	    && *filter       == *that.filter;
+bool SymbolVariation::operator==(const SymbolVariation &that) const {
+    return name == that.name && border_radius == that.border_radius &&
+           *filter == *that.filter;
 }
 
 IMPLEMENT_REFLECTION_NO_SCRIPT(SymbolVariation) {
-	REFLECT(name);
-	REFLECT(border_radius);
-	REFLECT_NAMELESS(filter);
+    REFLECT(name);
+    REFLECT(border_radius);
+    REFLECT_NAMELESS(filter);
 }
 
-// ----------------------------------------------------------------------------- : LocalSymbolFile
+// -----------------------------------------------------------------------------
+// : LocalSymbolFile
 
-ScriptValueP script_local_symbol_file(LocalFileName const& filename) {
-	return intrusive(new LocalSymbolFile(filename));
+ScriptValueP script_local_symbol_file(LocalFileName const &filename) {
+    return intrusive(new LocalSymbolFile(filename));
 }
 
-String quote_string(String const& str);
+String quote_string(String const &str);
 String LocalSymbolFile::toCode() const {
-	return (L"local_symbol_file(") + quote_string(filename.toStringForWriting()) + (L")");
+    return (L"local_symbol_file(") +
+           quote_string(filename.toStringForWriting()) + (L")");
 }
-String LocalSymbolFile::typeName() const {
-	return (L"symbol");
-}
+String LocalSymbolFile::typeName() const { return (L"symbol"); }
 GeneratedImageP LocalSymbolFile::toImage() const {
-	SymbolVariationP variation(new SymbolVariation);
-	variation->filter = intrusive(new SolidFillSymbolFilter);
-	return intrusive(new SymbolToImage(true, filename, variation));
+    SymbolVariationP variation(new SymbolVariation);
+    variation->filter = intrusive(new SolidFillSymbolFilter);
+    return intrusive(new SymbolToImage(true, filename, variation));
 }
 String LocalSymbolFile::toFriendlyString() const {
-	return (L"<") + _TYPE_("symbol") + (L">");
+    return (L"<") + _TYPE_("symbol") + (L">");
 }

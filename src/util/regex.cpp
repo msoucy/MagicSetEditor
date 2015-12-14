@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <util/regex.hpp>
@@ -13,38 +14,44 @@
 using std::insert_iterator;
 
 #if USE_BOOST_REGEX
-// ----------------------------------------------------------------------------- : Regex : boost
+// -----------------------------------------------------------------------------
+// : Regex : boost
 
-void Regex::assign(const String& code) {
-	// compile string
-	try {
-		regex.assign(code.begin(),code.end());
-	} catch (const boost::regex_error& e) {
-		/// TODO: be more precise
-		throw ScriptError(String::Format((L"Error while compiling regular expression: '%s'\nAt position: %d\n%s"),
-		                  code.c_str(), e.position(), String(e.what(), wxConvUTF8).c_str()));
-	}
+void Regex::assign(const String &code) {
+    // compile string
+    try {
+        regex.assign(code.begin(), code.end());
+    } catch (const boost::regex_error &e) {
+        /// TODO: be more precise
+        throw ScriptError(String::Format(
+            (L"Error while compiling regular expression: '%s'\nAt position: "
+             L"%d\n%s"),
+            code.c_str(), e.position(), String(e.what(), wxConvUTF8).c_str()));
+    }
 }
 
-void Regex::replace_all(String* input, const String& format) {
-	//std::basic_string<Char> fmt; format_string(format,fmt);
-	std::basic_string<Char> fmt(format.begin(),format.end());
-	String output;
-	regex_replace(insert_iterator<String>(output, output.end()),
-	              input->begin(), input->end(), regex, fmt, boost::format_sed);
-	*input = output;
+void Regex::replace_all(String *input, const String &format) {
+    // std::basic_string<Char> fmt; format_string(format,fmt);
+    std::basic_string<Char> fmt(format.begin(), format.end());
+    String output;
+    regex_replace(insert_iterator<String>(output, output.end()), input->begin(),
+                  input->end(), regex, fmt, boost::format_sed);
+    *input = output;
 }
 
 #else // USE_BOOST_REGEX
-// ----------------------------------------------------------------------------- : Regex : wx
+// -----------------------------------------------------------------------------
+// : Regex : wx
 
-void Regex::assign(const String& code) {
-	// compile string
-	if (!regex.Compile(code, wxRE_ADVANCED)) {
-		throw ScriptError((L"Error while compiling regular expression: '") + code + (L"'"));
-	}
-	assert(regex.IsValid());
+void Regex::assign(const String &code) {
+    // compile string
+    if (!regex.Compile(code, wxRE_ADVANCED)) {
+        throw ScriptError((L"Error while compiling regular expression: '") +
+                          code + (L"'"));
+    }
+    assert(regex.IsValid());
 }
 
 #endif // USE_BOOST_REGEX
-// ----------------------------------------------------------------------------- : Regex : common
+// -----------------------------------------------------------------------------
+// : Regex : common

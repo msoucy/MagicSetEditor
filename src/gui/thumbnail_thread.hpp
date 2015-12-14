@@ -7,7 +7,8 @@
 #ifndef HEADER_GUI_THUMBNAIL_THREAD
 #define HEADER_GUI_THUMBNAIL_THREAD
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <wx/datetime.h>
@@ -17,33 +18,36 @@
 DECLARE_POINTER_TYPE(ThumbnailRequest);
 class ThumbnailThreadWorker;
 
-// ----------------------------------------------------------------------------- : ThumbnailRequest
+// -----------------------------------------------------------------------------
+// : ThumbnailRequest
 
 /// A request for some kind of thumbnail
 class ThumbnailRequest : public IntrusivePtrVirtualBase {
   public:
-	ThumbnailRequest(void* owner, const String& cache_name, const wxDateTime& modified)
-		: owner(owner), cache_name(cache_name), modified(modified) {}
+    ThumbnailRequest(void *owner, const String &cache_name,
+                     const wxDateTime &modified)
+        : owner(owner), cache_name(cache_name), modified(modified) {}
 
-	virtual ~ThumbnailRequest() {}
+    virtual ~ThumbnailRequest() {}
 
-	/// Generate the thumbnail, called in another thread
-	virtual Image generate() = 0;
-	/// Store the thumbnail, called from the main thread
-	virtual void store(const Image&) = 0;
+    /// Generate the thumbnail, called in another thread
+    virtual Image generate() = 0;
+    /// Store the thumbnail, called from the main thread
+    virtual void store(const Image &) = 0;
 
-	/// Can the thumbnail safely be generated from another thread?
-	virtual bool threadSafe() const { return true; }
+    /// Can the thumbnail safely be generated from another thread?
+    virtual bool threadSafe() const { return true; }
 
-	/// Object that requested the thumbnail
-	void* const owner;
-	/// Name under which this object will be stored in the image cache
-	String cache_name;
-	/// Modification time for the object of which the thumnail is generated
-	wxDateTime modified;
+    /// Object that requested the thumbnail
+    void *const owner;
+    /// Name under which this object will be stored in the image cache
+    String cache_name;
+    /// Modification time for the object of which the thumnail is generated
+    wxDateTime modified;
 };
 
-// ----------------------------------------------------------------------------- : ThumbnailThread
+// -----------------------------------------------------------------------------
+// : ThumbnailThread
 
 /// A (generic) class that generates thumbnails in another thread
 /** All requests have an 'owner', the object that requested the thumbnail.
@@ -53,36 +57,39 @@ class ThumbnailRequest : public IntrusivePtrVirtualBase {
  */
 class ThumbnailThread {
   public:
-	ThumbnailThread();
+    ThumbnailThread();
 
-	/// Request a thumbnail, it may be store()d immediatly if the thumbnail is cached
-	void request(const ThumbnailRequestP& request);
-	/// Is one or more thumbnail for the given owner finished?
-	/** If so, call their store() functions */
-	bool done(void* owner);
-	/// Abort all thumbnail requests for the given owner
-	void abort(void* owner);
-	/// Abort all computations
-	/** *must* be called at application exit */
-	void abortAll();
+    /// Request a thumbnail, it may be store()d immediatly if the thumbnail is
+    /// cached
+    void request(const ThumbnailRequestP &request);
+    /// Is one or more thumbnail for the given owner finished?
+    /** If so, call their store() functions */
+    bool done(void *owner);
+    /// Abort all thumbnail requests for the given owner
+    void abort(void *owner);
+    /// Abort all computations
+    /** *must* be called at application exit */
+    void abortAll();
 
   private:
-	wxMutex     mutex;  ///< Mutex used by the worker when accessing the request lists or the thread pointer
-	wxCondition completed; ///< Event signaled when a request is completed
+    wxMutex mutex; ///< Mutex used by the worker when accessing the request
+                   ///lists or the thread pointer
+    wxCondition completed; ///< Event signaled when a request is completed
 
-	/// Requests on which work hasn't finished
-	std::deque<ThumbnailRequestP>           open_requests;
-	/// Requests for which work is completed
-	vector<std::pair<ThumbnailRequestP,Image> >  closed_requests;
-	/// Requests that haven't been stored yet, to prevent duplicates
-	set<ThumbnailRequestP>                  request_names;
-	/// The worker thread. invariant: no requests ==> worker==nullptr
-	friend class ThumbnailThreadWorker;
-	ThumbnailThreadWorker* worker;
+    /// Requests on which work hasn't finished
+    std::deque<ThumbnailRequestP> open_requests;
+    /// Requests for which work is completed
+    vector<std::pair<ThumbnailRequestP, Image>> closed_requests;
+    /// Requests that haven't been stored yet, to prevent duplicates
+    set<ThumbnailRequestP> request_names;
+    /// The worker thread. invariant: no requests ==> worker==nullptr
+    friend class ThumbnailThreadWorker;
+    ThumbnailThreadWorker *worker;
 };
 
 /// The global thumbnail generator thread
 extern ThumbnailThread thumbnail_thread;
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

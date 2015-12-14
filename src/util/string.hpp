@@ -12,7 +12,8 @@
  *  @brief String and character utility functions and macros
  */
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include "prec.hpp"
 #include <ctype.h>
@@ -20,23 +21,26 @@
 
 class wxTextOutputStream;
 
-// ----------------------------------------------------------------------------- : String type
+// -----------------------------------------------------------------------------
+// : String type
 
 /// The string type used throughout MSE
 typedef wxString String;
 
-
-// ----------------------------------------------------------------------------- : Unicode
+// -----------------------------------------------------------------------------
+// : Unicode
 
 /// The character type used
 typedef wchar_t Char;
 
 /// Decode a UTF8 string
-/** In non-unicode builds the input is considered to be an incorrectly encoded utf8 string.
+/** In non-unicode builds the input is considered to be an incorrectly encoded
+ * utf8 string.
  *  In unicode builds it is a normal string, utf8 already decoded.
- *  Also removes a byte-order-mark from the start of the string if it is pressent
+ *  Also removes a byte-order-mark from the start of the string if it is
+ * pressent
  */
-String decodeUTF8BOM(const String& s);
+String decodeUTF8BOM(const String &s);
 
 /// UTF8 Byte order mark for writing at the start of files
 /** In non-unicode builds it is UTF8 encoded \xFEFF.
@@ -45,20 +49,22 @@ String decodeUTF8BOM(const String& s);
 const Char BYTE_ORDER_MARK[] = L"\xFEFF";
 
 /// Writes a string to an output stream, encoded as UTF8
-void writeUTF8(wxTextOutputStream& stream, const String& str);
+void writeUTF8(wxTextOutputStream &stream, const String &str);
 
 /// Some constants we like to use
-constexpr auto  LEFT_ANGLE_BRACKET = L"\x2039"; // <
+constexpr auto LEFT_ANGLE_BRACKET = L"\x2039";  // <
 constexpr auto RIGHT_ANGLE_BRACKET = L"\x203A"; // >
-constexpr auto  LEFT_SINGLE_QUOTE  = L'\x2018'; // '
-constexpr auto RIGHT_SINGLE_QUOTE  = L'\x2019'; // '
-constexpr auto  LEFT_DOUBLE_QUOTE  = L'\x201C'; // "
-constexpr auto RIGHT_DOUBLE_QUOTE  = L'\x201D'; // "
-constexpr auto EN_DASH             = L'\x2013'; // -
-constexpr auto EM_DASH             = L'\x2014'; // -
-constexpr auto CONNECTION_SPACE    = L'\xEB00'; // in private use area, untags to ' '
+constexpr auto LEFT_SINGLE_QUOTE = L'\x2018';   // '
+constexpr auto RIGHT_SINGLE_QUOTE = L'\x2019';  // '
+constexpr auto LEFT_DOUBLE_QUOTE = L'\x201C';   // "
+constexpr auto RIGHT_DOUBLE_QUOTE = L'\x201D';  // "
+constexpr auto EN_DASH = L'\x2013';             // -
+constexpr auto EM_DASH = L'\x2014';             // -
+constexpr auto CONNECTION_SPACE =
+    L'\xEB00'; // in private use area, untags to ' '
 
-// ----------------------------------------------------------------------------- : Char functions
+// -----------------------------------------------------------------------------
+// : Char functions
 
 // Character set tests
 inline bool isAlpha(Char c) { return iswalpha(c); }
@@ -69,86 +75,93 @@ inline bool isLower(Char c) { return iswlower(c); }
 inline bool isPunct(Char c) { return iswpunct(c); }
 // Character conversions
 #ifdef _MSC_VER
-	#define CHAR_FUNCTIONS_ARE_SLOW
+#define CHAR_FUNCTIONS_ARE_SLOW
 #endif
 #ifdef CHAR_FUNCTIONS_ARE_SLOW
-	// These functions are slow as hell on msvc.
-	// If also in other compilers, they can also use these routines.
-	Char toLower(Char c);
-	Char toUpper(Char c);
-	inline bool isSpace(Char c) {
-		if (c <= 128) {
-			return (c >= 0x09 && c <= 0x0D) || c == 0x20;
-		} else {
-			return iswspace(c) || c == CONNECTION_SPACE;
-		}
-	}
+// These functions are slow as hell on msvc.
+// If also in other compilers, they can also use these routines.
+Char toLower(Char c);
+Char toUpper(Char c);
+inline bool isSpace(Char c) {
+    if (c <= 128) {
+        return (c >= 0x09 && c <= 0x0D) || c == 0x20;
+    } else {
+        return iswspace(c) || c == CONNECTION_SPACE;
+    }
+}
 #else
-	inline Char toLower(Char c) { return towlower(c); }
-	inline Char toUpper(Char c) { return towupper(c); }
-	inline bool isSpace(Char c) { return iswspace(c) || c == CONNECTION_SPACE; }
+inline Char toLower(Char c) { return towlower(c); }
+inline Char toUpper(Char c) { return towupper(c); }
+inline bool isSpace(Char c) { return iswspace(c) || c == CONNECTION_SPACE; }
 #endif
 
-// ----------------------------------------------------------------------------- : String utilities
+// -----------------------------------------------------------------------------
+// : String utilities
 
 /// Remove whitespace from both ends of a string
-String trim(const String&);
+String trim(const String &);
 
 /// Remove whitespace from the start of a string
-String trim_left(const String&);
+String trim_left(const String &);
 
 /// Replace the substring [start...end) of 'input' with 'replacement'
-String substr_replace(const String& input, size_t start, size_t end, const String& replacement);
+String substr_replace(const String &input, size_t start, size_t end,
+                      const String &replacement);
 
 /// Replace all occurences of one needle with replacement
-String replace_all(const String& heystack, const String& needle, const String& replacement);
+String replace_all(const String &heystack, const String &needle,
+                   const String &replacement);
 
-// ----------------------------------------------------------------------------- : Words
+// -----------------------------------------------------------------------------
+// : Words
 
 /// Returns the last word in a string
-String last_word(const String&);
+String last_word(const String &);
 
 /// Remove the last word from a string, leaves whitespace before that word
-String strip_last_word(const String&);
+String strip_last_word(const String &);
 
 /// Trim punctuation at the start/end of a word in the range [start..end)
-void trim_punctuation(const String&, size_t& start, size_t& end);
+void trim_punctuation(const String &, size_t &start, size_t &end);
 
 bool is_word_start_punctuation(Char c);
 bool is_word_end_punctuation(Char c);
 
-// ----------------------------------------------------------------------------- : Caseing
+// -----------------------------------------------------------------------------
+// : Caseing
 
 /// Make each word in a string start with an upper case character.
 /** for use in menus */
-String capitalize(const String&);
+String capitalize(const String &);
 
 /// Make the first word in a string start with an upper case character.
 /** for use in dialogs */
-String capitalize_sentence(const String&);
+String capitalize_sentence(const String &);
 
 /// Convert a field name to canonical form
 /** - currently only convert ' ' to '_'.
  */
-String canonical_name_form(const String&);
-/// Undo canonical_name_form, this used to be the canonical name form until 2.0.1
-String uncanonical_name_form(const String&);
+String canonical_name_form(const String &);
+/// Undo canonical_name_form, this used to be the canonical name form until
+/// 2.0.1
+String uncanonical_name_form(const String &);
 
 /// Convert a field name to a string that can be shown to the user
-String name_to_caption(const String&);
+String name_to_caption(const String &);
 
 /// Returns the singular form of a string
 /** Used for reflection, for example "vector<T> apples" is written with keys
  *  singular_form("apples"), which is "apple"
  */
-String singular_form(const String&);
+String singular_form(const String &);
 
 /// Remove a shortcut from a menu string
 /** e.g. "Cut\tCtrl+X" --> "Cut"
  */
-String remove_shortcut(const String&);
+String remove_shortcut(const String &);
 
-// ----------------------------------------------------------------------------- : Comparing / finding
+// -----------------------------------------------------------------------------
+// : Comparing / finding
 
 /// Compare two strings
 /** Uses a smart comparison algorithm that understands numbers.
@@ -157,45 +170,49 @@ String remove_shortcut(const String&);
  *
  *  Returns -1 if a < b, 0 if they are equal, and 1 if a > b
  */
-int smart_compare(const String&, const String&);
+int smart_compare(const String &, const String &);
 /// Compare two strings, is the first less than the first?
-bool smart_less(const String&, const String&);
+bool smart_less(const String &, const String &);
 /// Compare two strings for equality
-bool smart_equal(const String&, const String&);
+bool smart_equal(const String &, const String &);
 
 /// Return whether str starts with start
 /** starts_with(a,b) == is_substr(a,0,b) */
-bool starts_with(const String& str, const String& start);
+bool starts_with(const String &str, const String &start);
 
 /// Return whether str contains the string cmp at position pos
-bool is_substr(const String& str, size_t pos, const Char* cmp);
+bool is_substr(const String &str, size_t pos, const Char *cmp);
 /// Return whether str contains the string cmp at position pos
-bool is_substr(const String& str, size_t pos, const String& cmp);
+bool is_substr(const String &str, size_t pos, const String &cmp);
 
-/// Return whether str contains the string cmp at position pos, case insensitive compare
-bool is_substr_i(const String& str, size_t pos, const Char* cmp);
-/// Return whether str contains the string cmp at position pos, case insensitive compare
-bool is_substr_i(const String& str, size_t pos, const String& cmp);
+/// Return whether str contains the string cmp at position pos, case insensitive
+/// compare
+bool is_substr_i(const String &str, size_t pos, const Char *cmp);
+/// Return whether str contains the string cmp at position pos, case insensitive
+/// compare
+bool is_substr_i(const String &str, size_t pos, const String &cmp);
 
 /// Case insensitive string search, returns String::npos if not found
-size_t find_i(const String& heystack, const String& needle);
+size_t find_i(const String &heystack, const String &needle);
 
 /// Compare two strings for equality, b may contain ' ' where a contains '_'
 /** canoncial_name_compare(a,b) == (canocial_name_form(a) == b)
  *  b should already be in canonical name form, i.e. use _ to separate words.
  */
-bool canoncial_name_compare(const String& a, const Char* b);
+bool canoncial_name_compare(const String &a, const Char *b);
 
-// ----------------------------------------------------------------------------- : Regular expressions
+// -----------------------------------------------------------------------------
+// : Regular expressions
 
 /// Escape a single character for use in regular expressions
 String regex_escape(Char c);
 /// Escape a string for use in regular expressions
-String regex_escape(const String& s);
+String regex_escape(const String &s);
 
 /// Make sure the given regex does no capturing
 /** Basicly replaces "(" with "(?:" */
-String make_non_capturing(const String& re);
+String make_non_capturing(const String &re);
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

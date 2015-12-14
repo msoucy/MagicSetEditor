@@ -7,7 +7,8 @@
 #ifndef HEADER_RENDER_VALUE_COLOR
 #define HEADER_RENDER_VALUE_COLOR
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <render/value/viewer.hpp>
@@ -15,16 +16,18 @@
 
 DECLARE_POINTER_TYPE(AlphaMask);
 
-// ----------------------------------------------------------------------------- : ColorValueViewer
+// -----------------------------------------------------------------------------
+// : ColorValueViewer
 
 /// Viewer that displays a color value
 class ColorValueViewer : public ValueViewer {
   public:
-	DECLARE_VALUE_VIEWER(Color) : ValueViewer(parent,style) {}
-	
-	virtual void draw(RotatedDC& dc);
-	virtual bool containsPoint(const RealPoint& p) const;
+    DECLARE_VALUE_VIEWER(Color) : ValueViewer(parent, style) {}
+
+    virtual void draw(RotatedDC &dc);
+    virtual bool containsPoint(const RealPoint &p) const;
 };
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

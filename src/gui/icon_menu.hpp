@@ -7,11 +7,13 @@
 #ifndef HEADER_GUI_ICON_MENU
 #define HEADER_GUI_ICON_MENU
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include "../util/prec.hpp"
 
-// ----------------------------------------------------------------------------- : IconMenu
+// -----------------------------------------------------------------------------
+// : IconMenu
 
 /// Helper class for menus with icons
 /** This class functions just like a normal wxMenu.
@@ -21,19 +23,26 @@
  */
 class IconMenu : public wxMenu {
   public:
-	/// Append a menu item, with an image (loaded from a resource)
-	void Append(int id, const String& resource, const String& text, const String& help, wxItemKind kind = wxITEM_NORMAL, wxMenu* submenu = nullptr);
-	/// Append a menu item, without an image
-	void Append(int id, const String& text, const String& help, wxItemKind kind = wxITEM_NORMAL, wxMenu* submenu = nullptr);
-	/// Append a menu item, without an image
-	void Append(wxMenuItem* item);
-	/// Insert a menu item, with an image (loaded from a resource)
-	void Insert(size_t pos, int id, const String& resource, const String& text, const String& help, wxItemKind kind = wxITEM_NORMAL, wxMenu* submenu = nullptr);
-	/// Insert a menu item, without an image
-	void Insert(size_t pos, int id, const String& text, const String& help, wxItemKind kind = wxITEM_NORMAL, wxMenu* submenu = nullptr);
+    /// Append a menu item, with an image (loaded from a resource)
+    void Append(int id, const String &resource, const String &text,
+                const String &help, wxItemKind kind = wxITEM_NORMAL,
+                wxMenu *submenu = nullptr);
+    /// Append a menu item, without an image
+    void Append(int id, const String &text, const String &help,
+                wxItemKind kind = wxITEM_NORMAL, wxMenu *submenu = nullptr);
+    /// Append a menu item, without an image
+    void Append(wxMenuItem *item);
+    /// Insert a menu item, with an image (loaded from a resource)
+    void Insert(size_t pos, int id, const String &resource, const String &text,
+                const String &help, wxItemKind kind = wxITEM_NORMAL,
+                wxMenu *submenu = nullptr);
+    /// Insert a menu item, without an image
+    void Insert(size_t pos, int id, const String &text, const String &help,
+                wxItemKind kind = wxITEM_NORMAL, wxMenu *submenu = nullptr);
 };
 
-void set_menu_item_image(wxMenuItem* menuitem, const String& resource);
+void set_menu_item_image(wxMenuItem *menuitem, const String &resource);
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

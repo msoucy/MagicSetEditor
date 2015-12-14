@@ -7,7 +7,8 @@
 #ifndef HEADER_DATA_FIELD_PACKAGE_CHOICE
 #define HEADER_DATA_FIELD_PACKAGE_CHOICE
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/field.hpp>
@@ -16,39 +17,44 @@
 
 DECLARE_POINTER_TYPE(Packaged);
 
-// ----------------------------------------------------------------------------- : PackageChoiceField
+// -----------------------------------------------------------------------------
+// : PackageChoiceField
 
 DECLARE_POINTER_TYPE(PackageChoiceField);
 DECLARE_POINTER_TYPE(PackageChoiceStyle);
 
-/// A field for PackageChoice values, it contains a list of choices for PackageChoices
+/// A field for PackageChoice values, it contains a list of choices for
+/// PackageChoices
 class PackageChoiceField : public Field {
   public:
-	PackageChoiceField() : required(true), empty_name((L"none")) {}
-	DECLARE_FIELD_TYPE();
-	
-	String             match;			///< Glob of package filenames to match
-	bool               required;		///< Is selecting a package required?
-	String             empty_name;		///< Displayed name for the empty value (if !required)
+    PackageChoiceField() : required(true), empty_name((L"none")) {}
+    DECLARE_FIELD_TYPE();
+
+    String match;      ///< Glob of package filenames to match
+    bool required;     ///< Is selecting a package required?
+    String empty_name; ///< Displayed name for the empty value (if !required)
 };
 
-// ----------------------------------------------------------------------------- : PackageChoiceStyle
+// -----------------------------------------------------------------------------
+// : PackageChoiceStyle
 
 /// The Style for a PackageChoiceField
 class PackageChoiceStyle : public Style {
   public:
-	PackageChoiceStyle(const PackageChoiceFieldP& field);
-	DECLARE_STYLE_TYPE(PackageChoice);
-	
-	Font font;	///< Font to use for the text
-	
-	virtual int update(Context&);
+    PackageChoiceStyle(const PackageChoiceFieldP &field);
+    DECLARE_STYLE_TYPE(PackageChoice);
+
+    Font font; ///< Font to use for the text
+
+    virtual int update(Context &);
 };
 
-// ----------------------------------------------------------------------------- : PackageChoiceValue
+// -----------------------------------------------------------------------------
+// : PackageChoiceValue
 
 typedef Value PackageChoiceValue;
 typedef ValueP PackageChoiceValueP;
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

@@ -4,18 +4,20 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/symbol/editor.hpp>
 #include <gui/symbol/window.hpp>
 
-// ----------------------------------------------------------------------------- : SymbolEditorBase
+// -----------------------------------------------------------------------------
+// : SymbolEditorBase
 
-void SymbolEditorBase::SetStatusText(const String& text) {
-	control.parent->SetStatusText(text);
+void SymbolEditorBase::SetStatusText(const String &text) {
+    control.parent->SetStatusText(text);
 }
 
-void SymbolEditorBase::addAction(Action* action, bool allow_merge) {
-	getSymbol()->actions.addAction(action, allow_merge);
+void SymbolEditorBase::addAction(Action *action, bool allow_merge) {
+    getSymbol()->actions.addAction(action, allow_merge);
 }

@@ -7,34 +7,36 @@
 #ifndef HEADER_GUI_CONTROL_FILTERED_CARD_LIST
 #define HEADER_GUI_CONTROL_FILTERED_CARD_LIST
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/control/card_list.hpp>
 #include <data/filter.hpp>
 
-typedef intrusive_ptr<Filter<Card> > CardListFilterP;
+typedef intrusive_ptr<Filter<Card>> CardListFilterP;
 
-// ----------------------------------------------------------------------------- : FilteredCardList
+// -----------------------------------------------------------------------------
+// : FilteredCardList
 
 /// A card list that lists a subset of the cards in the set
 class FilteredCardList : public CardListBase {
   public:
-	FilteredCardList(Window* parent, int id, long additional_style = 0);
-	
-	/// Change the filter to use
-	void setFilter(const CardListFilterP& filter);
-	
+    FilteredCardList(Window *parent, int id, long additional_style = 0);
+
+    /// Change the filter to use
+    void setFilter(const CardListFilterP &filter);
+
   protected:
-	/// Get only the subset of the cards
-	virtual void getItems(vector<VoidP>& out) const;
-	
-	virtual void onChangeSet();
-	
-  private:	
-	CardListFilterP filter;	///< Filter with which this.cards is made
+    /// Get only the subset of the cards
+    virtual void getItems(vector<VoidP> &out) const;
+
+    virtual void onChangeSet();
+
+  private:
+    CardListFilterP filter; ///< Filter with which this.cards is made
 };
 
-
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

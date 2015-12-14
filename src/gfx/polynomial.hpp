@@ -11,33 +11,40 @@
  *
  *  Solutions to polynomials, used by bezier curve algorithms
  */
- 
-// ----------------------------------------------------------------------------- : Includes
+
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 
-// ----------------------------------------------------------------------------- : Solving
+// -----------------------------------------------------------------------------
+// : Solving
 
 /// Solve a linear equation a x + b = 0
-/** Returns the number of real roots, and the roots themselfs in the output parameter.
- */ 
-UInt solve_linear(double a, double b, double* root);
+/** Returns the number of real roots, and the roots themselfs in the output
+ * parameter.
+ */
+UInt solve_linear(double a, double b, double *root);
 
 /// Solve a quadratic equation a x^2 + b x + c == 0
-/** Returns the number of real roots, and the roots themselfs in the output parameter.
+/** Returns the number of real roots, and the roots themselfs in the output
+ * parameter.
  */
-UInt solve_quadratic(double a, double b, double c, double* roots);
+UInt solve_quadratic(double a, double b, double c, double *roots);
 
 // Solve a cubic equation a x^3 + b x^2 + c x + d == 0
-/** Returns the number of real roots, and the roots themselfs in the output parameter.
+/** Returns the number of real roots, and the roots themselfs in the output
+ * parameter.
  */
-UInt solve_cubic(double a, double b, double c, double d, double* roots);
+UInt solve_cubic(double a, double b, double c, double d, double *roots);
 
 // Solve a cubic equation x^3 + a x^2 + b x + c == 0
-/** Returns the number of real roots, and the roots themselfs in the output parameter.
+/** Returns the number of real roots, and the roots themselfs in the output
+ * parameter.
  *  Based on http://en.wikipedia.org/wiki/Cubic_equation
  */
-UInt solve_cubic(double a, double b, double c, double* roots);
+UInt solve_cubic(double a, double b, double c, double *roots);
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

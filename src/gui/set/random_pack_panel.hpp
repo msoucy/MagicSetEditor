@@ -7,7 +7,8 @@
 #ifndef HEADER_GUI_SET_RANDOM_PACK_PANEL
 #define HEADER_GUI_SET_RANDOM_PACK_PANEL
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <gui/set/panel.hpp>
@@ -21,82 +22,87 @@ class SelectableLabel;
 struct CardSelectEvent;
 DECLARE_POINTER_TYPE(PackType);
 
-// ----------------------------------------------------------------------------- : Utility
+// -----------------------------------------------------------------------------
+// : Utility
 
 // for lists of spin controls
 struct PackAmountPicker {
-	PackTypeP        pack;
-	SelectableLabel* label;
-	wxSpinCtrl*      value;
-	
-	PackAmountPicker() {}
-	PackAmountPicker(wxWindow* parent, wxFlexGridSizer* sizer, const PackTypeP& pack, bool interactive);
-	void destroy(wxFlexGridSizer* sizer);
+    PackTypeP pack;
+    SelectableLabel *label;
+    wxSpinCtrl *value;
+
+    PackAmountPicker() {}
+    PackAmountPicker(wxWindow *parent, wxFlexGridSizer *sizer,
+                     const PackTypeP &pack, bool interactive);
+    void destroy(wxFlexGridSizer *sizer);
 };
 
-// ----------------------------------------------------------------------------- : RandomPackPanel
+// -----------------------------------------------------------------------------
+// : RandomPackPanel
 
 /// A SetWindowPanel for creating random booster packs
 class RandomPackPanel : public SetWindowPanel {
   public:
-	RandomPackPanel(Window* parent, int id);
-	~RandomPackPanel();
-	
-	// --------------------------------------------------- : UI
-	
-	virtual void onBeforeChangeSet();
-	virtual void onChangeSet();
-	virtual void onAction(const Action&, bool undone);
-	
-	virtual void initUI   (wxToolBar* tb, wxMenuBar* mb);
-	virtual void destroyUI(wxToolBar* tb, wxMenuBar* mb);
-	virtual void onUpdateUI(wxUpdateUIEvent&);
-	virtual void onCommand(int id);
-	
-	// --------------------------------------------------- : Selection
-	virtual CardP selectedCard() const;
-	virtual void selectCard(const CardP& card);
-	virtual void selectionChoices(ExportCardSelectionChoices& out);
-	
-	// --------------------------------------------------- : Clipboard
-	
-	virtual bool canCopy()  const;
-	virtual void doCopy();
-	
+    RandomPackPanel(Window *parent, int id);
+    ~RandomPackPanel();
+
+    // --------------------------------------------------- : UI
+
+    virtual void onBeforeChangeSet();
+    virtual void onChangeSet();
+    virtual void onAction(const Action &, bool undone);
+
+    virtual void initUI(wxToolBar *tb, wxMenuBar *mb);
+    virtual void destroyUI(wxToolBar *tb, wxMenuBar *mb);
+    virtual void onUpdateUI(wxUpdateUIEvent &);
+    virtual void onCommand(int id);
+
+    // --------------------------------------------------- : Selection
+    virtual CardP selectedCard() const;
+    virtual void selectCard(const CardP &card);
+    virtual void selectionChoices(ExportCardSelectionChoices &out);
+
+    // --------------------------------------------------- : Clipboard
+
+    virtual bool canCopy() const;
+    virtual void doCopy();
+
   private:
-	DECLARE_EVENT_TABLE();
-	
-	CardViewer*       preview;		///< Card preview
-	RandomCardList*   card_list;	///< The list of cards
-	wxTextCtrl*       seed;			///< Seed value
-	wxFlexGridSizer*  packsSizer;
-	wxFlexGridSizer*  totalsSizer;
-	wxButton*         generate_button;
-	wxRadioButton*    seed_random, *seed_fixed;
-	PackTotalsPanel*  totals;
-	vector<PackAmountPicker> pickers;
-	
-	PackGenerator generator;
-	int last_seed;
-	
-	/// Actual intialization of the controls
-	void initControls();
-	
-	/// Update the total count of each card type
-	void updateTotals();
-	/// Get a seed value
-	int getSeed();
-	void setSeed(int seed);
-	/// Generate the cards
-	void generate();
-	/// Store the settings
-	void storeSettings();
-	
-	void onCardSelect(CardSelectEvent& ev);
-	void onPackTypeClick(wxCommandEvent& ev);
+    DECLARE_EVENT_TABLE();
+
+    CardViewer *preview;       ///< Card preview
+    RandomCardList *card_list; ///< The list of cards
+    wxTextCtrl *seed;          ///< Seed value
+    wxFlexGridSizer *packsSizer;
+    wxFlexGridSizer *totalsSizer;
+    wxButton *generate_button;
+    wxRadioButton *seed_random, *seed_fixed;
+    PackTotalsPanel *totals;
+    vector<PackAmountPicker> pickers;
+
+    PackGenerator generator;
+    int last_seed;
+
+    /// Actual intialization of the controls
+    void initControls();
+
+    /// Update the total count of each card type
+    void updateTotals();
+    /// Get a seed value
+    int getSeed();
+    void setSeed(int seed);
+    /// Generate the cards
+    void generate();
+    /// Store the settings
+    void storeSettings();
+
+    void onCardSelect(CardSelectEvent &ev);
+    void onPackTypeClick(wxCommandEvent &ev);
+
   public:
-	typedef PackItem PackItem_for_typeof;
+    typedef PackItem PackItem_for_typeof;
 };
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

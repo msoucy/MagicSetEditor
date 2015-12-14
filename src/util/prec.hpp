@@ -12,7 +12,8 @@
  *  @brief Precompiled header, and aliasses for common types
  */
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 // Wx headers
 #include <wx/setup.h>
@@ -31,54 +32,62 @@ using std::set;
 
 #undef RGB
 
-// ----------------------------------------------------------------------------- : Wx Aliasses
+// -----------------------------------------------------------------------------
+// : Wx Aliasses
 
 // Remove some of the wxUglyness
 
 typedef wxWindow Window;
 
 typedef wxBitmap Bitmap;
-typedef wxImage  Image;
+typedef wxImage Image;
 typedef wxColour Color;
-typedef wxDC     DC;
+typedef wxDC DC;
 
 typedef wxDateTime DateTime;
 
-// ----------------------------------------------------------------------------- : Compatability fixes
+// -----------------------------------------------------------------------------
+// : Compatability fixes
 
 #if wxVERSION_NUMBER < 2805
-	#define wxBORDER_THEME wxSUNKEN_BORDER
+#define wxBORDER_THEME wxSUNKEN_BORDER
 #endif
 #if wxVERSION_NUMBER < 2900 && defined(__WXMSW__)
-	// see http://docs.wxwidgets.org/2.8.11/wx_wxmswport.html
-	#define wxBORDER_THEME_FIX(x) (x&wxBORDER_THEME ? (x&~wxBORDER_THEME)|wxWindow::GetThemedBorderStyle() : x)
+// see http://docs.wxwidgets.org/2.8.11/wx_wxmswport.html
+#define wxBORDER_THEME_FIX(x)                                                  \
+    (x & wxBORDER_THEME                                                        \
+         ? (x & ~wxBORDER_THEME) | wxWindow::GetThemedBorderStyle()            \
+         : x)
 #else
-	#define wxBORDER_THEME_FIX(x) x
+#define wxBORDER_THEME_FIX(x) x
 #endif
 #if wxVERSION_NUMBER < 2900
-	// wx >= 2.9 requires the use of HandleWindowEvent on windows, instead of ProcessEvent
-	#define HandleWindowEvent ProcessEvent
+// wx >= 2.9 requires the use of HandleWindowEvent on windows, instead of
+// ProcessEvent
+#define HandleWindowEvent ProcessEvent
 #endif
 #if wxVERSION_NUMBER < 2700
-	// is it worth it to still support wx2.6?
-	#define wxFD_SAVE             wxSAVE
-	#define wxFD_OPEN             wxOPEN
-	#define wxFD_OVERWRITE_PROMPT wxOVERWRITE_PROMPT
-	typedef wxEvent wxMouseCaptureLostEvent;
-	#define EVT_MOUSE_CAPTURE_LOST(handler) // ignore
-	#define wxEVT_MOUSE_CAPTURE_LOST 12345678 // not an actual event type
-	#define wxAutoBufferedPaintDC wxBufferedPaintDC
+// is it worth it to still support wx2.6?
+#define wxFD_SAVE wxSAVE
+#define wxFD_OPEN wxOPEN
+#define wxFD_OVERWRITE_PROMPT wxOVERWRITE_PROMPT
+typedef wxEvent wxMouseCaptureLostEvent;
+#define EVT_MOUSE_CAPTURE_LOST(handler)   // ignore
+#define wxEVT_MOUSE_CAPTURE_LOST 12345678 // not an actual event type
+#define wxAutoBufferedPaintDC wxBufferedPaintDC
 #endif
 #if wxVERSION_NUMBER < 2811
-	#define SetDeviceClippingRegion SetClippingRegion
+#define SetDeviceClippingRegion SetClippingRegion
 #endif
 
-// ----------------------------------------------------------------------------- : Other aliasses
+// -----------------------------------------------------------------------------
+// : Other aliasses
 
 typedef unsigned char Byte;
-typedef unsigned int  UInt;
+typedef unsigned int UInt;
 
-// ----------------------------------------------------------------------------- : MSE Headers
+// -----------------------------------------------------------------------------
+// : MSE Headers
 
 // MSE utility headers (ones unlikely to change and used everywhere)
 #include "string.hpp"
@@ -89,16 +98,21 @@ typedef unsigned int  UInt;
 #include "reflect.hpp"
 #include "regex.hpp"
 
-// ----------------------------------------------------------------------------- : Debugging fixes
+// -----------------------------------------------------------------------------
+// : Debugging fixes
 
 #ifdef _MSC_VER
-	#if defined(_DEBUG) && defined(_CRT_WIDE)
-		// Use OutputDebugString/DebugBreak for assertions if in debug mode
-		void msvc_assert(const wchar_t*, const wchar_t*, const wchar_t*, unsigned);
-		#undef assert
-		#define assert(exp) (void)( (exp) || (msvc_assert(nullptr, _CRT_WIDE(#exp), _CRT_WIDE(__FILE__), __LINE__), 0) )
-	#endif
+#if defined(_DEBUG) && defined(_CRT_WIDE)
+// Use OutputDebugString/DebugBreak for assertions if in debug mode
+void msvc_assert(const wchar_t *, const wchar_t *, const wchar_t *, unsigned);
+#undef assert
+#define assert(exp)                                                            \
+    (void)((exp) || (msvc_assert(nullptr, _CRT_WIDE(#exp),                     \
+                                 _CRT_WIDE(__FILE__), __LINE__),               \
+                     0))
+#endif
 #endif
 
-// ----------------------------------------------------------------------------- : EOF
+// -----------------------------------------------------------------------------
+// : EOF
 #endif

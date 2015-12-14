@@ -4,7 +4,8 @@
 //| License:      GNU General Public License 2 or later (see file COPYING)     |
 //+----------------------------------------------------------------------------+
 
-// ----------------------------------------------------------------------------- : Includes
+// -----------------------------------------------------------------------------
+// : Includes
 
 #include <util/prec.hpp>
 #include <data/format/formats.hpp>
@@ -21,16 +22,16 @@
 #include <wx/datstrm.h>
 #include <wx/filename.h>
 
+String card_rarity_code(const String &rarity);
 
-String card_rarity_code(const String& rarity);
-
-// ----------------------------------------------------------------------------- : Generic export dialog
+// -----------------------------------------------------------------------------
+// : Generic export dialog
 
 /// Callback for updating a progress bar
 class WithProgress {
   public:
-	virtual void onProgress(float progress, const String& message) = 0;
-	virtual ~WithProgress () {}
+    virtual void onProgress(float progress, const String &message) = 0;
+    virtual ~WithProgress() {}
 };
 
 /// Exception thrown to indicate exporting should be aborted
@@ -39,324 +40,331 @@ class AbortException {};
 /// A dialog to show the progress of exporting
 class ExportProgressDialog : public wxProgressDialog, public WithProgress {
   public:
-	ExportProgressDialog(Window* parent, const String& title, const String& message);
-	
-	/// Update the progress bar
-	/** if the operation should be aborted, throws an AbortException
-	 */
-	virtual void onProgress(float progress, const String& message);
+    ExportProgressDialog(Window *parent, const String &title,
+                         const String &message);
+
+    /// Update the progress bar
+    /** if the operation should be aborted, throws an AbortException
+     */
+    virtual void onProgress(float progress, const String &message);
 };
 
-ExportProgressDialog::ExportProgressDialog(Window* parent, const String& title, const String& message)
-	: wxProgressDialog(title, message, 1000, parent, wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_CAN_ABORT)
-{}
+ExportProgressDialog::ExportProgressDialog(Window *parent, const String &title,
+                                           const String &message)
+    : wxProgressDialog(title, message, 1000, parent,
+                       wxPD_APP_MODAL | wxPD_SMOOTH | wxPD_CAN_ABORT) {}
 
-void ExportProgressDialog::onProgress(float progress, const String& message) {
-	if (!Update(int(progress * 1000), message)) {
-		throw AbortException();
-	}
+void ExportProgressDialog::onProgress(float progress, const String &message) {
+    if (!Update(int(progress * 1000), message)) {
+        throw AbortException();
+    }
 }
 
-// ----------------------------------------------------------------------------- : Generic apprentice database
+// -----------------------------------------------------------------------------
+// : Generic apprentice database
 
 /// An Apprentice database file, has read() and write() functions
 class ApprDatabase {
   public:
-	ApprDatabase(WithProgress* progress_target, const String& name);
-	virtual ~ApprDatabase();
-	
-	/// Read the database
-	void read();
-	/// Write to a temporary file
-	void write();
-	/// Finalize the writing, swap the actual and the temporary file
-	void commit();
-	
+    ApprDatabase(WithProgress *progress_target, const String &name);
+    virtual ~ApprDatabase();
+
+    /// Read the database
+    void read();
+    /// Write to a temporary file
+    void write();
+    /// Finalize the writing, swap the actual and the temporary file
+    void commit();
+
   protected:
-	virtual void doRead(wxInputStream&)   = 0;
-	virtual void doWrite(wxOutputStream&) = 0;
-	
-	WithProgress* progress_target; ///< Write progress information to here
-	
+    virtual void doRead(wxInputStream &) = 0;
+    virtual void doWrite(wxOutputStream &) = 0;
+
+    WithProgress *progress_target; ///< Write progress information to here
+
   private:
-	bool in_progress; ///< Is writing in progress?
-	String filename; ///< Filename of database file
+    bool in_progress; ///< Is writing in progress?
+    String filename;  ///< Filename of database file
 };
 
-
-ApprDatabase::ApprDatabase(WithProgress* progress_target, const String& name)
-	: progress_target(progress_target)
-	, in_progress(false)
-	, filename(settings.apprentice_location + (L"\\") + name)
-{}
+ApprDatabase::ApprDatabase(WithProgress *progress_target, const String &name)
+    : progress_target(progress_target), in_progress(false),
+      filename(settings.apprentice_location + (L"\\") + name) {}
 ApprDatabase::~ApprDatabase() {
-	// An exception is thrown while we were writing, clean up the temporary files
-	if (in_progress) {
-		// abort 'transaction'
-		wxRemoveFile(filename + (L".new"));
-	}
+    // An exception is thrown while we were writing, clean up the temporary
+    // files
+    if (in_progress) {
+        // abort 'transaction'
+        wxRemoveFile(filename + (L".new"));
+    }
 }
 
 void ApprDatabase::read() {
-	wxFileInputStream in(filename);
-	if (!in.Ok()) {
-		throw Error((L"Can not open apprentice file for input\n'") + filename + (L"'"));
-	}
-	doRead(in);
+    wxFileInputStream in(filename);
+    if (!in.Ok()) {
+        throw Error((L"Can not open apprentice file for input\n'") + filename +
+                    (L"'"));
+    }
+    doRead(in);
 }
 void ApprDatabase::write() {
-	// write to a .new file, doesn't commit yet
-	if (wxFileExists(filename + (L".new"))) {
-		wxRemoveFile(filename + (L".new"));
-	}
-	wxFileOutputStream out(filename + (L".new"));
-	in_progress = true;
-	if (!out.Ok()) {
-		throw Error((L"Can not open apprentice file for output\n'") + filename + (L".new'"));
-	}
-	doWrite(out);
+    // write to a .new file, doesn't commit yet
+    if (wxFileExists(filename + (L".new"))) {
+        wxRemoveFile(filename + (L".new"));
+    }
+    wxFileOutputStream out(filename + (L".new"));
+    in_progress = true;
+    if (!out.Ok()) {
+        throw Error((L"Can not open apprentice file for output\n'") + filename +
+                    (L".new'"));
+    }
+    doWrite(out);
 }
 void ApprDatabase::commit() {
-	// commit : rename .new to real filename
-	if (in_progress) {
-		wxRenameFile(filename, filename + (L".bak"));
-		wxRenameFile(filename + (L".new"), filename);
-		in_progress = false;
-	}
+    // commit : rename .new to real filename
+    if (in_progress) {
+        wxRenameFile(filename, filename + (L".bak"));
+        wxRenameFile(filename + (L".new"), filename);
+        in_progress = false;
+    }
 }
 
-// ----------------------------------------------------------------------------- : Expansion database
+// -----------------------------------------------------------------------------
+// : Expansion database
 
 /// An Apprentice expansion database (Expan.dat)
 class ApprExpansionDatabase : public ApprDatabase {
   public:
-	inline ApprExpansionDatabase(WithProgress* progress_target)
-		: ApprDatabase(progress_target, (L"Expan.dat"))
-	{}
+    inline ApprExpansionDatabase(WithProgress *progress_target)
+        : ApprDatabase(progress_target, (L"Expan.dat")) {}
+
   protected:
-	virtual void doRead(wxInputStream& in);
-	virtual void doWrite(wxOutputStream& out);
-	
+    virtual void doRead(wxInputStream &in);
+    virtual void doWrite(wxOutputStream &out);
+
   public:
-	map<String,String> expansions; ///< code -> name
-	vector<String> order;          ///< order of codes
+    map<String, String> expansions; ///< code -> name
+    vector<String> order;           ///< order of codes
 };
 
-void ApprExpansionDatabase::doRead(wxInputStream& in) {
-	wxTextInputStream tin(in);
-	while (!in.Eof()) {
-		String l = tin.ReadLine();
-		if (l.size() < 3) continue;
-		order.push_back(l.substr(0,2));
-		expansions[l.substr(0,2)] = l.substr(3);
-	}
+void ApprExpansionDatabase::doRead(wxInputStream &in) {
+    wxTextInputStream tin(in);
+    while (!in.Eof()) {
+        String l = tin.ReadLine();
+        if (l.size() < 3)
+            continue;
+        order.push_back(l.substr(0, 2));
+        expansions[l.substr(0, 2)] = l.substr(3);
+    }
 }
 
-void ApprExpansionDatabase::doWrite(wxOutputStream& out) {
-	wxTextOutputStream tout(out, wxEOL_DOS);
-	// write in order first
-	for(auto& c : order) {
-		String code = c;
-		if (code.GetChar(0) != (L'-')) {
-			// but not the rarities
-			tout << code << (L"-") << expansions[c] << (L"\n");
-			expansions.erase(c);
-		}
-	}
-	// the remaing expansions (our new set)
-	for(auto& e : expansions) {
-		String code = e.first;
-		if (code.GetChar(0) != (L'-')) {
-			tout << code << (L"-") << e.second << (L"\n");
-		}
-	}
-	// and at last the rarities
-	for(auto& c : order) {
-		String code = c;
-		if (code.GetChar(0) == (L'-')) {
-			tout << c << (L"-") << expansions[c] << (L"\n");
-		}
-	}
+void ApprExpansionDatabase::doWrite(wxOutputStream &out) {
+    wxTextOutputStream tout(out, wxEOL_DOS);
+    // write in order first
+    for (auto &c : order) {
+        String code = c;
+        if (code.GetChar(0) != (L'-')) {
+            // but not the rarities
+            tout << code << (L"-") << expansions[c] << (L"\n");
+            expansions.erase(c);
+        }
+    }
+    // the remaing expansions (our new set)
+    for (auto &e : expansions) {
+        String code = e.first;
+        if (code.GetChar(0) != (L'-')) {
+            tout << code << (L"-") << e.second << (L"\n");
+        }
+    }
+    // and at last the rarities
+    for (auto &c : order) {
+        String code = c;
+        if (code.GetChar(0) == (L'-')) {
+            tout << c << (L"-") << expansions[c] << (L"\n");
+        }
+    }
 }
 
-// ----------------------------------------------------------------------------- : Format database
+// -----------------------------------------------------------------------------
+// : Format database
 
 class ApprFormat {
   public:
-	ApprFormat(const String& name) : name(name) {}
-	String name, sets;
+    ApprFormat(const String &name) : name(name) {}
+    String name, sets;
 };
-
 
 /// An Apprentice format database (Format.dat)
 class ApprFormatDatabase : public ApprDatabase {
   public:
-	inline ApprFormatDatabase(WithProgress* progress_target)
-		: ApprDatabase(progress_target, (L"Format.dat"))
-	{}
-	/// Remove a set code from all formats
-	void removeSet(const String& code);
-	
+    inline ApprFormatDatabase(WithProgress *progress_target)
+        : ApprDatabase(progress_target, (L"Format.dat")) {}
+    /// Remove a set code from all formats
+    void removeSet(const String &code);
+
   protected:
-	virtual void doRead(wxInputStream& in);
-	virtual void doWrite(wxOutputStream& out);
-	
+    virtual void doRead(wxInputStream &in);
+    virtual void doWrite(wxOutputStream &out);
+
   private:
-	vector<ApprFormat> formats;
+    vector<ApprFormat> formats;
 };
 
-void ApprFormatDatabase::removeSet(const String& code) {
-	// TODO?
-}
-	
-void ApprFormatDatabase::doRead(wxInputStream& in) {
-	wxTextInputStream tin(in);
-	// read titles
-	while (!in.Eof()) {
-		String l = trim(tin.ReadLine());
-		if (l == (L"<Titles>")) {
-			// ignore header
-		} else if (l == (L"<Format>")) {
-			break; // to formatting step
-		} else {
-			size_t pos = l.find_first_of((L'='));
-			if (pos == String::npos)  continue;
-			// assume formats are in order
-			formats.push_back( ApprFormat(l.substr(pos + 1)) );
-		}
-	}
-	// read formats
-	size_t i = 0;
-	while (!in.Eof() && i < formats.size()) {
-		String l = trim(tin.ReadLine());
-		size_t pos = l.find_first_of((L'='));
-		if (pos == String::npos)  continue;
-		formats[i].sets = l.substr(pos + 1);
-		i += 1;
-	}
+void ApprFormatDatabase::removeSet(const String &code) {
+    // TODO?
 }
 
-void ApprFormatDatabase::doWrite(wxOutputStream& out) {
-	wxTextOutputStream tout(out, wxEOL_DOS);
-	tout << (L"<Titles>\n");
-	int i = 1;
-	for(auto& f : formats) {
-		tout << i++ << (L"=") << f.name << (L"\n");
-	}
-	tout << (L"\n<Format>\n");
-	i = 1;
-	for(auto& f : formats) {
-		tout << i++ << (L"=") << f.sets << (L"\n");
-	}
+void ApprFormatDatabase::doRead(wxInputStream &in) {
+    wxTextInputStream tin(in);
+    // read titles
+    while (!in.Eof()) {
+        String l = trim(tin.ReadLine());
+        if (l == (L"<Titles>")) {
+            // ignore header
+        } else if (l == (L"<Format>")) {
+            break; // to formatting step
+        } else {
+            size_t pos = l.find_first_of((L'='));
+            if (pos == String::npos)
+                continue;
+            // assume formats are in order
+            formats.push_back(ApprFormat(l.substr(pos + 1)));
+        }
+    }
+    // read formats
+    size_t i = 0;
+    while (!in.Eof() && i < formats.size()) {
+        String l = trim(tin.ReadLine());
+        size_t pos = l.find_first_of((L'='));
+        if (pos == String::npos)
+            continue;
+        formats[i].sets = l.substr(pos + 1);
+        i += 1;
+    }
 }
 
+void ApprFormatDatabase::doWrite(wxOutputStream &out) {
+    wxTextOutputStream tout(out, wxEOL_DOS);
+    tout << (L"<Titles>\n");
+    int i = 1;
+    for (auto &f : formats) {
+        tout << i++ << (L"=") << f.name << (L"\n");
+    }
+    tout << (L"\n<Format>\n");
+    i = 1;
+    for (auto &f : formats) {
+        tout << i++ << (L"=") << f.sets << (L"\n");
+    }
+}
 
-// ----------------------------------------------------------------------------- : Distro database
+// -----------------------------------------------------------------------------
+// : Distro database
 
 // An entry in the Distro database
 class ApprDistro {
   public:
-	inline ApprDistro(int bc = 0, int bu = 0, int br = 0,  int sc = 0, int su = 0, int sr = 0)
-		: bc(bc), bu(bu), br(br)
-		, sc(sc), su(su), sr(sr)
-	{}
-	
-	int bc, bu, br; ///< # of cards in booster of each rarity
-	int sc, su, sr; ///< .. in starter
-	
-	String scode, bcode; ///< alternative : numbers as a string (if numbers == 0)
-	
-	void write(const String& code, wxTextOutputStream& tout);
-	
-  private:
-	void writeD(wxTextOutputStream& tout, const String& name, int c, int u, int r);
-};
+    inline ApprDistro(int bc = 0, int bu = 0, int br = 0, int sc = 0,
+                      int su = 0, int sr = 0)
+        : bc(bc), bu(bu), br(br), sc(sc), su(su), sr(sr) {}
 
+    int bc, bu, br; ///< # of cards in booster of each rarity
+    int sc, su, sr; ///< .. in starter
+
+    String scode,
+        bcode; ///< alternative : numbers as a string (if numbers == 0)
+
+    void write(const String &code, wxTextOutputStream &tout);
+
+  private:
+    void writeD(wxTextOutputStream &tout, const String &name, int c, int u,
+                int r);
+};
 
 /// An Apprentice distribution database (Distro.dat)
 class ApprDistroDatabase : public ApprDatabase {
   public:
-	inline ApprDistroDatabase(WithProgress* progress_target)
-		: ApprDatabase(progress_target, (L"Distro.dat"))
-	{}
-	/// Remove a set code
-	void removeSet(const String& code);
-	
+    inline ApprDistroDatabase(WithProgress *progress_target)
+        : ApprDatabase(progress_target, (L"Distro.dat")) {}
+    /// Remove a set code
+    void removeSet(const String &code);
+
   protected:
-	virtual void doRead(wxInputStream& in);
-	virtual void doWrite(wxOutputStream& out);
-	
+    virtual void doRead(wxInputStream &in);
+    virtual void doWrite(wxOutputStream &out);
+
   public:
-	map<String,ApprDistro> distros;
-	vector<String> order; // order of codes
+    map<String, ApprDistro> distros;
+    vector<String> order; // order of codes
 };
 
-
-void ApprDistroDatabase::removeSet(const String& code) {
-	// TODO ?
+void ApprDistroDatabase::removeSet(const String &code) {
+    // TODO ?
 }
 
-void ApprDistroDatabase::doRead(InputStream& in) {
-	wxTextInputStream tin(in);
-	ApprDistro* last = 0;
-	while (!in.Eof()) {
-		String l = trim(tin.ReadLine());
-		if (l.size() > 2 && l.GetChar(0) == (L'<')) {
-			// new code
-			l = l.substr(1, l.size() - 2);
-			order.push_back(l);
-			last = &distros[l];
-		} else if (last && starts_with(l, (L"Starter"))) {
-			// no need to read the actual code, only to write it out later
-			// keep it as a string
-			last->scode = l;
-		} else if (last && starts_with(l, (L"Booster"))) {
-			last->bcode = l;
-		}
-	}
+void ApprDistroDatabase::doRead(InputStream &in) {
+    wxTextInputStream tin(in);
+    ApprDistro *last = 0;
+    while (!in.Eof()) {
+        String l = trim(tin.ReadLine());
+        if (l.size() > 2 && l.GetChar(0) == (L'<')) {
+            // new code
+            l = l.substr(1, l.size() - 2);
+            order.push_back(l);
+            last = &distros[l];
+        } else if (last && starts_with(l, (L"Starter"))) {
+            // no need to read the actual code, only to write it out later
+            // keep it as a string
+            last->scode = l;
+        } else if (last && starts_with(l, (L"Booster"))) {
+            last->bcode = l;
+        }
+    }
 }
 
-void ApprDistroDatabase::doWrite(wxOutputStream& out) {
-	wxTextOutputStream tout(out, wxEOL_DOS);
-	// write in order
-	for(auto& c : order) {
-		distros[c].write(c, tout);
-		distros.erase(c);
-	}
-	// remaining distros (the newly added one)
-	for(auto& d : distros) {
-		d.second.write(d.first, tout);
-	}
+void ApprDistroDatabase::doWrite(wxOutputStream &out) {
+    wxTextOutputStream tout(out, wxEOL_DOS);
+    // write in order
+    for (auto &c : order) {
+        distros[c].write(c, tout);
+        distros.erase(c);
+    }
+    // remaining distros (the newly added one)
+    for (auto &d : distros) {
+        d.second.write(d.first, tout);
+    }
 }
 
-void ApprDistro::write(const String& code, wxTextOutputStream& tout) {
-	tout.WriteString((L"<") + code + (L">\n"));
-	// starter
-	if (sc || su || sr) {
-		writeD(tout, (L"Starter"), sc, su, sr);
-	} else if (!scode.empty()) {
-		tout.WriteString((L"    ") + scode + (L"\n"));
-	}
-	// booster
-	if (bc || bu || br) {
-		writeD(tout, (L"Booster"), bc, bu, br);
-	} else if (!bcode.empty()) {
-		tout.WriteString((L"    ") + bcode + (L"\n"));
-	}
+void ApprDistro::write(const String &code, wxTextOutputStream &tout) {
+    tout.WriteString((L"<") + code + (L">\n"));
+    // starter
+    if (sc || su || sr) {
+        writeD(tout, (L"Starter"), sc, su, sr);
+    } else if (!scode.empty()) {
+        tout.WriteString((L"    ") + scode + (L"\n"));
+    }
+    // booster
+    if (bc || bu || br) {
+        writeD(tout, (L"Booster"), bc, bu, br);
+    } else if (!bcode.empty()) {
+        tout.WriteString((L"    ") + bcode + (L"\n"));
+    }
 }
 
-void ApprDistro::writeD(wxTextOutputStream& tout, const String& name, int c, int u, int r) {
-	tout.WriteString((L"    ")+name+(L"=R") << r << (L",U") << u << (L",C") << c << (L"\n"));
+void ApprDistro::writeD(wxTextOutputStream &tout, const String &name, int c,
+                        int u, int r) {
+    tout.WriteString((L"    ") + name + (L"=R") << r << (L",U") << u << (L",C")
+                                                << c << (L"\n"));
 }
 
-// ----------------------------------------------------------------------------- : Card database
+// -----------------------------------------------------------------------------
+// : Card database
 
 /// Untag function for apprentice, replaces newlines with \r\n
-String untag_appr(const String& s) {
-	return replace_all(untag(curly_quotes(s,false)), (L"\n"), (L"\r\n"));
+String untag_appr(const String &s) {
+    return replace_all(untag(curly_quotes(s, false)), (L"\n"), (L"\r\n"));
 }
-inline String untag_appr(const ScriptValueP& str) {
-	return untag_appr(str->toString());
+inline String untag_appr(const ScriptValueP &str) {
+    return untag_appr(str->toString());
 }
 
 DECLARE_POINTER_TYPE(ApprCardRecord);
@@ -364,18 +372,17 @@ DECLARE_POINTER_TYPE(ApprCardRecord);
 /// An Apprentice card database (cardinfo.dat)
 class ApprCardDatabase : public ApprDatabase {
   public:
-	inline ApprCardDatabase(WithProgress* progress_target)
-		: ApprDatabase(progress_target, (L"sets\\cardinfo.dat"))
-	{}
-	/// Remove a set code
-	void removeSet(const String& code);
-	
+    inline ApprCardDatabase(WithProgress *progress_target)
+        : ApprDatabase(progress_target, (L"sets\\cardinfo.dat")) {}
+    /// Remove a set code
+    void removeSet(const String &code);
+
   protected:
-	virtual void doRead(wxInputStream& in);
-	virtual void doWrite(wxOutputStream& out);
-	
+    virtual void doRead(wxInputStream &in);
+    virtual void doWrite(wxOutputStream &out);
+
   public:
-	vector<ApprCardRecordP> cards;
+    vector<ApprCardRecordP> cards;
 };
 
 /// A single record in the apprentice card database
@@ -384,403 +391,434 @@ class ApprCardDatabase : public ApprDatabase {
  */
 class ApprCardRecord : public IntrusivePtrBase<ApprCardRecord> {
   public:
-	String name, sets;
-	String type, cc, pt, text, flavor;
-	UInt data_pos;
-	Byte color; // bitmask:
-	enum Color {
-		white = 0x01,
-		blue  = 0x02,
-		black = 0x04,
-		red   = 0x08,
-		green = 0x10,
-		gold  = 0x20,
-		arti  = 0x40,
-		land  = 0x80,
-	};
-	
-	ApprCardRecord() {}
-	ApprCardRecord(const Card& card, const String& sets_);
-	
-	void readHead(wxDataInputStream& strm);
-	void readCard(wxDataInputStream& strm);
-	void writeHead(wxDataOutputStream& strm);
-	void writeCard(wxDataOutputStream& strm);
-	
-	/// Reads a string in apprentice format
-	String readString(wxDataInputStream& strm);
-	/// Writes a string in apprentice format
-	void writeString(wxDataOutputStream& strm, const String& out);
-	
-	// Remove a code from the list of set codes
-	void removeSet(const String& code);
+    String name, sets;
+    String type, cc, pt, text, flavor;
+    UInt data_pos;
+    Byte color; // bitmask:
+    enum Color {
+        white = 0x01,
+        blue = 0x02,
+        black = 0x04,
+        red = 0x08,
+        green = 0x10,
+        gold = 0x20,
+        arti = 0x40,
+        land = 0x80,
+    };
+
+    ApprCardRecord() {}
+    ApprCardRecord(const Card &card, const String &sets_);
+
+    void readHead(wxDataInputStream &strm);
+    void readCard(wxDataInputStream &strm);
+    void writeHead(wxDataOutputStream &strm);
+    void writeCard(wxDataOutputStream &strm);
+
+    /// Reads a string in apprentice format
+    String readString(wxDataInputStream &strm);
+    /// Writes a string in apprentice format
+    void writeString(wxDataOutputStream &strm, const String &out);
+
+    // Remove a code from the list of set codes
+    void removeSet(const String &code);
 };
 
 // conversion from MSE2 card
-ApprCardRecord::ApprCardRecord(const Card& card, const String& sets_) {
-	name   = untag_appr(card.value((L"name")));
-	sets   = sets_ + (L"-") + card_rarity_code(card.value((L"rarity"))->toString());
-	cc     = untag_appr(card.value((L"casting_cost")));
-	type   = untag_appr(card.value((L"super_type")));
-	String subType = untag_appr(card.value((L"sub_type")));
-	if (!subType.empty())  type += (L" - ") + subType;
-	text   = untag_appr(card.value((L"rule_text")));
-	flavor = untag_appr(card.value((L"flavor_text")));
-	pt     = untag_appr(card.value((L"pt")));
+ApprCardRecord::ApprCardRecord(const Card &card, const String &sets_) {
+    name = untag_appr(card.value((L"name")));
+    sets =
+        sets_ + (L"-") + card_rarity_code(card.value((L"rarity"))->toString());
+    cc = untag_appr(card.value((L"casting_cost")));
+    type = untag_appr(card.value((L"super_type")));
+    String subType = untag_appr(card.value((L"sub_type")));
+    if (!subType.empty())
+        type += (L" - ") + subType;
+    text = untag_appr(card.value((L"rule_text")));
+    flavor = untag_appr(card.value((L"flavor_text")));
+    pt = untag_appr(card.value((L"pt")));
 }
 
-	
-void ApprCardRecord::readHead(wxDataInputStream& strm) {
-	name     = readString(strm);
-	data_pos = strm.Read32();
-	color    = strm.Read8();
-	sets     = readString(strm);
-	strm.Read16(); // 00 00
+void ApprCardRecord::readHead(wxDataInputStream &strm) {
+    name = readString(strm);
+    data_pos = strm.Read32();
+    color = strm.Read8();
+    sets = readString(strm);
+    strm.Read16(); // 00 00
 }
-void ApprCardRecord::readCard(wxDataInputStream& strm) {
-	type   = readString(strm);
-	cc     = readString(strm);
-	pt     = readString(strm);
-	text   = readString(strm);
-	flavor = readString(strm);
-}
-
-void ApprCardRecord::writeHead(wxDataOutputStream& strm) {
-	name = name.substr(0, 27); // max length
-	// determine color
-	color = 0;
-	int cnt = 0;
-	if (cc.find_first_of((L'W')) != String::npos) { cnt +=1;  color |= white; }
-	if (cc.find_first_of((L'U')) != String::npos) { cnt +=1;  color |= blue;  }
-	if (cc.find_first_of((L'B')) != String::npos) { cnt +=1;  color |= black; }
-	if (cc.find_first_of((L'R')) != String::npos) { cnt +=1;  color |= red;   }
-	if (cc.find_first_of((L'G')) != String::npos) { cnt +=1;  color |= green; }
-	if (cnt > 1)  color |= gold;
-	if (cnt == 0) {
-		if (type.find((L"Land")) != String::npos) color = land;
-		else                                      color = arti;
-	}
-	// write
-	writeString(strm, name);
-	strm.Write32(data_pos);
-	strm.Write8(color);
-	writeString(strm, sets);
-	strm.Write16(0x0000);
-}
-void ApprCardRecord::writeCard(wxDataOutputStream& strm) {
-	writeString(strm, type);
-	writeString(strm, cc);
-	writeString(strm, pt);
-	writeString(strm, text);
-	writeString(strm, flavor);
+void ApprCardRecord::readCard(wxDataInputStream &strm) {
+    type = readString(strm);
+    cc = readString(strm);
+    pt = readString(strm);
+    text = readString(strm);
+    flavor = readString(strm);
 }
 
-String ApprCardRecord::readString(wxDataInputStream& strm) {
-	size_t size = strm.Read16();
-	if (size > 1000) size = 1000; // sanity check
-	String ret;
-	ret.reserve(size);
-	for (size_t i = 0 ; i < size ; ++i) {
-		ret += (Char) strm.Read8();
-	}
-	return ret;
+void ApprCardRecord::writeHead(wxDataOutputStream &strm) {
+    name = name.substr(0, 27); // max length
+    // determine color
+    color = 0;
+    int cnt = 0;
+    if (cc.find_first_of((L'W')) != String::npos) {
+        cnt += 1;
+        color |= white;
+    }
+    if (cc.find_first_of((L'U')) != String::npos) {
+        cnt += 1;
+        color |= blue;
+    }
+    if (cc.find_first_of((L'B')) != String::npos) {
+        cnt += 1;
+        color |= black;
+    }
+    if (cc.find_first_of((L'R')) != String::npos) {
+        cnt += 1;
+        color |= red;
+    }
+    if (cc.find_first_of((L'G')) != String::npos) {
+        cnt += 1;
+        color |= green;
+    }
+    if (cnt > 1)
+        color |= gold;
+    if (cnt == 0) {
+        if (type.find((L"Land")) != String::npos)
+            color = land;
+        else
+            color = arti;
+    }
+    // write
+    writeString(strm, name);
+    strm.Write32(data_pos);
+    strm.Write8(color);
+    writeString(strm, sets);
+    strm.Write16(0x0000);
+}
+void ApprCardRecord::writeCard(wxDataOutputStream &strm) {
+    writeString(strm, type);
+    writeString(strm, cc);
+    writeString(strm, pt);
+    writeString(strm, text);
+    writeString(strm, flavor);
 }
 
-void ApprCardRecord::writeString(wxDataOutputStream& strm, const String& out) {
-	strm.Write16(UInt(out.size()));
-	for(const auto& c : out) {
-		strm.Write8(c);
-	}
+String ApprCardRecord::readString(wxDataInputStream &strm) {
+    size_t size = strm.Read16();
+    if (size > 1000)
+        size = 1000; // sanity check
+    String ret;
+    ret.reserve(size);
+    for (size_t i = 0; i < size; ++i) {
+        ret += (Char)strm.Read8();
+    }
+    return ret;
 }
 
-void ApprCardRecord::removeSet(const String& code) {
-	size_t pos = sets.find(code);
-	if (pos == String::npos)  return;
-	String before = sets.substr(0, pos);
-	String after  = sets.substr(pos + code.size());
-	if (!before.empty() && before.GetChar(before.size()-1) == (L',')) {
-		// remove comma
-		before.resize(before.size() - 1);
-	}
-	sets = before + after;
+void ApprCardRecord::writeString(wxDataOutputStream &strm, const String &out) {
+    strm.Write16(UInt(out.size()));
+    for (const auto &c : out) {
+        strm.Write8(c);
+    }
+}
+
+void ApprCardRecord::removeSet(const String &code) {
+    size_t pos = sets.find(code);
+    if (pos == String::npos)
+        return;
+    String before = sets.substr(0, pos);
+    String after = sets.substr(pos + code.size());
+    if (!before.empty() && before.GetChar(before.size() - 1) == (L',')) {
+        // remove comma
+        before.resize(before.size() - 1);
+    }
+    sets = before + after;
 }
 
 // Is a card record unused, i.e. no sets refer to it?
-bool unused_appr_card_record(const ApprCardRecordP& rec) {
-	return rec->sets.size() < 2 || // nothing
-	      (rec->sets.size() < 4 && rec->sets.find_first_of((L'-')) != String::npos); // only a rarity code
+bool unused_appr_card_record(const ApprCardRecordP &rec) {
+    return rec->sets.size() < 2 || // nothing
+           (rec->sets.size() < 4 &&
+            rec->sets.find_first_of((L'-')) !=
+                String::npos); // only a rarity code
 }
 
-
-
-void ApprCardDatabase::removeSet(const String& code) {
-	for(auto& c : cards) {
-		c->removeSet(code);
-	}
-	// cleanup
-	cards.erase(remove_if(cards.begin(), cards.end(), unused_appr_card_record), cards.end());
+void ApprCardDatabase::removeSet(const String &code) {
+    for (auto &c : cards) {
+        c->removeSet(code);
+    }
+    // cleanup
+    cards.erase(remove_if(cards.begin(), cards.end(), unused_appr_card_record),
+                cards.end());
 }
 
-void ApprCardDatabase::doRead(wxInputStream& in) {
-	wxDataInputStream data(in);
-	size_t head_pos = data.Read32();
-	in.SeekI(head_pos);
-	size_t card_count = data.Read32();
-	cards.resize(card_count);
-	// read cards
-	int i = 0;
-	for(auto& card : cards) {
-		if (++i % 100 == 0) {
-			// report progress sometimes
-			progress_target->onProgress(0.4f * float(i) / cards.size(),
-			                            String((L"reading card ")) << i << (L" of ") << (int)cards.size());
-		}
-		card = intrusive(new ApprCardRecord());
-		card->readHead(data);
-		head_pos = in.TellI();
-		in.SeekI(card->data_pos);
-		card->readCard(data);
-		in.SeekI(head_pos);
-	}
+void ApprCardDatabase::doRead(wxInputStream &in) {
+    wxDataInputStream data(in);
+    size_t head_pos = data.Read32();
+    in.SeekI(head_pos);
+    size_t card_count = data.Read32();
+    cards.resize(card_count);
+    // read cards
+    int i = 0;
+    for (auto &card : cards) {
+        if (++i % 100 == 0) {
+            // report progress sometimes
+            progress_target->onProgress(0.4f * float(i) / cards.size(),
+                                        String((L"reading card "))
+                                            << i << (L" of ")
+                                            << (int)cards.size());
+        }
+        card = intrusive(new ApprCardRecord());
+        card->readHead(data);
+        head_pos = in.TellI();
+        in.SeekI(card->data_pos);
+        card->readCard(data);
+        in.SeekI(head_pos);
+    }
 }
 
-void ApprCardDatabase::doWrite(wxOutputStream& out) {
-	wxDataOutputStream data(out);
-	data.Write32(0); // replaced with header pos
-	// write card data
-	int i = 0;
-	for(auto& card : cards) {
-		if (++i % 100 == 0) {
-			// report progress sometimes
-			progress_target->onProgress(0.4f + 0.4f * float(i) / cards.size(),
-			                            String((L"writing card ")) << i << (L" of ") << (int)cards.size());
-		}
-		card->data_pos = out.TellO();
-		card->writeCard(data);
-	}
-	// write header location
-	UInt head_start = out.TellO();
-	out.SeekO(0);
-	data.Write32(head_start);
-	// card count
-	out.SeekO(head_start);
-	data.Write32((UInt)cards.size());
-	// write card heads
-	i = 0;
-	for(auto& card : cards) {
-		if (++i % 100 == 0) {
-			// report progress sometimes
-			progress_target->onProgress(0.8f + 0.2f * float(i) / cards.size(),
-			                            String((L"writing header ")) << i << (L" of ") << (int)cards.size());
-		}
-		card->writeHead(data);
-	}
+void ApprCardDatabase::doWrite(wxOutputStream &out) {
+    wxDataOutputStream data(out);
+    data.Write32(0); // replaced with header pos
+    // write card data
+    int i = 0;
+    for (auto &card : cards) {
+        if (++i % 100 == 0) {
+            // report progress sometimes
+            progress_target->onProgress(0.4f + 0.4f * float(i) / cards.size(),
+                                        String((L"writing card "))
+                                            << i << (L" of ")
+                                            << (int)cards.size());
+        }
+        card->data_pos = out.TellO();
+        card->writeCard(data);
+    }
+    // write header location
+    UInt head_start = out.TellO();
+    out.SeekO(0);
+    data.Write32(head_start);
+    // card count
+    out.SeekO(head_start);
+    data.Write32((UInt)cards.size());
+    // write card heads
+    i = 0;
+    for (auto &card : cards) {
+        if (++i % 100 == 0) {
+            // report progress sometimes
+            progress_target->onProgress(0.8f + 0.2f * float(i) / cards.size(),
+                                        String((L"writing header "))
+                                            << i << (L" of ")
+                                            << (int)cards.size());
+        }
+        card->writeHead(data);
+    }
 }
 
-
-
-
-
-// ----------------------------------------------------------------------------- : Export dialog
+// -----------------------------------------------------------------------------
+// : Export dialog
 
 /// Dialog for exporting a set to Apprentice
 class ApprenticeExportWindow : public wxDialog, public WithProgress {
   public:
-	ApprenticeExportWindow(Window* parent, const SetP& set);
-	
-	virtual void onProgress(float p, const String& message);
-	void doStep(const String& s, float size);
-	
+    ApprenticeExportWindow(Window *parent, const SetP &set);
+
+    virtual void onProgress(float p, const String &message);
+    void doStep(const String &s, float size);
+
   private:
-	DECLARE_EVENT_TABLE();
-	SetP set;
-	
-	// Gui controls
-	wxTextCtrl *apprentice, *set_code;
-	
-	// In what step of the export process are we?
-	String step;
-	float step_begin, step_end;
-	ExportProgressDialog* progress_target;
-	
-	void onApprenticeBrowse(wxCommandEvent& ev);
-	void onOk(wxCommandEvent& ev);
-	
-	/// Export the set
-	bool exportSet();
+    DECLARE_EVENT_TABLE();
+    SetP set;
+
+    // Gui controls
+    wxTextCtrl *apprentice, *set_code;
+
+    // In what step of the export process are we?
+    String step;
+    float step_begin, step_end;
+    ExportProgressDialog *progress_target;
+
+    void onApprenticeBrowse(wxCommandEvent &ev);
+    void onOk(wxCommandEvent &ev);
+
+    /// Export the set
+    bool exportSet();
 };
 
-
-void export_apprentice(Window* parent, const SetP& set) {
-	ApprenticeExportWindow wnd(parent, set);
-	wnd.ShowModal();
+void export_apprentice(Window *parent, const SetP &set) {
+    ApprenticeExportWindow wnd(parent, set);
+    wnd.ShowModal();
 }
 
+ApprenticeExportWindow::ApprenticeExportWindow(Window *parent, const SetP &set)
+    : wxDialog(parent, wxID_ANY, (L"Export to Apprentice"), wxDefaultPosition),
+      set(set), step_begin(0), step_end(0) {
+    if (!set->game->isMagic())
+        throw Error((L"Can only export Magic sets to Apprentice"));
 
-ApprenticeExportWindow::ApprenticeExportWindow(Window* parent, const SetP& set)
-	: wxDialog(parent, wxID_ANY, (L"Export to Apprentice"), wxDefaultPosition)
-	, set(set)
-	, step_begin(0), step_end(0)
-{
-	if (!set->game->isMagic()) throw Error((L"Can only export Magic sets to Apprentice"));
-	
-	// create controls
-	apprentice = new wxTextCtrl(this, wxID_ANY);
-	set_code   = new wxTextCtrl(this, wxID_ANY);
-	wxButton* browse = new wxButton(this, ID_APPRENTICE_BROWSE , _BUTTON_("browse"));
-	// set values
-	apprentice->SetValue(settings.apprentice_location);
-	set_code->SetValue(set->apprentice_code);
-	// init sizer
-	wxSizer* s = new wxBoxSizer(wxVERTICAL);
-		// Apprentice location
-		s->Add(new wxStaticText(this, wxID_ANY, _TITLE_("locate apprentice")), 0, wxALL, 4);
-		wxSizer* s2 = new wxBoxSizer(wxHORIZONTAL);
-			s2->Add(apprentice, 1, wxEXPAND | wxRIGHT, 4);
-			s2->Add(browse,     0, wxEXPAND);
-		s->Add(s2, 0, wxEXPAND | (wxALL & ~wxTOP), 4);
-		s->AddSpacer(8);
-		// Set code
-		s->Add(new wxStaticText(this, -1, _LABEL_("set code")), 0, wxALL, 4);
-		s->Add(set_code, 0, wxEXPAND | wxLEFT | wxRIGHT, 4);
-		s->Add(new wxStaticText(this, -1, _HELP_( "set code")), 0, wxALL, 4);
-		s->AddSpacer(4);
-		s->Add(CreateButtonSizer(wxOK | wxCANCEL), 0, wxEXPAND | (wxALL & ~wxTOP),    8);
-	s->SetSizeHints(this);
-	SetSizer(s);
+    // create controls
+    apprentice = new wxTextCtrl(this, wxID_ANY);
+    set_code = new wxTextCtrl(this, wxID_ANY);
+    wxButton *browse =
+        new wxButton(this, ID_APPRENTICE_BROWSE, _BUTTON_("browse"));
+    // set values
+    apprentice->SetValue(settings.apprentice_location);
+    set_code->SetValue(set->apprentice_code);
+    // init sizer
+    wxSizer *s = new wxBoxSizer(wxVERTICAL);
+    // Apprentice location
+    s->Add(new wxStaticText(this, wxID_ANY, _TITLE_("locate apprentice")), 0,
+           wxALL, 4);
+    wxSizer *s2 = new wxBoxSizer(wxHORIZONTAL);
+    s2->Add(apprentice, 1, wxEXPAND | wxRIGHT, 4);
+    s2->Add(browse, 0, wxEXPAND);
+    s->Add(s2, 0, wxEXPAND | (wxALL & ~wxTOP), 4);
+    s->AddSpacer(8);
+    // Set code
+    s->Add(new wxStaticText(this, -1, _LABEL_("set code")), 0, wxALL, 4);
+    s->Add(set_code, 0, wxEXPAND | wxLEFT | wxRIGHT, 4);
+    s->Add(new wxStaticText(this, -1, _HELP_("set code")), 0, wxALL, 4);
+    s->AddSpacer(4);
+    s->Add(CreateButtonSizer(wxOK | wxCANCEL), 0, wxEXPAND | (wxALL & ~wxTOP),
+           8);
+    s->SetSizeHints(this);
+    SetSizer(s);
 }
 
-void ApprenticeExportWindow::onApprenticeBrowse(wxCommandEvent& ev) {
-	// browse for appr.exe
-	// same as in DirsPreferencesPage
-	wxFileDialog dlg(this, _TITLE_("locate apprentice"), apprentice->GetValue(), (L""), _LABEL_("apprentice exe") + (L"|appr.exe"), wxFD_OPEN);
-	if (dlg.ShowModal() == wxID_OK) {
-		wxFileName fn(dlg.GetPath());
-		apprentice->SetValue(fn.GetPath());
-	}
+void ApprenticeExportWindow::onApprenticeBrowse(wxCommandEvent &ev) {
+    // browse for appr.exe
+    // same as in DirsPreferencesPage
+    wxFileDialog dlg(this, _TITLE_("locate apprentice"), apprentice->GetValue(),
+                     (L""), _LABEL_("apprentice exe") + (L"|appr.exe"),
+                     wxFD_OPEN);
+    if (dlg.ShowModal() == wxID_OK) {
+        wxFileName fn(dlg.GetPath());
+        apprentice->SetValue(fn.GetPath());
+    }
 }
 
-void ApprenticeExportWindow::onOk(wxCommandEvent& ev) {
-	// store settings
-	settings.apprentice_location = apprentice->GetValue();
-	// store new code
-	String new_set_code = set_code->GetValue();
-	if (new_set_code.size() != 2) {
-		wxMessageBox((L"The set code must be 2 characters long"),
-			         (L"Invalid set code"), wxOK | wxICON_ERROR);
-		return;
-	}
-	new_set_code.MakeUpper();
-	set->apprentice_code.MakeUpper();
-	if (set->apprentice_code != new_set_code) {
-		// changed something in the set
-		set->apprentice_code = new_set_code;
-		//set->actions.atSavePoint = false; // TODO: tell the user he needs to save
-	}
-	// Check if apprentice exists
-	if (!wxFileExists(settings.apprentice_location + (L"\\appr.exe"))) {
-		wxMessageBox((L"Apprentice is not found in the specified location\n") + settings.apprentice_location,
-		             (L"Apprentice Not Found"), wxOK | wxICON_ERROR);
-		return;
-	}
-	// create progress dialog
-	progress_target = new ExportProgressDialog(this, (L"Export to Apprentice"), (L"Exporting to Apprentice, please wait"));
-	progress_target->Show();
-	// export!
-	try {
-		if (!exportSet()) {
-			// canceled, but allow to try again
-			progress_target->Hide();
-			progress_target->Close();
-			return;
-		}
-	} catch (const AbortException&) {
-		// aborted, cleanup is already handled by dtors
-		wxMessageBox(_LABEL_("apprentice export cancelled"), _TITLE_("export cancelled"), wxOK | wxICON_INFORMATION);
-	}
-	// Done, close progress window
-	progress_target->Hide();
-	progress_target->Close();
-	// Close this window
-	EndModal(wxID_OK);
+void ApprenticeExportWindow::onOk(wxCommandEvent &ev) {
+    // store settings
+    settings.apprentice_location = apprentice->GetValue();
+    // store new code
+    String new_set_code = set_code->GetValue();
+    if (new_set_code.size() != 2) {
+        wxMessageBox((L"The set code must be 2 characters long"),
+                     (L"Invalid set code"), wxOK | wxICON_ERROR);
+        return;
+    }
+    new_set_code.MakeUpper();
+    set->apprentice_code.MakeUpper();
+    if (set->apprentice_code != new_set_code) {
+        // changed something in the set
+        set->apprentice_code = new_set_code;
+        // set->actions.atSavePoint = false; // TODO: tell the user he needs to
+        // save
+    }
+    // Check if apprentice exists
+    if (!wxFileExists(settings.apprentice_location + (L"\\appr.exe"))) {
+        wxMessageBox((L"Apprentice is not found in the specified location\n") +
+                         settings.apprentice_location,
+                     (L"Apprentice Not Found"), wxOK | wxICON_ERROR);
+        return;
+    }
+    // create progress dialog
+    progress_target =
+        new ExportProgressDialog(this, (L"Export to Apprentice"),
+                                 (L"Exporting to Apprentice, please wait"));
+    progress_target->Show();
+    // export!
+    try {
+        if (!exportSet()) {
+            // canceled, but allow to try again
+            progress_target->Hide();
+            progress_target->Close();
+            return;
+        }
+    } catch (const AbortException &) {
+        // aborted, cleanup is already handled by dtors
+        wxMessageBox(_LABEL_("apprentice export cancelled"),
+                     _TITLE_("export cancelled"), wxOK | wxICON_INFORMATION);
+    }
+    // Done, close progress window
+    progress_target->Hide();
+    progress_target->Close();
+    // Close this window
+    EndModal(wxID_OK);
 }
 
 bool ApprenticeExportWindow::exportSet() {
-	// Expan database
-	doStep((L"Exporting expansion"), 0.01f);
-	ApprExpansionDatabase expan(this);
-	expan.read();
-	// Is there already a set with the desired code?
-	map<String,String>::iterator expan_it = expan.expansions.find(set->apprentice_code); 
-	if (expan_it != expan.expansions.end()) {
-		int res = wxMessageBox(
-			(L"There is already a set with the code '")+ expan_it->first +(L"' in the Apprentice database.\n") +
-			(L"This set has the name '")+ expan_it->second +(L"'\n") +
-			(L"Do you want to continue, and overwrite that set?"),
-			(L"Overwrite Set?"), wxYES_NO | wxICON_EXCLAMATION
-		);
-		if (res == wxNO) return false; // abort export
-	}
-	// add our set
-	expan.expansions[set->apprentice_code] = set->value((L"title"))->toString();
-	expan.write();
-	
-	// Format database
-	doStep((L"Exporting format"), 0.01f);
-	ApprFormatDatabase format(this);
-	format.read();
-	// remove old with code, TODO add new?
-	format.removeSet(set->apprentice_code);
-	format.write();
-	
-	// Distro database
-	doStep((L"Exporting distribution"), 0.01f);
-	ApprDistroDatabase distro(this);
-	distro.read();
-	// remove old with code, add new
-	distro.removeSet(set->apprentice_code);
-	distro.distros[set->apprentice_code] = ApprDistro(11,3,1); // booster size
-	distro.write();
-	
-	// Card database
-	doStep((L"Exporting cards"), 0.96f);
-	ApprCardDatabase cardlist(this);
-	cardlist.read();
-	// remove old cards with same code
-	cardlist.removeSet(set->apprentice_code);
-	// add cards from set
-	for(auto& card : set->cards) {
-		ApprCardRecordP rec = intrusive(new ApprCardRecord(*card, set->apprentice_code));
-		cardlist.cards.push_back(rec);
-	}
-	cardlist.write();
-	
-	// Commit everything
-	doStep((L"Committing"), 0.01f);
-	expan.commit();
-	format.commit();
-	distro.commit();
-	cardlist.commit();
-	
-	return true; // all went well
+    // Expan database
+    doStep((L"Exporting expansion"), 0.01f);
+    ApprExpansionDatabase expan(this);
+    expan.read();
+    // Is there already a set with the desired code?
+    map<String, String>::iterator expan_it =
+        expan.expansions.find(set->apprentice_code);
+    if (expan_it != expan.expansions.end()) {
+        int res = wxMessageBox(
+            (L"There is already a set with the code '") + expan_it->first +
+                (L"' in the Apprentice database.\n") +
+                (L"This set has the name '") + expan_it->second + (L"'\n") +
+                (L"Do you want to continue, and overwrite that set?"),
+            (L"Overwrite Set?"), wxYES_NO | wxICON_EXCLAMATION);
+        if (res == wxNO)
+            return false; // abort export
+    }
+    // add our set
+    expan.expansions[set->apprentice_code] = set->value((L"title"))->toString();
+    expan.write();
+
+    // Format database
+    doStep((L"Exporting format"), 0.01f);
+    ApprFormatDatabase format(this);
+    format.read();
+    // remove old with code, TODO add new?
+    format.removeSet(set->apprentice_code);
+    format.write();
+
+    // Distro database
+    doStep((L"Exporting distribution"), 0.01f);
+    ApprDistroDatabase distro(this);
+    distro.read();
+    // remove old with code, add new
+    distro.removeSet(set->apprentice_code);
+    distro.distros[set->apprentice_code] = ApprDistro(11, 3, 1); // booster size
+    distro.write();
+
+    // Card database
+    doStep((L"Exporting cards"), 0.96f);
+    ApprCardDatabase cardlist(this);
+    cardlist.read();
+    // remove old cards with same code
+    cardlist.removeSet(set->apprentice_code);
+    // add cards from set
+    for (auto &card : set->cards) {
+        ApprCardRecordP rec =
+            intrusive(new ApprCardRecord(*card, set->apprentice_code));
+        cardlist.cards.push_back(rec);
+    }
+    cardlist.write();
+
+    // Commit everything
+    doStep((L"Committing"), 0.01f);
+    expan.commit();
+    format.commit();
+    distro.commit();
+    cardlist.commit();
+
+    return true; // all went well
 }
 
-void ApprenticeExportWindow::onProgress(float p, const String& m) {
-	progress_target->onProgress(
-		p * (step_end - step_begin) + step_begin,
-		m.empty() ? step : step + (L": ") + m
-	);
+void ApprenticeExportWindow::onProgress(float p, const String &m) {
+    progress_target->onProgress(p * (step_end - step_begin) + step_begin,
+                                m.empty() ? step : step + (L": ") + m);
 }
-void ApprenticeExportWindow::doStep(const String& s, float size) {
-	step = s;
-	step_begin = step_end;
-	step_end += size;
-	onProgress(0.0f, (L""));
+void ApprenticeExportWindow::doStep(const String &s, float size) {
+    step = s;
+    step_begin = step_end;
+    step_end += size;
+    onProgress(0.0f, (L""));
 }
-
-
 
 BEGIN_EVENT_TABLE(ApprenticeExportWindow, wxDialog)
-	EVT_BUTTON      (wxID_OK, ApprenticeExportWindow::onOk)
-	EVT_BUTTON      (ID_APPRENTICE_BROWSE, ApprenticeExportWindow::onApprenticeBrowse)
-END_EVENT_TABLE  ()
+EVT_BUTTON(wxID_OK, ApprenticeExportWindow::onOk)
+EVT_BUTTON(ID_APPRENTICE_BROWSE, ApprenticeExportWindow::onApprenticeBrowse)
+END_EVENT_TABLE()

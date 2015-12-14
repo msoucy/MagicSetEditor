@@ -21,10 +21,10 @@
 // : Path selection
 
 String getDataDir() {
-	wxFileName fn{wxStandardPaths::Get().GetExecutablePath()};
-	fn.AppendDir((L"share"));
-	fn.AppendDir((L"magicseteditor"));
-	return fn.GetPath();
+    wxFileName fn{wxStandardPaths::Get().GetExecutablePath()};
+    fn.AppendDir((L"share"));
+    fn.AppendDir((L"magicseteditor"));
+    return fn.GetPath();
 }
 
 String getUserDataDir() { return wxStandardPaths::Get().GetUserDataDir(); }
