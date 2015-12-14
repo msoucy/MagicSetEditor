@@ -135,7 +135,7 @@ TreeList::TreeList(Window* parent, int id)
 	wxClientDC dc(this);
 	dc.SetFont(*wxNORMAL_FONT);
 	int h;
-	dc.GetTextExtent(_("X"), 0, &h);
+	dc.GetTextExtent((L"X"), 0, &h);
 	item_height = h + 2;
 }
 

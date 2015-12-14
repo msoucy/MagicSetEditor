@@ -102,12 +102,12 @@ void KeywordReminderTextValue::highlight(const String& code, const vector<Script
 		while (error != errors.end() && error->start == error->end) ++error;
 		if (error != errors.end()) {
 			if (error->start == pos) {
-				new_value += _("<error>");
+				new_value += (L"<error>");
 			}
 			if (error->end == pos) {
 				++error;
 				if (error == errors.end() || error->start > pos) {
-					new_value += _("</error>");
+					new_value += (L"</error>");
 				} else {
 					// immediatly open again
 				}
@@ -115,12 +115,12 @@ void KeywordReminderTextValue::highlight(const String& code, const vector<Script
 		}
 		// process a character
 		Char c = code.GetChar(pos);
-		if (c == _('<')) {
-			new_value += _('\1'); // escape
+		if (c == (L'<')) {
+			new_value += (L'\1'); // escape
 			++pos;
-		} else if (c == _('{')) {
+		} else if (c == (L'{')) {
 			if (in_string) {
-				new_value += _("<code>");
+				new_value += (L"<code>");
 				in_brace.push_back(1);
 				in_string = false;
 			} else {
@@ -128,44 +128,44 @@ void KeywordReminderTextValue::highlight(const String& code, const vector<Script
 			}
 			new_value += c;
 			++pos;
-		} else if (c == _('}') && !in_string) {
+		} else if (c == (L'}') && !in_string) {
 			new_value += c;
 			if (!in_brace.empty() && in_brace.back() == 1) {
-				new_value += _("</code>");
+				new_value += (L"</code>");
 				in_string = true;
 			}
 			if (!in_brace.empty()) in_brace.pop_back();
 			++pos;
-		} else if (c == _('"')) {
+		} else if (c == (L'"')) {
 			if (in_string) {
 				in_string = false;
-				new_value += _("\"</code-str><code>");
+				new_value += (L"\"</code-str><code>");
 			} else {
 				in_string = true;
-				new_value += _("</code><code-str>\"");
+				new_value += (L"</code><code-str>\"");
 			}
 			++pos;
-		} else if (c == _('\\') && in_string && pos + 1 < code.size()) {
+		} else if (c == (L'\\') && in_string && pos + 1 < code.size()) {
 			new_value += c + code.GetChar(pos + 1); // escape code
 			pos += 2;
-		} else if (is_substr(code, pos, _("if ")) && !in_string) {
-			new_value += _("<code-kw>if</code-kw> ");
+		} else if (is_substr(code, pos, (L"if ")) && !in_string) {
+			new_value += (L"<code-kw>if</code-kw> ");
 			pos += 3;
-		} else if (is_substr(code, pos, _("then ")) && !in_string) {
-			new_value += _("<code-kw>then</code-kw> ");
+		} else if (is_substr(code, pos, (L"then ")) && !in_string) {
+			new_value += (L"<code-kw>then</code-kw> ");
 			pos += 5;
-		} else if (is_substr(code, pos, _("else ")) && !in_string) {
-			new_value += _("<code-kw>else</code-kw> ");
+		} else if (is_substr(code, pos, (L"else ")) && !in_string) {
+			new_value += (L"<code-kw>else</code-kw> ");
 			pos += 5;
-		} else if (is_substr(code, pos, _("for ")) && !in_string) {
-			new_value += _("<code-kw>for</code-kw> ");
+		} else if (is_substr(code, pos, (L"for ")) && !in_string) {
+			new_value += (L"<code-kw>for</code-kw> ");
 			pos += 4;
-		} else if (is_substr(code, pos, _("param")) && !in_string) {
+		} else if (is_substr(code, pos, (L"param")) && !in_string) {
 			// parameter reference
-			size_t end = code.find_first_not_of(_("0123456789"), pos + 5);
+			size_t end = code.find_first_not_of((L"0123456789"), pos + 5);
 			if (end == String::npos) end = code.size();
 			String param = code.substr(pos, end-pos);
-			new_value += _("<ref-") + param + _(">") + param + _("</ref-") + param + _(">");
+			new_value += (L"<ref-") + param + (L">") + param + (L"</ref-") + param + (L">");
 			pos = end;
 		} else {
 			new_value += c;
@@ -182,9 +182,9 @@ bool KeywordReminderTextValue::checkScript(const ScriptP& script) {
 		LocalScope scope(ctx);
 		for (size_t i = 0 ; i < keyword.parameters.size() ; ++i) {
 			const KeywordParam& kwp = *keyword.parameters[i];
-			String param_name = String(_("param")) << (int)(i+1);
-			String param_value = _("<atom-kwpph>") + (kwp.placeholder.empty() ? kwp.name : kwp.placeholder) + _("</atom-kwpph>");
-			ctx.setVariable(param_name, intrusive(new KeywordParamValue(kwp.name, _(""), _(""), param_value)));
+			String param_name = String((L"param")) << (int)(i+1);
+			String param_value = (L"<atom-kwpph>") + (kwp.placeholder.empty() ? kwp.name : kwp.placeholder) + (L"</atom-kwpph>");
+			ctx.setVariable(param_name, intrusive(new KeywordParamValue(kwp.name, (L""), (L""), param_value)));
 		}
 		script->eval(ctx);
 		errors.clear();
@@ -202,7 +202,7 @@ ChangeKeywordModeAction::ChangeKeywordModeAction(Keyword& keyword, const String&
 {}
 
 String ChangeKeywordModeAction::getName(bool to_undo) const {
-	return _("Keyword mode");
+	return (L"Keyword mode");
 }
 
 void ChangeKeywordModeAction::perform(bool to_undo) {

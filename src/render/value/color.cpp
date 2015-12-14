@@ -22,7 +22,7 @@ void ColorValueViewer::draw(RotatedDC& dc) {
 	if (nativeLook()) {
 		// native look
 		// find name of color
-		String color_name = _("Custom");
+		String color_name = (L"Custom");
 		if (field().default_script && is_default(value().value)) {
 			color_name = field().default_name;
 		} else {

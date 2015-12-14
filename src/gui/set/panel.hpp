@@ -29,7 +29,7 @@ class SetWindowPanel : public wxPanel, public SetView {
 	
 //	// --------------------------------------------------- : Meta information
 //	
-//	virtual String helpFile()    { return _(""); } ///< help file to use when this panel is active
+//	virtual String helpFile()    { return (L""); } ///< help file to use when this panel is active
 	
 	// --------------------------------------------------- : UI
 	

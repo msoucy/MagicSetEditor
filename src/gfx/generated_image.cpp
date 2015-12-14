@@ -22,7 +22,7 @@ using std::min;
 
 ScriptType GeneratedImage::type() const { return SCRIPT_IMAGE; }
 String GeneratedImage::typeName() const { return _TYPE_("image"); }
-String GeneratedImage::toFriendlyString() const { return _("<") + _TYPE_("image") + _(">"); }
+String GeneratedImage::toFriendlyString() const { return (L"<") + _TYPE_("image") + (L">"); }
 GeneratedImageP GeneratedImage::toImage() const {
 	return intrusive_from_existing(const_cast<GeneratedImage*>(this));
 }
@@ -420,14 +420,14 @@ bool DropShadowImage::operator == (const GeneratedImage& that) const {
 Image PackagedImage::generate(const Options& opt) const {
 	// TODO : use opt.width and opt.height?
 	// open file from package
-	if (!opt.package) throw ScriptError(_("Can only load images in a context where an image is expected"));
+	if (!opt.package) throw ScriptError((L"Can only load images in a context where an image is expected"));
 	InputStreamP file = opt.package->openIn(filename);
 	Image img;
 	if (img.LoadFile(*file)) {
 		if (img.HasMask()) img.InitAlpha(); // we can't handle masks
 		return img;
 	} else {
-		throw ScriptError(_("Unable to load image '") + filename + _("' from '" + opt.package->name() + _("'")));
+		throw ScriptError((L"Unable to load image '") + filename + (L"' from '" + opt.package->name() + (L"'")));
 	}
 }
 bool PackagedImage::operator == (const GeneratedImage& that) const {
@@ -441,7 +441,7 @@ Image BuiltInImage::generate(const Options& opt) const {
 	// TODO : use opt.width and opt.height?
 	Image img = load_resource_image(name);
 	if (!img.Ok()) {
-		throw ScriptError(_("There is no built in image '") + name + _("'"));
+		throw ScriptError((L"There is no built in image '") + name + (L"'"));
 	}
 	return img;
 }
@@ -463,7 +463,7 @@ SymbolToImage::~SymbolToImage() {}
 Image SymbolToImage::generate(const Options& opt) const {
 	// TODO : use opt.width and opt.height?
 	Package* package = is_local ? opt.local_package : opt.package;
-	if (!package) throw ScriptError(_("Can only load images in a context where an image is expected"));
+	if (!package) throw ScriptError((L"Can only load images in a context where an image is expected"));
 	SymbolP the_symbol;
 	if (filename.empty()) {
 		the_symbol = default_symbol();
@@ -503,7 +503,7 @@ ImageValueToImage::~ImageValueToImage() {}
 
 Image ImageValueToImage::generate(const Options& opt) const {
 	// TODO : use opt.width and opt.height?
-	if (!opt.local_package) throw ScriptError(_("Can only load images in a context where an image is expected"));
+	if (!opt.local_package) throw ScriptError((L"Can only load images in a context where an image is expected"));
 	Image image;
 	if (!filename.empty()) {
 		InputStreamP image_file = opt.local_package->openIn(filename);
@@ -521,5 +521,5 @@ bool ImageValueToImage::operator == (const GeneratedImage& that) const {
 
 String quote_string(String const& str);
 String ImageValueToImage::toCode() const {
-	return _("local_image_file(") + quote_string(filename.toStringForWriting()) + _(")");
+	return (L"local_image_file(") + quote_string(filename.toStringForWriting()) + (L")");
 }

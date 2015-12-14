@@ -51,91 +51,91 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
 	, find_data(wxFR_DOWN)
 	, number_of_recent_sets(0)
 {
-	SetIcon(load_resource_icon(_("app")));
-	
+	SetIcon(load_resource_icon((L"app")));
+
 	// initialize menu bar
 	wxMenuBar* menuBar = new wxMenuBar();
 	IconMenu* menuFile = new IconMenu();
-		menuFile->Append(ID_FILE_NEW,		_("new"),		_MENU_("new set"),			_HELP_("new set"));
-		menuFile->Append(ID_FILE_OPEN,		_("open"),		_MENU_("open set"),			_HELP_("open set"));
-		menuFile->Append(ID_FILE_SAVE,		_("save"),		_MENU_("save set"),			_HELP_("save set"));
+		menuFile->Append(ID_FILE_NEW,		(L"new"),		_MENU_("new set"),			_HELP_("new set"));
+		menuFile->Append(ID_FILE_OPEN,		(L"open"),		_MENU_("open set"),			_HELP_("open set"));
+		menuFile->Append(ID_FILE_SAVE,		(L"save"),		_MENU_("save set"),			_HELP_("save set"));
 		menuFile->Append(ID_FILE_SAVE_AS,					_MENU_("save set as"),		_HELP_("save set as"));
 		menuExport = new IconMenu();
-			menuExport->Append(ID_FILE_EXPORT_HTML,		_("export_html"),		_MENU_("export html"),		_HELP_("export html"));
-			menuExport->Append(ID_FILE_EXPORT_IMAGE,	_("export_image"),		_MENU_("export image"),		_HELP_("export image"));
-			menuExport->Append(ID_FILE_EXPORT_IMAGES,	_("export_images"),		_MENU_("export images"),	_HELP_("export images"));
-			menuExport->Append(ID_FILE_EXPORT_APPR,		_("export_apprentice"),	_MENU_("export apprentice"),_HELP_("export apprentice"));
-			menuExport->Append(ID_FILE_EXPORT_MWS,		_("export_mws"),		_MENU_("export mws"),		_HELP_("export mws"));
-		menuFile->Append(wxID_ANY,			_("export"),	_MENU_("export"),					_HELP_("export"), wxITEM_NORMAL, menuExport);
+			menuExport->Append(ID_FILE_EXPORT_HTML,		(L"export_html"),		_MENU_("export html"),		_HELP_("export html"));
+			menuExport->Append(ID_FILE_EXPORT_IMAGE,	(L"export_image"),		_MENU_("export image"),		_HELP_("export image"));
+			menuExport->Append(ID_FILE_EXPORT_IMAGES,	(L"export_images"),		_MENU_("export images"),	_HELP_("export images"));
+			menuExport->Append(ID_FILE_EXPORT_APPR,		(L"export_apprentice"),	_MENU_("export apprentice"),_HELP_("export apprentice"));
+			menuExport->Append(ID_FILE_EXPORT_MWS,		(L"export_mws"),		_MENU_("export mws"),		_HELP_("export mws"));
+		menuFile->Append(wxID_ANY,			(L"export"),	_MENU_("export"),					_HELP_("export"), wxITEM_NORMAL, menuExport);
 		menuFile->AppendSeparator();
 		menuFile->Append(ID_FILE_CHECK_UPDATES,	_MENU_("check updates"),	_HELP_("check updates"));
 		#if USE_SCRIPT_PROFILING
 		menuFile->Append(ID_FILE_PROFILER,		_MENU_("show profiler"),	_HELP_("show profiler"));
 		#endif
-//		menuFile->Append(ID_FILE_INSPECT,					_("Inspect Internal Data..."),	_("Shows a the data in the set using a tree structure"));
+//		menuFile->Append(ID_FILE_INSPECT,					(L"Inspect Internal Data..."),	(L"Shows a the data in the set using a tree structure"));
 //		menuFile->AppendSeparator();
 		menuFile->Append(ID_FILE_RELOAD,					_MENU_("reload data"),		_HELP_("reload data"));
 		menuFile->AppendSeparator();
-		menuFile->Append(ID_FILE_PRINT_PREVIEW,	_("print_preview"),	_MENU_("print preview"),	_HELP_("print preview"));
-		menuFile->Append(ID_FILE_PRINT,			_("print"),			_MENU_("print"),			_HELP_("print"));
+		menuFile->Append(ID_FILE_PRINT_PREVIEW,	(L"print_preview"),	_MENU_("print preview"),	_HELP_("print preview"));
+		menuFile->Append(ID_FILE_PRINT,			(L"print"),			_MENU_("print"),			_HELP_("print"));
 		menuFile->AppendSeparator();
 		// recent files go here
 		menuFile->AppendSeparator();
 		menuFile->Append(ID_FILE_EXIT,						_MENU_("exit"),				_HELP_("exit"));
 	menuBar->Append(menuFile, _MENU_("file"));
-	
+
 	IconMenu* menuEdit = new IconMenu();
-		menuEdit->Append(ID_EDIT_UNDO,		_("undo"),		_MENU_1_("undo",wxEmptyString),	_HELP_("undo"));
-		menuEdit->Append(ID_EDIT_REDO,		_("redo"),		_MENU_1_("redo",wxEmptyString),	_HELP_("redo"));
+		menuEdit->Append(ID_EDIT_UNDO,		(L"undo"),		_MENU_1_("undo",wxEmptyString),	_HELP_("undo"));
+		menuEdit->Append(ID_EDIT_REDO,		(L"redo"),		_MENU_1_("redo",wxEmptyString),	_HELP_("redo"));
 		menuEdit->AppendSeparator();
-		menuEdit->Append(ID_EDIT_CUT,		_("cut"),		_MENU_("cut"),				_HELP_("cut"));
-		menuEdit->Append(ID_EDIT_COPY,		_("copy"),		_MENU_("copy"),				_HELP_("copy"));
-		menuEdit->Append(ID_EDIT_PASTE,		_("paste"),		_MENU_("paste"),			_HELP_("paste"));
+		menuEdit->Append(ID_EDIT_CUT,		(L"cut"),		_MENU_("cut"),				_HELP_("cut"));
+		menuEdit->Append(ID_EDIT_COPY,		(L"copy"),		_MENU_("copy"),				_HELP_("copy"));
+		menuEdit->Append(ID_EDIT_PASTE,		(L"paste"),		_MENU_("paste"),			_HELP_("paste"));
 		menuEdit->AppendSeparator();
-		menuEdit->Append(ID_EDIT_FIND,		_("find"),		_MENU_("find"),				_HELP_("find"));
+		menuEdit->Append(ID_EDIT_FIND,		(L"find"),		_MENU_("find"),				_HELP_("find"));
 		menuEdit->Append(ID_EDIT_FIND_NEXT,					_MENU_("find next"),		_HELP_("find next"));
 		menuEdit->Append(ID_EDIT_REPLACE,					_MENU_("replace"),			_HELP_("replace"));
 		menuEdit->Append(ID_EDIT_AUTO_REPLACE,				_MENU_("auto replace"),		_HELP_("auto replace"));
 		menuEdit->AppendSeparator();
 		menuEdit->Append(ID_EDIT_PREFERENCES,				_MENU_("preferences"),		_HELP_("preferences"));
 	menuBar->Append(menuEdit, _MENU_("edit"));
-	
+
 	IconMenu* menuWindow = new IconMenu();
 		menuWindow->Append(ID_WINDOW_NEW,					_MENU_("new window"),		_HELP_("new window"));
 		menuWindow->AppendSeparator();
 	menuBar->Append(menuWindow, _MENU_("window"));
-	
+
 	IconMenu* menuHelp = new IconMenu();
-		menuHelp->Append(ID_HELP_INDEX,		_("help"),		_MENU_("index"),			_HELP_("index"));
+		menuHelp->Append(ID_HELP_INDEX,		(L"help"),		_MENU_("index"),			_HELP_("index"));
 		menuHelp->Append(ID_HELP_WEBSITE,					_MENU_("website"),			_HELP_("website"));
 		menuHelp->AppendSeparator();
 		menuHelp->Append(ID_HELP_ABOUT,						_MENU_("about"),			_HELP_("about"));
 	menuBar->Append(menuHelp, _MENU_("help"));
-	
+
 	SetMenuBar(menuBar);
-	
+
 	// status bar
 	CreateStatusBar();
 	SetStatusText(_HELP_("welcome"));
-	
+
 	// tool bar
 	wxToolBar* tb = CreateToolBar(wxTB_FLAT | wxNO_BORDER | wxTB_HORIZONTAL);
 	tb->SetToolBitmapSize(wxSize(18,18));
-	tb->AddTool(ID_FILE_NEW,	_(""),	load_resource_tool_image(_("new")),		wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_("new set"),	_HELP_("new set"));
-	tb->AddTool(ID_FILE_OPEN,	_(""),	load_resource_tool_image(_("open")),	wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_("open set"),	_HELP_("open set"));
-	tb->AddTool(ID_FILE_SAVE,	_(""),	load_resource_tool_image(_("save")),	wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_("save set"),	_HELP_("save set"));
+	tb->AddTool(ID_FILE_NEW,	(L""),	load_resource_tool_image((L"new")),		wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_("new set"),	_HELP_("new set"));
+	tb->AddTool(ID_FILE_OPEN,	(L""),	load_resource_tool_image((L"open")),	wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_("open set"),	_HELP_("open set"));
+	tb->AddTool(ID_FILE_SAVE,	(L""),	load_resource_tool_image((L"save")),	wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_("save set"),	_HELP_("save set"));
 	tb->AddSeparator();
-	tb->AddTool(ID_FILE_EXPORT,	_(""),	load_resource_tool_image(_("export")),	wxNullBitmap, wxITEM_CHECK,  _TOOLTIP_("export"),	_HELP_("export"));
+	tb->AddTool(ID_FILE_EXPORT,	(L""),	load_resource_tool_image((L"export")),	wxNullBitmap, wxITEM_CHECK,  _TOOLTIP_("export"),	_HELP_("export"));
 	tb->AddSeparator();
-	tb->AddTool(ID_EDIT_CUT,	_(""),	load_resource_tool_image(_("cut")),		wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_("cut"),		_HELP_("cut"));
-	tb->AddTool(ID_EDIT_COPY,	_(""),	load_resource_tool_image(_("copy")),	wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_("copy"),		_HELP_("copy"));
-	tb->AddTool(ID_EDIT_PASTE,	_(""),	load_resource_tool_image(_("paste")),	wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_("paste"),	_HELP_("paste"));
+	tb->AddTool(ID_EDIT_CUT,	(L""),	load_resource_tool_image((L"cut")),		wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_("cut"),		_HELP_("cut"));
+	tb->AddTool(ID_EDIT_COPY,	(L""),	load_resource_tool_image((L"copy")),	wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_("copy"),		_HELP_("copy"));
+	tb->AddTool(ID_EDIT_PASTE,	(L""),	load_resource_tool_image((L"paste")),	wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_("paste"),	_HELP_("paste"));
 	tb->AddSeparator();
-	tb->AddTool(ID_EDIT_UNDO,	_(""),	load_resource_tool_image(_("undo")),	wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_1_("undo",wxEmptyString));
-	tb->AddTool(ID_EDIT_REDO,	_(""),	load_resource_tool_image(_("redo")),	wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_1_("redo",wxEmptyString));
+	tb->AddTool(ID_EDIT_UNDO,	(L""),	load_resource_tool_image((L"undo")),	wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_1_("undo",wxEmptyString));
+	tb->AddTool(ID_EDIT_REDO,	(L""),	load_resource_tool_image((L"redo")),	wxNullBitmap, wxITEM_NORMAL, _TOOLTIP_1_("redo",wxEmptyString));
 	tb->AddSeparator();
 	tb->Realize();
-	
+
 	// tab bar, sizer
 	wxToolBar* tabBar = new wxToolBar(this, ID_TAB_BAR, wxDefaultPosition, wxDefaultSize, wxTB_FLAT | wxNO_BORDER | wxTB_HORIZONTAL | wxTB_HORZ_TEXT | wxTB_NOALIGN);
 	wxSizer* s = new wxBoxSizer(wxVERTICAL);
@@ -147,17 +147,17 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
 		int style = ::SendMessage(hWND, TB_GETEXTENDEDSTYLE, 0, 0);
 		::SendMessage(hWND, TB_SETEXTENDEDSTYLE, style | LVS_EX_DOUBLEBUFFER, 0);
 	#endif
-	
+
 	// panels
-	addPanel(menuWindow, tabBar, new CardsPanel     (this, wxID_ANY), 0, _("window_cards"),      _("cards tab"));
-	addPanel(menuWindow, tabBar, new StylePanel     (this, wxID_ANY), 1, _("window_style"),      _("style tab"));
-	addPanel(menuWindow, tabBar, new SetInfoPanel   (this, wxID_ANY), 2, _("window_set_info"),   _("set info tab"));
-	addPanel(menuWindow, tabBar, new KeywordsPanel  (this, wxID_ANY), 3, _("window_keywords"),   _("keywords tab"));
-	addPanel(menuWindow, tabBar, new StatsPanel     (this, wxID_ANY), 4, _("window_statistics"), _("stats tab"));
-	addPanel(menuWindow, tabBar, new RandomPackPanel(this, wxID_ANY), 5, _("window_random_pack"),_("random pack tab"));
-	addPanel(menuWindow, tabBar, new ConsolePanel   (this, wxID_ANY), 6, _("window_console"),    _("console tab"));
+	addPanel(menuWindow, tabBar, new CardsPanel     (this, wxID_ANY), 0, (L"window_cards"),      (L"cards tab"));
+	addPanel(menuWindow, tabBar, new StylePanel     (this, wxID_ANY), 1, (L"window_style"),      (L"style tab"));
+	addPanel(menuWindow, tabBar, new SetInfoPanel   (this, wxID_ANY), 2, (L"window_set_info"),   (L"set info tab"));
+	addPanel(menuWindow, tabBar, new KeywordsPanel  (this, wxID_ANY), 3, (L"window_keywords"),   (L"keywords tab"));
+	addPanel(menuWindow, tabBar, new StatsPanel     (this, wxID_ANY), 4, (L"window_statistics"), (L"stats tab"));
+	addPanel(menuWindow, tabBar, new RandomPackPanel(this, wxID_ANY), 5, (L"window_random_pack"),(L"random pack tab"));
+	addPanel(menuWindow, tabBar, new ConsolePanel   (this, wxID_ANY), 6, (L"window_console"),    (L"console tab"));
 	selectPanel(ID_WINDOW_CARDS); // select cards panel
-	
+
 	// loose ends
 	tabBar->Realize();
 	SetSize(settings.set_window_width, settings.set_window_height);
@@ -170,7 +170,7 @@ SetWindow::SetWindow(Window* parent, const SetP& set)
 	wxUpdateUIEvent::SetMode(wxUPDATE_UI_PROCESS_SPECIFIED);
 	SetExtraStyle(wxWS_EX_PROCESS_UI_UPDATES);
 	tabBar->SetExtraStyle(wxWS_EX_PROCESS_UI_UPDATES);
-	
+
 	try {
 		setSet(set);
 	} catch (...) {
@@ -214,7 +214,7 @@ void SetWindow::addPanel(IconMenu* windowMenu, wxToolBar* tabBar, SetWindowPanel
 	String tab_help    = tr(LOCALE_CAT_TOOLTIP, name);
 	// add to tab bar
 	int id = ID_WINDOW_MIN + pos;
-	tabBar->AddTool(id, tab_name + _("   "), load_resource_tool_image(image_name), wxNullBitmap, wxITEM_CHECK, tab_help, description);
+	tabBar->AddTool(id, tab_name + (L"   "), load_resource_tool_image(image_name), wxNullBitmap, wxITEM_CHECK, tab_help, description);
 	tabBar->AddSeparator();
 	// add to menu bar
 	windowMenu->Append(id, image_name, menu_name, description, wxITEM_CHECK);
@@ -395,14 +395,14 @@ void SetWindow::onClose(wxCloseEvent& ev) {
 
 
 int ask_save_changes_impl(wxWindow* parent, String const& message, String const& title) {
-	#if defined(__WXMSW__) && defined(UNICODE) && defined(TD_WARNING_ICON) // the last one is a hack to test for precense of TASKDIALOG stuff
+	#if defined(__WXMSW__) && defined(TD_WARNING_ICON) // the last one is a hack to test for precense of TASKDIALOG stuff
 		// Do we have the TaskDialogIndirect function?
 		HMODULE h = ::LoadLibrary(L"comctl32.dll");
 		if (!h) return 0;
 		typedef HRESULT (WINAPI *type_TaskDialogIndirect)(const TASKDIALOGCONFIG *pTaskConfig, int *pnButton, int *pnRadioButton, BOOL *pfVerificationFlagChecked);
 		type_TaskDialogIndirect func_TaskDialogIndirect = !h ? nullptr : (type_TaskDialogIndirect)::GetProcAddress(h, "TaskDialogIndirect" );
 		if (!func_TaskDialogIndirect) return 0;
-		
+
 		int nButtonPressed                  = 0;
 		TASKDIALOGCONFIG config             = {0};
 		const TASKDIALOG_BUTTON buttons[]   = { { IDYES, L"&Save" }, { IDNO, L"Do&n't Save" } };
@@ -413,11 +413,11 @@ int ask_save_changes_impl(wxWindow* parent, String const& message, String const&
 		config.pButtons                     = buttons;
 		config.cButtons                     = ARRAYSIZE(buttons);
 		config.hwndParent                   = (HWND)(parent->GetHWND()); // without this the dialog is not modal
-		
+
 		func_TaskDialogIndirect(&config, &nButtonPressed, NULL, NULL);
-		
+
 		FreeLibrary(h);
-		
+
 		switch (nButtonPressed) {
 			case IDYES: return wxYES;
 			case IDNO:  return wxNO;
@@ -534,12 +534,12 @@ void SetWindow::updateRecentSets() {
 		if (i >= settings.max_recent_sets) break;
 		if (i < number_of_recent_sets) {
 			// menu item already exists, update it
-			mb->SetLabel(ID_FILE_RECENT + i, String(_("&")) << (i+1) << _(" ") << file);
+			mb->SetLabel(ID_FILE_RECENT + i, String((L"&")) << (i+1) << (L" ") << file);
 		} else {
 			// add new item
 			int pos = i + FILE_MENU_SIZE_BEFORE_RECENT_SETS; // HUGE HACK, we should calculate the position to insert!
 			IconMenu* file_menu = static_cast<IconMenu*>(mb->GetMenu(0));
-			file_menu->Insert(pos, ID_FILE_RECENT + i, String(_("&")) << (i+1) << _(" ") << file, wxEmptyString);
+			file_menu->Insert(pos, ID_FILE_RECENT + i, String((L"&")) << (i+1) << (L" ") << file, wxEmptyString);
 		}
 		i++;
 	}
@@ -558,7 +558,7 @@ void SetWindow::onFileNew(wxCommandEvent&) {
 
 void SetWindow::onFileOpen(wxCommandEvent&) {
 	if (!settings.open_sets_in_new_window && isOnlyWithSet() && !askSaveAndContinue()) return;
-	wxFileDialog dlg(this, _TITLE_("open set"), settings.default_set_dir, _(""), import_formats(), wxFD_OPEN);
+	wxFileDialog dlg(this, _TITLE_("open set"), settings.default_set_dir, (L""), import_formats(), wxFD_OPEN);
 	if (dlg.ShowModal() == wxID_OK) {
 		settings.default_set_dir = dlg.GetDirectory();
 		wxBusyCursor busy;
@@ -628,8 +628,8 @@ void SetWindow::onFileExportMenu(wxCommandEvent& ev) {
 void SetWindow::onFileExportImage(wxCommandEvent&) {
 	CardP card = current_panel->selectedCard();
 	if (!card)  return; // no card selected
-	String name = wxFileSelector(_TITLE_("save image"), settings.default_export_dir, clean_filename(card->identification()), _(""),
-		                         _("JPEG images (*.jpg)|*.jpg|Windows bitmaps (*.bmp)|*.bmp|PNG images (*.png)|*.png|TIFF images (*.tif)|*.tif"),
+	String name = wxFileSelector(_TITLE_("save image"), settings.default_export_dir, clean_filename(card->identification()), (L""),
+		                         (L"JPEG images (*.jpg)|*.jpg|Windows bitmaps (*.bmp)|*.bmp|PNG images (*.png)|*.png|TIFF images (*.tif)|*.tif"),
 		                         wxFD_SAVE | wxFD_OVERWRITE_PROMPT, this);
 	if (!name.empty()) {
 		settings.default_export_dir = wxPathOnly(name);
@@ -737,7 +737,7 @@ void SetWindow::onEditPaste(wxCommandEvent&) {
 
 void SetWindow::onEditFind(wxCommandEvent&) {
 	delete find_dialog;
-	find_dialog = new wxFindReplaceDialog(this, &find_data, _("Find"));
+	find_dialog = new wxFindReplaceDialog(this, &find_data, (L"Find"));
 	find_dialog->Show();
 }
 void SetWindow::onEditFindNext(wxCommandEvent&) {
@@ -745,7 +745,7 @@ void SetWindow::onEditFindNext(wxCommandEvent&) {
 }
 void SetWindow::onEditReplace(wxCommandEvent&) {
 	delete find_dialog;
-	find_dialog = new wxFindReplaceDialog(this, &find_data, _("Replace"), wxFR_REPLACEDIALOG);
+	find_dialog = new wxFindReplaceDialog(this, &find_data, (L"Replace"), wxFR_REPLACEDIALOG);
 	find_dialog->Show();
 }
 
@@ -866,7 +866,7 @@ BEGIN_EVENT_TABLE(SetWindow, wxFrame)
 	EVT_COMMAND_RANGE	(ID_CHILD_MIN, ID_CHILD_MAX, wxEVT_COMMAND_RADIOBUTTON_SELECTED, SetWindow::onChildMenu)
 	EVT_COMMAND_RANGE	(ID_CHILD_MIN, ID_CHILD_MAX, wxEVT_COMMAND_TEXT_UPDATED, SetWindow::onChildMenu)
 	EVT_GALLERY_SELECT  (ID_FIELD_LIST,                SetWindow::onChildMenu) // for StatsPanel, because it is not a EVT_TOOL
-	
+
 	EVT_UPDATE_UI		(wxID_ANY,				SetWindow::onUpdateUI)
 	EVT_FIND			(wxID_ANY,				SetWindow::onFind)
 	EVT_FIND_NEXT		(wxID_ANY,				SetWindow::onFindNext)

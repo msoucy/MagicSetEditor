@@ -192,11 +192,11 @@ void SetScriptManager::onAction(const Action& action, bool undone) {
 	}
 	TYPE_CASE_(action, CardListAction) {
 		#ifdef LOG_UPDATES
-			wxLogDebug(_("Card dependencies"));
+			wxLogDebug((L"Card dependencies"));
 		#endif
 		updateAllDependend(set.game->dependent_scripts_cards);
 		#ifdef LOG_UPDATES
-			wxLogDebug(_("-------------------------------\n"));
+			wxLogDebug((L"-------------------------------\n"));
 		#endif
 	}
 	TYPE_CASE_(action, KeywordListAction) {
@@ -245,7 +245,7 @@ void SetScriptManager::updateStyles(Context& ctx, const IndexMap<FieldP,StyleP>&
 			}
 		} catch (const ScriptError& e) {
 			// NOTE: don't handle errors now, we are likely in an onPaint handler
-			handle_error(ScriptError(e.what() + _("\n  while updating styles for '") + s->fieldP->name + _("'")));
+			handle_error(ScriptError(e.what() + (L"\n  while updating styles for '") + s->fieldP->name + (L"'")));
 		}
 	}
 }
@@ -264,29 +264,29 @@ void SetScriptManager::updateValue(Value& value, const CardP& card, Action const
 	value.last_modified = starting_age;
 	value.update(getContext(card), action);
 	#ifdef LOG_UPDATES
-		wxLogDebug(_("Start:     %s"), value.fieldP->name);
+		wxLogDebug((L"Start:     %s"), value.fieldP->name);
 	#endif
 	// update dependent scripts
 	alsoUpdate(to_update, value.fieldP->dependent_scripts, card);
 	updateRecursive(to_update, starting_age);
 	#ifdef LOG_UPDATES
-		wxLogDebug(_("-------------------------------\n"));
+		wxLogDebug((L"-------------------------------\n"));
 	#endif
 }
 
 void SetScriptManager::updateAll() {
 	#ifdef LOG_UPDATES
-		wxLogDebug(_("Update all"));
+		wxLogDebug((L"Update all"));
 	#endif
 	wxBusyCursor busy;
 	// update set data
 	Context& ctx = getContext(set.stylesheet);
 	for(auto& v : set.data) {
 		try {
-			PROFILER2( v->fieldP.get(), _("update set.") + v->fieldP->name );
+			PROFILER2( v->fieldP.get(), (L"update set.") + v->fieldP->name );
 			v->update(ctx);
 		} catch (const ScriptError& e) {
-			handle_error(ScriptError(e.what() + _("\n  while updating set value '") + v->fieldP->name + _("'")));
+			handle_error(ScriptError(e.what() + (L"\n  while updating set value '") + v->fieldP->name + (L"'")));
 		}
 	}
 	// update card data of all cards
@@ -296,18 +296,18 @@ void SetScriptManager::updateAll() {
 			try {
 				#if USE_SCRIPT_PROFILING
 					Timer t;
-					Profiler prof(t, v->fieldP.get(), _("update card.") + v->fieldP->name);
+					Profiler prof(t, v->fieldP.get(), (L"update card.") + v->fieldP->name);
 				#endif
 				v->update(ctx);
 			} catch (const ScriptError& e) {
-				handle_error(ScriptError(e.what() + _("\n  while updating card value '") + v->fieldP->name + _("'")));
+				handle_error(ScriptError(e.what() + (L"\n  while updating card value '") + v->fieldP->name + (L"'")));
 			}
 		}
 	}
 	// update things that depend on the card list
 	updateAllDependend(set.game->dependent_scripts_cards);
 	#ifdef LOG_UPDATES
-		wxLogDebug(_("-------------------------------\n"));
+		wxLogDebug((L"-------------------------------\n"));
 	#endif
 }
 
@@ -336,7 +336,7 @@ void SetScriptManager::updateToUpdate(const ToUpdate& u, deque<ToUpdate>& to_upd
 	try {
 		changes = u.value->update(ctx);
 	} catch (const ScriptError& e) {
-		handle_error(ScriptError(e.what() + _("\n  while updating value '") + u.value->fieldP->name + _("'")));
+		handle_error(ScriptError(e.what() + (L"\n  while updating value '") + u.value->fieldP->name + (L"'")));
 	}
 	if (changes) {
 		// changed, send event
@@ -345,12 +345,12 @@ void SetScriptManager::updateToUpdate(const ToUpdate& u, deque<ToUpdate>& to_upd
 		// u.value has changed, also update values with a dependency on u.value
 		alsoUpdate(to_update, u.value->fieldP->dependent_scripts, u.card);
 	#ifdef LOG_UPDATES
-		wxLogDebug(_("Changed: %s"), u.value->fieldP->name);
+		wxLogDebug((L"Changed: %s"), u.value->fieldP->name);
 	#endif
 	}
 	#ifdef LOG_UPDATES
 	else
-		wxLogDebug(_("Same:    %s"), u.value->fieldP->name);
+		wxLogDebug((L"Same:    %s"), u.value->fieldP->name);
 	#endif
 }
 

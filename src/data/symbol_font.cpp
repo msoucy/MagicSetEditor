@@ -35,14 +35,14 @@ SymbolFont::~SymbolFont() {
 	delete processed_insert_symbol_menu;
 }
 
-String SymbolFont::typeNameStatic() { return _("symbol-font"); }
-String SymbolFont::typeName() const { return _("symbol-font"); }
+String SymbolFont::typeNameStatic() { return (L"symbol-font"); }
+String SymbolFont::typeName() const { return (L"symbol-font"); }
 Version SymbolFont::fileVersion() const { return file_version_symbol_font; }
 
 SymbolFontP SymbolFont::byName(const String& name) {
 	return package_manager.open<SymbolFont>(
-		name.size() > 16 && is_substr(name, name.size() - 16, _(".mse-symbol-font"))
-		? name : name + _(".mse-symbol-font"));
+		name.size() > 16 && is_substr(name, name.size() - 16, (L".mse-symbol-font"))
+		? name : name + (L".mse-symbol-font"));
 }
 
 IMPLEMENT_REFLECTION(SymbolFont) {
@@ -117,7 +117,7 @@ SymbolInFont::SymbolInFont()
 Image SymbolInFont::getImage(Package& pkg, double size) {
 	// generate new image
 	if (!image.isReady()) {
-		throw Error(_("No image specified for symbol with code '") + code + _("' in symbol font."));
+		throw Error((L"No image specified for symbol with code '") + code + (L"' in symbol font."));
 	}
 	Image img = image.generate(GeneratedImage::Options(0, 0, &pkg));
 	actual_size = wxSize(img.GetWidth(), img.GetHeight());
@@ -140,7 +140,7 @@ Bitmap SymbolInFont::getBitmap(Package& pkg, double size) {
 Bitmap SymbolInFont::getBitmap(Package& pkg, wxSize size) {
 	// generate new bitmap
 	if (!image.isReady()) {
-		throw Error(_("No image specified for symbol with code '") + code + _("' in symbol font."));
+		throw Error((L"No image specified for symbol with code '") + code + (L"' in symbol font."));
 	}
 	return Bitmap( image.generate(GeneratedImage::Options(size.x, size.y, &pkg, nullptr, ASPECT_BORDER)) );
 }
@@ -211,7 +211,7 @@ void SymbolFont::split(const String& text, SplitSymbols& out) const {
 						} else {
 							out.push_back(DrawableSymbol(
 											results.str(),
-											_(""),
+											(L""),
 											*sym));
 						}
 						pos += results.length();
@@ -219,7 +219,7 @@ void SymbolFont::split(const String& text, SplitSymbols& out) const {
 					}
 				} else {
 					if (is_substr(text, pos, sym->code)) {
-						out.push_back(DrawableSymbol(sym->code, sym->draw_text >= 0 ? sym->code : _(""), *sym));
+						out.push_back(DrawableSymbol(sym->code, sym->draw_text >= 0 ? sym->code : (L""), *sym));
 						pos += sym->code.size();
 						goto next_symbol; // continue two levels
 					}
@@ -227,7 +227,7 @@ void SymbolFont::split(const String& text, SplitSymbols& out) const {
 			}
 		}
 		// unknown code, draw single character as text
-		//out.push_back(DrawableSymbol(text.substr(pos, 1), _(""), defaultSymbol()));
+		//out.push_back(DrawableSymbol(text.substr(pos, 1), (L""), defaultSymbol()));
 		pos += 1;
 next_symbol:;
 	}
@@ -263,7 +263,7 @@ next_symbol:;
 
 SymbolInFont* SymbolFont::defaultSymbol() const {
 	for(const auto& sym : symbols) {
-		if (sym->enabled && sym->regex && sym->code_regex.matches(_("0"))) return sym.get();
+		if (sym->enabled && sym->regex && sym->code_regex.matches((L"0"))) return sym.get();
 	}
 	return nullptr;
 }
@@ -461,8 +461,8 @@ String InsertSymbolMenu::getCode(int id, const SymbolFont& font) const {
 	} else if (id == 0 && type == ITEM_CODE) {
 		return name;
 	} else if (id == 0 && type == ITEM_CUSTOM) {
-		String caption = tr(font,_("title"),   name, capitalize_sentence);
-		String message = tr(font,_("message"), name, capitalize_sentence);
+		String caption = tr(font,(L"title"),   name, capitalize_sentence);
+		String message = tr(font,(L"message"), name, capitalize_sentence);
 		return wxGetTextFromUser(message, caption);
 	}
 	return wxEmptyString;
@@ -480,13 +480,13 @@ wxMenu* InsertSymbolMenu::makeMenu(int id, SymbolFont& font) const {
 	return nullptr;
 }
 wxMenuItem* InsertSymbolMenu::makeMenuItem(wxMenu* parent, int first_id, SymbolFont& font) const {
-	wxString menu_name = tr(font, _("menu item"), name, capitalize);
+	wxString menu_name = tr(font, (L"menu item"), name, capitalize);
 	// ensure that there is not actually an accelerator string,
-	menu_name.Replace(_("\t "),_("\t"));
+	menu_name.Replace((L"\t "),(L"\t"));
 	#ifdef __WXMSW__
-		menu_name.Replace(_("\t"),_("\t ")); // by prepending " "
+		menu_name.Replace((L"\t"),(L"\t ")); // by prepending " "
 	#else
-		menu_name.Replace(_("\t"),_("   ")); // by simply dropping the \t
+		menu_name.Replace((L"\t"),(L"   ")); // by simply dropping the \t
 	#endif
 	if (type == ITEM_SUBMENU) {
 		wxMenuItem* item = new wxMenuItem(parent, wxID_ANY, menu_name,
@@ -543,9 +543,9 @@ template <> void GetDefaultMember::handle(const InsertSymbolMenu& m) {
 	handle(m.name);
 }
 template <> void GetMember::handle(const InsertSymbolMenu& m) {
-	handle(_("type"),  m.type);
-	handle(_("name"),  m.name);
-	handle(_("items"), m.items);
+	handle((L"type"),  m.type);
+	handle((L"name"),  m.name);
+	handle((L"items"), m.items);
 }
 
 // ----------------------------------------------------------------------------- : SymbolFontRef
@@ -584,12 +584,12 @@ void SymbolFontRef::loadFont(Context& ctx) {
 		font = SymbolFontP();
 	} else {
 		font = SymbolFont::byName(name);
-		if (starts_with(name(),_("/:NO-WARN-DEP:"))) {
+		if (starts_with(name(),(L"/:NO-WARN-DEP:"))) {
 			// ensure the dependency on the font is present in the stylesheet this ref is in
 			// Getting this stylesheet from the context is a bit of a hack
 			// If the name starts with a ' ', no dependency is needed;
 			//  this is for packages selected with a PackageChoiceList
-			StyleSheetP stylesheet = from_script<StyleSheetP>(ctx.getVariable(_("stylesheet")));
+			StyleSheetP stylesheet = from_script<StyleSheetP>(ctx.getVariable((L"stylesheet")));
 			stylesheet->requireDependency(font.get());
 		}
 	}

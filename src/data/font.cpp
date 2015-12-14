@@ -35,8 +35,8 @@ bool Font::update(Context& ctx) {
 	     | color       .update(ctx)
 	     | shadow_color.update(ctx);
 	flags = (flags & ~FONT_BOLD & ~FONT_ITALIC)
-	      | (weight() == _("bold")   ? FONT_BOLD   : FONT_NORMAL)
-	      | (style()  == _("italic") ? FONT_ITALIC : FONT_NORMAL);
+	      | (weight() == (L"bold")   ? FONT_BOLD   : FONT_NORMAL)
+	      | (style()  == (L"italic") ? FONT_ITALIC : FONT_NORMAL);
 	return changes;
 }
 void Font::initDependencies(Context& ctx, const Dependency& dep) const {
@@ -84,9 +84,9 @@ wxFont Font::toWxFont(double scale) const {
 	wxFont font;
 	if (flags & FONT_CODE) {
 		if (size_i < 2) {
-			return wxFont(wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, weight_i, underline(), _("Courier New"));
+			return wxFont(wxNORMAL_FONT->GetPointSize(), wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, weight_i, underline(), (L"Courier New"));
 		} else {
-			font = wxFont(size_i, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, weight_i, underline(), _("Courier New"));
+			font = wxFont(size_i, wxFONTFAMILY_TELETYPE, wxFONTSTYLE_NORMAL, weight_i, underline(), (L"Courier New"));
 		}
 	} else if (name().empty()) {
 		font = *wxNORMAL_FONT;

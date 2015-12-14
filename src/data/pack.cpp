@@ -241,7 +241,7 @@ void PackInstance::generate(vector<CardP>* out) {
 
 	} else if (pack_type.select == SELECT_NO_REPLACE) {
 		if (!pack_type.items.empty()) {
-			throw Error(_("'select:no replace' is not yet supported in combination with 'items', only with 'filter'."));
+			throw Error((L"'select:no replace' is not yet supported in combination with 'items', only with 'filter'."));
 		}
 		card_copies += requested_copies;
 		// NOTE: there is no way to pick items without replacement

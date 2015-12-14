@@ -19,7 +19,7 @@ void FontTextElement::draw(RotatedDC& dc, double scale, const RealRect& rect, co
 	if ((what & draw_as) != draw_as) return; // don't draw
 	// text
 	String text = content.substr(start - this->start, end - start);
-	if (!text.empty() && text.GetChar(text.size() - 1) == _('\n')) {
+	if (!text.empty() && text.GetChar(text.size() - 1) == (L'\n')) {
 		text = text.substr(0, text.size() - 1); // don't draw last \n
 	}
 	// draw
@@ -35,7 +35,7 @@ void FontTextElement::getCharInfo(RotatedDC& dc, double scale, vector<CharInfo>&
 	size_t line_start = start; // start of the current line
 	for (size_t i = start ; i < end ; ++i) {
 		Char c = content.GetChar(i - this->start);
-		if (c == _('\n')) {
+		if (c == (L'\n')) {
 			out.push_back(CharInfo(RealSize(0, dc.GetCharHeight()), break_style, draw_as == DRAW_ACTIVE));
 			line_start = i + 1;
 			prev_width = 0;
@@ -43,7 +43,7 @@ void FontTextElement::getCharInfo(RotatedDC& dc, double scale, vector<CharInfo>&
 			RealSize s = dc.GetTextExtent(content.substr(line_start - this->start, i - line_start + 1));
 			out.push_back(CharInfo(
 			                 RealSize(s.width - prev_width, s.height),
-			                 c == _(' ') ? BREAK_SPACE : BREAK_MAYBE,
+			                 c == (L' ') ? BREAK_SPACE : BREAK_MAYBE,
 			                 draw_as == DRAW_ACTIVE // from <soft> tag
 			             ));
 			prev_width = s.width;

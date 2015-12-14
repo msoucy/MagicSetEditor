@@ -54,15 +54,15 @@ void SymbolSymmetryEditor::draw(DC& dc) {
 // ----------------------------------------------------------------------------- : UI
 
 void SymbolSymmetryEditor::initUI(wxToolBar* tb, wxMenuBar* mb) {
-	copies = new wxSpinCtrl(  tb, ID_COPIES, _("2"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 2, 10, 2);
+	copies = new wxSpinCtrl(  tb, ID_COPIES, (L"2"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 2, 10, 2);
 	copies->SetHelpText(_HELP_("copies"));
 	copies->SetSize(50, -1);
 	tb->AddSeparator();
-	tb->AddTool(ID_ADD_SYMMETRY,		_TOOL_("add symmetry"),		load_resource_tool_image(_("symmetry_add")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("add symmetry"),    _HELP_("add symmetry"));
-	tb->AddTool(ID_REMOVE_SYMMETRY,		_TOOL_("remove symmetry"),	load_resource_tool_image(_("symmetry_remove")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("remove symmetry"), _HELP_("remove symmetry"));
+	tb->AddTool(ID_ADD_SYMMETRY,		_TOOL_("add symmetry"),		load_resource_tool_image((L"symmetry_add")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("add symmetry"),    _HELP_("add symmetry"));
+	tb->AddTool(ID_REMOVE_SYMMETRY,		_TOOL_("remove symmetry"),	load_resource_tool_image((L"symmetry_remove")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("remove symmetry"), _HELP_("remove symmetry"));
 	tb->AddSeparator();
-	tb->AddTool(ID_SYMMETRY_ROTATION,	_TOOL_("rotation"),		load_resource_image(_("symmetry_rotation")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("rotation"),   _HELP_("rotation"));
-	tb->AddTool(ID_SYMMETRY_REFLECTION,	_TOOL_("reflection"),	load_resource_image(_("symmetry_reflection")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("reflection"), _HELP_("reflection"));
+	tb->AddTool(ID_SYMMETRY_ROTATION,	_TOOL_("rotation"),		load_resource_image((L"symmetry_rotation")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("rotation"),   _HELP_("rotation"));
+	tb->AddTool(ID_SYMMETRY_REFLECTION,	_TOOL_("reflection"),	load_resource_image((L"symmetry_reflection")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("reflection"), _HELP_("reflection"));
 	tb->AddSeparator();
 	tb->AddControl(copies);
 	tb->Realize();

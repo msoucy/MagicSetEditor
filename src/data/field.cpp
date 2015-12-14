@@ -37,7 +37,7 @@ Field::Field()
 	, card_list_visible(false)
 	, card_list_allow  (true)
 	, card_list_align  (ALIGN_LEFT)
-	, default_name     (_("Default"))
+	, default_name     ((L"Default"))
 	, initial          (script_default_nil)
 {}
 
@@ -87,18 +87,18 @@ template <>
 intrusive_ptr<Field> read_new<Field>(Reader& reader) {
 	// there must be a type specified
 	String type;
-	reader.handle(_("type"), type);
-	if      (type == _("text"))				return intrusive(new TextField());
-	else if (type == _("choice"))			return intrusive(new ChoiceField());
-	else if (type == _("multiple choice"))	return intrusive(new MultipleChoiceField());
-	else if (type == _("boolean"))			return intrusive(new BooleanField());
-	else if (type == _("image"))			return intrusive(new ImageField());
-	else if (type == _("symbol"))			return intrusive(new SymbolField());
-	else if (type == _("color"))			return intrusive(new ColorField());
-	else if (type == _("info"))				return intrusive(new InfoField());
-	else if (type == _("package choice"))	return intrusive(new PackageChoiceField());
+	reader.handle((L"type"), type);
+	if      (type == (L"text"))				return intrusive(new TextField());
+	else if (type == (L"choice"))			return intrusive(new ChoiceField());
+	else if (type == (L"multiple choice"))	return intrusive(new MultipleChoiceField());
+	else if (type == (L"boolean"))			return intrusive(new BooleanField());
+	else if (type == (L"image"))			return intrusive(new ImageField());
+	else if (type == (L"symbol"))			return intrusive(new SymbolField());
+	else if (type == (L"color"))			return intrusive(new ColorField());
+	else if (type == (L"info"))				return intrusive(new InfoField());
+	else if (type == (L"package choice"))	return intrusive(new PackageChoiceField());
 	else if (type.empty()) {
-		reader.warning(_ERROR_1_("expected key", _("type")));
+		reader.warning(_ERROR_1_("expected key", (L"type")));
 		throw ParseError(_ERROR_("aborting parsing"));
 	} else {
 		reader.warning(_ERROR_1_("unsupported field type", type));
@@ -141,7 +141,7 @@ void init_object(const FieldP& field, StyleP& style) {
 	if (!style) style = field->newStyle();
 }
 template <> StyleP read_new<Style>(Reader&) {
-	throw InternalError(_("IndexMap contains nullptr StyleP the application should have crashed already"));
+	throw InternalError((L"IndexMap contains nullptr StyleP the application should have crashed already"));
 }
 
 inline bool is_set(const Scriptable<double>& x) {
@@ -238,7 +238,7 @@ void Style::checkContentDependencies(Context& ctx, const Dependency& dep) const 
 
 void Style::markDependencyMember(const String& name, const Dependency& dep) const {
 	// mark dependencies on content
-	if (dep.type == DEP_DUMMY && dep.index == false && starts_with(name, _("content "))) {
+	if (dep.type == DEP_DUMMY && dep.index == false && starts_with(name, (L"content "))) {
 		// anything that starts with "content_" is a content property
 		const_cast<Dependency&>(dep).index = true;
 	}
@@ -327,7 +327,7 @@ void Reader::handle(ScriptValueP& value) {
 			String str;
 			handle(str);
 		} else {
-			throw InternalError(_("Reader::handle(ScriptValueP)"));
+			throw InternalError((L"Reader::handle(ScriptValueP)"));
 		}
 	} else {
 		// in the new system, the type is stored in the file.
@@ -380,7 +380,7 @@ String Value::toFriendlyString() const {
 	try {
 		return value->toFriendlyString();
 	} catch (...) {
-		return _("<") + value->typeName() + _(">");
+		return (L"<") + value->typeName() + (L">");
 	}
 }
 
@@ -419,7 +419,7 @@ void init_object(const FieldP& field, ValueP& value) {
 }
 
 template <> ValueP read_new<Value>(Reader&) {
-	throw InternalError(_("IndexMap contains nullptr ValueP the application should have crashed already"));
+	throw InternalError((L"IndexMap contains nullptr ValueP the application should have crashed already"));
 }
 
 void mark_dependency_member(const IndexMap<FieldP,ValueP>& value, const String& name, const Dependency& dep) {

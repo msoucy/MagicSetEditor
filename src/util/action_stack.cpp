@@ -77,14 +77,14 @@ bool ActionStack::canRedo() const {
 
 String ActionStack::undoName() const {
 	if (canUndo()) {
-		return _(" ") + capitalize(undo_actions.back()->getName(true));
+		return (L" ") + capitalize(undo_actions.back()->getName(true));
 	} else {
 		return wxEmptyString;
 	}
 }
 String ActionStack::redoName() const {
 	if (canRedo()) {
-		return _(" ") + capitalize(redo_actions.back()->getName(false));
+		return (L" ") + capitalize(redo_actions.back()->getName(false));
 	} else {
 		return wxEmptyString;
 	}

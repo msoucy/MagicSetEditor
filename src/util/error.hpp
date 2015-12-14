@@ -23,12 +23,12 @@ class Error {
   public:
 	Error(const String& message);
 	virtual ~Error();
-	
+
 	/// Return the error message
-	virtual String what() const; 
+	virtual String what() const;
 	/// Is the message (potentially) fatal?
 	virtual bool is_fatal() const { return false; }
-	
+
   protected:
 	String message; ///< The error message
 };
@@ -93,7 +93,7 @@ class ScriptParseError : public ParseError {
 	/// Filename the error was in, or an empty string
 	String filename;
 	/// Return the error message
-	virtual String what() const; 
+	virtual String what() const;
 };
 
 /// Multiple parse errors in a script
@@ -113,7 +113,7 @@ class ScriptError : public Error {
 /// "Variable not set"
 class ScriptErrorNoVariable : public ScriptError {
   public:
-	inline ScriptErrorNoVariable(const String& var) : ScriptError(_("Variable not set: ") + var) {}
+	inline ScriptErrorNoVariable(const String& var) : ScriptError((L"Variable not set: ") + var) {}
 };
 
 /// "Can't convert from A to B"
@@ -173,10 +173,10 @@ String get_stack_trace();
 		handle_error(e); \
 	} catch (const std::exception& e) { \
 		/* we don't throw std::exception ourselfs, so this is probably something serious */ \
-		String message(e.what(), IF_UNICODE(wxConvLocal, wxSTRING_MAXLEN) ); \
+		String message(e.what(), wxConvLocal); \
 		handle_error(InternalError(message)); \
 	} catch (...) { \
-		handle_error(InternalError(_("An unexpected exception occurred!"))); \
+		handle_error(InternalError((L"An unexpected exception occurred!"))); \
 	}
 
 // ----------------------------------------------------------------------------- : EOF

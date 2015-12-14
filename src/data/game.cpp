@@ -29,15 +29,15 @@ Game::Game()
 {}
 
 GameP Game::byName(const String& name) {
-	return package_manager.open<Game>(name + _(".mse-game"));
+	return package_manager.open<Game>(name + (L".mse-game"));
 }
 
 bool Game::isMagic() const {
-	return name() == _("magic");
+	return name() == (L"magic");
 }
 
-String Game::typeNameStatic() { return _("game"); }
-String Game::typeName() const { return _("game"); }
+String Game::typeNameStatic() { return (L"game"); }
+String Game::typeName() const { return (L"game"); }
 Version Game::fileVersion() const { return file_version_game; }
 
 IMPLEMENT_REFLECTION(Game) {
@@ -87,11 +87,11 @@ void Game::validate(Version v) {
 	// automatic pack if there are none
 	if (pack_types.empty()) {
 		PackTypeP pack(new PackType);
-		pack->name = _("Any card");
+		pack->name = (L"Any card");
 		pack->enabled = true;
 		pack->selectable = true;
 		pack->summary = true;
-		pack->filter = OptionalScript(_("true"));
+		pack->filter = OptionalScript((L"true"));
 		pack->select = SELECT_NO_REPLACE;
 		pack_types.push_back(pack);
 	}

@@ -68,7 +68,7 @@ String DropDownColorList::itemText(size_t item) const {
 	if (isDefault(item)) {
 		return field().default_name;
 	} else if (isCustom(item)) {
-		return _("Custom...");
+		return (L"Custom...");
 	} else {
 		return field().choices[item - hasDefault()]->name;
 	}

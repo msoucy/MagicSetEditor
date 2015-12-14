@@ -71,7 +71,7 @@ IMPLEMENT_REFLECTION_NO_SCRIPT(ColumnSettings) {
 
 GameSettings::GameSettings()
 	: sort_cards_ascending(true)
-	, images_export_filename(_("{card.name}.jpg"))
+	, images_export_filename((L"{card.name}.jpg"))
 	, images_export_conflicts(CONFLICT_NUMBER_OVERWRITE)
 	, use_auto_replace(true)
 	, pack_seed_random(true)
@@ -163,7 +163,7 @@ IMPLEMENT_REFLECTION_ENUM(PageLayoutType) {
 Settings settings;
 
 Settings::Settings()
-	: locale               (_("en"))
+	: locale               ((L"en"))
 	, set_window_maximized (false)
 	, set_window_width     (790)
 	, set_window_height    (300)
@@ -174,13 +174,13 @@ Settings::Settings()
 	, symbol_grid_snap     (false)
 	, print_layout         (LAYOUT_NO_SPACE)
 	#if USE_OLD_STYLE_UPDATE_CHECKER
-	, updates_url          (_("http://magicseteditor.sourceforge.net/updates"))
+	, updates_url          ((L"http://magicseteditor.sourceforge.net/updates"))
 	#endif
-	, package_versions_url (_("http://magicseteditor.sourceforge.net/packages"))
-	, installer_list_url   (_("http://magicseteditor.sourceforge.net/installers"))
+	, package_versions_url ((L"http://magicseteditor.sourceforge.net/packages"))
+	, installer_list_url   ((L"http://magicseteditor.sourceforge.net/installers"))
 	, check_updates        (CHECK_IF_CONNECTED)
 	, check_updates_all    (true)
-	, website_url          (_("http://magicseteditor.sourceforge.net/"))
+	, website_url          ((L"http://magicseteditor.sourceforge.net/"))
 	, install_type         (INSTALL_DEFAULT)
 {}
 
@@ -234,12 +234,12 @@ IndexMap<FieldP,ValueP>& Settings::exportOptionsFor(const ExportTemplate& export
 String user_settings_dir() {
 	String dir = getUserDataDir();
 	if (!wxDirExists(dir)) wxMkdir(dir);
-	return dir + _("/");
+	return dir + (L"/");
 }
 
 String Settings::settingsFile() {
-//	return user_settings_dir() + _("mse.config");
-	return user_settings_dir() + _("mse8.config"); // use different file during development of C++ port
+//	return user_settings_dir() + (L"mse.config");
+	return user_settings_dir() + (L"mse8.config"); // use different file during development of C++ port
 }
 
 IMPLEMENT_REFLECTION_NO_SCRIPT(Settings) {

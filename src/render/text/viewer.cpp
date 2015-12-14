@@ -535,7 +535,7 @@ bool TextViewer::prepareLinesScale(RotatedDC& dc, const vector<CharInfo>& chars,
 		bool word_too_long = false;
 		bool break_now     = false;
 		bool accept_word   = false; // the current word should be added to the line
-		bool hide_breaker  = true;  // hide the \n or _(' ') that caused a line break
+		bool hide_breaker  = true;  // hide the \n or (L' ') that caused a line break
 		if (c.break_after == BREAK_SOFT || c.break_after == BREAK_HARD || c.break_after == BREAK_LINE) {
 			break_now   = true;
 			accept_word = true;
@@ -607,7 +607,7 @@ bool TextViewer::prepareLinesScale(RotatedDC& dc, const vector<CharInfo>& chars,
 		}
 		// Breaking (ending the current line)
 		if (break_now) {
-			// remove the _('\n') or _(' ') that caused the break
+			// remove the (L'\n') or (L' ') that caused the break
 			if (hide_breaker && line.positions.size() > 1) {
 				line.positions.pop_back();
 			}

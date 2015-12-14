@@ -20,8 +20,8 @@ ScriptValueP script_local_image_file(LocalFileName const& filename);
 IMPLEMENT_VALUE_EDITOR(Image) {}
 
 bool ImageValueEditor::onLeftDClick(const RealPoint&, wxMouseEvent&) {
-	String filename = wxFileSelector(_("Open image file"), settings.default_image_dir, _(""), _(""),
-		                             _("All images|*.bmp;*.jpg;*.png;*.gif|Windows bitmaps (*.bmp)|*.bmp|JPEG images (*.jpg;*.jpeg)|*.jpg;*.jpeg|PNG images (*.png)|*.png|GIF images (*.gif)|*.gif|TIFF images (*.tif;*.tiff)|*.tif;*.tiff"),
+	String filename = wxFileSelector((L"Open image file"), settings.default_image_dir, (L""), (L""),
+		                             (L"All images|*.bmp;*.jpg;*.png;*.gif|Windows bitmaps (*.bmp)|*.bmp|JPEG images (*.jpg;*.jpeg)|*.jpg;*.jpeg|PNG images (*.png)|*.png|GIF images (*.gif)|*.gif|TIFF images (*.tif;*.tiff)|*.tif;*.tiff"),
 		                             wxOPEN, wxGetTopLevelParent(&editor()));
 	if (!filename.empty()) {
 		settings.default_image_dir = wxPathOnly(filename);
@@ -41,7 +41,7 @@ void ImageValueEditor::sliceImage(const Image& image) {
 	// clicked ok?
 	if (s.ShowModal() == wxID_OK) {
 		// store the image into the set
-		LocalFileName new_image_file = getLocalPackage().newFileName(field().name,_("")); // a new unique name in the package
+		LocalFileName new_image_file = getLocalPackage().newFileName(field().name,(L"")); // a new unique name in the package
 		Image img = s.getImage();
 		img.SaveFile(getLocalPackage().nameOut(new_image_file), wxBITMAP_TYPE_PNG); // always use PNG images, see #69. Disk space is cheap anyway.
 		addAction(value_action(valueP(), script_local_image_file(new_image_file)));

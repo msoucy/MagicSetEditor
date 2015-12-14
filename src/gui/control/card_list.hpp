@@ -52,7 +52,7 @@ struct CardSelectEvent : public wxCommandEvent {
 // ----------------------------------------------------------------------------- : CardListBase
 
 /// A list view of the cards in a set.
-/*  This class allows the cards to be sorted, and has a _('currentCard'), the selected card
+/*  This class allows the cards to be sorted, and has a (L'currentCard'), the selected card
  *  when a card is selected, it raises a CardSelectEvent, that will propage to the parent window.
  *
  *  Note: (long) pos refers to position in the sorted_list,

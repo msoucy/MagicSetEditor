@@ -31,7 +31,7 @@ GeneratedImageP ScriptValue::toImage()                      const { throw Script
 String       ScriptValue::toCode()                          const { return toString(); }
 String       ScriptValue::toFriendlyString()                const { return toString(); }
 ScriptValueP ScriptValue::do_eval(Context&, bool)           const { return delay_error(ScriptErrorConversion(typeName(), _TYPE_("function"))); }
-ScriptValueP ScriptValue::next(ScriptValueP* key_out)             { throw InternalError(_("Can't convert from ")+typeName()+_(" to iterator")); }
+ScriptValueP ScriptValue::next(ScriptValueP* key_out)             { throw InternalError((L"Can't convert from ")+typeName()+(L" to iterator")); }
 ScriptValueP ScriptValue::makeIterator()                    const { return delay_error(ScriptErrorConversion(typeName(), _TYPE_("collection"))); }
 int          ScriptValue::itemCount()                       const { throw ScriptErrorConversion(typeName(), _TYPE_("collection")); }
 CompareWhat  ScriptValue::compareAs(String& compare_str, void const*& compare_ptr) const {
@@ -124,7 +124,7 @@ ScriptValueP ScriptDelayedError::makeIterator() const                           
 // ----------------------------------------------------------------------------- : Iterators
 
 ScriptType ScriptIterator::type() const { return SCRIPT_ITERATOR; }
-String ScriptIterator::typeName() const { return _("iterator"); }
+String ScriptIterator::typeName() const { return (L"iterator"); }
 CompareWhat ScriptIterator::compareAs(String&, void const*&) const { return COMPARE_NO; }
 ScriptValueP ScriptIterator::makeIterator() const { return intrusive_from_existing(const_cast<ScriptIterator*>(this)); }
 
@@ -191,7 +191,7 @@ class ScriptBool : public ScriptValue {
 	ScriptBool(bool v) : value(v) {}
 	virtual ScriptType type() const { return SCRIPT_BOOL; }
 	virtual String typeName() const { return _TYPE_("boolean"); }
-	virtual String toString() const { return value ? _("true") : _("false"); }
+	virtual String toString() const { return value ? (L"true") : (L"false"); }
 	// bools don't autoconvert to int
 	virtual bool   toBool()   const { return value; }
   private:
@@ -230,16 +230,16 @@ ScriptValueP to_script(double v) {
 String quote_string(String const& str) {
 	String out;
 	out.reserve(str.size() + 2);
-	out += _('"');
+	out += (L'"');
 	for(const auto& c : str) {
-		if      (c == _('"') || c == _('\\')) { out += _('\\'); out += c; }
-		else if (c == _('\1')) out += _("\\<");
-		else if (c == _('\n')) out += _("\\n");
-		else if (c == _('\r')) out += _("\\r");
-		else if (c == _('\t')) out += _("\\t");
+		if      (c == (L'"') || c == (L'\\')) { out += (L'\\'); out += c; }
+		else if (c == (L'\1')) out += (L"\\<");
+		else if (c == (L'\n')) out += (L"\\n");
+		else if (c == (L'\r')) out += (L"\\r");
+		else if (c == (L'\t')) out += (L"\\t");
 		else out += c;
 	}
-	out += _('"');
+	out += (L'"');
 	return out;
 }
 
@@ -248,7 +248,7 @@ class ScriptString : public ScriptValue {
   public:
 	ScriptString(const String& v) : value(v) {}
 	virtual ScriptType type() const { return SCRIPT_STRING; }
-	virtual String typeName() const { return _TYPE_("string") + _(" (\"") + (value.size() < 30 ? value : value.substr(0,30) + _("...")) + _("\")"); }
+	virtual String typeName() const { return _TYPE_("string") + (L" (\"") + (value.size() < 30 ? value : value.substr(0,30) + (L"...")) + (L"\")"); }
 	virtual String toString() const { return value; }
 	virtual String toCode() const {
 		return quote_string(value);
@@ -275,9 +275,9 @@ class ScriptString : public ScriptValue {
 		}
 	}
 	virtual bool toBool() const {
-		if (value == _("yes") || value == _("true")) {
+		if (value == (L"yes") || value == (L"true")) {
 			return true;
-		} else if (value == _("no") || value == _("false") || value.empty()) {
+		} else if (value == (L"no") || value == (L"false") || value.empty()) {
 			return false;
 		} else {
 			throw ScriptErrorConversion(value, typeName(), _TYPE_("boolean"));
@@ -358,7 +358,7 @@ class ScriptDateTime : public ScriptValue {
 	virtual String typeName() const { return _TYPE_("date"); }
 	virtual wxDateTime toDateTime() const { return value; }
 	virtual String toString() const {
-		return value.Format(_("%Y-%m-%d %H:%M:%S"));
+		return value.Format((L"%Y-%m-%d %H:%M:%S"));
 	}
   private:
 	wxDateTime value;
@@ -377,7 +377,7 @@ class ScriptNil : public ScriptValue {
 	virtual ScriptType type() const { return SCRIPT_NIL; }
 	virtual String typeName() const { return _TYPE_("nil"); }
 	virtual String toString() const { return wxEmptyString; }
-	virtual String toCode()   const { return _("nil"); }
+	virtual String toCode()   const { return (L"nil"); }
 	virtual double toDouble() const { return 0.0; }
 	virtual int    toInt()    const { return 0; }
 	virtual bool   toBool()   const { return false; }
@@ -402,16 +402,16 @@ ScriptValueP script_default_nil(new ScriptDefault(script_nil));
 // ----------------------------------------------------------------------------- : Collection base
 
 String ScriptCollectionBase::toCode() const {
-	String ret = _("[");
+	String ret = (L"[");
 	bool first = true;
 	ScriptValueP it = makeIterator();
 	while (ScriptValueP v = it->next()) {
-		if (!first) ret += _(",");
+		if (!first) ret += (L",");
 		first = false;
 		// todo: include keys
 		ret += v->toCode();
 	}
-	ret += _("]");
+	ret += (L"]");
 	return ret;
 }
 
@@ -510,7 +510,7 @@ ScriptType ScriptClosure::type() const {
 	return SCRIPT_FUNCTION;
 }
 String ScriptClosure::typeName() const {
-	return fun->typeName() + _(" closure");
+	return fun->typeName() + (L" closure");
 }
 
 void ScriptClosure::addBinding(Variable v, const ScriptValueP& value) {
@@ -548,7 +548,7 @@ void ScriptClosure::applyBindings(Context& ctx) const {
 
 
 ScriptType ScriptRule::type() const { return SCRIPT_FUNCTION; }
-String ScriptRule::typeName() const { return fun->typeName() + _(" rule"); }
+String ScriptRule::typeName() const { return fun->typeName() + (L" rule"); }
 ScriptValueP ScriptRule::do_eval(Context& ctx, bool openScope) const {
 	return ctx.makeClosure(fun);
 }

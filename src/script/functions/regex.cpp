@@ -20,7 +20,7 @@ DECLARE_POINTER_TYPE(ScriptRegex);
 class ScriptRegex : public ScriptValue, public Regex {
   public:
 	virtual ScriptType type() const { return SCRIPT_REGEX; }
-	virtual String typeName() const { return _("regex"); }
+	virtual String typeName() const { return (L"regex"); }
 	
 	ScriptRegex(const String& code) {
 		assign(code);
@@ -34,7 +34,7 @@ class ScriptRegex : public ScriptValue, public Regex {
 			while (matches(results, begin, str.end())) {
 				Results::const_reference match = results[0];
 				String context_str(str.begin(), match.first); // before
-				context_str += _("<match>");
+				context_str += (L"<match>");
 				context_str.append(match.second, str.end()); // after
 				if (in_context->matches(context_str)) {
 					return true; // the context matches, done
@@ -83,7 +83,7 @@ struct RegexReplacer {
 			if (replacement_function) {
 				// set match results in context
 				for (UInt sub = 0 ; sub < results.size() ; ++sub) {
-					String name  = sub == 0 ? _("input") : String(_("_")) << sub;
+					String name  = sub == 0 ? (L"input") : String((L"_")) << sub;
 					ctx.setVariable(name, to_script(results.str(sub)));
 				}
 				// call
@@ -244,15 +244,15 @@ SCRIPT_FUNCTION_SIMPLIFY_CLOSURE(match_text) {
 // ----------------------------------------------------------------------------- : Init
 
 void init_script_regex_functions(Context& ctx) {
-	ctx.setVariable(_("replace"),              script_replace_text); // compatability
-	ctx.setVariable(_("replace_text"),         script_replace_text);
-	ctx.setVariable(_("filter_text"),          script_filter_text);
-	ctx.setVariable(_("break_text"),           script_break_text);
-	ctx.setVariable(_("split_text"),           script_split_text);
-	ctx.setVariable(_("match"),                script_match_text); // compatability
-	ctx.setVariable(_("match_text"),           script_match_text);
-	ctx.setVariable(_("replace_rule"),         intrusive(new ScriptRule(script_replace_text))); // compatability
-	ctx.setVariable(_("filter_rule"),          intrusive(new ScriptRule(script_filter_text))); // compatability
-	ctx.setVariable(_("break_rule"),           intrusive(new ScriptRule(script_break_text))); // compatability
-	ctx.setVariable(_("match_rule"),           intrusive(new ScriptRule(script_match_text))); // compatability
+	ctx.setVariable((L"replace"),              script_replace_text); // compatability
+	ctx.setVariable((L"replace_text"),         script_replace_text);
+	ctx.setVariable((L"filter_text"),          script_filter_text);
+	ctx.setVariable((L"break_text"),           script_break_text);
+	ctx.setVariable((L"split_text"),           script_split_text);
+	ctx.setVariable((L"match"),                script_match_text); // compatability
+	ctx.setVariable((L"match_text"),           script_match_text);
+	ctx.setVariable((L"replace_rule"),         intrusive(new ScriptRule(script_replace_text))); // compatability
+	ctx.setVariable((L"filter_rule"),          intrusive(new ScriptRule(script_filter_text))); // compatability
+	ctx.setVariable((L"break_rule"),           intrusive(new ScriptRule(script_break_text))); // compatability
+	ctx.setVariable((L"match_rule"),           intrusive(new ScriptRule(script_match_text))); // compatability
 }

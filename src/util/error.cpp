@@ -66,26 +66,26 @@ String get_stack_trace() {
 
       protected:
         virtual void OnStackFrame(const wxStackFrame& frame) {
-            m_stackTrace << wxString::Format(_("[%02d] "), frame.GetLevel());
+            m_stackTrace << wxString::Format((L"[%02d] "), frame.GetLevel());
 
             wxString name = frame.GetName();
             if ( !name.empty() ) {
-                m_stackTrace << wxString::Format(_("%-40s"), name.c_str());
+                m_stackTrace << wxString::Format((L"%-40s"), name.c_str());
             } else {
                 m_stackTrace << wxString::Format(
-                                    _("%p"),
+                                    (L"%p"),
                                     (void*)frame.GetAddress()
                                 );
             }
 
             if ( frame.HasSourceLocation() ) {
-                m_stackTrace << _('\t')
+                m_stackTrace << (L'\t')
                              << frame.GetFileName()
-                             << _(':')
+                             << (L':')
                              << (unsigned int)frame.GetLine();
             }
 
-            m_stackTrace << _('\n');
+            m_stackTrace << (L'\n');
         }
 
       private:
@@ -108,24 +108,24 @@ String get_stack_trace() {
 }
 #else
 String get_stack_trace() {
-	return _(""); // not supported
+	return (L""); // not supported
 }
 #endif // wxUSE_STACKWALKER
 
 InternalError::InternalError(const String& str)
 	: Error(
-		_("An internal error occured:\n\n") +
-		str + _("\n")
-		_("Please save your work (use 'save as' to so you don't overwrite things)\n")
-		_("and restart Magic Set Editor.\n\n")
-		_("You should leave a bug report on http://magicseteditor.sourceforge.net/\n")
-		_("Press Ctrl+C to copy this message to the clipboard.")
+		L"An internal error occured:\n\n" +
+		str + L"\n"
+		L"Please save your work (use 'save as' to so you don't overwrite things)\n"
+		L"and restart Magic Set Editor.\n\n"
+		L"You should leave a bug report on http://magicseteditor.sourceforge.net/\n"
+		L"Press Ctrl+C to copy this message to the clipboard."
 	)
 {
 	// add a stacktrace
 	const String stack_trace = get_stack_trace();
 	if (!stack_trace.empty()) {
-		message << _("\n\nCall stack:\n") << stack_trace;
+		message << (L"\n\nCall stack:\n") << stack_trace;
 	}
 }
 
@@ -136,21 +136,21 @@ ScriptParseError::ScriptParseError(size_t pos, int line, const String& filename,
 	, start(pos), end(pos), line(line), filename(filename)
 {}
 ScriptParseError::ScriptParseError(size_t pos, int line, const String& filename, const String& exp, const String& found)
-	: ParseError(_("Expected '") + exp + _("' instead of '") + found + _("'"))
+	: ParseError((L"Expected '") + exp + (L"' instead of '") + found + (L"'"))
 	, start(pos), end(pos + found.size()), line(line), filename(filename)
 {}
 ScriptParseError::ScriptParseError(size_t pos1, size_t pos2, int line, const String& filename, const String& open, const String& close, const String& found)
-	: ParseError(_("Expected closing '") + close + _("' for this '") + open + _("' instead of '") + found + _("'"))
+	: ParseError((L"Expected closing '") + close + (L"' for this '") + open + (L"' instead of '") + found + (L"'"))
 	, start(pos1), end(pos2 + found.size()), line(line), filename(filename)
 {}
 String ScriptParseError::what() const {
-	return String(_("(")) << (int)start << _("): ") << Error::what();
+	return String((L"(")) << (int)start << (L"): ") << Error::what();
 }
 
 String concat(const vector<ScriptParseError>& errors) {
 	String total;
 	for(const auto& e : errors) {
-		if (!total.empty()) total += _("\n");
+		if (!total.empty()) total += (L"\n");
 		total += e.what();
 	}
 	return total;
@@ -175,7 +175,7 @@ void queue_message(MessageType type, String const& msg) {
 	}
 	if (show_message_box_for_fatal_errors && type == MESSAGE_FATAL_ERROR && wxThread::IsMain()) {
 		// bring this to the user's attention right now!
-		wxMessageBox(msg, _("Error"), wxOK | wxICON_ERROR);
+		wxMessageBox(msg, (L"Error"), wxOK | wxICON_ERROR);
 	}
 	// Thread safety
 	wxMutexLocker lock(crit_error_handling);

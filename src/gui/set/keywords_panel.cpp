@@ -46,11 +46,11 @@ void KeywordsPanel::initControls() {
 	reminder  = new TextCtrl(panel, ID_REMINDER, true); // allow multiline for wordwrap
 	ref_param = new wxButton(panel, ID_KEYWORD_REF_PARAM, _BUTTON_("refer parameter"));
 	rules     = new TextCtrl(panel, ID_RULES,    true);
-	errors    = new wxStaticText(panel, wxID_ANY, _(""));
+	errors    = new wxStaticText(panel, wxID_ANY, (L""));
 	filter    = nullptr;
 	errors->SetForegroundColour(*wxRED);
 	// warning about fixed keywords
-	fixedL    = new wxStaticText(panel, wxID_ANY, _(""));
+	fixedL    = new wxStaticText(panel, wxID_ANY, (L""));
 	wxStaticBitmap* fixedI = new wxStaticBitmap(panel, wxID_ANY, wxArtProvider::GetBitmap(wxART_WARNING));
 	fixed = new wxBoxSizer(wxVERTICAL);
 		wxSizer* s0 = new wxBoxSizer(wxHORIZONTAL);
@@ -63,28 +63,28 @@ void KeywordsPanel::initControls() {
 	sp = new wxBoxSizer(wxVERTICAL);
 		sp->Add(fixed, 0, wxEXPAND); sp->Show(fixed,false);
 		wxSizer* s1 = new wxBoxSizer(wxVERTICAL);
-			s1->Add(new wxStaticText(panel, wxID_ANY, _LABEL_("keyword")+_(":")), 0, wxTOP, 4);
+			s1->Add(new wxStaticText(panel, wxID_ANY, _LABEL_("keyword")+(L":")), 0, wxTOP, 4);
 			s1->Add(keyword, 0, wxEXPAND | wxTOP, 2);
-			s1->Add(new wxStaticText(panel, wxID_ANY, _LABEL_("mode")+_(":")), 0, wxTOP, 2);
+			s1->Add(new wxStaticText(panel, wxID_ANY, _LABEL_("mode")+(L":")), 0, wxTOP, 2);
 			s1->Add(mode, 0, wxEXPAND | wxTOP, 2);
 		sp->Add(s1, 0, wxEXPAND | wxRIGHT, 4);
 		sp->Add(new wxStaticLine(panel), 0, wxEXPAND | wxTOP | wxBOTTOM, 8);
 		wxSizer* s2 = new wxBoxSizer(wxVERTICAL);
-			s2->Add(new wxStaticText(panel, wxID_ANY, _LABEL_("match")+_(":")), 0);
+			s2->Add(new wxStaticText(panel, wxID_ANY, _LABEL_("match")+(L":")), 0);
 			s2->Add(match, 0, wxEXPAND | wxTOP, 2);
 			s2->Add(add_param, 0, wxALIGN_LEFT | wxTOP, 2);
 		sp->Add(s2, 0, wxEXPAND | wxRIGHT, 4);
 		sp->Add(new wxStaticLine(panel), 0, wxEXPAND | wxTOP | wxBOTTOM, 8);
 		wxSizer* s3 = new wxBoxSizer(wxVERTICAL);
-			s3->Add(new wxStaticText(panel, wxID_ANY, _LABEL_("reminder")+_(":")), 0);
+			s3->Add(new wxStaticText(panel, wxID_ANY, _LABEL_("reminder")+(L":")), 0);
 			s3->Add(reminder, 1, wxEXPAND | wxTOP, 2);
 			s3->Add(ref_param, 0, wxALIGN_LEFT | wxTOP, 2);
 			s3->Add(errors,   0, wxEXPAND | wxTOP, 4);
-			//s3->Add(new wxStaticText(panel, wxID_ANY, _("Example:")), 0, wxTOP, 6);
+			//s3->Add(new wxStaticText(panel, wxID_ANY, (L"Example:")), 0, wxTOP, 6);
 		sp->Add(s3, 1, wxEXPAND | wxRIGHT, 4);
 		sp->Add(new wxStaticLine(panel), 0, wxEXPAND | wxTOP | wxBOTTOM, 8);
 		wxSizer* s4 = new wxBoxSizer(wxVERTICAL);
-			s4->Add(new wxStaticText(panel, wxID_ANY, _LABEL_("rules")+_(":")), 0);
+			s4->Add(new wxStaticText(panel, wxID_ANY, _LABEL_("rules")+(L":")), 0);
 			s4->Add(rules, 1, wxEXPAND | wxTOP, 2);
 		sp->Add(s4, 1, wxEXPAND | wxRIGHT, 4);
 	panel->SetSizer(sp);
@@ -98,7 +98,7 @@ void KeywordsPanel::initControls() {
 	s->SetSizeHints(this);
 	SetSizer(s);
 	
-	//s->Add(new wxStaticText(this, wxID_ANY, _("Sorry, no keywords for now"),wxDefaultPosition,wxDefaultSize,wxALIGN_CENTER), 1, wxALIGN_CENTER); // TODO: Remove
+	//s->Add(new wxStaticText(this, wxID_ANY, (L"Sorry, no keywords for now"),wxDefaultPosition,wxDefaultSize,wxALIGN_CENTER), 1, wxALIGN_CENTER); // TODO: Remove
 	/*	wxSizer* s2 = new wxBoxSizer(wxVERTICAL);
 			s2->Add(list_active,   1, wxEXPAND);
 			s2->Add(list_inactive, 1, wxEXPAND);*/
@@ -108,10 +108,10 @@ void KeywordsPanel::initControls() {
 		menuKeyword->Append(ID_KEYWORD_PREV,						_MENU_("previous keyword"),		_HELP_("previous keyword"));
 		menuKeyword->Append(ID_KEYWORD_NEXT,						_MENU_("next keyword"),			_HELP_("next keyword"));
 		menuKeyword->AppendSeparator();
-		menuKeyword->Append(ID_KEYWORD_ADD,		_("keyword_add"),	_MENU_("add keyword"),			_HELP_("add keyword"));
+		menuKeyword->Append(ID_KEYWORD_ADD,		(L"keyword_add"),	_MENU_("add keyword"),			_HELP_("add keyword"));
 																	// NOTE: space after "Del" prevents wx from making del an accellerator
 																	// otherwise we delete a card when delete is pressed inside the editor
-		menuKeyword->Append(ID_KEYWORD_REMOVE,	_("keyword_del"),	_MENU_("remove keyword")+_(" "),_HELP_("remove keyword"));
+		menuKeyword->Append(ID_KEYWORD_REMOVE,	(L"keyword_del"),	_MENU_("remove keyword")+(L" "),_HELP_("remove keyword"));
 }
 
 KeywordsPanel::~KeywordsPanel() {
@@ -129,8 +129,8 @@ void KeywordsPanel::initUI(wxToolBar* tb, wxMenuBar* mb) {
 		onChangeSet();
 	}
 	// Toolbar
-	tb->AddTool(ID_KEYWORD_ADD,		_(""), load_resource_tool_image(_("keyword_add")),	wxNullBitmap, wxITEM_NORMAL,_TOOLTIP_("add keyword"),	_HELP_("add keyword"));
-	tb->AddTool(ID_KEYWORD_REMOVE,	_(""), load_resource_tool_image(_("keyword_del")),	wxNullBitmap, wxITEM_NORMAL,_TOOLTIP_("remove keyword"),_HELP_("remove keyword"));
+	tb->AddTool(ID_KEYWORD_ADD,		(L""), load_resource_tool_image((L"keyword_add")),	wxNullBitmap, wxITEM_NORMAL,_TOOLTIP_("add keyword"),	_HELP_("add keyword"));
+	tb->AddTool(ID_KEYWORD_REMOVE,	(L""), load_resource_tool_image((L"keyword_del")),	wxNullBitmap, wxITEM_NORMAL,_TOOLTIP_("remove keyword"),_HELP_("remove keyword"));
 	// Filter/search textbox
 	tb->AddSeparator();
 	assert(!filter);
@@ -204,7 +204,7 @@ void KeywordsPanel::onCommand(int id) {
 			int id = ID_PARAM_REF_MIN;
 			int param = 0;
 			for(auto& p : list->getKeyword()->parameters) {
-				String item = String() << ++param << _(". ") << LEFT_ANGLE_BRACKET << p->name << RIGHT_ANGLE_BRACKET;
+				String item = String() << ++param << (L". ") << LEFT_ANGLE_BRACKET << p->name << RIGHT_ANGLE_BRACKET;
 				if (p->refer_scripts.empty()) {
 					ref_menu.Append(id++, item);
 				} else {
@@ -227,11 +227,11 @@ void KeywordsPanel::onCommand(int id) {
 			if (id >= ID_PARAM_TYPE_MIN && id < ID_PARAM_TYPE_MAX) {
 				// add parameter
 				KeywordParamP param = set->game->keyword_parameter_types.at(id - ID_PARAM_TYPE_MIN);
-				String to_insert = _("<atom-param>") + param->name + _("</atom-param>");
-				match->insert(to_insert, _("Insert parameter"));
+				String to_insert = (L"<atom-param>") + param->name + (L"</atom-param>");
+				match->insert(to_insert, (L"Insert parameter"));
 			} else if (id >= ID_PARAM_REF_MIN && id < ID_PARAM_REF_MAX) {
 				String to_insert = runRefScript(id - ID_PARAM_REF_MIN);
-				reminder->insert(to_insert, _("Use parameter"));
+				reminder->insert(to_insert, (L"Use parameter"));
 			}
 	}
 }
@@ -240,11 +240,11 @@ String KeywordsPanel::runRefScript(int find_i) {
 	int param = 0;
 	int i = 0;
 	for(auto& p : list->getKeyword()->parameters) {
-		String param_s = String(_("param")) << ++param;
+		String param_s = String((L"param")) << ++param;
 		if (p->refer_scripts.empty()) {
 			if (i++ == find_i) {
 				// found it
-				return _("{") + param_s + _("}");
+				return (L"{") + param_s + (L"}");
 			}
 		} else {
 			for(auto& r : p->refer_scripts) {

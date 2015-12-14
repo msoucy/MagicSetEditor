@@ -35,7 +35,7 @@ String serialize_for_clipboard(Package& package, T& object) {
 template <typename T>
 void deserialize_from_clipboard(T& object, Package& package, const String& data) {
 	wxStringInputStream stream(data);
-	Reader reader(stream, nullptr, _("clipboard"));
+	Reader reader(stream, nullptr, (L"clipboard"));
 	WITH_DYNAMIC_ARG(clipboard_package, &package);
 	reader.handle_greedy(object);
 }
@@ -60,7 +60,7 @@ IMPLEMENT_REFLECTION(WrappedCards) {
 }
 
 
-wxDataFormat CardsDataObject::format = _("application/x-mse-cards");
+wxDataFormat CardsDataObject::format = (L"application/x-mse-cards");
 
 CardsDataObject::CardsDataObject(const SetP& set, const vector<CardP>& cards) {
 	// set the stylesheet, so when deserializing we know whos style options we are reading
@@ -120,7 +120,7 @@ IMPLEMENT_REFLECTION(WrappedKeyword) {
 }
 
 
-wxDataFormat KeywordDataObject::format = _("application/x-mse-keyword");
+wxDataFormat KeywordDataObject::format = (L"application/x-mse-keyword");
 
 KeywordDataObject::KeywordDataObject(const SetP& set, const KeywordP& keyword) {
 	WrappedKeyword data = { set->game.get(), set->game->name(), keyword };
@@ -145,7 +145,7 @@ KeywordP KeywordDataObject::getKeyword(const SetP& set) {
 CardsOnClipboard::CardsOnClipboard(const SetP& set, const vector<CardP>& cards) {
 	// Conversion to text format
 		// TODO
-		//Add( new TextDataObject(_("card"))) 
+		//Add( new TextDataObject((L"card"))) 
 	// Conversion to bitmap format
 		if (cards.size() == 1) {
 			Add(new wxBitmapDataObject(export_bitmap(set, cards[0])));

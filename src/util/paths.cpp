@@ -22,8 +22,8 @@
 
 String getDataDir() {
 	wxFileName fn{wxStandardPaths::Get().GetExecutablePath()};
-	fn.AppendDir(_("share"));
-	fn.AppendDir(_("magicseteditor"));
+	fn.AppendDir((L"share"));
+	fn.AppendDir((L"magicseteditor"));
 	return fn.GetPath();
 }
 

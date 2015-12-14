@@ -171,7 +171,7 @@ void MultipleChoiceValueEditor::toggle(int id) {
 		bool active = select_it != selected.end() && *select_it == choice;
 		if (active) select_it++;
 		if (active != (i == id)) {
-			if (!new_value.empty()) new_value += _(", ");
+			if (!new_value.empty()) new_value += (L", ");
 			new_value += choice;
 		}
 		if (i == id) toggled_choice = choice;

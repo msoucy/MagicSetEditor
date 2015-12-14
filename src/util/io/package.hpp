@@ -48,7 +48,7 @@ class LocalFileName {
 	String toStringForWriting() const;
 	// Construct a LocalFileName based on a string read from a package.
 	// when reading from the clipboard, this will instead be a global file reference, and it is converted at this point.
-	static LocalFileName fromReadString(const String&, const String& prefix = _("image"), String const& suffix = _(""));
+	static LocalFileName fromReadString(const String&, const String& prefix = (L"image"), String const& suffix = (L""));
 	
 	inline bool empty() const {
 		return fn.empty();
@@ -355,11 +355,11 @@ template <typename T>
 inline void Package::readFile(const String& filename, T& obj)
 {
 	InputStreamP stream = openIn(filename);
-	Reader reader(*stream, dynamic_cast<Packaged*>(this), absoluteFilename() + _("/") + filename);
+	Reader reader(*stream, dynamic_cast<Packaged*>(this), absoluteFilename() + (L"/") + filename);
 	try {
 		reader.handle_greedy(obj);
 	} catch (const ParseError& err) {
-		throw FileParseError(err.what(), absoluteFilename() + _("/") + filename); // more detailed message
+		throw FileParseError(err.what(), absoluteFilename() + (L"/") + filename); // more detailed message
 	}
 }
 

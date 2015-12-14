@@ -301,7 +301,7 @@ class SinglePointRemoveAction : public Action, public IntrusivePtrBase<SinglePoi
   public:
 	SinglePointRemoveAction(const SymbolShapeP& shape, UInt position);
 	
-	virtual String getName(bool to_undo) const { return _("Delete point"); }
+	virtual String getName(bool to_undo) const { return (L"Delete point"); }
 	virtual void   perform(bool to_undo);
 	
   private:

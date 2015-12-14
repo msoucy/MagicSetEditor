@@ -63,7 +63,7 @@ GenericAddAction<T>::GenericAddAction(AddingOrRemoving ar, const T& item, const 
 				return;
 			}
 		}
-		throw InternalError(_("Item to remove not found in container"));
+		throw InternalError((L"Item to remove not found in container"));
 	}
 }
 
@@ -83,14 +83,14 @@ GenericAddAction<T>::GenericAddAction(AddingOrRemoving ar, const vector<T>& item
 			}
 		}
 		if (steps.size() != items.size()) {
-			throw InternalError(_("Item to remove not found in container"));
+			throw InternalError((L"Item to remove not found in container"));
 		}
 	}
 }
 
 template <typename T>
 String GenericAddAction<T>::getName() const {
-	String type = type_name(steps.front().item) + (steps.size() == 1 ? _("") : _("s"));
+	String type = type_name(steps.front().item) + (steps.size() == 1 ? (L"") : (L"s"));
 	return adding ? _ACTION_1_("add item", type) : _ACTION_1_("remove item", type);
 }
 

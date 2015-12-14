@@ -117,10 +117,10 @@ void resample_pass(const Image& img_in, Image& img_out, int offset_in, int offse
  *  - for each row:
  *    - each input pixel becomes a fixed amount of output (in 1<<shift fixed point math)
  *    - for each output pixel:
- *      - _('eat') input pixels until the total is 1<<shift
+ *      - (L'eat') input pixels until the total is 1<<shift
  *      - write the total to the output pixel
  *  - to ensure the sum of all the pixel amounts is exacly width<<shift an extra rest amount
- *    is _('eaten') from the first pixel;
+ *    is (L'eaten') from the first pixel;
  *
  * Uses fixed point numbers
  */

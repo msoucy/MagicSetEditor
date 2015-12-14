@@ -36,15 +36,15 @@ SymbolPartList::SymbolPartList(Window* parent, int id, SymbolPartsSelection& sel
 {
 	SetScrollRate(0, ITEM_HEIGHT+1);
 	// NOTE: this is based on the order of the SymbolShapeCombine and SymbolSymmetryType enums!
-	state_icons.Add(load_resource_image(_("icon_combine_merge")));
-	state_icons.Add(load_resource_image(_("icon_combine_subtract")));
-	state_icons.Add(load_resource_image(_("icon_combine_intersection")));
-	state_icons.Add(load_resource_image(_("icon_combine_difference")));
-	state_icons.Add(load_resource_image(_("icon_combine_overlap")));
-	state_icons.Add(load_resource_image(_("icon_combine_border")));
-	state_icons.Add(load_resource_image(_("icon_symmetry_rotation")));
-	state_icons.Add(load_resource_image(_("icon_symmetry_reflection")));
-	state_icons.Add(load_resource_image(_("icon_symbol_group")));
+	state_icons.Add(load_resource_image((L"icon_combine_merge")));
+	state_icons.Add(load_resource_image((L"icon_combine_subtract")));
+	state_icons.Add(load_resource_image((L"icon_combine_intersection")));
+	state_icons.Add(load_resource_image((L"icon_combine_difference")));
+	state_icons.Add(load_resource_image((L"icon_combine_overlap")));
+	state_icons.Add(load_resource_image((L"icon_combine_border")));
+	state_icons.Add(load_resource_image((L"icon_symmetry_rotation")));
+	state_icons.Add(load_resource_image((L"icon_symmetry_reflection")));
+	state_icons.Add(load_resource_image((L"icon_symbol_group")));
 	// view symbol
 	setSymbol(symbol);
 }
@@ -271,15 +271,11 @@ void SymbolPartList::onChar(wxKeyEvent& ev) {
 			default:
 			  // See gui/value/text.cpp
 			  #ifdef __WXMSW__
-				if (ev.GetKeyCode() >= _(' ') && ev.GetKeyCode() == (int)ev.GetRawKeyCode()) {
+				if (ev.GetKeyCode() >= (L' ') && ev.GetKeyCode() == (int)ev.GetRawKeyCode()) {
 			  #else
-				if (ev.GetKeyCode() >= _(' ') /*&& ev.GetKeyCode() == (int)ev.GetRawKeyCode()*/) {
+				if (ev.GetKeyCode() >= (L' ') /*&& ev.GetKeyCode() == (int)ev.GetRawKeyCode()*/) {
 			  #endif
-					#ifdef UNICODE
-						Char key = ev.GetUnicodeKey();
-					#else
-						Char key = (Char)ev.GetKeyCode();
-					#endif
+                    Char key = ev.GetUnicodeKey();
 					String new_name = typing_in->name;
 					new_name.insert(cursor, 1, key);
 					symbol->actions.addAction(new SymbolPartNameAction(typing_in, new_name, cursor, cursor + 1));
@@ -323,7 +319,7 @@ SymbolPartP SymbolPartList::findItem(int& i, int x, const SymbolPartP& part) {
 
 void SymbolPartList::findParent(const SymbolPart& of, SymbolGroupP& parent_out, size_t& pos_out) {
 	if (!findParent(of, symbol, parent_out, pos_out)) {
-		throw InternalError(_("Symbol part without a parent"));
+		throw InternalError((L"Symbol part without a parent"));
 	}
 }
 bool SymbolPartList::findParent(const SymbolPart& of, const SymbolGroupP& g, SymbolGroupP& parent_out, size_t& pos_out) {

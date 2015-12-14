@@ -19,7 +19,7 @@ void InfoValueViewer::draw(RotatedDC& dc) {
 	if (nativeLook()) {
 		dc.SetTextForeground(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
 		dc.SetBrush(wxSystemSettings::GetColour(wxSYS_COLOUR_APPWORKSPACE));
-		dc.SetFont(wxFont(16, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, _("Arial")));
+		dc.SetFont(wxFont(16, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, (L"Arial")));
 	} else {
 		dc.SetTextForeground(style().font.color);
 		dc.SetBrush(style().background_color);

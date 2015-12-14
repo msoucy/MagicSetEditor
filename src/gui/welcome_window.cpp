@@ -26,19 +26,19 @@
 
 WelcomeWindow::WelcomeWindow()
 	: wxFrame(nullptr, wxID_ANY, _TITLE_("magic set editor"), wxDefaultPosition, wxSize(520,380), wxDEFAULT_DIALOG_STYLE | wxTAB_TRAVERSAL | wxCLIP_CHILDREN )
-	, logo (load_resource_image(_("about")))
+	, logo (load_resource_image((L"about")))
 	#if USE_BETA_LOGO
-	, logo2(load_resource_image(_("two_beta")))
+	, logo2(load_resource_image((L"two_beta")))
 	#endif
 {
-	SetIcon(load_resource_icon(_("app")));
+	SetIcon(load_resource_icon((L"app")));
 
 	// init controls
 	#ifdef USE_HOVERBUTTON
-		wxControl* new_set   = new HoverButtonExt(this, ID_FILE_NEW,           load_resource_image(_("welcome_new")),     _BUTTON_("new set"),       _HELP_("new set"));
-		wxControl* open_set  = new HoverButtonExt(this, ID_FILE_OPEN,          load_resource_image(_("welcome_open")),    _BUTTON_("open set"),      _HELP_("open set"));
+		wxControl* new_set   = new HoverButtonExt(this, ID_FILE_NEW,           load_resource_image((L"welcome_new")),     _BUTTON_("new set"),       _HELP_("new set"));
+		wxControl* open_set  = new HoverButtonExt(this, ID_FILE_OPEN,          load_resource_image((L"welcome_open")),    _BUTTON_("open set"),      _HELP_("open set"));
 		#if !USE_OLD_STYLE_UPDATE_CHECKER
-		wxControl* updates   = new HoverButtonExt(this, ID_FILE_CHECK_UPDATES, load_resource_image(_("welcome_updates")), _BUTTON_("check updates"), _HELP_("check updates"));
+		wxControl* updates   = new HoverButtonExt(this, ID_FILE_CHECK_UPDATES, load_resource_image((L"welcome_updates")), _BUTTON_("check updates"), _HELP_("check updates"));
 		#endif
 	#else
 		wxControl* new_set   = new wxButton(this, ID_FILE_NEW,           _BUTTON_("new set"));
@@ -50,10 +50,10 @@ WelcomeWindow::WelcomeWindow()
 	wxControl* open_last = nullptr;
 	if (!settings.recent_sets.empty()) {
 		const String& filename = settings.recent_sets.front();
-		if (wxFileName::FileExists(filename) || wxFileName::DirExists(filename + _("/"))) {
+		if (wxFileName::FileExists(filename) || wxFileName::DirExists(filename + (L"/"))) {
 			#ifdef USE_HOVERBUTTON
 				wxFileName n(filename);
-				open_last       = new HoverButtonExt(this, ID_FILE_RECENT, load_resource_image(_("welcome_last")), _BUTTON_("last opened set"), _HELP_1_("last opened set", n.GetName()));
+				open_last       = new HoverButtonExt(this, ID_FILE_RECENT, load_resource_image((L"welcome_last")), _BUTTON_("last opened set"), _HELP_1_("last opened set", n.GetName()));
 			#else
 				open_last       = new wxButton(this, ID_FILE_RECENT, _BUTTON_("last opened set"));
 			#endif
@@ -92,10 +92,10 @@ void WelcomeWindow::draw(DC& dc) {
 		dc.DrawBitmap(logo2,  ws.GetWidth() - logo2.GetWidth(),      ws.GetHeight() - logo2.GetHeight());
 	#endif
 	// draw version number
-	dc.SetFont(wxFont(8, wxSWISS, wxNORMAL, wxNORMAL, false, _("Arial")));
+	dc.SetFont(wxFont(8, wxSWISS, wxNORMAL, wxNORMAL, false, (L"Arial")));
 	dc.SetTextForeground(Color(0,126,176));
 	int tw,th;
-	String version_string = _("version ") + app_version.toString() + version_suffix;
+	String version_string = (L"version ") + app_version.toString() + version_suffix;
 	dc.GetTextExtent(version_string,&tw,&th);
 	dc.DrawText(version_string, 4, ws.GetHeight()-th-4);
 }
@@ -108,7 +108,7 @@ void WelcomeWindow::onOpenSet(wxCommandEvent&) {
 		try {
 			close(import_set(dlg->GetPath()));
 		} catch (Error& e) {
-			handle_error(_("Error loading set: ") + e.what());
+			handle_error((L"Error loading set: ") + e.what());
 		}
 	}
 }
@@ -123,7 +123,7 @@ void WelcomeWindow::onOpenLast(wxCommandEvent&) {
 	try {
 		close( open_package<Set>(settings.recent_sets.front()) );
 	} catch (PackageNotFoundError& e) {
-		handle_error(_("Cannot find set ") + e.what() + _(" to open."));
+		handle_error((L"Cannot find set ") + e.what() + (L" to open."));
 		// remove this package from the recent sets, so we don't get this error again
 		settings.recent_sets.erase(settings.recent_sets.begin());
 	}
@@ -156,11 +156,11 @@ END_EVENT_TABLE  ()
 // ----------------------------------------------------------------------------- : Hover button with label
 
 HoverButtonExt::HoverButtonExt(Window* parent, int id, const wxImage& icon, const String& label, const String& sub_label)
-	: HoverButton(parent, id, _("btn"))
+	: HoverButton(parent, id, (L"btn"))
 	, icon(icon)
 	, label(label), sub_label(sub_label)
-	, font_large(14, wxSWISS, wxNORMAL, wxNORMAL, false, _("Arial"))
-	, font_small(8,  wxSWISS, wxNORMAL, wxNORMAL, false, _("Arial"))
+	, font_large(14, wxSWISS, wxNORMAL, wxNORMAL, false, (L"Arial"))
+	, font_small(8,  wxSWISS, wxNORMAL, wxNORMAL, false, (L"Arial"))
 {}
 
 void HoverButtonExt::draw(DC& dc) {

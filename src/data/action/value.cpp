@@ -113,19 +113,19 @@ TextValueAction* toggle_format_action(const TextValueP& value, const String& tag
 	String new_value;
 	String old_value = value->value->toString();
 	// Are we inside the tag we are toggling?
-	if (!is_in_tag(old_value, _("<") + tag, start_i, end_i)) {
+	if (!is_in_tag(old_value, (L"<") + tag, start_i, end_i)) {
 		// we are not inside this tag, add it
 		new_value =  old_value.substr(0, start_i);
-		new_value += _("<") + tag + _(">");
+		new_value += (L"<") + tag + (L">");
 		new_value += old_value.substr(start_i, end_i - start_i);
-		new_value += _("</") + tag + _(">");
+		new_value += (L"</") + tag + (L">");
 		new_value += old_value.substr(end_i);
 	} else {
 		// we are inside this tag, 'remove' it
 		new_value =  old_value.substr(0, start_i);
-		new_value += _("</") + tag + _(">");
+		new_value += (L"</") + tag + (L">");
 		new_value += old_value.substr(start_i, end_i - start_i);
-		new_value += _("<") + tag + _(">");
+		new_value += (L"<") + tag + (L">");
 		new_value += old_value.substr(end_i);
 	}
 	// Build action
@@ -167,16 +167,16 @@ TextToggleReminderAction::TextToggleReminderAction(const TextValueP& value, size
 	: ValueAction(value)
 {
 	String old_value = value->value->toString();
-	pos = in_tag(old_value, _("<kw-"), pos_in, pos_in);
+	pos = in_tag(old_value, (L"<kw-"), pos_in, pos_in);
 	if (pos == String::npos) {
-		throw InternalError(_("TextToggleReminderAction: not in <kw- tag"));
+		throw InternalError((L"TextToggleReminderAction: not in <kw- tag"));
 	}
 	Char c = old_value.GetChar(pos + 4);
-	enable = !(c == _('1') || c == _('A')); // if it was not enabled, then enable it
-	old = enable ? _('1') : _('0');
+	enable = !(c == (L'1') || c == (L'A')); // if it was not enabled, then enable it
+	old = enable ? (L'1') : (L'0');
 }
 String TextToggleReminderAction::getName(bool to_undo) const {
-	return enable ? _("Show reminder text") : _("Hide reminder text");
+	return enable ? (L"Show reminder text") : (L"Hide reminder text");
 }
 
 void TextToggleReminderAction::perform(bool to_undo) {
@@ -199,7 +199,7 @@ void TextToggleReminderAction::perform(bool to_undo) {
 
 String ScriptValueEvent::getName(bool) const {
 	assert(false); // this action is just an event, getName shouldn't be called
-	throw InternalError(_("ScriptValueEvent::getName"));
+	throw InternalError((L"ScriptValueEvent::getName"));
 }
 void ScriptValueEvent::perform(bool) {
 	assert(false); // this action is just an event, it should not be performed
@@ -208,7 +208,7 @@ void ScriptValueEvent::perform(bool) {
 
 String ScriptStyleEvent::getName(bool) const {
 	assert(false); // this action is just an event, getName shouldn't be called
-	throw InternalError(_("ScriptStyleEvent::getName"));
+	throw InternalError((L"ScriptStyleEvent::getName"));
 }
 void ScriptStyleEvent::perform(bool) {
 	assert(false); // this action is just an event, it should not be performed

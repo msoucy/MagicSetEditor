@@ -147,8 +147,8 @@ bool KeywordList::doDelete() {
 String match_string(const Keyword& a) {
 	return untag(replace_all(replace_all(
 	            a.match,
-		         _("<atom-param>"), LEFT_ANGLE_BRACKET),
-		        _("</atom-param>"), RIGHT_ANGLE_BRACKET)
+		         (L"<atom-param>"), LEFT_ANGLE_BRACKET),
+		        (L"</atom-param>"), RIGHT_ANGLE_BRACKET)
 	       );
 }
 
@@ -198,7 +198,7 @@ String KeywordList::OnGetItemText (long pos, long col) const {
 		case 0:		return kw.keyword;
 		case 1:		return match_string(kw);
 		case 2:		return kw.mode;
-		case 3:		return String::Format(_("%d"), usage(kw));
+		case 3:		return String::Format((L"%d"), usage(kw));
 		case 4: {
 			// convert all whitespace to ' '
 			String formatted;
@@ -209,7 +209,7 @@ String KeywordList::OnGetItemText (long pos, long col) const {
 					seen_space = true;
 				} else {
 					if (seen_space) {
-						formatted += _(' ');
+						formatted += (L' ');
 						seen_space = false;
 					}
 					formatted += c;
@@ -240,12 +240,12 @@ wxListItemAttr* KeywordList::OnGetItemAttr(long pos) const {
 
 void KeywordList::onContextMenu(wxContextMenuEvent&) {
 	IconMenu m;
-	m.Append(ID_EDIT_CUT,		_("cut"),			_CONTEXT_MENU_("cut"),				_HELP_("cut keyword"));
-	m.Append(ID_EDIT_COPY,		_("copy"),			_CONTEXT_MENU_("copy"),				_HELP_("copy keyword"));
-	m.Append(ID_EDIT_PASTE,		_("paste"),			_CONTEXT_MENU_("paste"),			_HELP_("paste keyword"));
+	m.Append(ID_EDIT_CUT,		(L"cut"),			_CONTEXT_MENU_("cut"),				_HELP_("cut keyword"));
+	m.Append(ID_EDIT_COPY,		(L"copy"),			_CONTEXT_MENU_("copy"),				_HELP_("copy keyword"));
+	m.Append(ID_EDIT_PASTE,		(L"paste"),			_CONTEXT_MENU_("paste"),			_HELP_("paste keyword"));
 	m.AppendSeparator();
-	m.Append(ID_KEYWORD_ADD,	_("keyword_add"),	_CONTEXT_MENU_("add keyword"),		_HELP_("add keyword"));
-	m.Append(ID_KEYWORD_REMOVE,	_("keyword_del"),	_CONTEXT_MENU_("remove keyword"),	_HELP_("remove keyword"));
+	m.Append(ID_KEYWORD_ADD,	(L"keyword_add"),	_CONTEXT_MENU_("add keyword"),		_HELP_("add keyword"));
+	m.Append(ID_KEYWORD_REMOVE,	(L"keyword_del"),	_CONTEXT_MENU_("remove keyword"),	_HELP_("remove keyword"));
 	PopupMenu(&m);
 }
 

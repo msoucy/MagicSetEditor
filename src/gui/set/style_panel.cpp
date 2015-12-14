@@ -88,7 +88,7 @@ bool StylePanel::Layout() {
 
 void StylePanel::onChangeSet() {
 	if (!isInitialized()) return;
-	list->showData<StyleSheet>(set->game->name() + _("-*"));
+	list->showData<StyleSheet>(set->game->name() + (L"-*"));
 	list->select(set->stylesheet->name(), false);
 	editor->setSet(set);
 	preview->setSet(set);
@@ -167,7 +167,7 @@ void StylePanel::onStyleSelect(wxCommandEvent&) {
 	if (list->hasSelection() && card) {
 		StyleSheetP stylesheet = list->getSelection<StyleSheet>();
 		if (stylesheet->game != set->game) {
-			throw PackageError(_("Stylesheet made for the wrong game"));
+			throw PackageError((L"Stylesheet made for the wrong game"));
 		}
 		if (stylesheet == set->stylesheet) {
 			// select no special style when selecting the same style as the set default

@@ -51,7 +51,7 @@ ReorderCardsAction::ReorderCardsAction(Set& set, size_t card_id1, size_t card_id
 {}
 
 String ReorderCardsAction::getName(bool to_undo) const {
-	return _("Reorder cards");
+	return (L"Reorder cards");
 }
 
 void ReorderCardsAction::perform(bool to_undo) {
@@ -70,7 +70,7 @@ void ReorderCardsAction::perform(bool to_undo) {
 
 String DisplayChangeAction::getName(bool to_undo) const {
 	assert(false);
-	return _("");
+	return (L"");
 }
 void DisplayChangeAction::perform(bool to_undo) {
 	assert(false);
@@ -81,7 +81,7 @@ ChangeCardStyleAction::ChangeCardStyleAction(const CardP& card, const StyleSheet
 	: card(card), stylesheet(stylesheet), has_styling(false) // styling_data(empty)
 {}
 String ChangeCardStyleAction::getName(bool to_undo) const {
-	return _("Change style");
+	return (L"Change style");
 }
 void ChangeCardStyleAction::perform(bool to_undo) {
 	swap(card->stylesheet,   stylesheet);
@@ -94,7 +94,7 @@ ChangeSetStyleAction::ChangeSetStyleAction(Set& set, const CardP& card)
 	: set(set), card(card)
 {}
 String ChangeSetStyleAction::getName(bool to_undo) const {
-	return _("Change style (all cards)");
+	return (L"Change style (all cards)");
 }
 void ChangeSetStyleAction::perform(bool to_undo) {
 	if (!to_undo) {
@@ -130,7 +130,7 @@ ChangeCardHasStylingAction::ChangeCardHasStylingAction(Set& set, const CardP& ca
 	}
 }
 String ChangeCardHasStylingAction::getName(bool to_undo) const {
-	return _("Use custom style");
+	return (L"Use custom style");
 }
 void ChangeCardHasStylingAction::perform(bool to_undo) {
 	card->has_styling = !card->has_styling;

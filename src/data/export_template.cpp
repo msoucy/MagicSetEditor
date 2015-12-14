@@ -16,16 +16,16 @@
 // ----------------------------------------------------------------------------- : Export template, basics
 
 ExportTemplate::ExportTemplate()
-	: file_type(_("HTML files (*.html)|*.html"))
+	: file_type((L"HTML files (*.html)|*.html"))
 	, create_directory(false)
 {}
 
 ExportTemplateP ExportTemplate::byName(const String& name) {
-	return package_manager.open<ExportTemplate>(add_extension(name, _(".mse-export-template")));
+	return package_manager.open<ExportTemplate>(add_extension(name, (L".mse-export-template")));
 }
 
-String ExportTemplate::typeNameStatic() { return _("export-template"); }
-String ExportTemplate::typeName() const { return _("export-template"); }
+String ExportTemplate::typeNameStatic() { return (L"export-template"); }
+String ExportTemplate::typeName() const { return (L"export-template"); }
 Version ExportTemplate::fileVersion() const { return file_version_export_template; }
 
 void ExportTemplate::validate(Version) {

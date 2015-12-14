@@ -122,13 +122,13 @@ class TokenIterator {
 
 // ----------------------------------------------------------------------------- : Characters
 
-bool isAlpha_(Char c) { return isAlpha(c) || c==_('_'); }
-bool isAlnum_(Char c) { return isAlnum(c) || c==_('_'); }
-bool isOper  (Char c) { return wxStrchr(_("+-*/!.@%^&:=<>;,"),c) != nullptr; }
-bool isLparen(Char c) { return c==_('(') || c==_('[') || c==_('{'); }
-bool isRparen(Char c) { return c==_(')') || c==_(']') || c==_('}'); }
-bool isDigitOrDot(Char c) { return isDigit(c) || c==_('.'); }
-bool isLongOper(const String& s) { return s==_(":=") || s==_("==") || s==_("!=") || s==_("<=") || s==_(">="); }
+bool isAlpha_(Char c) { return isAlpha(c) || c==(L'_'); }
+bool isAlnum_(Char c) { return isAlnum(c) || c==(L'_'); }
+bool isOper  (Char c) { return wxStrchr((L"+-*/!.@%^&:=<>;,"),c) != nullptr; }
+bool isLparen(Char c) { return c==(L'(') || c==(L'[') || c==(L'{'); }
+bool isRparen(Char c) { return c==(L')') || c==(L']') || c==(L'}'); }
+bool isDigitOrDot(Char c) { return isDigit(c) || c==(L'.'); }
+bool isLongOper(const String& s) { return s==(L":=") || s==(L"==") || s==(L"!=") || s==(L"<=") || s==(L">="); }
 
 // ----------------------------------------------------------------------------- : Tokenizing
 
@@ -162,7 +162,7 @@ const Token& TokenIterator::read() {
 void TokenIterator::putBack() {
 	// Don't use addToken, because it canges newline
 	// Also, we want to push_front
-	Token t = {TOK_DUMMY, _(""), false};
+	Token t = {TOK_DUMMY, (L""), false};
 	buffer.insert(buffer.begin(), t);
 }
 
@@ -183,22 +183,22 @@ void TokenIterator::readToken() {
 			more.pop();
 		} else {
 			// EOF
-			addToken(TOK_EOF, _("end of input"), input.size());
+			addToken(TOK_EOF, (L"end of input"), input.size());
 		}
 		return;
 	}
 	// read a character from the input
 	Char c = input.GetChar(pos++);
-	if (c == _('\n')) {
+	if (c == (L'\n')) {
 		newline = true;
 	} else if (isSpace(c)) {
 		// ignore
-	} else if (is_substr(input, pos-1, _("include file:"))) {
+	} else if (is_substr(input, pos-1, (L"include file:"))) {
 		// include a file
 		// HACK: This is not really the right place for it, but it's the best I've got
 		// filename
 		pos += 12; // "nclude file:"
-		size_t eol = input.find_first_of(_("\r\n"), pos);
+		size_t eol = input.find_first_of((L"\r\n"), pos);
 		if (eol == String::npos) eol = input.size();
 		String include_file = trim(input.substr(pos, eol - pos));
 		// store the current input for later retrieval
@@ -209,7 +209,7 @@ void TokenIterator::readToken() {
 		filename = include_file;
 		InputStreamP is = package_manager.openFileFromPackage(package, include_file);
 		input = read_utf8_line(*is, true, true);
-	} else if (isAlpha(c) || c == _('_') || (isDigit(c) && !buffer.empty() && buffer.back() == _("."))) {
+	} else if (isAlpha(c) || c == (L'_') || (isDigit(c) && !buffer.empty() && buffer.back() == (L"."))) {
 		// name, or a number after a . token, as in array.0
 		size_t start = pos - 1;
 		while (pos < input.size() && isAlnum_(input.GetChar(pos))) ++pos;
@@ -232,14 +232,14 @@ void TokenIterator::readToken() {
 		} else {
 			addToken(TOK_OPER, input.substr(pos - 1, 1), pos-1);
 		}
-	} else if (c==_('"')) {
+	} else if (c==(L'"')) {
 		// string
 		open_braces.push(BRACE_STRING);
 		readStringToken();
-	} else if (c == _('}') && !open_braces.empty() && open_braces.top() != BRACE_PAREN) {
+	} else if (c == (L'}') && !open_braces.empty() && open_braces.top() != BRACE_PAREN) {
 		// closing smart string, resume to string parsing
 		//   "a{e}b"  -->  "a"  "{  e  }"  "b"
-		addToken(TOK_RPAREN, _("}\""), pos-1);
+		addToken(TOK_RPAREN, (L"}\""), pos-1);
 		readStringToken();
 	} else if (isLparen(c)) {
 		// paranthesis/brace
@@ -249,11 +249,11 @@ void TokenIterator::readToken() {
 		// paranthesis/brace
 		if (!open_braces.empty()) open_braces.pop();
 		addToken(TOK_RPAREN, String(1,c), pos-1);
-	} else if(c==_('#')) {
+	} else if(c==(L'#')) {
 		// comment untill end of line
-		while (pos < input.size() && input[pos] != _('\n')) ++pos;
+		while (pos < input.size() && input[pos] != (L'\n')) ++pos;
 	} else {
-		add_error(_("Unknown character in script: '") + String(1,c) + _("'"));
+		add_error((L"Unknown character in script: '") + String(1,c) + (L"'"));
 		// just skip the character
 	}
 }
@@ -268,7 +268,7 @@ void TokenIterator::readStringToken() {
 				addToken(TOK_STRING, str, start);
 				return;
 			} else {
-				add_error(_("Unexpected end of input in string constant"));
+				add_error((L"Unexpected end of input in string constant"));
 				// fix up
 				addToken(TOK_STRING, str, start);
 				return;
@@ -276,45 +276,45 @@ void TokenIterator::readStringToken() {
 		}
 		Char c = input.GetChar(pos++);
 		// parse the string constant
-		if (c == _('"') && !open_braces.empty() && open_braces.top() == BRACE_STRING) {
+		if (c == (L'"') && !open_braces.empty() && open_braces.top() == BRACE_STRING) {
 			// end of string
 			addToken(TOK_STRING, str, start);
 			open_braces.pop();
 			return;
-		} else if (c == _('\\')) {
+		} else if (c == (L'\\')) {
 			// escape
 			if (pos >= input.size()) {
-				add_error(_("Unexpected end of input in string constant"));
+				add_error((L"Unexpected end of input in string constant"));
 				// fix up
 				addToken(TOK_STRING, str, start);
 				return;
 			}
 			c = input.GetChar(pos++);
-			if      (c == _('n')) str += _('\n');
-			else if (c == _('r')) str += _('\r');
-			else if (c == _('t')) str += _('\t');
-			else if (c == _('&')); // escape for nothing
-			else if (c == _('<')) str += _('\1'); // escape for <
-			else if (c == _('\\') || c == _('"') || c == _('\'') || c == _('{') || c == _('}')) {
+			if      (c == (L'n')) str += (L'\n');
+			else if (c == (L'r')) str += (L'\r');
+			else if (c == (L't')) str += (L'\t');
+			else if (c == (L'&')); // escape for nothing
+			else if (c == (L'<')) str += (L'\1'); // escape for <
+			else if (c == (L'\\') || c == (L'"') || c == (L'\'') || c == (L'{') || c == (L'}')) {
 				str += c; // \ or { or " or ', don't warn about these, since they look escape-worthy
-			} else if (c >= _('0') && c <= _('9')) {
+			} else if (c >= (L'0') && c <= (L'9')) {
 				// numeric escape
 				int i = 0;
-				while (c >= _('0') && c <= _('9')) {
-					i = i * 10 + static_cast<int>(c - _('0'));
+				while (c >= (L'0') && c <= (L'9')) {
+					i = i * 10 + static_cast<int>(c - (L'0'));
 					c = input.GetChar(pos++);
 				}
 				pos--;
 				str += static_cast<Char>(i); // ignore
 			} else {
-				add_error(String::Format(_("Invalid string escape sequence: \"\\%c\""),c));
-				str += _('\\') + c; // ignore
+				add_error(String::Format((L"Invalid string escape sequence: \"\\%c\""),c));
+				str += (L'\\') + c; // ignore
 			}
-		} else if (c == _('{')) {
+		} else if (c == (L'{')) {
 			// smart string
 			//   "a{e}b"  -->  "a"  "{  e  }"  "b"
 			addToken(TOK_STRING, str, start);
-			addToken(TOK_LPAREN, _("\"{"), pos-1);
+			addToken(TOK_LPAREN, (L"\"{"), pos-1);
 			return;
 		} else {
 			str += c;
@@ -325,7 +325,7 @@ void TokenIterator::readStringToken() {
 int line_number(size_t pos, const String& input) {
 	int line = 1;
 	for (size_t i = 0 ; i < input.size() && i < pos ; ++i) {
-		if (input.GetChar(i) == _('\n')) line++;
+		if (input.GetChar(i) == (L'\n')) line++;
 	}
 	return line;
 }
@@ -416,7 +416,7 @@ ScriptP parse(const String& s, Packaged* package, bool string_mode, vector<Scrip
 	ExprType type = parseOper(input, *script, PREC_ALL);
 	Token eof = input.read();
 	if (eof != TOK_EOF) {
-		input.expected(_("end of input"));
+		input.expected((L"end of input"));
 	}
 	// were there fatal errors?
 	if (type == EXPR_FAILED) {
@@ -449,26 +449,26 @@ bool expectToken(TokenIterator& input, const Char* expect, const Token* opening 
 
 ExprType parseExpr(TokenIterator& input, Script& script, Precedence minPrec) {
 	Token token = input.read();
-	if (token == _("(")) {
+	if (token == (L"(")) {
 		// Parentheses = grouping for precedence of expressions
 		ExprType type = parseOper(input, script, PREC_ALL);
-		expectToken(input, _(")"), &token);
+		expectToken(input, (L")"), &token);
 		return type;
-	} else if (token == _("{")) {
+	} else if (token == (L"{")) {
 		// {} = function block. Parse a new Script
 		intrusive_ptr<Script> subScript(new Script);
 		ExprType t = parseOper(input, *subScript, PREC_ALL);
 		if (t == EXPR_STATEMENT) {
-			input.add_error(_("Warning: last statement of a function should be an expression, i.e. it should return a result in all cases."));
+			input.add_error((L"Warning: last statement of a function should be an expression, i.e. it should return a result in all cases."));
 		}
-		expectToken(input, _("}"), &token);
+		expectToken(input, (L"}"), &token);
 		script.addInstruction(I_PUSH_CONST, subScript);
-	} else if (token == _("[")) {
+	} else if (token == (L"[")) {
 		// [] = list or map literal
 		unsigned int count = 0;
 		Token t = input.peek();
-		while (t != _("]") && t != TOK_EOF) {
-			if (input.peek(2) == _(":") && (t.type == TOK_NAME || t.type == TOK_INT || t.type == TOK_STRING)) {
+		while (t != (L"]") && t != TOK_EOF) {
+			if (input.peek(2) == (L":") && (t.type == TOK_NAME || t.type == TOK_INT || t.type == TOK_STRING)) {
 				// name: ...
 				script.addInstruction(I_PUSH_CONST, to_script(t.value));
 				input.read(); // skip the name
@@ -480,34 +480,34 @@ ExprType parseExpr(TokenIterator& input, Script& script, Precedence minPrec) {
 			parseOper(input, script, PREC_AND);
 			++count;
 			t = input.peek();
-			if (t == _(",")) {
+			if (t == (L",")) {
 				// Comma separating the elements
 				input.read();
 				t = input.peek();
 			}
 		}
-		expectToken(input, _("]"), &token);
+		expectToken(input, (L"]"), &token);
 		script.addInstruction(I_MAKE_OBJECT, count);
-	} else if (minPrec <= PREC_UNARY && token == _("-")) {
+	} else if (minPrec <= PREC_UNARY && token == (L"-")) {
 		parseOper(input, script, PREC_UNARY, I_UNARY, I_NEGATE); // unary negation
 	} else if (token == TOK_NAME) {
-		if (minPrec <= PREC_UNARY && token == _("not")) {
+		if (minPrec <= PREC_UNARY && token == (L"not")) {
 			parseOper(input, script, PREC_UNARY, I_UNARY, I_NOT); // unary not
-		} else if (token == _("true")) {
+		} else if (token == (L"true")) {
 			script.addInstruction(I_PUSH_CONST, script_true); // boolean constant : true
-		} else if (token == _("false")) {
+		} else if (token == (L"false")) {
 			script.addInstruction(I_PUSH_CONST, script_false); // boolean constant : false
-		} else if (token == _("nil")) {
+		} else if (token == (L"nil")) {
 			script.addInstruction(I_PUSH_CONST, script_nil); // universal constant : nil
-		} else if (token == _("if")) {
+		} else if (token == (L"if")) {
 			// if AAA then BBB else CCC
 			parseOper(input, script, PREC_AND);							// AAA
 			unsigned jmpElse = script.addInstruction(I_JUMP_IF_NOT);	//		jnz lbl_else
-			expectToken(input, _("then"));								// then
+			expectToken(input, (L"then"));								// then
 			ExprType type1 = parseOper(input, script, PREC_SET);		// BBB
 			unsigned jmpEnd = script.addInstruction(I_JUMP);			//		jump lbl_end
 			script.comeFrom(jmpElse);									//		lbl_else:
-			bool has_else = input.peek() == _("else");					//else
+			bool has_else = input.peek() == (L"else");					//else
 			ExprType type2 = EXPR_STATEMENT;
 			if (has_else) {
 				input.read();
@@ -517,10 +517,10 @@ ExprType parseExpr(TokenIterator& input, Script& script, Precedence minPrec) {
 			}
 			script.comeFrom(jmpEnd);									//		lbl_end:
 			return type1 == EXPR_STATEMENT || type2 == EXPR_STATEMENT ? EXPR_STATEMENT : EXPR_OTHER;
-		} else if (token == _("for")) {
+		} else if (token == (L"for")) {
 			// the loop body should have a net stack effect of 0, but the entire expression of +1
 			// solution: add all results from the body, start with nil
-			bool is_each = input.peek() == _("each");
+			bool is_each = input.peek() == (L"each");
 			if (is_each) {
 				// for each AAA(:BBB) in CCC do EEE
 				input.read();										// each?
@@ -530,18 +530,18 @@ ExprType parseExpr(TokenIterator& input, Script& script, Precedence minPrec) {
 			// name
 			Token name = input.read();								// AAA
 			if (name != TOK_NAME) {
-				input.expected(_("name"));
+				input.expected((L"name"));
 				return EXPR_FAILED;
 			}
 			Variable var = string_to_variable(name.value);
 			// key:value?
-			bool with_key = input.peek() == _(":");
+			bool with_key = input.peek() == (L":");
 			Variable key = (Variable)-1;
 			if (with_key) {
 				input.read();										// :
 				name = input.read();								// BBB
 				if (name != TOK_NAME) {
-					input.expected(_("name"));
+					input.expected((L"name"));
 					return EXPR_FAILED;
 				}
 				key = string_to_variable(name.value);
@@ -549,13 +549,13 @@ ExprType parseExpr(TokenIterator& input, Script& script, Precedence minPrec) {
 			}
 			// iterator
 			if (is_each) {
-				expectToken(input, _("in"));						// in
+				expectToken(input, (L"in"));						// in
 				parseOper(input, script, PREC_AND);					// CCC
 				script.addInstruction(I_UNARY, I_ITERATOR_C);		//		iterator_collection
 			} else {
-				expectToken(input, _("from"));						// from
+				expectToken(input, (L"from"));						// from
 				parseOper(input, script, PREC_AND);					// CCC
-				expectToken(input, _("to"));						// to
+				expectToken(input, (L"to"));						// to
 				parseOper(input, script, PREC_AND);					// DDD
 				script.addInstruction(I_BINARY, I_ITERATOR_R);		//		iterator_range
 			}
@@ -563,7 +563,7 @@ ExprType parseExpr(TokenIterator& input, Script& script, Precedence minPrec) {
 			unsigned lblStart = script.addInstruction(with_key
 									? I_LOOP_WITH_KEY				//		lbl_start: loop_with_key lbl_end
 									: I_LOOP);						//		lbl_start: loop lbl_end
-			expectToken(input, _("do"));							// do
+			expectToken(input, (L"do"));							// do
 			if (with_key) {
 				script.addInstruction(I_SET_VAR, key);				//		set key_name
 				script.addInstruction(I_POP);						//		 pop
@@ -573,54 +573,54 @@ ExprType parseExpr(TokenIterator& input, Script& script, Precedence minPrec) {
 			parseOper(input, script, PREC_SET, I_BINARY, I_ADD);	// EEE;	add
 			script.addInstruction(I_JUMP, lblStart);				//		jump lbl_start
 			script.comeFrom(lblStart);								//		lbl_end:
-		} else if (token == _("rgb")) {
+		} else if (token == (L"rgb")) {
 			// rgb(r, g, b)
-			expectToken(input, _("("));
+			expectToken(input, (L"("));
 			parseOper(input, script, PREC_ALL); // r
-			expectToken(input, _(","));
+			expectToken(input, (L","));
 			parseOper(input, script, PREC_ALL); // g
-			expectToken(input, _(","));
+			expectToken(input, (L","));
 			parseOper(input, script, PREC_ALL); // b
-			expectToken(input, _(")"));
+			expectToken(input, (L")"));
 			script.addInstruction(I_TERNARY, I_RGB);
-		} else if (token == _("rgba")) {
+		} else if (token == (L"rgba")) {
 			// rgba(r, g, b, a)
-			expectToken(input, _("("));
+			expectToken(input, (L"("));
 			parseOper(input, script, PREC_ALL); // r
-			expectToken(input, _(","));
+			expectToken(input, (L","));
 			parseOper(input, script, PREC_ALL); // g
-			expectToken(input, _(","));
+			expectToken(input, (L","));
 			parseOper(input, script, PREC_ALL); // b
-			expectToken(input, _(","));
+			expectToken(input, (L","));
 			parseOper(input, script, PREC_ALL); // a
-			expectToken(input, _(")"));
+			expectToken(input, (L")"));
 			script.addInstruction(I_QUATERNARY, I_RGBA);
-		} else if (token == _("min") || token == _("max")) {
+		} else if (token == (L"min") || token == (L"max")) {
 			// min(x,y,z,...)
-			unsigned int op = token == _("min") ? I_MIN : I_MAX;
-			expectToken(input, _("("));
+			unsigned int op = token == (L"min") ? I_MIN : I_MAX;
+			expectToken(input, (L"("));
 			parseOper(input, script, PREC_ALL); // first
-			while(input.peek() == _(",")) {
-				expectToken(input, _(","));
+			while(input.peek() == (L",")) {
+				expectToken(input, (L","));
 				parseOper(input, script, PREC_ALL); // second, third, etc.
 				script.addInstruction(I_BINARY, op);
 			}
-			expectToken(input, _(")"), &token);
-		} else if (token == _("assert")) {
+			expectToken(input, (L")"), &token);
+		} else if (token == (L"assert")) {
 			// assert(condition)
-			expectToken(input, _("("));
+			expectToken(input, (L"("));
 			size_t start = input.peek().pos;
 			int line = input.getLineNumber();
 			size_t function_pos = script.getConstants().size();
 			script.addInstruction(I_PUSH_CONST, script_warning);
 			parseOper(input, script, PREC_ALL); // condition
 			size_t end = input.peek().pos;
-			String message = String::Format(_("Assertion failure on line %d:\n   expected: "), line) + input.getSourceCode(start,end);
-			expectToken(input, _(")"), &token);
+			String message = String::Format((L"Assertion failure on line %d:\n   expected: "), line) + input.getSourceCode(start,end);
+			expectToken(input, (L")"), &token);
 			if (script.getInstructions().back().instr == I_BINARY && script.getInstructions().back().instr2 == I_EQ) {
 				// compile "assert(x == y)" into
 				//    warning_if_neq("condition", _1: x, _2: y)
-				message += _("\n   found: ");
+				message += (L"\n   found: ");
 				script.getConstants()[function_pos] = script_warning_if_neq;
 				script.getInstructions().pop_back();						// POP == instruction
 				script.addInstruction(I_PUSH_CONST, message);				// push "condition"
@@ -657,7 +657,7 @@ ExprType parseExpr(TokenIterator& input, Script& script, Precedence minPrec) {
 		script.addInstruction(I_PUSH_CONST, to_script(token.value));
 	} else {
 		script.addInstruction(I_PUSH_CONST, script_nil);
-		input.expected(_("expression"));
+		input.expected((L"expression"));
 		return EXPR_FAILED;
 	}
 	return EXPR_OTHER;
@@ -677,7 +677,7 @@ ExprType parseOper(TokenIterator& input, Script& script, Precedence minPrec, Ins
 			break;
 		}
 		
-		if (minPrec <= PREC_SEQ && token==_(";")) {
+		if (minPrec <= PREC_SEQ && token==(L";")) {
 			Token next = input.peek(1);
 			if (next == TOK_RPAREN || next == TOK_EOF) {
 				// allow ; at end of expression without errors
@@ -685,22 +685,22 @@ ExprType parseOper(TokenIterator& input, Script& script, Precedence minPrec, Ins
 			}
 			script.addInstruction(I_POP); // discard result of first expression
 			type = parseOper(input, script, PREC_SET);
-		} else if (minPrec <= PREC_SET && token==_(":=")) {
+		} else if (minPrec <= PREC_SET && token==(L":=")) {
 			// We made a mistake, the part before the := should be a variable name,
 			// not an expression. Remove that instruction.
 			Instruction& instr = script.getInstructions().back();
 			if (type != EXPR_VAR || instr.instr != I_GET_VAR) {
-				input.add_error(_("Can only assign to variables"));
+				input.add_error((L"Can only assign to variables"));
 				return EXPR_FAILED;
 			}
 			script.getInstructions().pop_back();
 			type = parseOper(input, script, PREC_SET,  I_SET_VAR, instr.data);
 			if (type == EXPR_STATEMENT) {
-				input.add_error(_("Warning: the right hand side of an assignment should always yield a value."));
+				input.add_error((L"Warning: the right hand side of an assignment should always yield a value."));
 			}
 		}
-		else if (minPrec <= PREC_AND    && token==_("orelse"))parseOper(input, script, PREC_ADD,   I_BINARY, I_OR_ELSE);
-		else if (minPrec <= PREC_AND    && token==_("and")) {
+		else if (minPrec <= PREC_AND    && token==(L"orelse"))parseOper(input, script, PREC_ADD,   I_BINARY, I_OR_ELSE);
+		else if (minPrec <= PREC_AND    && token==(L"and")) {
 			// short-circuiting and:
 			//   "XXX and YYY"
 			// becomes
@@ -712,9 +712,9 @@ ExprType parseOper(TokenIterator& input, Script& script, Precedence minPrec, Ins
 			parseOper(input, script, PREC_CMP);
 			script.comeFrom(jmpSC);
 		}
-		else if (minPrec <= PREC_AND    && token==_("or" )) {
+		else if (minPrec <= PREC_AND    && token==(L"or" )) {
 			Token t = input.peek();
-			if (t == _("else")) {// or else
+			if (t == (L"else")) {// or else
 				input.read(); // skip else
 				// TODO: deprecate "or else" in favor of "orelse"
 				parseOper(input, script, PREC_ADD, I_BINARY, I_OR_ELSE);
@@ -725,27 +725,27 @@ ExprType parseOper(TokenIterator& input, Script& script, Precedence minPrec, Ins
 				script.comeFrom(jmpSC);
 			}
 		}
-		else if (minPrec <= PREC_AND    && token==_("xor"))   parseOper(input, script, PREC_CMP,   I_BINARY, I_XOR);
-		else if (minPrec <= PREC_CMP    && token==_("=")) {
+		else if (minPrec <= PREC_AND    && token==(L"xor"))   parseOper(input, script, PREC_CMP,   I_BINARY, I_XOR);
+		else if (minPrec <= PREC_CMP    && token==(L"=")) {
 			if (minPrec <= PREC_SET) {
-				input.add_error(_("Use of '=', did you mean ':=' or '=='? I will assume '=='"));
+				input.add_error((L"Use of '=', did you mean ':=' or '=='? I will assume '=='"));
 			}
 			parseOper(input, script, PREC_ADD,   I_BINARY, I_EQ);
 		}
-		else if (minPrec <= PREC_CMP    && token==_("=="))    parseOper(input, script, PREC_ADD,   I_BINARY, I_EQ);
-		else if (minPrec <= PREC_CMP    && token==_("!="))    parseOper(input, script, PREC_ADD,   I_BINARY, I_NEQ);
-		else if (minPrec <= PREC_CMP    && token==_("<"))     parseOper(input, script, PREC_ADD,   I_BINARY, I_LT);
-		else if (minPrec <= PREC_CMP    && token==_(">"))     parseOper(input, script, PREC_ADD,   I_BINARY, I_GT);
-		else if (minPrec <= PREC_CMP    && token==_("<="))    parseOper(input, script, PREC_ADD,   I_BINARY, I_LE);
-		else if (minPrec <= PREC_CMP    && token==_(">="))    parseOper(input, script, PREC_ADD,   I_BINARY, I_GE);
-		else if (minPrec <= PREC_ADD    && token==_("+"))     parseOper(input, script, PREC_MUL,   I_BINARY, I_ADD);
-		else if (minPrec <= PREC_ADD    && token==_("-"))     parseOper(input, script, PREC_MUL,   I_BINARY, I_SUB);
-		else if (minPrec <= PREC_MUL    && token==_("*"))     parseOper(input, script, PREC_POW,   I_BINARY, I_MUL);
-		else if (minPrec <= PREC_MUL    && token==_("/"))     parseOper(input, script, PREC_POW,   I_BINARY, I_FDIV);
-		else if (minPrec <= PREC_MUL    && token==_("div"))   parseOper(input, script, PREC_POW,   I_BINARY, I_DIV);
-		else if (minPrec <= PREC_MUL    && token==_("mod"))   parseOper(input, script, PREC_POW,   I_BINARY, I_MOD);
-		else if (minPrec <= PREC_POW    && token==_("^"))     parseOper(input, script, PREC_POW,   I_BINARY, I_POW);
-		else if (minPrec <= PREC_FUN    && token==_(".")) { // get member by name
+		else if (minPrec <= PREC_CMP    && token==(L"=="))    parseOper(input, script, PREC_ADD,   I_BINARY, I_EQ);
+		else if (minPrec <= PREC_CMP    && token==(L"!="))    parseOper(input, script, PREC_ADD,   I_BINARY, I_NEQ);
+		else if (minPrec <= PREC_CMP    && token==(L"<"))     parseOper(input, script, PREC_ADD,   I_BINARY, I_LT);
+		else if (minPrec <= PREC_CMP    && token==(L">"))     parseOper(input, script, PREC_ADD,   I_BINARY, I_GT);
+		else if (minPrec <= PREC_CMP    && token==(L"<="))    parseOper(input, script, PREC_ADD,   I_BINARY, I_LE);
+		else if (minPrec <= PREC_CMP    && token==(L">="))    parseOper(input, script, PREC_ADD,   I_BINARY, I_GE);
+		else if (minPrec <= PREC_ADD    && token==(L"+"))     parseOper(input, script, PREC_MUL,   I_BINARY, I_ADD);
+		else if (minPrec <= PREC_ADD    && token==(L"-"))     parseOper(input, script, PREC_MUL,   I_BINARY, I_SUB);
+		else if (minPrec <= PREC_MUL    && token==(L"*"))     parseOper(input, script, PREC_POW,   I_BINARY, I_MUL);
+		else if (minPrec <= PREC_MUL    && token==(L"/"))     parseOper(input, script, PREC_POW,   I_BINARY, I_FDIV);
+		else if (minPrec <= PREC_MUL    && token==(L"div"))   parseOper(input, script, PREC_POW,   I_BINARY, I_DIV);
+		else if (minPrec <= PREC_MUL    && token==(L"mod"))   parseOper(input, script, PREC_POW,   I_BINARY, I_MOD);
+		else if (minPrec <= PREC_POW    && token==(L"^"))     parseOper(input, script, PREC_POW,   I_BINARY, I_POW);
+		else if (minPrec <= PREC_FUN    && token==(L".")) { // get member by name
 			input.peek(1); // peek ahead, so the next token can see the preceding "."
 			               // that forces the next token to always be a TOK_NAME instead of TOK_INT/TOK_DOUBLE
 			               // (this is a bit of a hack)
@@ -753,9 +753,9 @@ ExprType parseOper(TokenIterator& input, Script& script, Precedence minPrec, Ins
 			if (token == TOK_NAME || token == TOK_STRING) {
 				script.addInstruction(I_MEMBER_C, token.value);
 			} else {
-				input.expected(_("name"));
+				input.expected((L"name"));
 			}
-		} else if (minPrec <= PREC_FUN && token==_("[") && !token.newline) { // get member by expr
+		} else if (minPrec <= PREC_FUN && token==(L"[") && !token.newline) { // get member by expr
 			size_t before = script.getInstructions().size();
 			parseOper(input, script, PREC_SET);
 			if (script.getInstructions().size() == before + 1 && script.getInstructions().back().instr == I_PUSH_CONST) {
@@ -768,29 +768,29 @@ ExprType parseOper(TokenIterator& input, Script& script, Precedence minPrec, Ins
 			} else {
 				script.addInstruction(I_BINARY, I_MEMBER);
 			}
-			expectToken(input, _("]"), &token);
-		} else if (minPrec <= PREC_FUN && token==_("(") && !token.newline) {
+			expectToken(input, (L"]"), &token);
+		} else if (minPrec <= PREC_FUN && token==(L"(") && !token.newline) {
 			// function call, read arguments
 			vector<Variable> arguments;
 			parseCallArguments(input, script, arguments);
-			expectToken(input, _(")"), &token);
+			expectToken(input, (L")"), &token);
 			// generate instruction
 			script.addInstruction(I_CALL, (unsigned int)arguments.size());
 			for(auto& arg :arguments) {
 				script.addInstruction(I_NOP, arg);
 			}
-		} else if (minPrec <= PREC_FUN && token==_("@")) {
+		} else if (minPrec <= PREC_FUN && token==(L"@")) {
 			// closure call, read arguments
 			vector<Variable> arguments;
-			expectToken(input, _("("));
+			expectToken(input, (L"("));
 			parseCallArguments(input, script, arguments);
-			expectToken(input, _(")"), &token);
+			expectToken(input, (L")"), &token);
 			// generate instruction
 			script.addInstruction(I_CLOSURE, (unsigned int)arguments.size());
 			for(auto& arg :arguments) {
 				script.addInstruction(I_NOP, arg);
 			}
-		} else if (minPrec <= PREC_STRING && token==_("\"{")) {
+		} else if (minPrec <= PREC_STRING && token==(L"\"{")) {
 			// for smart strings: "x" {{ e }} "y"
 			// optimize: "" + e  ->  e
 			Instruction i = script.getInstructions().back();
@@ -800,7 +800,7 @@ ExprType parseOper(TokenIterator& input, Script& script, Precedence minPrec, Ins
 			} else {
 				parseOper(input, script, PREC_ALL, I_BINARY, I_ADD);	// e
 			}
-			if (expectToken(input, _("}\""), &token, _("}"))) {
+			if (expectToken(input, (L"}\""), &token, (L"}"))) {
 				parseOper(input, script, PREC_NONE);					// y
 				// optimize: e + ""  -> e
 				i = script.getInstructions().back();
@@ -832,8 +832,8 @@ ExprType parseOper(TokenIterator& input, Script& script, Precedence minPrec, Ins
 
 void parseCallArguments(TokenIterator& input, Script& script, vector<Variable>& arguments) {
 	Token t = input.peek();
-	while (t != _(")") && t != TOK_EOF) {
-		if (input.peek(2) == _(":") && t.type == TOK_NAME) {
+	while (t != (L")") && t != TOK_EOF) {
+		if (input.peek(2) == (L":") && t.type == TOK_NAME) {
 			// name: ...
 			arguments.push_back(string_to_variable(t.value));
 			input.read(); // skip the name
@@ -845,7 +845,7 @@ void parseCallArguments(TokenIterator& input, Script& script, vector<Variable>& 
 			parseOper(input, script, PREC_SEQ);
 		}
 		t = input.peek();
-		if (t == _(",")) {
+		if (t == (L",")) {
 			// Comma separating the arguments
 			input.read();
 			t = input.peek();
@@ -860,17 +860,17 @@ ScriptValueP script_local_symbol_file(LocalFileName const& filename);
 
 ScriptValueP parse_value(TokenIterator& input, Packaged* package) {
 	Token token = input.read();
-	if (token == _("(")) {
+	if (token == (L"(")) {
 		// Parentheses = grouping, i.e. ignore it
 		ScriptValueP a = parse_value(input, package);
-		expectToken(input, _(")"), &token);
+		expectToken(input, (L")"), &token);
 		return a;
-	} else if (token == _("[")) {
+	} else if (token == (L"[")) {
 		// [] = list or map literal
 		ScriptCustomCollectionP col(new ScriptCustomCollection);
 		Token t = input.peek();
-		while (t != _("]") && t != TOK_EOF) {
-			if (input.peek(2) == _(":") && (t.type == TOK_NAME || t.type == TOK_INT || t.type == TOK_STRING)) {
+		while (t != (L"]") && t != TOK_EOF) {
+			if (input.peek(2) == (L":") && (t.type == TOK_NAME || t.type == TOK_INT || t.type == TOK_STRING)) {
 				// name: ...
 				String key = t.value;
 				input.read(); // skip the name
@@ -883,61 +883,61 @@ ScriptValueP parse_value(TokenIterator& input, Packaged* package) {
 				if (v) col->value.push_back(v);
 			}
 			t = input.peek();
-			if (t == _(",")) {
+			if (t == (L",")) {
 				// Comma separating the elements
 				input.read();
 				t = input.peek();
 			}
 		}
-		expectToken(input, _("]"), &token);
+		expectToken(input, (L"]"), &token);
 		return col;
 	} else if (token == TOK_NAME) {
-		if (token == _("true")) {
+		if (token == (L"true")) {
 			return script_true;
-		} else if (token == _("false")) {
+		} else if (token == (L"false")) {
 			return script_false;
-		} else if (token == _("nil")) {
+		} else if (token == (L"nil")) {
 			return script_nil;
-		} else if (token == _("rgb")) {
+		} else if (token == (L"rgb")) {
 			// rgb(r, g, b)
-			expectToken(input, _("("));
+			expectToken(input, (L"("));
 			ScriptValueP r = parse_value(input, package);
-			expectToken(input, _(","));
+			expectToken(input, (L","));
 			ScriptValueP g = parse_value(input, package);
-			expectToken(input, _(","));
+			expectToken(input, (L","));
 			ScriptValueP b = parse_value(input, package);
-			expectToken(input, _(")"));
+			expectToken(input, (L")"));
 			if (!r || !g || !b) return ScriptValueP();
 			return to_script(wxColour(r->toInt(),g->toInt(),b->toInt()));
-		} else if (token == _("rgba")) {
+		} else if (token == (L"rgba")) {
 			// rgba(r, g, b, a)
-			expectToken(input, _("("));
+			expectToken(input, (L"("));
 			ScriptValueP r = parse_value(input, package);
-			expectToken(input, _(","));
+			expectToken(input, (L","));
 			ScriptValueP g = parse_value(input, package);
-			expectToken(input, _(","));
+			expectToken(input, (L","));
 			ScriptValueP b = parse_value(input, package);
-			expectToken(input, _(","));
+			expectToken(input, (L","));
 			ScriptValueP a = parse_value(input, package);
-			expectToken(input, _(")"));
+			expectToken(input, (L")"));
 			if (!r || !g || !b) return ScriptValueP();
 			return to_script(AColor(r->toInt(),g->toInt(),b->toInt(),a->toInt()));
-		} else if (token == _("mark_default")) {
-			expectToken(input, _("("));
+		} else if (token == (L"mark_default")) {
+			expectToken(input, (L"("));
 			ScriptValueP x = parse_value(input, package);
-			expectToken(input, _(")"));
+			expectToken(input, (L")"));
 			if (!x) return ScriptValueP();
 			return intrusive(new ScriptDefault(x));
-		} else if (token == _("local_image_file")) {
-			expectToken(input, _("("));
+		} else if (token == (L"local_image_file")) {
+			expectToken(input, (L"("));
 			ScriptValueP x = parse_value(input, package);
-			expectToken(input, _(")"));
+			expectToken(input, (L")"));
 			if (!x) return ScriptValueP();
 			return script_local_image_file(LocalFileName::fromReadString(x->toString()));
-		} else if (token == _("local_symbol_file")) {
-			expectToken(input, _("("));
+		} else if (token == (L"local_symbol_file")) {
+			expectToken(input, (L"("));
 			ScriptValueP x = parse_value(input, package);
-			expectToken(input, _(")"));
+			expectToken(input, (L")"));
 			if (!x) return ScriptValueP();
 			return script_local_symbol_file(LocalFileName::fromReadString(x->toString()));
 		}
@@ -951,12 +951,12 @@ ScriptValueP parse_value(TokenIterator& input, Packaged* package) {
 		return to_script(d);
 	} else if (token == TOK_STRING) {
 		return to_script(token.value);
-	/*} else if (token == _("-")) {
+	/*} else if (token == (L"-")) {
 		// TODO?
 		throw InternalError("TODO");*/
 	}
 	// parse error
-	input.expected(_("value (string/number/boolean/color/list)"));
+	input.expected((L"value (string/number/boolean/color/list)"));
 	return ScriptValueP();
 }
 
@@ -966,7 +966,7 @@ ScriptValueP parse_value(const String& s, Packaged* package, vector<ScriptParseE
 	TokenIterator input(s, package, false, errors_out);
 	ScriptValueP value = parse_value(input, package);
 	if (input.read() != TOK_EOF) {
-		input.expected(_("end of input"));
+		input.expected((L"end of input"));
 	}
 	return value;
 }

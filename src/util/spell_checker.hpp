@@ -15,11 +15,7 @@
 
 DECLARE_POINTER_TYPE(SpellChecker);
 
-#ifdef UNICODE
-	typedef wxCharBuffer CharBuffer;
-#else
-	typedef const char* CharBuffer;
-#endif
+typedef wxCharBuffer CharBuffer;
 
 // ----------------------------------------------------------------------------- : Spell checker
 

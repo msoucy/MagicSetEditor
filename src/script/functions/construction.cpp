@@ -33,7 +33,7 @@ SCRIPT_FUNCTION(new_card) {
 		// find value to update
 		IndexMap<FieldP,ValueP>::const_iterator value_it = new_card->data.find(name);
 		if (value_it == new_card->data.end()) {
-			throw ScriptError(format_string(_("Card doesn't have a field named '%s'"),name));
+			throw ScriptError(format_string((L"Card doesn't have a field named '%s'"),name));
 		}
 		// set it
 		Value* value = value_it->get();
@@ -45,5 +45,5 @@ SCRIPT_FUNCTION(new_card) {
 // ----------------------------------------------------------------------------- : Init
 
 void init_script_construction_functions(Context& ctx) {
-	ctx.setVariable(_("new_card"), script_new_card);
+	ctx.setVariable((L"new_card"), script_new_card);
 }

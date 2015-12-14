@@ -12,8 +12,8 @@
 // ----------------------------------------------------------------------------- : BooleanField
 
 BooleanField::BooleanField() {
-	choices->choices.push_back(intrusive(new Choice(_("true"),_("yes"))));
-	choices->choices.push_back(intrusive(new Choice(_("false"),_("no"))));
+	choices->choices.push_back(intrusive(new Choice((L"true"),(L"yes"))));
+	choices->choices.push_back(intrusive(new Choice((L"false"),(L"no"))));
 	choices->initIds();
 	initial = script_true;
 }
@@ -30,8 +30,8 @@ BooleanStyle::BooleanStyle(const ChoiceFieldP& field)
 	: ChoiceStyle(field)
 {
 	render_style = RENDER_BOTH;
-	choice_images[_("true")]  = ScriptableImage(intrusive(new BuiltInImage(_("bool_yes"))));
-	choice_images[_("false")] = ScriptableImage(intrusive(new BuiltInImage(_("bool_no"))));
+	choice_images[(L"true")]  = ScriptableImage(intrusive(new BuiltInImage((L"bool_yes"))));
+	choice_images[(L"false")] = ScriptableImage(intrusive(new BuiltInImage((L"bool_no"))));
 }
 
 IMPLEMENT_REFLECTION(BooleanStyle) {
@@ -40,11 +40,11 @@ IMPLEMENT_REFLECTION(BooleanStyle) {
 
 void BooleanStyle::after_reading(Version ver) {
 	// Prior to 2.0.1, the choices were called "yes" and "no"
-	if (!choice_images[_("true")].isScripted() && choice_images.find(_("yes")) != choice_images.end()) {
-		choice_images[_("true")] = choice_images[_("yes")];
+	if (!choice_images[(L"true")].isScripted() && choice_images.find((L"yes")) != choice_images.end()) {
+		choice_images[(L"true")] = choice_images[(L"yes")];
 	}
-	if (!choice_images[_("false")].isScripted() && choice_images.find(_("no")) != choice_images.end()) {
-		choice_images[_("false")] = choice_images[_("no")];
+	if (!choice_images[(L"false")].isScripted() && choice_images.find((L"no")) != choice_images.end()) {
+		choice_images[(L"false")] = choice_images[(L"no")];
 	}
 }
 

@@ -52,8 +52,8 @@ FilterCtrl::FilterCtrl(wxWindow* parent, int id, String const& placeholder)
 	SetBackgroundColour(bg);
 	SetCursor(wxCURSOR_IBEAM);
 	filter_ctrl = new TextCtrlWithFocus();
-	filter_ctrl->Create(this, wxID_ANY, _(""), wxDefaultPosition, wxSize(130,-1), wxNO_BORDER);
-	clear_button = new HoverButton(this, wxID_ANY, _("btn_clear_filter"), bg, false);
+	filter_ctrl->Create(this, wxID_ANY, (L""), wxDefaultPosition, wxSize(130,-1), wxNO_BORDER);
+	clear_button = new HoverButton(this, wxID_ANY, (L"btn_clear_filter"), bg, false);
 	clear_button->SetCursor(*wxSTANDARD_CURSOR);
 	onSize();
 	update();

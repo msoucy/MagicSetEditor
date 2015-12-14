@@ -16,13 +16,13 @@
 
 AboutWindow::AboutWindow(Window* parent)
 	: wxDialog(parent, wxID_ANY, _TITLE_("about"), wxDefaultPosition, wxSize(510,340), wxCLIP_CHILDREN | wxDEFAULT_DIALOG_STYLE | wxTAB_TRAVERSAL)
-	, logo (load_resource_image(_("about")))
+	, logo (load_resource_image((L"about")))
 	#if USE_BETA_LOGO
-	, logo2(load_resource_image(_("two_beta")))
+	, logo2(load_resource_image((L"two_beta")))
 	#endif
 {
 	// init controls
-	wxControl* ok_button = new HoverButton(this, wxID_OK, _("btn_ok"));
+	wxControl* ok_button = new HoverButton(this, wxID_OK, (L"btn_ok"));
 	wxSize bs = ok_button->GetSize(), ws = GetClientSize();
 	ok_button->Move(ws.GetWidth() - bs.GetWidth(),  ws.GetHeight() - bs.GetHeight()); // align bottom right
 }
@@ -50,12 +50,12 @@ void AboutWindow::draw(DC& dc) {
 	dc.SetTextBackground(Color(114,197,224));
 	dc.SetTextForeground(Color(0,0,0));
 	// draw version info
-	dc.SetFont(wxFont(9, wxSWISS, wxNORMAL, wxNORMAL, false, _("Arial")));
-	dc.DrawText(_("Version: ") + app_version.toString() + version_suffix, 34, 110);
-	dc.DrawText(_("Copyright \xA9 2001-2011"), 34, 130);
-	dc.DrawText(_("   Twan van Laarhoven,"), 34, 147);
-	dc.DrawText(_("   Sean Hunt,"), 34, 164);
-	dc.DrawText(_("   and the other MSE developers"), 34, 181);
+	dc.SetFont(wxFont(9, wxSWISS, wxNORMAL, wxNORMAL, false, (L"Arial")));
+	dc.DrawText((L"Version: ") + app_version.toString() + version_suffix, 34, 110);
+	dc.DrawText((L"Copyright \xA9 2001-2011"), 34, 130);
+	dc.DrawText((L"   Twan van Laarhoven,"), 34, 147);
+	dc.DrawText((L"   Sean Hunt,"), 34, 164);
+	dc.DrawText((L"   and the other MSE developers"), 34, 181);
 }
 
 BEGIN_EVENT_TABLE(AboutWindow, wxDialog)
@@ -173,10 +173,10 @@ HoverButton::HoverButton(Window* parent, int id, const String& name, const Color
 void HoverButton::loadBitmaps(const String& name) {
 	if (bitmaps == name) return;
 	bitmaps = name;
-	bg_normal = Bitmap(load_resource_image(name + _("_normal")));
-	bg_hover  = Bitmap(load_resource_image(name + _("_hover")));
-	bg_focus  = Bitmap(load_resource_image(name + _("_focus")));
-	bg_down   = Bitmap(load_resource_image(name + _("_down")));
+	bg_normal = Bitmap(load_resource_image(name + (L"_normal")));
+	bg_hover  = Bitmap(load_resource_image(name + (L"_hover")));
+	bg_focus  = Bitmap(load_resource_image(name + (L"_focus")));
+	bg_down   = Bitmap(load_resource_image(name + (L"_down")));
 	Refresh(false);
 }
 

@@ -29,9 +29,9 @@ void PackageManager::init() {
 	local.init(true);
 	global.init(false);
 	if (!(local.valid() || global.valid()))
-		throw Error(_("The MSE data files can not be found, there should be a directory called 'data' with these files. ")
-								_("The expected place to find it in was either ") + getDataDir() + _(" or ") +
-								getUserDataDir());
+		throw Error(L"The MSE data files can not be found, there should be a directory called 'data' with these files. "
+                    L"The expected place to find it in was either " + getDataDir() + L" or " +
+                    getUserDataDir());
 }
 void PackageManager::destroy() {
 	loaded_packages.clear();
@@ -42,7 +42,7 @@ void PackageManager::reset() {
 
 PackagedP PackageManager::openAny(const String& name_, bool just_header) {
 	String name = trim(name_);
-	if (starts_with(name,_("/:NO-WARN-DEP:"))) name = name.substr(14);
+	if (starts_with(name,(L"/:NO-WARN-DEP:"))) name = name.substr(14);
 	// Attempt to load local data first.
 	String filename;
 	if (wxFileName(name).IsRelative()) {
@@ -53,7 +53,7 @@ PackagedP PackageManager::openAny(const String& name_, bool just_header) {
 			filename = normalize_filename(global.name(name));
 		}
 		if (!wxFileExists(filename) && !wxDirExists(filename)) {
-			throw PackageNotFoundError(_("Package not found: '") + name + _("'"));
+			throw PackageNotFoundError((L"Package not found: '") + name + (L"'"));
 		}
 	} else { // Absolute filename
 		filename = normalize_filename(name);
@@ -64,14 +64,14 @@ PackagedP PackageManager::openAny(const String& name_, bool just_header) {
 	if (!p) {
 		// load with the right type, based on extension
 		wxFileName fn(filename);
-		if      (fn.GetExt() == _("mse-game"))            p = intrusive(new Game);
-		else if (fn.GetExt() == _("mse-style"))           p = intrusive(new StyleSheet);
-		else if (fn.GetExt() == _("mse-locale"))          p = intrusive(new Locale);
-		else if (fn.GetExt() == _("mse-include"))         p = intrusive(new IncludePackage);
-		else if (fn.GetExt() == _("mse-symbol-font"))     p = intrusive(new SymbolFont);
-		else if (fn.GetExt() == _("mse-export-template")) p = intrusive(new ExportTemplate);
+		if      (fn.GetExt() == (L"mse-game"))            p = intrusive(new Game);
+		else if (fn.GetExt() == (L"mse-style"))           p = intrusive(new StyleSheet);
+		else if (fn.GetExt() == (L"mse-locale"))          p = intrusive(new Locale);
+		else if (fn.GetExt() == (L"mse-include"))         p = intrusive(new IncludePackage);
+		else if (fn.GetExt() == (L"mse-symbol-font"))     p = intrusive(new SymbolFont);
+		else if (fn.GetExt() == (L"mse-export-template")) p = intrusive(new ExportTemplate);
 		else {
-			throw PackageError(_("Unrecognized package type: '") + fn.GetExt() + _("'\nwhile trying to open: ") + name);
+			throw PackageError((L"Unrecognized package type: '") + fn.GetExt() + (L"'\nwhile trying to open: ") + name);
 		}
 		p->open(filename, just_header);
 	} else if (!just_header) {
@@ -99,14 +99,14 @@ void PackageManager::findMatching(const String& pattern, vector<PackagedP>& out)
 }
 
 InputStreamP PackageManager::openFileFromPackage(Packaged*& package, const String& name) {
-	if (!name.empty() && name.GetChar(0) == _('/')) {
+	if (!name.empty() && name.GetChar(0) == (L'/')) {
 		// absolute name; break name
-		size_t start = name.find_first_not_of(_("/\\"), 1); // allow "//package/name" from incorrect scripts
-		size_t pos   = name.find_first_of(_("/\\"), start);
+		size_t start = name.find_first_not_of((L"/\\"), 1); // allow "//package/name" from incorrect scripts
+		size_t pos   = name.find_first_of((L"/\\"), start);
 		if (start < pos && pos != String::npos) {
 			// open package
 			PackagedP p = openAny(name.substr(start, pos-start));
-			if (package && !is_substr(name,start,_(":NO-WARN-DEP:"))) {
+			if (package && !is_substr(name,start,(L":NO-WARN-DEP:"))) {
 				package->requireDependency(p.get());
 			}
 			package = p.get();
@@ -116,34 +116,34 @@ InputStreamP PackageManager::openFileFromPackage(Packaged*& package, const Strin
 		// relative name
 		return package->openIn(name);
 	}
-	throw FileNotFoundError(name, _("No package name specified, use '/package/filename'"));
+	throw FileNotFoundError(name, (L"No package name specified, use '/package/filename'"));
 }
 
 String PackageManager::openFilenameFromPackage(Packaged*& package, const String& name) {
-	if (!name.empty() && name.GetChar(0) == _('/')) {
+	if (!name.empty() && name.GetChar(0) == (L'/')) {
 		// absolute name; break name
-		size_t start = name.find_first_not_of(_("/\\"), 1); // allow "//package/name" from incorrect scripts
-		size_t pos   = name.find_first_of(_("/\\"), start);
+		size_t start = name.find_first_not_of((L"/\\"), 1); // allow "//package/name" from incorrect scripts
+		size_t pos   = name.find_first_of((L"/\\"), start);
 		if (start < pos && pos != String::npos) {
 			// open package
 			PackagedP p = openAny(name.substr(start, pos-start));
-			if (package && !is_substr(name,start,_(":NO-WARN-DEP:"))) {
+			if (package && !is_substr(name,start,(L":NO-WARN-DEP:"))) {
 				package->requireDependency(p.get());
 			}
 			package = p.get();
-			return p->absoluteFilename() + _("/") + name.substr(pos + 1);
+			return p->absoluteFilename() + (L"/") + name.substr(pos + 1);
 		}
 	} else if (package) {
 		// relative name
-		return package->absoluteFilename() + _("/") + name;
+		return package->absoluteFilename() + (L"/") + name;
 	}
-	throw FileNotFoundError(name, _("No package name specified, use '/package/filename'"));
+	throw FileNotFoundError(name, (L"No package name specified, use '/package/filename'"));
 }
 
 String PackageManager::getDictionaryDir(bool l) const {
 	String dir = (l ? local : global).getDirectory();
 	if (dir.empty()) return wxEmptyString;
-	else             return dir + _("/dictionaries/");
+	else             return dir + (L"/dictionaries/");
 }
 
 // ----------------------------------------------------------------------------- : PackageManager : on disk
@@ -154,7 +154,7 @@ bool PackageManager::checkDependency(const PackageDependency& dep, bool report_e
 		if (app_version < dep.version) {
 			queue_message(
 					MESSAGE_WARNING,
-					_ERROR_3_("package out of date", _("Magic Set Editor"),
+					_ERROR_3_("package out of date", (L"Magic Set Editor"),
 							  app_version.toString().c_str(), dep.version.toString().c_str()));
 		}
 		return true;
@@ -207,7 +207,7 @@ bool PackageManager::install(const InstallablePackage& package) {
 void PackageDirectory::init(bool local) {
 	is_local = local;
 	if (local) {
-		init(getUserDataDir() + _("/data"));
+		init(getUserDataDir() + (L"/data"));
 	} else {
 		// determine data directory
 		String dir = getDataDir();
@@ -215,7 +215,7 @@ void PackageDirectory::init(bool local) {
 		// the data may be higher up:
 		//  exe path  = mse/build/debug/mse.exe
 		//  data path = mse/data
-		while (!wxDirExists(dir + _("/data"))) {
+		while (!wxDirExists(dir + (L"/data"))) {
 			String d = dir;
 			dir = wxPathOnly(dir);
 			if (d == dir) {
@@ -224,7 +224,7 @@ void PackageDirectory::init(bool local) {
 				break;
 			}
 		}
-		init(dir + _("/data"));
+		init(dir + (L"/data"));
 	}
 }
 void PackageDirectory::init(const String& dir) {
@@ -235,7 +235,7 @@ void PackageDirectory::init(const String& dir) {
 }
 
 String PackageDirectory::name(const String& name) const {
-	return directory + _("/") + name;
+	return directory + (L"/") + name;
 }
 bool PackageDirectory::exists(const String& filename) const {
 	String fn = name(filename);
@@ -244,7 +244,7 @@ bool PackageDirectory::exists(const String& filename) const {
 
 String PackageDirectory::findFirstMatching(const String& pattern) const {
 	if (!wxDirExists(directory)) return String();
-	return wxFindFirstFile(directory + _("/") + pattern, 0);
+	return wxFindFirstFile(directory + (L"/") + pattern, 0);
 }
 
 bool compare_name(const PackageVersionP& a, const PackageVersionP& b) {
@@ -255,8 +255,8 @@ void PackageDirectory::installedPackages(vector<InstallablePackageP>& packages_o
 	loadDatabase();
 	// find all package files
 	vector<String> in_dir;
-	for (String s = findFirstMatching(_("*.mse-*")) ; !s.empty() ; s = wxFindNextFile()) {
-		size_t pos = s.find_last_of(_("/\\"));
+	for (String s = findFirstMatching((L"*.mse-*")) ; !s.empty() ; s = wxFindNextFile()) {
+		size_t pos = s.find_last_of((L"/\\"));
 		if (pos != String::npos) s = s.substr(pos+1);
 		// TODO : check for valid package names
 		in_dir.push_back(s);
@@ -355,7 +355,7 @@ void PackageDirectory::saveDatabase() {
 	writer.handle(*this);
 }
 String PackageDirectory::databaseFile() {
-	return name(_("packages"));
+	return name((L"packages"));
 }
 
 // ----------------------------------------------------------------------------- : PackageDirectory : installing
@@ -366,12 +366,12 @@ bool PackageDirectory::install(const InstallablePackage& package) {
 		if (!remove_file_or_dir(n)) return false;
 		removeFromDatabase(package.description->name);
 	} else if (package.action & PACKAGE_ACT_INSTALL) {
-		if (!remove_file_or_dir(n + _(".new"))) return false;
-		bool ok = actual_install(package, n + _(".new"));
+		if (!remove_file_or_dir(n + (L".new"))) return false;
+		bool ok = actual_install(package, n + (L".new"));
 		if (!ok) return false;
-		move_ignored_files(n, n + _(".new")); // copy over files from the old installed version to the new one
+		move_ignored_files(n, n + (L".new")); // copy over files from the old installed version to the new one
 		if (!remove_file_or_dir(n)) return false;
-		if (!rename_file_or_dir(n + _(".new"), n)) return false;
+		if (!rename_file_or_dir(n + (L".new"), n)) return false;
 		bless(package.description->name);
 	}
 	saveDatabase();
@@ -381,7 +381,7 @@ bool PackageDirectory::install(const InstallablePackage& package) {
 bool PackageDirectory::actual_install(const InstallablePackage& package, const String& install_dir) {
 	String name = package.description->name;
 	if (!package.installer->installer) {
-		queue_message(MESSAGE_ERROR, _("Installer not found for package: ") + name);
+		queue_message(MESSAGE_ERROR, (L"Installer not found for package: ") + name);
 		return false;
 	}
 	Installer& installer = *package.installer->installer;
@@ -411,12 +411,12 @@ bool PackageDirectory::actual_install(const InstallablePackage& package, const S
 
 template <> void Writer::handle(const PackageVersion::FileInfo& f) {
 	if (f.status == PackageVersion::FILE_DELETED) {
-		handle(_("D ") + f.file);
+		handle((L"D ") + f.file);
 	} else {
-		handle(format_string(_("%s%s %s"),
-			  f.status == PackageVersion::FILE_ADDED    ? _("A")
-			: f.status == PackageVersion::FILE_MODIFIED ? _("M") : _(""),
-			f.time.Format(_("%Y%m%dT%H%M%S")).c_str(),
+		handle(format_string((L"%s%s %s"),
+			  f.status == PackageVersion::FILE_ADDED    ? (L"A")
+			: f.status == PackageVersion::FILE_MODIFIED ? (L"M") : (L""),
+			f.time.Format((L"%Y%m%dT%H%M%S")).c_str(),
 			f.file.c_str()));
 	}
 }
@@ -424,21 +424,21 @@ template <> void Reader::handle(PackageVersion::FileInfo& f) {
 	String s; handle(s);
 	// read status
 	if (s.size() < 2) {f.status = PackageVersion::FILE_ADDED; return; }
-	f.status = s.GetChar(0) == _('M') ? PackageVersion::FILE_MODIFIED
-	         : s.GetChar(0) == _('A') ? PackageVersion::FILE_ADDED
-	         : s.GetChar(0) == _('D') ? PackageVersion::FILE_DELETED
+	f.status = s.GetChar(0) == (L'M') ? PackageVersion::FILE_MODIFIED
+	         : s.GetChar(0) == (L'A') ? PackageVersion::FILE_ADDED
+	         : s.GetChar(0) == (L'D') ? PackageVersion::FILE_DELETED
 	         :                          PackageVersion::FILE_UNCHANGED;
 	if (f.status == PackageVersion::FILE_DELETED) {
-		if (s.GetChar(1) != _(' ')) {f.status = PackageVersion::FILE_ADDED; return; }
+		if (s.GetChar(1) != (L' ')) {f.status = PackageVersion::FILE_ADDED; return; }
 		f.file = s.substr(2);
 		return;
 	} else if (f.status != PackageVersion::FILE_UNCHANGED) {
 		s = s.substr(1);
 	}
 	if (s.size() < 8+1+6+1)         {f.status = PackageVersion::FILE_ADDED; return; }
-	if (s.GetChar(8+1+6) != _(' ')) {f.status = PackageVersion::FILE_ADDED; return; } // invalid format
+	if (s.GetChar(8+1+6) != (L' ')) {f.status = PackageVersion::FILE_ADDED; return; } // invalid format
 	// read time, filename
-	f.time.ParseFormat(s, _("%Y%m%dT%H%M%S"));
+	f.time.ParseFormat(s, (L"%Y%m%dT%H%M%S"));
 	f.file = s.substr(8+1+6+1);
 }
 IMPLEMENT_REFLECTION_NO_SCRIPT(PackageVersion) {

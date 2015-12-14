@@ -32,7 +32,7 @@ void downsample_to_alpha(Bitmap& bmp_in, Image& img_out) {
 		if (!img_in.IsOk()) return;
 		// if text_scaling = 4, then the line always is dword aligned, so we need no adjusting
 		// we created a bitmap with depth 24, so that is what we should have here
-		if (img_in.GetDepth() != 24) throw InternalError(_("DIB has wrong bit depth"));
+		if (img_in.GetDepth() != 24) throw InternalError((L"DIB has wrong bit depth"));
 	#else
 		Image img_in = bmp_in.ConvertToImage();
 	#endif

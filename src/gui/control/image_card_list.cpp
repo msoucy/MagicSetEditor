@@ -56,7 +56,7 @@ class CardThumbnailRequest : public ThumbnailRequest {
 	CardThumbnailRequest(ImageCardList* parent, const String& key, const GeneratedImageP& imgen)
 		: ThumbnailRequest(
 			parent,
-			_("card") + parent->set->absoluteFilename() + _("-") + key,
+			(L"card") + parent->set->absoluteFilename() + (L"-") + key,
 			wxDateTime::Now())	// TODO: Find mofication time of card image
 		, key(key)
 		, imgen(imgen)

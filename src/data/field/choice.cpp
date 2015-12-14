@@ -88,7 +88,7 @@ int ChoiceField::Choice::choiceId(const String& search_name) const {
 			int sub_id = c->choiceId(search_name);
 			if (sub_id != -1) return sub_id;
 		}
-	} else if (isGroup() && starts_with(search_name, name + _(" "))) {
+	} else if (isGroup() && starts_with(search_name, name + (L" "))) {
 		String sub_name = search_name.substr(name.size() + 1);
 		for(const auto& c : choices) {
 			int sub_id = c->choiceId(sub_name);
@@ -108,12 +108,12 @@ String ChoiceField::Choice::choiceName(int id) const {
 				if (name.empty()) {
 					return c->choiceName(id);
 				} else {
-					return name + _(" ") + c->choiceName(id);
+					return name + (L" ") + c->choiceName(id);
 				}
 			}
 		}
 	}
-	return _("");
+	return (L"");
 }
 
 String ChoiceField::Choice::choiceNameNice(int id) const {
@@ -130,7 +130,7 @@ String ChoiceField::Choice::choiceNameNice(int id) const {
 			}
 		}
 	}
-	return _("");
+	return (L"");
 }
 
 

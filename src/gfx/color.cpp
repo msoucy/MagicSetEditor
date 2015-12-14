@@ -15,7 +15,7 @@ template <> void Reader::handle(Color& col) {
 	col = parse_color(getValue());
 	if (!col.Ok()) {
 		col = *wxBLACK;
-		warning(_("Not a valid color value"));
+		warning((L"Not a valid color value"));
 	}
 }
 
@@ -23,7 +23,7 @@ template <> void Reader::handle(AColor& col) {
 	col = parse_acolor(getValue());
 	if (!col.Ok()) {
 		col = AColor(0,0,0,0);
-		warning(_("Not a valid color value"));
+		warning((L"Not a valid color value"));
 	}
 }
 template <> void Writer::handle(const AColor& col) {
@@ -33,7 +33,7 @@ template <> void Writer::handle(const AColor& col) {
 
 Color parse_color(const String& v) {
 	UInt r,g,b;
-	if (wxSscanf(v.c_str(),_("rgb(%u,%u,%u)"),&r,&g,&b)) {
+	if (wxSscanf(v.c_str(),(L"rgb(%u,%u,%u)"),&r,&g,&b)) {
 		return Color(r, g, b);
 	} else {
 		return Color(v);
@@ -42,11 +42,11 @@ Color parse_color(const String& v) {
 
 AColor parse_acolor(const String& v) {
 	UInt r,g,b,a;
-	if (wxSscanf(v.c_str(),_("rgb(%u,%u,%u)"),&r,&g,&b)) {
+	if (wxSscanf(v.c_str(),(L"rgb(%u,%u,%u)"),&r,&g,&b)) {
 		return AColor(r, g, b);
-	} else if (wxSscanf(v.c_str(),_("rgba(%u,%u,%u,%u)"),&r,&g,&b,&a)) {
+	} else if (wxSscanf(v.c_str(),(L"rgba(%u,%u,%u,%u)"),&r,&g,&b,&a)) {
 		return AColor(r, g, b, a);
-	} else if (v == _("transparent")) {
+	} else if (v == (L"transparent")) {
 		return AColor(0,0,0,0);
 	} else {
 		return Color(v);
@@ -55,11 +55,11 @@ AColor parse_acolor(const String& v) {
 
 String format_acolor(AColor col) {
 	if (col.alpha == 255) {
-		return String::Format(_("rgb(%u,%u,%u)"), col.Red(), col.Green(), col.Blue());
+		return String::Format((L"rgb(%u,%u,%u)"), col.Red(), col.Green(), col.Blue());
 	} else if (col.alpha == 0) {
-		return _("transparent");
+		return (L"transparent");
 	} else {
-		return String::Format(_("rgba(%u,%u,%u,%u)"), col.Red(), col.Green(), col.Blue(), col.alpha);
+		return String::Format((L"rgba(%u,%u,%u,%u)"), col.Red(), col.Green(), col.Blue(), col.alpha);
 	}
 }
 

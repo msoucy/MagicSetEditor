@@ -28,20 +28,9 @@ typedef wxString String;
 
 // ----------------------------------------------------------------------------- : Unicode
 
-/// u if UNICODE is defined, a otherwise
-#ifdef UNICODE
-#	define IF_UNICODE(u,a) u
-#else
-#	define IF_UNICODE(u,a) a
-#endif
-
-#undef _
-/// A string/character constant, correctly handled in unicode builds
-#define _(S) IF_UNICODE(BOOST_PP_CAT(L,S), S)
-
 /// The character type used
-typedef IF_UNICODE(wchar_t, char) Char;
-	
+typedef wchar_t Char;
+
 /// Decode a UTF8 string
 /** In non-unicode builds the input is considered to be an incorrectly encoded utf8 string.
  *  In unicode builds it is a normal string, utf8 already decoded.
@@ -53,43 +42,31 @@ String decodeUTF8BOM(const String& s);
 /** In non-unicode builds it is UTF8 encoded \xFEFF.
  *  In unicode builds it is a normal \xFEFF.
  */
-const Char BYTE_ORDER_MARK[] = IF_UNICODE(L"\xFEFF", "\xEF\xBB\xBF");
+const Char BYTE_ORDER_MARK[] = L"\xFEFF";
 
 /// Writes a string to an output stream, encoded as UTF8
 void writeUTF8(wxTextOutputStream& stream, const String& str);
 
 /// Some constants we like to use
-#ifdef UNICODE
-	#define  LEFT_ANGLE_BRACKET _("\x2039")
-	#define RIGHT_ANGLE_BRACKET _("\x203A")
-	#define  LEFT_SINGLE_QUOTE  _('\x2018')
-	#define RIGHT_SINGLE_QUOTE  _('\x2019')
-	#define  LEFT_DOUBLE_QUOTE  _('\x201C')
-	#define RIGHT_DOUBLE_QUOTE  _('\x201D')
-	#define EN_DASH             _('\x2013')
-	#define EM_DASH             _('\x2014')
-	#define CONNECTION_SPACE    _('\xEB00') // in private use area, untags to ' '
-#else
-	#define  LEFT_ANGLE_BRACKET _("<")
-	#define RIGHT_ANGLE_BRACKET _(">")
-	#define  LEFT_SINGLE_QUOTE  _('\'')
-	#define RIGHT_SINGLE_QUOTE  _('\'')
-	#define  LEFT_DOUBLE_QUOTE  _('\"')
-	#define RIGHT_DOUBLE_QUOTE  _('\"')
-	#define EN_DASH             _('-') // 150?
-	#define EM_DASH             _('-') // 151?
-	#define CONNECTION_SPACE    _(' ') // too bad
-#endif
+constexpr auto  LEFT_ANGLE_BRACKET = L"\x2039"; // <
+constexpr auto RIGHT_ANGLE_BRACKET = L"\x203A"; // >
+constexpr auto  LEFT_SINGLE_QUOTE  = L'\x2018'; // '
+constexpr auto RIGHT_SINGLE_QUOTE  = L'\x2019'; // '
+constexpr auto  LEFT_DOUBLE_QUOTE  = L'\x201C'; // "
+constexpr auto RIGHT_DOUBLE_QUOTE  = L'\x201D'; // "
+constexpr auto EN_DASH             = L'\x2013'; // -
+constexpr auto EM_DASH             = L'\x2014'; // -
+constexpr auto CONNECTION_SPACE    = L'\xEB00'; // in private use area, untags to ' '
 
 // ----------------------------------------------------------------------------- : Char functions
 
 // Character set tests
-inline bool isAlpha(Char c) { return IF_UNICODE( iswalpha(c) , isalpha((unsigned char)c) ); }
-inline bool isDigit(Char c) { return IF_UNICODE( iswdigit(c) , isdigit((unsigned char)c) ); }
-inline bool isAlnum(Char c) { return IF_UNICODE( iswalnum(c) , isalnum((unsigned char)c) ); }
-inline bool isUpper(Char c) { return IF_UNICODE( iswupper(c) , isupper((unsigned char)c) ); }
-inline bool isLower(Char c) { return IF_UNICODE( iswlower(c) , islower((unsigned char)c) ); }
-inline bool isPunct(Char c) { return IF_UNICODE( iswpunct(c) , ispunct((unsigned char)c) ); }
+inline bool isAlpha(Char c) { return iswalpha(c); }
+inline bool isDigit(Char c) { return iswdigit(c); }
+inline bool isAlnum(Char c) { return iswalnum(c); }
+inline bool isUpper(Char c) { return iswupper(c); }
+inline bool isLower(Char c) { return iswlower(c); }
+inline bool isPunct(Char c) { return iswpunct(c); }
 // Character conversions
 #ifdef _MSC_VER
 	#define CHAR_FUNCTIONS_ARE_SLOW
@@ -103,13 +80,13 @@ inline bool isPunct(Char c) { return IF_UNICODE( iswpunct(c) , ispunct((unsigned
 		if (c <= 128) {
 			return (c >= 0x09 && c <= 0x0D) || c == 0x20;
 		} else {
-			return IF_UNICODE( iswspace(c) , isspace((unsigned char)c) ) || c == CONNECTION_SPACE;
+			return iswspace(c) || c == CONNECTION_SPACE;
 		}
 	}
 #else
-	inline Char toLower(Char c) { return IF_UNICODE( towlower(c) , tolower(c) ); }
-	inline Char toUpper(Char c) { return IF_UNICODE( towupper(c) , toupper(c) ); }
-	inline bool isSpace(Char c) { return IF_UNICODE( iswspace(c) , isspace((unsigned char)c) ) || c == CONNECTION_SPACE; }
+	inline Char toLower(Char c) { return towlower(c); }
+	inline Char toUpper(Char c) { return towupper(c); }
+	inline bool isSpace(Char c) { return iswspace(c) || c == CONNECTION_SPACE; }
 #endif
 
 // ----------------------------------------------------------------------------- : String utilities
@@ -174,7 +151,7 @@ String remove_shortcut(const String&);
 // ----------------------------------------------------------------------------- : Comparing / finding
 
 /// Compare two strings
-/** Uses a smart comparison algorithm that understands numbers. 
+/** Uses a smart comparison algorithm that understands numbers.
  *  The comparison is case insensitive.
  *  Doesn't handle leading zeros.
  *
@@ -204,7 +181,7 @@ bool is_substr_i(const String& str, size_t pos, const String& cmp);
 size_t find_i(const String& heystack, const String& needle);
 
 /// Compare two strings for equality, b may contain ' ' where a contains '_'
-/** canoncial_name_compare(a,b) == (canocial_name_form(a) == b) 
+/** canoncial_name_compare(a,b) == (canocial_name_form(a) == b)
  *  b should already be in canonical name form, i.e. use _ to separate words.
  */
 bool canoncial_name_compare(const String& a, const Char* b);

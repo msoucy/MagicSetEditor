@@ -177,7 +177,7 @@ SymbolShapeP read_symbol_shape(const ImageData& data) {
 			case 0x1101 : x -= 1; break;
 			case 0x1110 : y += 1; break;
 			default:
-				throw InternalError(_("in the ground/air"));
+				throw InternalError((L"in the ground/air"));
 		}
 		
 		// add to shape and place a mark

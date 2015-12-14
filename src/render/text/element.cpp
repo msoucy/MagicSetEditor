@@ -97,7 +97,7 @@ struct TextElementsFromString {
 		// for each character...
 		for (size_t pos = start ; pos < end ; ) {
 			Char c = text.GetChar(pos);
-			if (c == _('<')) {
+			if (c == (L'<')) {
 				if (text_start < pos) {
 					// text element before this tag?
 					addText(te, text, text_start, pos, style, ctx);
@@ -106,46 +106,46 @@ struct TextElementsFromString {
 				size_t tag_start = pos;
 				pos = skip_tag(text, tag_start);
 				if      (is_substr(text, tag_start, _( "<b")))          bold        += 1;
-				else if (is_substr(text, tag_start, _("</b")))          bold        -= 1;
+				else if (is_substr(text, tag_start, (L"</b")))          bold        -= 1;
 				else if (is_substr(text, tag_start, _( "<i")))          italic      += 1;
-				else if (is_substr(text, tag_start, _("</i")))          italic      -= 1;
+				else if (is_substr(text, tag_start, (L"</i")))          italic      -= 1;
 				else if (is_substr(text, tag_start, _( "<sym")))        symbol      += 1;
-				else if (is_substr(text, tag_start, _("</sym")))        symbol      -= 1;
+				else if (is_substr(text, tag_start, (L"</sym")))        symbol      -= 1;
 				else if (is_substr(text, tag_start, _( "<line")))       line        += 1;
-				else if (is_substr(text, tag_start, _("</line")))       line        -= 1;
+				else if (is_substr(text, tag_start, (L"</line")))       line        -= 1;
 				else if (is_substr(text, tag_start, _( "<soft-line")))  soft_line   += 1;
-				else if (is_substr(text, tag_start, _("</soft-line")))  soft_line   -= 1;
+				else if (is_substr(text, tag_start, (L"</soft-line")))  soft_line   -= 1;
 				else if (is_substr(text, tag_start, _( "<sep-soft")))   soft        += 1;
-				else if (is_substr(text, tag_start, _("</sep-soft")))   soft        -= 1;
+				else if (is_substr(text, tag_start, (L"</sep-soft")))   soft        -= 1;
 				else if (is_substr(text, tag_start, _( "<soft")))       soft        += 1; // must be after <soft-line
-				else if (is_substr(text, tag_start, _("</soft")))       soft        -= 1;
+				else if (is_substr(text, tag_start, (L"</soft")))       soft        -= 1;
 				else if (is_substr(text, tag_start, _( "<atom-kwpph"))) kwpph       += 1;
-				else if (is_substr(text, tag_start, _("</atom-kwpph"))) kwpph       -= 1;
+				else if (is_substr(text, tag_start, (L"</atom-kwpph"))) kwpph       -= 1;
 				else if (is_substr(text, tag_start, _( "<code-kw")))    code_kw     += 1;
-				else if (is_substr(text, tag_start, _("</code-kw")))    code_kw     -= 1;
+				else if (is_substr(text, tag_start, (L"</code-kw")))    code_kw     -= 1;
 				else if (is_substr(text, tag_start, _( "<code-str")))   code_string += 1;
-				else if (is_substr(text, tag_start, _("</code-str")))   code_string -= 1;
+				else if (is_substr(text, tag_start, (L"</code-str")))   code_string -= 1;
 				else if (is_substr(text, tag_start, _( "<code")))       code        += 1;
-				else if (is_substr(text, tag_start, _("</code")))       code        -= 1;
+				else if (is_substr(text, tag_start, (L"</code")))       code        -= 1;
 				else if (is_substr(text, tag_start, _( "<color"))) {
-					size_t colon = text.find_first_of(_(">:"), tag_start);
-					if (colon < pos - 1 && text.GetChar(colon) == _(':')) {
+					size_t colon = text.find_first_of((L">:"), tag_start);
+					if (colon < pos - 1 && text.GetChar(colon) == (L':')) {
 						AColor c = parse_acolor(text.substr(colon+1, pos-colon-2));
 						if (!c.Ok()) c = style.font.color;
 						colors.push_back(c);
 					}
-				} else if (is_substr(text, tag_start, _("</color"))) {
+				} else if (is_substr(text, tag_start, (L"</color"))) {
 					if (!colors.empty()) colors.pop_back();
 				}
 				else if (is_substr(text, tag_start, _( "<size"))) {
-					size_t colon = text.find_first_of(_(">:"), tag_start);
-					if (colon < pos - 1 && text.GetChar(colon) == _(':')) {
+					size_t colon = text.find_first_of((L">:"), tag_start);
+					if (colon < pos - 1 && text.GetChar(colon) == (L':')) {
 						double size = style.font.size;
 						String v = text.substr(colon+1, pos-colon-2);
 						v.ToDouble(&size);
 						sizes.push_back(size);
 					}
-				} else if (is_substr(text, tag_start, _("</size"))) {
+				} else if (is_substr(text, tag_start, (L"</size"))) {
 					if (!sizes.empty()) sizes.pop_back();
 				}
 				else if (is_substr(text, tag_start, _( "<ref-param"))) {
@@ -160,10 +160,10 @@ struct TextElementsFromString {
 					}
 					param_ref += 1;
 				}
-				else if (is_substr(text, tag_start, _("</ref-param")))  param_ref   -= 1;
+				else if (is_substr(text, tag_start, (L"</ref-param")))  param_ref   -= 1;
 				else if (is_substr(text, tag_start, _( "<atom-param"))) param       += 1;
-				else if (is_substr(text, tag_start, _("</atom-param"))) param       -= 1;
-				else if (is_substr(text, tag_start, _("<atom"))) {
+				else if (is_substr(text, tag_start, (L"</atom-param"))) param       -= 1;
+				else if (is_substr(text, tag_start, (L"<atom"))) {
 					// 'atomic' indicator
 					size_t end_tag = min(end, match_close_tag(text, tag_start));
 					intrusive_ptr<AtomTextElement> e(new AtomTextElement(pos, end_tag));

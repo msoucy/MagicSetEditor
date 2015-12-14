@@ -26,7 +26,7 @@ extern ScriptValueP dependency_dummy;
 class DependencyDummy : public ScriptIterator {
   public:
 	virtual ScriptType type() const { return SCRIPT_DUMMY; }
-	virtual String typeName() const { return _("dummy"); }
+	virtual String typeName() const { return (L"dummy"); }
 	virtual ScriptValueP next(ScriptValueP*) { return ScriptValueP(); }
 	virtual ScriptValueP dependencyName(const ScriptValue&, const Dependency&) const { return dependency_dummy; }
 };
@@ -46,7 +46,7 @@ class DependencyUnion : public ScriptValue {
 	{}
 	
 	virtual ScriptType type() const { return SCRIPT_DUMMY; }
-	virtual String typeName() const { return _("union of ") + a->typeName() + _(" and ") + b->typeName(); }
+	virtual String typeName() const { return (L"union of ") + a->typeName() + (L" and ") + b->typeName(); }
 	
 	virtual ScriptValueP dependencies(Context& ctx, const Dependency& dep) const {
 		return unified( a->dependencies(ctx,dep), b->dependencies(ctx,dep));
@@ -81,7 +81,7 @@ class ScriptMissingVariable : public ScriptValue {
   public:
 	ScriptMissingVariable(const String& name) : name(name) {}
 	virtual ScriptType type() const { return SCRIPT_NIL; }
-	virtual String typeName() const { return _("missing variable '") + name + _("'"); }
+	virtual String typeName() const { return (L"missing variable '") + name + (L"'"); }
 	virtual String toString() const { return wxEmptyString; }
 	virtual double toDouble() const { return 0.0; }
 	virtual int    toInt()    const { return 0; }

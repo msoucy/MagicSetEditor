@@ -114,7 +114,7 @@ void PackTotalsPanel::draw(DC& dc) {
 void PackTotalsPanel::drawItem(DC& dc, int& y,  const String& name, double value) {
 	wxSize size = dc.GetSize();
 	int w,h;
-	String amount = String::Format(_("%.f"),value);
+	String amount = String::Format((L"%.f"),value);
 	dc.GetTextExtent(amount,&w,&h);
 	dc.DrawText(name,   0,        y);
 	dc.DrawText(amount, size.x-w, y);//align right
@@ -176,7 +176,7 @@ class SelectableLabel : public HoverButtonBase {
 		int w,h;
 		wxSize s = dc.GetSize();
 		dc.GetTextExtent(label,&w,&h);
-		dc.DrawText(interactive && hover ? label + _("...") : label, 2, (s.y-h)/2);
+		dc.DrawText(interactive && hover ? label + (L"...") : label, 2, (s.y-h)/2);
 	}
 	wxSize DoGetBestSize() const {
 		int w,h;
@@ -210,7 +210,7 @@ END_EVENT_TABLE()
 PackAmountPicker::PackAmountPicker(wxWindow* parent, wxFlexGridSizer* sizer, const PackTypeP& pack, bool active)
 	: pack(pack)
 	, label(new SelectableLabel(parent, ID_PACK_TYPE, capitalize_sentence(pack->name), active))
-	, value(new wxSpinCtrl(parent, ID_PACK_AMOUNT, _("0"), wxDefaultPosition, wxSize(50,-1)))
+	, value(new wxSpinCtrl(parent, ID_PACK_AMOUNT, (L"0"), wxDefaultPosition, wxSize(50,-1)))
 {
 	label->setBuddy(value);
 	sizer->Add(label, 1, wxEXPAND | wxALIGN_CENTER_VERTICAL);
@@ -258,7 +258,7 @@ CustomPackDialog::CustomPackDialog(Window* parent, const SetP& set, const PackTy
 {
 	// init ui
 	totals = new PackTotalsPanel(this, wxID_ANY, generator, true);
-	name   = new wxTextCtrl(this, wxID_ANY, edited_pack ? edited_pack->name : _("custom pack"));
+	name   = new wxTextCtrl(this, wxID_ANY, edited_pack ? edited_pack->name : (L"custom pack"));
 	wxButton* remove = 
 		can_remove ? new wxButton(this, ID_REMOVE_ITEM, _BUTTON_("remove item"))
 		           : nullptr;
@@ -590,7 +590,7 @@ int RandomPackPanel::getSeed() {
 }
 void RandomPackPanel::setSeed(int seed) {
 	seed %= 1000000;
-	this->seed->SetValue(wxString::Format(_("%06d"),seed));
+	this->seed->SetValue(wxString::Format((L"%06d"),seed));
 	GameSettings& gs = settings.gameSettingsFor(*set->game);
 	gs.pack_seed = seed;
 }

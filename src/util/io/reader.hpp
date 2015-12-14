@@ -171,7 +171,7 @@ class Reader {
 	/** Maybe the key is "include file" */
 	template <typename T>
 	void unknownKey(T& v) {
-		if (key == _("include_file")) {
+		if (key == (L"include_file")) {
 			InputStreamP stream = openIncludedFile();
 			Reader sub_reader(*stream, package, value, ignore_invalid);
 			if (sub_reader.file_app_version == 0) {

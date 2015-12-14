@@ -37,21 +37,21 @@ RealPoint align_in_rect(Alignment align, const RealSize& to_align, const RealRec
 /// Convert a String to an Alignment
 Alignment from_string(const String& s) {
 	int al = ALIGN_TOP_LEFT;
-	if (s.find(_("left"))             !=String::npos) al = ALIGN_LEFT             | (al & ~ALIGN_HORIZONTAL);
-	if (s.find(_("center"))           !=String::npos) al = ALIGN_CENTER           | (al & ~ALIGN_HORIZONTAL);
-	if (s.find(_("right"))            !=String::npos) al = ALIGN_RIGHT            | (al & ~ALIGN_HORIZONTAL);
+	if (s.find((L"left"))             !=String::npos) al = ALIGN_LEFT             | (al & ~ALIGN_HORIZONTAL);
+	if (s.find((L"center"))           !=String::npos) al = ALIGN_CENTER           | (al & ~ALIGN_HORIZONTAL);
+	if (s.find((L"right"))            !=String::npos) al = ALIGN_RIGHT            | (al & ~ALIGN_HORIZONTAL);
 	
-	if (s.find(_("justify"))          !=String::npos) al = ALIGN_JUSTIFY_WORDS    | (al & ~ALIGN_FILL);
-	if (s.find(_("justify-all"))      !=String::npos) al = ALIGN_JUSTIFY_ALL      | (al & ~ALIGN_FILL);
-	if (s.find(_("shrink"))           !=String::npos) al = ALIGN_STRETCH          | (al & ~ALIGN_FILL);
-	if (s.find(_("stretch"))          !=String::npos) al = ALIGN_STRETCH          | (al & ~ALIGN_FILL); // compatability
+	if (s.find((L"justify"))          !=String::npos) al = ALIGN_JUSTIFY_WORDS    | (al & ~ALIGN_FILL);
+	if (s.find((L"justify-all"))      !=String::npos) al = ALIGN_JUSTIFY_ALL      | (al & ~ALIGN_FILL);
+	if (s.find((L"shrink"))           !=String::npos) al = ALIGN_STRETCH          | (al & ~ALIGN_FILL);
+	if (s.find((L"stretch"))          !=String::npos) al = ALIGN_STRETCH          | (al & ~ALIGN_FILL); // compatability
 	
-	if (s.find(_("overflow"))         !=String::npos) al |= ALIGN_IF_OVERFLOW;
-	if (s.find(_("force"))            ==String::npos) al |= ALIGN_IF_SOFTBREAK; // force = !if_softbreak
+	if (s.find((L"overflow"))         !=String::npos) al |= ALIGN_IF_OVERFLOW;
+	if (s.find((L"force"))            ==String::npos) al |= ALIGN_IF_SOFTBREAK; // force = !if_softbreak
 	
-	if (s.find(_("top"))              !=String::npos) al = ALIGN_TOP              | (al & ~ALIGN_VERTICAL);
-	if (s.find(_("middle"))           !=String::npos) al = ALIGN_MIDDLE           | (al & ~ALIGN_VERTICAL);
-	if (s.find(_("bottom"))           !=String::npos) al = ALIGN_BOTTOM           | (al & ~ALIGN_VERTICAL);
+	if (s.find((L"top"))              !=String::npos) al = ALIGN_TOP              | (al & ~ALIGN_VERTICAL);
+	if (s.find((L"middle"))           !=String::npos) al = ALIGN_MIDDLE           | (al & ~ALIGN_VERTICAL);
+	if (s.find((L"bottom"))           !=String::npos) al = ALIGN_BOTTOM           | (al & ~ALIGN_VERTICAL);
 	
 	return static_cast<Alignment>(al);
 }
@@ -60,23 +60,23 @@ Alignment from_string(const String& s) {
 String to_string(Alignment align) {
 	String ret;
 	// vertical
-	if (align & ALIGN_TOP)    ret += _("top ");
-	if (align & ALIGN_MIDDLE) ret += _("middle ");
-	if (align & ALIGN_BOTTOM) ret += _("bottom ");
+	if (align & ALIGN_TOP)    ret += (L"top ");
+	if (align & ALIGN_MIDDLE) ret += (L"middle ");
+	if (align & ALIGN_BOTTOM) ret += (L"bottom ");
 	// horizontal
-	if (align & ALIGN_LEFT)   ret += _("left ");
-	if (align & ALIGN_CENTER) ret += _("center ");
-	if (align & ALIGN_RIGHT)  ret += _("right ");
+	if (align & ALIGN_LEFT)   ret += (L"left ");
+	if (align & ALIGN_CENTER) ret += (L"center ");
+	if (align & ALIGN_RIGHT)  ret += (L"right ");
 	// fill
 	if (align & ALIGN_FILL) {
 		// force = !if_softbreak && some fill type
-		if (!(align & ALIGN_IF_SOFTBREAK))  ret += _("force ");
+		if (!(align & ALIGN_IF_SOFTBREAK))  ret += (L"force ");
 		// fill
-		if (align & ALIGN_STRETCH)          ret += _("stretch ");
-		if (align & ALIGN_JUSTIFY_WORDS)    ret += _("justify ");
-		if (align & ALIGN_JUSTIFY_ALL)      ret += _("justify-all ");
+		if (align & ALIGN_STRETCH)          ret += (L"stretch ");
+		if (align & ALIGN_JUSTIFY_WORDS)    ret += (L"justify ");
+		if (align & ALIGN_JUSTIFY_ALL)      ret += (L"justify-all ");
 		// modifier
-		if (align & ALIGN_IF_OVERFLOW)      ret += _("if-overflow ");
+		if (align & ALIGN_IF_OVERFLOW)      ret += (L"if-overflow ");
 	}
 	ret.resize(ret.size() - 1); // drop trailing ' '
 	return ret;

@@ -24,9 +24,6 @@
 
 // ----------------------------------------------------------------------------- : Includes
 
-#define UNICODE
-#define _UNICODE
-
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <windows.h>
@@ -73,7 +70,7 @@ int main(int argc, char** argv) {
 		}
 	}
 	break_2:
-	
+
 	// command line
 	TCHAR* command_line = GetCommandLine();
 	if (need_redirection) {
@@ -83,7 +80,7 @@ int main(int argc, char** argv) {
 		_tcscpy(command_line, my_command_line);
 		_tcscat(command_line, _T(" --color"));
 	}
-	
+
 	// application name
 	TCHAR app_path[2048];
 	GetModuleFileName(NULL/*current process*/, app_path, sizeof(app_path)/sizeof(TCHAR));
@@ -95,30 +92,30 @@ int main(int argc, char** argv) {
 		// not a .com file, error message
 		fprintf(stderr, "This executable should be named <something>.com\n");
 	}
-	
+
 	// win32 structures for child program
 	STARTUPINFO child_startup_info;
 	memset(&child_startup_info, 0, sizeof(child_startup_info));
 	memset(&child_process_info, 0, sizeof(child_process_info));
 	child_startup_info.cb = sizeof(child_startup_info);
-	
+
 	// setup redirection
 	if (need_redirection) {
 		// Ctrl+C handler
 		SetConsoleCtrlHandler(HandleCtrlEvent, TRUE);
-		
+
 		// create pipes
 		CreatePipe(&in_theirs, &in_mine,    NULL, 0);
 		CreatePipe(&out_mine,  &out_theirs, NULL, 0);
 		CreatePipe(&err_mine,  &err_theirs, NULL, 0);
-		
+
 		// the actual handles
 		in_real  = GetStdHandle(STD_INPUT_HANDLE);
 		out_real = GetStdHandle(STD_OUTPUT_HANDLE);
 		err_real = GetStdHandle(STD_ERROR_HANDLE);
 		InitEscapeTranslation(out_real);
 		InitEscapeTranslation(err_real);
-		
+
 		// start threads
 		Transfer tranfer_in  = {in_real,  in_mine,  false};
 		Transfer tranfer_out = {out_mine, out_real, true};
@@ -126,7 +123,7 @@ int main(int argc, char** argv) {
 		CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)TransferThread,&tranfer_in, 0,NULL);
 		CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)TransferThread,&tranfer_out,0,NULL);
 		CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)TransferThread,&tranfer_err,0,NULL);
-		
+
 		// give (inheritable copies of) handles to child process
 		HANDLE me = GetCurrentProcess();
 		DuplicateHandle(me,in_theirs, me,&child_startup_info.hStdInput, 0,TRUE,DUPLICATE_CLOSE_SOURCE|DUPLICATE_SAME_ACCESS);
@@ -134,13 +131,13 @@ int main(int argc, char** argv) {
 		DuplicateHandle(me,err_theirs,me,&child_startup_info.hStdError, 0,TRUE,DUPLICATE_CLOSE_SOURCE|DUPLICATE_SAME_ACCESS);
 		child_startup_info.dwFlags = STARTF_USESTDHANDLES;
 	}
-	
+
 	// start the child program
 	if (!CreateProcess(app_path,command_line,NULL,NULL,TRUE,0,NULL,NULL,&child_startup_info,&child_process_info)) {
 		fprintf(stderr, "Unable to start child process.\n");
 		ExitProcess(1);
 	}
-	
+
 	// wait for program to terminate
 	DWORD exit_code = 0;
 	if (need_redirection) {
@@ -148,7 +145,7 @@ int main(int argc, char** argv) {
 		WaitForSingleObject(child_process_info.hProcess, INFINITE);
 		GetExitCodeProcess(child_process_info.hProcess, &exit_code);
 	}
-	
+
 	// That's all folks!
 	if (need_redirection) {
 		FinishEscapeTranslation(out_real);

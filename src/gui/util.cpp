@@ -135,34 +135,34 @@ Image load_resource_image(const String& name) {
 		// Load resource
 		// based on wxLoadUserResource
 		// The image can be in an IMAGE resource, in any file format
-		HRSRC hResource = ::FindResource(wxGetInstance(), name, _("IMAGE"));
-		if ( hResource == 0 ) throw InternalError(String::Format(_("Resource not found: %s"), name));
-		
+		HRSRC hResource = ::FindResource(wxGetInstance(), name, (L"IMAGE"));
+		if ( hResource == 0 ) throw InternalError(String::Format((L"Resource not found: %s"), name));
+
 		HGLOBAL hData = ::LoadResource(wxGetInstance(), hResource);
-		if ( hData == 0 ) throw InternalError(String::Format(_("Resource not an image: %s"), name));
-		
+		if ( hData == 0 ) throw InternalError(String::Format((L"Resource not an image: %s"), name));
+
 		char* data = (char *)::LockResource(hData);
-		if ( !data ) throw InternalError(String::Format(_("Resource cannot be locked: %s"), name));
-		
+		if ( !data ) throw InternalError(String::Format((L"Resource cannot be locked: %s"), name));
+
 		int len = ::SizeofResource(wxGetInstance(), hResource);
 		wxMemoryInputStream stream(data, len);
 		return wxImage(stream);
 	#elif defined(__linux__)
-		static String path = getDataDir() + _("/resource/");
+		static String path = getDataDir() + (L"/resource/");
 		String file = path + name;
 		wxImage resource;
-		if (wxFileExists(file + _(".png"))) resource.LoadFile(file + _(".png"));
-		else if (wxFileExists(file + _(".bmp"))) resource.LoadFile(file + _(".bmp"));
-		else if (wxFileExists(file + _(".ico"))) resource.LoadFile(file + _(".ico"));
-		else if (wxFileExists(file + _(".cur"))) resource.LoadFile(file + _(".cur"));
+		if (wxFileExists(file + (L".png"))) resource.LoadFile(file + (L".png"));
+		else if (wxFileExists(file + (L".bmp"))) resource.LoadFile(file + (L".bmp"));
+		else if (wxFileExists(file + (L".ico"))) resource.LoadFile(file + (L".ico"));
+		else if (wxFileExists(file + (L".cur"))) resource.LoadFile(file + (L".cur"));
 		if (resource.Ok()) return resource;
-        static String local_path = getUserDataDir() + _("/resource/");
+        static String local_path = getUserDataDir() + (L"/resource/");
         file = local_path + name;
-        if (wxFileExists(file + _(".png"))) resource.LoadFile(file + _(".png"));
-        else if (wxFileExists(file + _(".bmp"))) resource.LoadFile(file + _(".bmp"));
-        else if (wxFileExists(file + _(".ico"))) resource.LoadFile(file + _(".ico"));
-        else if (wxFileExists(file + _(".cur"))) resource.LoadFile(file + _(".cur"));
-        if (!resource.Ok()) handle_error(InternalError(String(_("Cannot find resource file at ")) + path + name + _(" or ") + file));
+        if (wxFileExists(file + (L".png"))) resource.LoadFile(file + (L".png"));
+        else if (wxFileExists(file + (L".bmp"))) resource.LoadFile(file + (L".bmp"));
+        else if (wxFileExists(file + (L".ico"))) resource.LoadFile(file + (L".ico"));
+        else if (wxFileExists(file + (L".cur"))) resource.LoadFile(file + (L".cur"));
+        if (!resource.Ok()) handle_error(InternalError(String((L"Cannot find resource file at ")) + path + name + (L" or ") + file));
 		return resource;
 	#else
 		#error Handling of resource loading needs to be declared.
@@ -171,33 +171,33 @@ Image load_resource_image(const String& name) {
 
 wxCursor load_resource_cursor(const String& name) {
 	#if defined(__WXMSW__)
-		return wxCursor(_("cursor/") + name, wxBITMAP_TYPE_CUR_RESOURCE);
+		return wxCursor((L"cursor/") + name, wxBITMAP_TYPE_CUR_RESOURCE);
 	#else
-		return wxCursor(load_resource_image(_("cursor/") + name));
+		return wxCursor(load_resource_image((L"cursor/") + name));
 	#endif
 }
 
 wxIcon load_resource_icon(const String& name) {
 	#if defined(__WXMSW__)
-		return wxIcon(_("icon/") + name);
+		return wxIcon((L"icon/") + name);
 	#else
-		static String path = getDataDir() + _("/resource/icon/");
-        static String local_path = getUserDataDir() + _("/resource/icon/");
-        if (wxFileExists(path + name + _(".ico"))) return wxIcon(path + name + _(".ico"), wxBITMAP_TYPE_ICO);
-        else return wxIcon(local_path + name + _(".ico"), wxBITMAP_TYPE_ICO);
+		static String path = getDataDir() + (L"/resource/icon/");
+        static String local_path = getUserDataDir() + (L"/resource/icon/");
+        if (wxFileExists(path + name + (L".ico"))) return wxIcon(path + name + (L".ico"), wxBITMAP_TYPE_ICO);
+        else return wxIcon(local_path + name + (L".ico"), wxBITMAP_TYPE_ICO);
 	#endif
 }
 
 wxBitmap load_resource_tool_image(const String& name) {
 	#if defined(__WXMSW__)
-		return load_resource_image(_("tool/") + name);
+		return load_resource_image((L"tool/") + name);
 	#else
-		return load_resource_image(_("tool/") + name);
+		return load_resource_image((L"tool/") + name);
 	#endif
 }
 
 
-#if defined(_UNICODE) && defined(_MSC_VER) && _MSC_VER >= 1400
+#if defined(_MSC_VER) && _MSC_VER >= 1400
 // manifest to use new-style controls in Windows Vista / Windows 7
 #if defined _M_IX86
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
@@ -306,7 +306,7 @@ void draw_drop_down_arrow(Window* win, DC& dc, const wxRect& rect, bool active) 
 	if (w == -1) {
 		w = wxSystemSettings::GetMetric(wxSYS_VSCROLL_X); // Try just the scrollbar, then.
 	}
-	rn.DrawComboBoxDropButton(win, dc, 
+	rn.DrawComboBoxDropButton(win, dc,
 		wxRect(rect.x + rect.width - w, rect.y, w, rect.height)
 		, active ? wxCONTROL_PRESSED : 0);
 }

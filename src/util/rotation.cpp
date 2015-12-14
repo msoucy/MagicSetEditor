@@ -354,7 +354,7 @@ double RotatedDC::GetCharHeight() const {
 	#ifdef __WXGTK__
 		// See above HACK
 		int extent;
-		dc.GetTextExtent(_("H"), 0, &extent);
+		dc.GetTextExtent((L"H"), 0, &extent);
 		if (h != extent)
 			h = 2 * extent - h;
 	#endif

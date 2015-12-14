@@ -30,20 +30,20 @@ typedef void (*ReaderPragmaHandler)(String&);
 DECLARE_DYNAMIC_ARG(ReaderPragmaHandler,reader_pragma_handler);
 
 void ignore_add_pragma(String& str) {
-	if      (starts_with(str,_("#_ADD "))) str = str.substr(6);
-	else if (starts_with(str,_("#_ADD")))  str = str.substr(5);
-	else if (starts_with(str,_("#_DEL")))  str.clear();
+	if      (starts_with(str,(L"#_ADD "))) str = str.substr(6);
+	else if (starts_with(str,(L"#_ADD")))  str = str.substr(5);
+	else if (starts_with(str,(L"#_DEL")))  str.clear();
 }
 
 // ----------------------------------------------------------------------------- : Locale class
 
 LocaleP the_locale;
 
-String Locale::typeName() const { return _("locale"); }
+String Locale::typeName() const { return (L"locale"); }
 Version Locale::fileVersion() const { return file_version_locale; }
 
 LocaleP Locale::byName(const String& name) {
-	return package_manager.open<Locale>(name + _(".mse-locale"));
+	return package_manager.open<Locale>(name + (L".mse-locale"));
 }
 
 IMPLEMENT_REFLECTION_NO_SCRIPT(Locale) {
@@ -69,7 +69,7 @@ IMPLEMENT_REFLECTION_NO_GET_MEMBER(SubLocale) {
 // ----------------------------------------------------------------------------- : Wildcards
 
 bool match_wildcard(const String& wildcard, const String& name) {
-	return Regex(replace_all(replace_all(wildcard, _("."), _("\\.")), _("*"), _(".*"))).matches(name);
+	return Regex(replace_all(replace_all(wildcard, (L"."), (L"\\.")), (L"*"), (L".*"))).matches(name);
 }
 
 SubLocaleP find_wildcard(map<String,SubLocaleP>& items, const String& name) {
@@ -85,7 +85,7 @@ SubLocaleP find_wildcard_and_set(map<String,SubLocaleP>& items, const String& na
 // ----------------------------------------------------------------------------- : Translation
 
 String warn_and_identity(const String& key) {
-	queue_message(MESSAGE_WARNING, _("Missing key in locale: ") + key);
+	queue_message(MESSAGE_WARNING, (L"Missing key in locale: ") + key);
 	return key;
 }
 String identity(const String& key) {
@@ -101,7 +101,7 @@ String SubLocale::tr(const String& key, DefaultLocaleFun def) {
 	}
 }
 String SubLocale::tr(const String& subcat, const String& key, DefaultLocaleFun def) {
-	map<String,String>::const_iterator it = translations.find(subcat + _("_") + canonical_name_form(key));
+	map<String,String>::const_iterator it = translations.find(subcat + (L"_") + canonical_name_form(key));
 	if (it == translations.end()) {
 		return def(key);
 	} else {
@@ -160,7 +160,7 @@ class LocaleValidator {
 
 template <> void Reader::handle(KeyValidator& k) {
 	String v = getValue();
-	if (starts_with(v, _("optional, "))) {
+	if (starts_with(v, (L"optional, "))) {
 		k.optional = true;
 		v = v.substr(10);
 	} else {
@@ -186,11 +186,11 @@ int string_format_args(const String& str) {
 	bool in_percent = false;
 	for(const auto& c : str) {
 		if (in_percent) {
-			if (c == _('s')) {
+			if (c == (L's')) {
 				count++;
 			}
 			in_percent = false;
-		} else if (c == _('%')) {
+		} else if (c == (L'%')) {
 			in_percent = true;
 		}
 	}
@@ -203,17 +203,17 @@ int string_format_args(const String& str) {
 InputStreamP load_resource_text(const String& name);
 InputStreamP load_resource_text(const String& name) {
 	#if defined(__WXMSW__)
-		HRSRC hResource = ::FindResource(wxGetInstance(), name, _("TEXT"));
-		if ( hResource == 0 ) throw InternalError(String::Format(_("Resource not found: %s"), name));
+		HRSRC hResource = ::FindResource(wxGetInstance(), name, (L"TEXT"));
+		if ( hResource == 0 ) throw InternalError(String::Format((L"Resource not found: %s"), name));
 		HGLOBAL hData = ::LoadResource(wxGetInstance(), hResource);
-		if ( hData == 0 ) throw InternalError(String::Format(_("Resource not text: %s"), name));
+		if ( hData == 0 ) throw InternalError(String::Format((L"Resource not text: %s"), name));
 		char* data = (char *)::LockResource(hData);
-		if ( !data ) throw InternalError(String::Format(_("Resource cannot be locked: %s"), name));
+		if ( !data ) throw InternalError(String::Format((L"Resource cannot be locked: %s"), name));
 		int len = ::SizeofResource(wxGetInstance(), hResource);
 		return shared(new wxMemoryInputStream(data, len));
 	#else
-        static String path = getDataDir() + _("/resource/");
-        static String local_path = getUserDataDir() + _("/resource/");
+        static String path = getDataDir() + (L"/resource/");
+        static String local_path = getUserDataDir() + (L"/resource/");
         if (wxFileExists(path + name)) return shared(new wxFileInputStream(path + name));
         else return shared(new wxFileInputStream(local_path + name));
 	#endif
@@ -226,34 +226,34 @@ void Locale::validate(Version ver) {
 	// load locale validator
 	LocaleValidator v;
 	{
-		InputStreamP stream = load_resource_text(_("expected_locale_keys"));
-		Reader reader(*stream, nullptr, _("expected_locale_keys"));
+		InputStreamP stream = load_resource_text((L"expected_locale_keys"));
+		Reader reader(*stream, nullptr, (L"expected_locale_keys"));
 		reader.handle_greedy(v);
 	}
 	// validate
 	String errors;
-	errors += translations[LOCALE_CAT_MENU   ].validate(_("menu"),    v.sublocales[_("menu")   ]);
-	errors += translations[LOCALE_CAT_HELP   ].validate(_("help"),    v.sublocales[_("help")   ]);
-	errors += translations[LOCALE_CAT_TOOL   ].validate(_("tool"),    v.sublocales[_("tool")   ]);
-	errors += translations[LOCALE_CAT_TOOLTIP].validate(_("tooltip"), v.sublocales[_("tooltip")]);
-	errors += translations[LOCALE_CAT_LABEL  ].validate(_("label"),   v.sublocales[_("label")  ]);
-	errors += translations[LOCALE_CAT_BUTTON ].validate(_("button"),  v.sublocales[_("button") ]);
-	errors += translations[LOCALE_CAT_TITLE  ].validate(_("title"),   v.sublocales[_("title")  ]);
-	errors += translations[LOCALE_CAT_ACTION ].validate(_("action"),  v.sublocales[_("action") ]);
-	errors += translations[LOCALE_CAT_ERROR  ].validate(_("error"),   v.sublocales[_("error")  ]);
-	errors += translations[LOCALE_CAT_TYPE   ].validate(_("type"),    v.sublocales[_("type")   ]);
+	errors += translations[LOCALE_CAT_MENU   ].validate((L"menu"),    v.sublocales[(L"menu")   ]);
+	errors += translations[LOCALE_CAT_HELP   ].validate((L"help"),    v.sublocales[(L"help")   ]);
+	errors += translations[LOCALE_CAT_TOOL   ].validate((L"tool"),    v.sublocales[(L"tool")   ]);
+	errors += translations[LOCALE_CAT_TOOLTIP].validate((L"tooltip"), v.sublocales[(L"tooltip")]);
+	errors += translations[LOCALE_CAT_LABEL  ].validate((L"label"),   v.sublocales[(L"label")  ]);
+	errors += translations[LOCALE_CAT_BUTTON ].validate((L"button"),  v.sublocales[(L"button") ]);
+	errors += translations[LOCALE_CAT_TITLE  ].validate((L"title"),   v.sublocales[(L"title")  ]);
+	errors += translations[LOCALE_CAT_ACTION ].validate((L"action"),  v.sublocales[(L"action") ]);
+	errors += translations[LOCALE_CAT_ERROR  ].validate((L"error"),   v.sublocales[(L"error")  ]);
+	errors += translations[LOCALE_CAT_TYPE   ].validate((L"type"),    v.sublocales[(L"type")   ]);
 	// errors?
 	if (!errors.empty()) {
 		if (ver != file_version_locale) {
-			errors = _("Errors in locale file ") + short_name + _(":") + errors;
+			errors = (L"Errors in locale file ") + short_name + (L":") + errors;
 		} else {
-			errors = _("Errors in locale file ") + short_name +
-			         _("\nThis is probably because the locale was made for a different version of MSE.") + errors;
+			errors = (L"Errors in locale file ") + short_name +
+			         (L"\nThis is probably because the locale was made for a different version of MSE.") + errors;
 		}
 	} else if (ver != file_version_locale) {
-			errors = _("Errors in locale file ") + short_name + _(":")
-			       + _("\n  Locale file out of date, expected: mse version: ") + file_version_locale.toString()
-			       + _("\n  found: ") + ver.toString();
+			errors = (L"Errors in locale file ") + short_name + (L":")
+			       + (L"\n  Locale file out of date, expected: mse version: ") + file_version_locale.toString()
+			       + (L"\n  found: ") + ver.toString();
 	}
 	if (!errors.empty()) {
 		queue_message(MESSAGE_WARNING, errors);
@@ -262,7 +262,7 @@ void Locale::validate(Version ver) {
 
 String SubLocale::validate(const String& name, const SubLocaleValidatorP& v) const {
 	if (!v) {
-		return _("\nInternal error validating local file: expected keys file missing for \"") + name + _("\" section.");
+		return (L"\nInternal error validating local file: expected keys file missing for \"") + name + (L"\" section.");
 	}
 	String errors;
 	// 1. keys in v but not in this, check arg count
@@ -270,11 +270,11 @@ String SubLocale::validate(const String& name, const SubLocaleValidatorP& v) con
 		map<String,String>::const_iterator it = translations.find(kc.first);
 		if (it == translations.end()) {
 			if (!kc.second.optional) {
-				errors += _("\n   Missing key:\t\t\t") + name + _(": ") + kc.first;
+				errors += (L"\n   Missing key:\t\t\t") + name + (L": ") + kc.first;
 			}
 		} else if (string_format_args(it->second) != kc.second.args) {
-			errors += _("\n   Incorrect number of arguments for:\t") + name + _(": ") + kc.first
-			       +  String::Format(_("\t  expected: %d, found %d"), kc.second.args, string_format_args(it->second));
+			errors += (L"\n   Incorrect number of arguments for:\t") + name + (L": ") + kc.first
+			       +  String::Format((L"\t  expected: %d, found %d"), kc.second.args, string_format_args(it->second));
 		}
 	}
 	// 2. keys in this but not in v
@@ -286,7 +286,7 @@ String SubLocale::validate(const String& name, const SubLocaleValidatorP& v) con
 			//   help:
 			//       file:
 			//       new set: blah blah
-			errors += _("\n   Unexpected key:\t\t\t") + name + _(": ") + kv.first;
+			errors += (L"\n   Unexpected key:\t\t\t") + name + (L": ") + kv.first;
 		}
 	}
 	return errors;

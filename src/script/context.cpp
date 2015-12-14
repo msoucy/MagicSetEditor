@@ -39,7 +39,7 @@ void instrQuaternary(QuaternaryInstructionType i, ScriptValueP& a, const ScriptV
 
 ScriptValueP Context::eval(const Script& script, bool useScope) {
 	if (level > 500) {
-		throw ScriptError(_("Stack overflow"));
+		throw ScriptError((L"Stack overflow"));
 	}
 	
 	size_t stack_size = stack.size();
@@ -389,7 +389,7 @@ class ScriptCompose : public ScriptValue {
 	ScriptCompose(ScriptValueP a, ScriptValueP b) : a(a), b(b) {}
 	
 	virtual ScriptType type() const { return SCRIPT_FUNCTION; }
-	virtual String typeName() const { return _("function composition"); }
+	virtual String typeName() const { return (L"function composition"); }
 
 	virtual ScriptValueP dependencies(Context& ctx, const Dependency& dep) const {
 		ctx.setVariable(SCRIPT_VAR_input, a->dependencies(ctx, dep));
@@ -540,7 +540,7 @@ void instrBinary (BinaryInstructionType  i, ScriptValueP& a, const ScriptValueP&
 			if (at == SCRIPT_ERROR) a = b;
 			break;
 		case I_ITERATOR_R: case I_MEMBER:
-			throw InternalError(_("ITERATOR_R/MEMBER instruction fell through!"));
+			throw InternalError((L"ITERATOR_R/MEMBER instruction fell through!"));
 	}}
 }
 

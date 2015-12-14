@@ -19,9 +19,9 @@ using std::pair;
 
 String user_settings_dir();
 String image_cache_dir() {
-	String dir = user_settings_dir() + _("/cache");
+	String dir = user_settings_dir() + (L"/cache");
 	if (!wxDirExists(dir)) wxMkdir(dir);
-	return dir + _("/");
+	return dir + (L"/");
 }
 
 /// A name that is safe to use as a filename, for the cache
@@ -30,10 +30,10 @@ String safe_filename(const String& str) {
 	for(const auto& c : str) {
 		if (isAlnum(c)) {
 			ret += c;
-		} else if (c==_(' ') || c==_('-')) {
-			ret += _('-');
+		} else if (c==(L' ') || c==(L'-')) {
+			ret += (L'-');
 		} else {
-			ret += _('_');
+			ret += (L'_');
 		}
 	}
 	return ret;
@@ -82,7 +82,7 @@ wxThread::ExitCode ThumbnailThreadWorker::Entry() {
 		}
 		// store in cache
 		if (img.Ok()) {
-			String filename = image_cache_dir() + safe_filename(current->cache_name) + _(".png");
+			String filename = image_cache_dir() + safe_filename(current->cache_name) + (L".png");
 			img.SaveFile(filename, wxBITMAP_TYPE_PNG);
 			// set modification time
 			wxFileName fn(filename);
@@ -120,7 +120,7 @@ void ThumbnailThread::request(const ThumbnailRequestP& request) {
 		return;
 	}
 	// Is the image in the cache?
-	String filename = image_cache_dir() + safe_filename(request->cache_name) + _(".png");
+	String filename = image_cache_dir() + safe_filename(request->cache_name) + (L".png");
 	wxFileName fn(filename);
 	if (fn.FileExists()) {
 		wxDateTime modified;
@@ -155,7 +155,7 @@ void ThumbnailThread::request(const ThumbnailRequestP& request) {
 		}
 		// store in cache
 		if (img.Ok()) {
-			String filename = image_cache_dir() + safe_filename(request->cache_name) + _(".png");
+			String filename = image_cache_dir() + safe_filename(request->cache_name) + (L".png");
 			img.SaveFile(filename, wxBITMAP_TYPE_PNG);
 			// set modification time
 			wxFileName fn(filename);

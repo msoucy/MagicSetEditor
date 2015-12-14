@@ -43,9 +43,9 @@ Variable string_to_variable(const String& s) {
  */
 String variable_to_string(Variable v) {
 	for(auto& vi : variables) {
-		if (vi.second == v) return replace_all(vi.first, _(" "), _("_"));
+		if (vi.second == v) return replace_all(vi.first, (L" "), (L"_"));
 	}
-	throw InternalError(String(_("Variable not found: ")) << v);
+	throw InternalError(String((L"Variable not found: ")) << v);
 }
 
 // ----------------------------------------------------------------------------- : CommonVariables
@@ -88,7 +88,7 @@ ScriptType Script::type() const {
 	return SCRIPT_FUNCTION;
 }
 String Script::typeName() const {
-	return _("function");
+	return (L"function");
 }
 ScriptValueP Script::do_eval(Context& ctx, bool openScope) const {
 	return ctx.eval(*this, openScope);
@@ -157,84 +157,84 @@ String Script::dumpScript() const {
 	int pos = 0;
 	for(const auto& i : instructions) {
 		wxLogDebug(dumpInstr(pos, i));
-		ret += dumpInstr(pos++, i) + _("\n");
+		ret += dumpInstr(pos++, i) + (L"\n");
 	}
 	return ret;
 }
 
 String Script::dumpInstr(unsigned int pos, Instruction i) const {
-	String ret = String::Format(_("%d:\t"),pos);
+	String ret = String::Format((L"%d:\t"),pos);
 	// instruction
 	switch (i.instr) {
-		case I_NOP:			ret += _("nop");		break;
-		case I_PUSH_CONST:	ret += _("push");		break;
-		case I_JUMP:		ret += _("jump");		break;
-		case I_JUMP_IF_NOT:	ret += _("jnz");		break;
-		case I_JUMP_SC_AND:	ret += _("jump sc and");break;
-		case I_JUMP_SC_OR:	ret += _("jump sc or");	break;
-		case I_GET_VAR:		ret += _("get");		break;
-		case I_SET_VAR:		ret += _("set");		break;
-		case I_MEMBER_C:	ret += _("member_c");	break;
-		case I_LOOP:		ret += _("loop");		break;
-		case I_LOOP_WITH_KEY:ret += _("loop with key"); break;
-		case I_MAKE_OBJECT:	ret += _("make object");break;
-		case I_CALL:		ret += _("call");		break;
-		case I_CLOSURE:		ret += _("closure");	break;
-		case I_UNARY:		ret += _("unary\t");
+		case I_NOP:			ret += (L"nop");		break;
+		case I_PUSH_CONST:	ret += (L"push");		break;
+		case I_JUMP:		ret += (L"jump");		break;
+		case I_JUMP_IF_NOT:	ret += (L"jnz");		break;
+		case I_JUMP_SC_AND:	ret += (L"jump sc and");break;
+		case I_JUMP_SC_OR:	ret += (L"jump sc or");	break;
+		case I_GET_VAR:		ret += (L"get");		break;
+		case I_SET_VAR:		ret += (L"set");		break;
+		case I_MEMBER_C:	ret += (L"member_c");	break;
+		case I_LOOP:		ret += (L"loop");		break;
+		case I_LOOP_WITH_KEY:ret += (L"loop with key"); break;
+		case I_MAKE_OBJECT:	ret += (L"make object");break;
+		case I_CALL:		ret += (L"call");		break;
+		case I_CLOSURE:		ret += (L"closure");	break;
+		case I_UNARY:		ret += (L"unary\t");
 			switch (i.instr1) {
-				case I_ITERATOR_C:	ret += _("iterator_c");	break;
-				case I_NEGATE:		ret += _("negate");		break;
-				case I_NOT:			ret += _("not");		break;
+				case I_ITERATOR_C:	ret += (L"iterator_c");	break;
+				case I_NEGATE:		ret += (L"negate");		break;
+				case I_NOT:			ret += (L"not");		break;
 			}
 			break;
-		case I_BINARY:		ret += _("binary\t");
+		case I_BINARY:		ret += (L"binary\t");
 			switch (i.instr2) {
-				case I_ITERATOR_R:	ret += _("iterator_r");	break;
-				case I_MEMBER:		ret += _("member");		break;
-				case I_ADD:			ret += _("+");			break;
-				case I_SUB:			ret += _("-");			break;
-				case I_MUL:			ret += _("*");			break;
-				case I_DIV:			ret += _("/");			break;
-				case I_MOD:			ret += _("mod");		break;
-				case I_AND:			ret += _("and");		break;
-				case I_OR:			ret += _("or");			break;
-				case I_XOR:			ret += _("xor");		break;
-				case I_EQ:			ret += _("==");			break;
-				case I_NEQ:			ret += _("!=");			break;
-				case I_LT:			ret += _("<");			break;
-				case I_GT:			ret += _(">");			break;
-				case I_LE:			ret += _("<=");			break;
-				case I_GE:			ret += _(">=");			break;
-				case I_OR_ELSE:		ret += _("or else");	break;
+				case I_ITERATOR_R:	ret += (L"iterator_r");	break;
+				case I_MEMBER:		ret += (L"member");		break;
+				case I_ADD:			ret += (L"+");			break;
+				case I_SUB:			ret += (L"-");			break;
+				case I_MUL:			ret += (L"*");			break;
+				case I_DIV:			ret += (L"/");			break;
+				case I_MOD:			ret += (L"mod");		break;
+				case I_AND:			ret += (L"and");		break;
+				case I_OR:			ret += (L"or");			break;
+				case I_XOR:			ret += (L"xor");		break;
+				case I_EQ:			ret += (L"==");			break;
+				case I_NEQ:			ret += (L"!=");			break;
+				case I_LT:			ret += (L"<");			break;
+				case I_GT:			ret += (L">");			break;
+				case I_LE:			ret += (L"<=");			break;
+				case I_GE:			ret += (L">=");			break;
+				case I_OR_ELSE:		ret += (L"or else");	break;
 			}
 			break;
-		case I_TERNARY:		ret += _("ternary\t");
+		case I_TERNARY:		ret += (L"ternary\t");
 			switch (i.instr3) {
-				case I_RGB:			ret += _("rgb");		break;
+				case I_RGB:			ret += (L"rgb");		break;
 			}
 			break;
-		case I_QUATERNARY:	ret += _("quaternary\t");
+		case I_QUATERNARY:	ret += (L"quaternary\t");
 			switch (i.instr3) {
-				case I_RGBA:		ret += _("rgba");		break;
+				case I_RGBA:		ret += (L"rgba");		break;
 			}
 			break;
-		case I_DUP:			ret += _("dup");				break;
-		case I_POP:			ret += _("pop");				break;
-		case I_TAILCALL:	ret += _("tailcall");			break;
+		case I_DUP:			ret += (L"dup");				break;
+		case I_POP:			ret += (L"pop");				break;
+		case I_TAILCALL:	ret += (L"tailcall");			break;
 	}
 	// arg
 	switch (i.instr) {
 		case I_PUSH_CONST: case I_MEMBER_C:							// const
-			ret += _("\t") + constants[i.data]->typeName();
+			ret += (L"\t") + constants[i.data]->typeName();
 			break;
 		case I_JUMP: case I_JUMP_IF_NOT: case I_JUMP_SC_AND: case I_JUMP_SC_OR:
 		case I_LOOP: case I_LOOP_WITH_KEY:
 		case I_MAKE_OBJECT:
 		case I_CALL: case I_CLOSURE: case I_DUP:	// int
-			ret += String::Format(_("\t%d"), i.data);
+			ret += String::Format((L"\t%d"), i.data);
 			break;
 		case I_GET_VAR: case I_SET_VAR: case I_NOP:					// variable
-			ret += _("\t") + variable_to_string((Variable)i.data);
+			ret += (L"\t") + variable_to_string((Variable)i.data);
 			break;
 	}
 	return ret;
@@ -330,24 +330,24 @@ const Instruction* Script::backtraceSkip(const Instruction* instr, int to_skip) 
 }
 
 String Script::instructionName(const Instruction* instr) const {
-	if (instr < &instructions[0] || instr >= &instructions[0] + instructions.size()) return _("??\?");
+	if (instr < &instructions[0] || instr >= &instructions[0] + instructions.size()) return (L"??\?");
 	if (instr->instr == I_GET_VAR) {
 		return variable_to_string((Variable)instr->data);
 	} else if (instr->instr == I_MEMBER_C) {
 		return instructionName(backtraceSkip(instr - 1, 0))
-		     + _(".")
+		     + (L".")
 		     + constants[instr->data]->toString();
 	} else if (instr->instr == I_BINARY && instr->instr2 == I_MEMBER) {
-		return _("??\?[...]");
+		return (L"??\?[...]");
 	} else if (instr->instr == I_BINARY && instr->instr2 == I_ADD) {
-		return _("??? + ???");
+		return (L"??? + ???");
 	} else if (instr->instr == I_NOP) {
-		return _("??\?(...)");
+		return (L"??\?(...)");
 	} else if (instr->instr == I_CALL) {
-		return instructionName(backtraceSkip(instr - 1, instr->data)) + _("(...)");
+		return instructionName(backtraceSkip(instr - 1, instr->data)) + (L"(...)");
 	} else if (instr->instr == I_CLOSURE) {
-		return instructionName(backtraceSkip(instr - 1, instr->data)) + _("@(...)");
+		return instructionName(backtraceSkip(instr - 1, instr->data)) + (L"@(...)");
 	} else {
-		return _("??\?");
+		return (L"??\?");
 	}
 }
