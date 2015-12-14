@@ -128,11 +128,11 @@ ScriptValueP& Set::value(const String& name) {
 			return (*it)->value;
 		}
 	}
-	throw InternalError(_("Expected a set field with name '")+name+_("'"));
+	throw InternalError((L"Expected a set field with name '")+name+(L"'"));
 }
 
 
-String Set::typeName() const { return _("set"); }
+String Set::typeName() const { return (L"set"); }
 Version Set::fileVersion() const { return file_version_set; }
 
 void Set::validate(Version file_app_version) {
@@ -195,12 +195,12 @@ void Set::reflect_cards<Writer> (Writer& reflector) {
 		for(auto& card : cards) {
 			// pick a unique filename for this card
 			// can't use Package::newFileName, because then we get conflicts with the previous save of the same card
-			String filename = _("card ") + normalize_internal_filename(clean_filename(card->identification()));
+			String filename = (L"card ") + normalize_internal_filename(clean_filename(card->identification()));
 			String full_name = filename;
 			int i = 0;
 
 			while (used.find(full_name) != used.end()) {
-				full_name = String(filename) << _(".") << ++i;
+				full_name = String(filename) << (L".") << ++i;
 			}
 			used.insert(full_name);
 
@@ -210,7 +210,7 @@ void Set::reflect_cards<Writer> (Writer& reflector) {
 			{
 				OutputStreamP stream = openOut(full_name);
 				Writer writer(*stream, app_version);
-				writer.handle(_("card"), card);
+				writer.handle((L"card"), card);
 			}
 			referenceFile(full_name);
 			REFLECT_N("include_file", full_name);
@@ -226,12 +226,12 @@ ScriptValueP make_iterator(const Set& set) {
 
 void mark_dependency_member(const Set& set, const String& name, const Dependency& dep) {
 	// is it the card list?
-	if (name == _("cards")) {
+	if (name == (L"cards")) {
 		set.game->dependent_scripts_cards.add(dep);
 		return;
 	}
 	// is it the keywords?
-	if (name == _("keywords")) {
+	if (name == (L"keywords")) {
 		set.game->dependent_scripts_keywords.add(dep);
 		return;
 	}
@@ -263,7 +263,7 @@ int Set::positionOfCard(const CardP& card, const ScriptValueP& order_by, const S
 		}
 		#if USE_SCRIPT_PROFILING
 			Timer t;
-			Profiler prof(t, order_by.get(), _("init order cache"));
+			Profiler prof(t, order_by.get(), (L"init order cache"));
 		#endif
 		// 3. initialize order cache
 		order = intrusive(new OrderCache<CardP>(cards, values, filter ? &keep : nullptr));

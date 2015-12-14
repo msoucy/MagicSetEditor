@@ -44,7 +44,7 @@ Rotation UnzoomedDataViewer::getRotation() const {
 }
 
 Bitmap export_bitmap(const SetP& set, const CardP& card) {
-	if (!set) throw Error(_("no set"));
+	if (!set) throw Error((L"no set"));
 	// create viewer
 	UnzoomedDataViewer viewer(!settings.stylesheetSettingsFor(set->stylesheetFor(card)).card_normal_export());
 	viewer.setSet(set);
@@ -53,7 +53,7 @@ Bitmap export_bitmap(const SetP& set, const CardP& card) {
 	RealSize size = viewer.getRotation().getExternalSize();
 	// create bitmap & dc
 	Bitmap bitmap((int) size.width, (int) size.height);
-	if (!bitmap.Ok()) throw InternalError(_("Unable to create bitmap"));
+	if (!bitmap.Ok()) throw InternalError((L"Unable to create bitmap"));
 	wxMemoryDC dc;
 	dc.SelectObject(bitmap);
 	// draw

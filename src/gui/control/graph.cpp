@@ -50,15 +50,15 @@ void GraphDataPre::splitList(size_t axis) {
 	for (size_t i = 0 ; i < count ; ++i) {
 		GraphElement& e = *elements[i];
 		String& v = e.values[axis];
-		size_t comma = v.find_first_of(_(','));
+		size_t comma = v.find_first_of((L','));
 		while (comma != String::npos) {
 			// split
 			GraphElementP e2(new GraphElement(e));
 			e2->values[axis] = v.substr(0,comma);
 			elements.push_back(e2);
-			if (is_substr(v, comma, _(", "))) ++comma; // skip space after it
+			if (is_substr(v, comma, (L", "))) ++comma; // skip space after it
 			v = v.substr(comma + 1);
-			comma = v.find_first_of(_(','));
+			comma = v.find_first_of((L','));
 		}
 	}
 	// re-sort by original_index
@@ -75,7 +75,7 @@ String to_bin(double value, double bin_size) {
 		return String() << (int)value;
 	} else {
 		int bin = ceil(value / bin_size);
-		return String::Format(_("%.0f%c%.0f"), (bin-1) * bin_size + 1, EN_DASH, bin * bin_size);
+		return String::Format((L"%.0f%c%.0f"), (bin-1) * bin_size + 1, EN_DASH, bin * bin_size);
 	}
 }
 int bin_to_group(double value, double bin_size) {
@@ -728,8 +728,8 @@ void GraphStats::setData(const GraphDataP& d) {
 	values.clear();
 	if (!axis.numeric) return;
 	if (axis.groups.empty()) return;
-	values.push_back(make_pair(_("max"),  String::Format(_("%.2f"), axis.max_value)));
-	values.push_back(make_pair(_("mean"), String::Format(_("%.2f"), axis.mean_value)));
+	values.push_back(make_pair((L"max"),  String::Format((L"%.2f"), axis.max_value)));
+	values.push_back(make_pair((L"mean"), String::Format((L"%.2f"), axis.mean_value)));
 }
 
 RealSize GraphStats::determineSize(RotatedDC& dc) const {
@@ -1195,20 +1195,20 @@ void GraphControl::onMotion(wxMouseEvent& ev) {
 		String tip;
 		for (size_t dim = 0 ; dim < hovered_item.size() ; ++dim) {
 			if (hovered_item[dim] != -1 && (size_t)hovered_item[dim] < data.axes[dim]->groups.size()) {
-				if (!tip.empty()) tip += _("\n");
-				tip += data.axes[dim]->name + _(": ") + data.axes[dim]->groups[hovered_item[dim]].name;
+				if (!tip.empty()) tip += (L"\n");
+				tip += data.axes[dim]->name + (L": ") + data.axes[dim]->groups[hovered_item[dim]].name;
 			}
 		}
 		UInt count = data.count(hovered_item);
-		tip += String::Format(_("\n%d "), count) + (count == 1 ? _TYPE_("card") : _TYPE_("cards"));
-		tip.Replace(_(" "),_("\xA0"));
+		tip += String::Format((L"\n%d "), count) + (count == 1 ? _TYPE_("card") : _TYPE_("cards"));
+		tip.Replace((L" "),(L"\xA0"));
 		// set tooltip
 		SetToolTip(tip);
 	} else {
 		// Note: don't use SetToolTip directly, we don't want to create a tip if it doesn't exist
 		//       on winXP this destroys the multiline behaviour.
 		wxToolTip* tooltip = GetToolTip();
-		if (tooltip) tooltip->SetTip(_(""));
+		if (tooltip) tooltip->SetTip((L""));
 	}
 	ev.Skip();
 }

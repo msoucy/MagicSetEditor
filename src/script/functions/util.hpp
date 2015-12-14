@@ -58,7 +58,7 @@
 			virtual  ScriptType type() const							\
 				{ return SCRIPT_FUNCTION; }								\
 			virtual String typeName() const								\
-				{ return _("built-in function '") _(#name) _("'"); }	\
+				{ return L"built-in function '" L ## #name L"'"; }      \
 			virtual ScriptValueP do_eval(Context&, bool) const;			\
 		};																\
 		ScriptValueP script_##name(new ScriptBuiltIn_##name);			\
@@ -159,7 +159,7 @@ inline Type from_script(const ScriptValueP& v, Variable var) {
 	  public:																\
 		inline ScriptRule_##funname(const type1& name1) : name1(name1) {}	\
 		virtual ScriptType type() const { return SCRIPT_FUNCTION; }			\
-		virtual String typeName() const { return _(#funname)_("_rule"); }	\
+		virtual String typeName() const { return _(#funname)(L"_rule"); }	\
 	  protected:															\
 		virtual ScriptValueP do_eval(Context& ctx, bool) const;				\
 	  private:																\
@@ -199,7 +199,7 @@ inline Type from_script(const ScriptValueP& v, Variable var) {
 		inline ScriptRule_##funname(const type1& name1, const type2& name2)	\
 			: name1(name1), name2(name2) {}									\
 		virtual ScriptType type() const { return SCRIPT_FUNCTION; }			\
-		virtual String typeName() const { return _(#funname)_("_rule"); }	\
+		virtual String typeName() const { return _(#funname)(L"_rule"); }	\
 		dep																	\
 	  protected:															\
 		virtual ScriptValueP do_eval(Context& ctx, bool) const;				\

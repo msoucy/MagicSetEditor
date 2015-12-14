@@ -12,8 +12,8 @@
 
 using std::reverse;
 
-const Char REMOVED     = _('\2');
-const Char PLACEHOLDER = _('\3');
+const Char REMOVED     = (L'\2');
+const Char PLACEHOLDER = (L'\3');
 
 String spec_sort(const String& spec, String& input, String& ret);
 
@@ -39,19 +39,19 @@ class SpecIterator {
 			if (close == 0) {
 				return false;
 			} else {
-				throw ParseError(String::Format(_("Expected '%c' in sort_rule specification"),close));
+				throw ParseError(String::Format((L"Expected '%c' in sort_rule specification"),close));
 			}
 		}
 		value = spec.GetChar(pos++);
 		preceded_by_space = false;
 		// skip whitespace
 		if (skip_space) {
-			while (value == _(' ')) {
+			while (value == (L' ')) {
 				if (pos >= spec.size()) {
 					if (close == 0) {
 						return false;
 					} else {
-						throw ParseError(String::Format(_("Expected '%c' in sort_rule specification"),close));
+						throw ParseError(String::Format((L"Expected '%c' in sort_rule specification"),close));
 					}
 				}
 				value = spec.GetChar(pos++);
@@ -59,10 +59,10 @@ class SpecIterator {
 			}
 		}
 		// escape?
-		if (value == _('\\')) {
+		if (value == (L'\\')) {
 			escaped = true;
 			if (pos >= spec.size()) {
-				throw ParseError(String::Format(_("Expected '%c' in sort_rule specification"),close));
+				throw ParseError(String::Format((L"Expected '%c' in sort_rule specification"),close));
 			}
 			value = spec.GetChar(pos++);
 		} else {
@@ -85,11 +85,11 @@ class SpecIterator {
 		int parens = 0;
 		while (nextUntil(0, false)) {
 			if (escaped) {
-				ret += _('\\');
+				ret += (L'\\');
 			} else {
 				if (parens == 0 && (value == close1 || value == close2)) break;
-				if      (value == _('(')) parens++;
-				else if (value == _(')')) parens--;
+				if      (value == (L'(')) parens++;
+				else if (value == (L')')) parens--;
 			}
 			ret += value;
 		}
@@ -249,16 +249,16 @@ String spec_sort(const String& spec, String& input, String& ret) {
 					d = REMOVED;
 				}
 			}
-		} else if (it.value == _('<')) {		// keep only a single copy
-			while (it.nextUntil(_('>'))) {
+		} else if (it.value == (L'<')) {		// keep only a single copy
+			while (it.nextUntil((L'>'))) {
 				size_t pos = input.find_first_of(it.value);
 				if (pos != String::npos) {
 					input.SetChar(pos, REMOVED);
 					ret += it.value; // input contains it.value
 				}
 			}
-		} else if (it.keyword(_("once("))) {
-			while (it.nextUntil(_(')'))) {
+		} else if (it.keyword((L"once("))) {
+			while (it.nextUntil((L')'))) {
 				size_t pos = input.find_first_of(it.value);
 				if (pos != String::npos) {
 					input.SetChar(pos, REMOVED);
@@ -266,39 +266,39 @@ String spec_sort(const String& spec, String& input, String& ret) {
 				}
 			}
 			
-		} else if (it.value == _('[')) {	// in input order
-			mixed_sort(it.readParam(_(']')), input, ret);
-		} else if (it.keyword(_("mixed("))) {
-			mixed_sort(it.readParam(_(')')), input, ret);
+		} else if (it.value == (L'[')) {	// in input order
+			mixed_sort(it.readParam((L']')), input, ret);
+		} else if (it.keyword((L"mixed("))) {
+			mixed_sort(it.readParam((L')')), input, ret);
 			
-		} else if (it.keyword(_("cycle("))) {
-			cycle_sort(it.readParam(_(')')), input, ret);
-		} else if (it.value == _('(')) {
-			cycle_sort(it.readParam(_(')')), input, ret);
+		} else if (it.keyword((L"cycle("))) {
+			cycle_sort(it.readParam((L')')), input, ret);
+		} else if (it.value == (L'(')) {
+			cycle_sort(it.readParam((L')')), input, ret);
 		
-		} else if (it.keyword(_("compound("))) { // compound item
-			compound_sort(it.readParam(_(')')), input, ret);
+		} else if (it.keyword((L"compound("))) { // compound item
+			compound_sort(it.readParam((L')')), input, ret);
 		
-		} else if (it.keyword(_("pattern("))) { // recurse with pattern
+		} else if (it.keyword((L"pattern("))) { // recurse with pattern
 			String pattern;
 			// read pattern
-			while (it.nextUntil(_(' '), false)) {
-				if (it.value == _('.') && !it.escaped) {
+			while (it.nextUntil((L' '), false)) {
+				if (it.value == (L'.') && !it.escaped) {
 					it.value = PLACEHOLDER;
 				}
 				pattern += it.value;
 			}
 			// read spec to apply to pattern
-			String sub_spec = it.readRawParam(_(')'));
+			String sub_spec = it.readRawParam((L')'));
 			// sort
 			pattern_sort(pattern, sub_spec, input, ret);
 		
-		} else if (it.keyword(_("in_place("))) { // recurse without pattern
+		} else if (it.keyword((L"in_place("))) { // recurse without pattern
 			// read spec to apply to pattern
-			String sub_spec = it.readRawParam(_(')'));
+			String sub_spec = it.readRawParam((L')'));
 			in_place_sort(sub_spec, input, ret);
 		
-		} else if (it.keyword(_("any()"))) { // remaining input
+		} else if (it.keyword((L"any()"))) { // remaining input
 			for(auto& d : input) {
 				if (d != REMOVED) {
 					ret += d;
@@ -306,11 +306,11 @@ String spec_sort(const String& spec, String& input, String& ret) {
 				}
 			}
 		
-		} else if (it.keyword(_("reverse_order("))) { // reverse order of preference
+		} else if (it.keyword((L"reverse_order("))) { // reverse order of preference
 			size_t old_ret_size = ret.size();
-			while (it.value != _(')')) {
+			while (it.value != (L')')) {
 				size_t before_ret_size = ret.size();
-				String sub_spec = it.readRawParam(_(')'),_(' '));
+				String sub_spec = it.readRawParam((L')'),(L' '));
 				spec_sort(sub_spec, input, ret);
 				// reverse this item
 				reverse(ret.begin() + before_ret_size, ret.end());
@@ -318,8 +318,8 @@ String spec_sort(const String& spec, String& input, String& ret) {
 			// re-reverse all items
 			reverse(ret.begin() + old_ret_size, ret.end());
 		
-		} else if (it.keyword(_("ordered("))) { // in spec order
-			while (it.nextUntil(_(')'))) {
+		} else if (it.keyword((L"ordered("))) { // in spec order
+			while (it.nextUntil((L')'))) {
 				for(auto& d : input) {
 					if (d == it.value) {
 						ret += d;

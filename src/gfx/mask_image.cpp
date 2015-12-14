@@ -97,7 +97,7 @@ void add_convex_point(vector<wxPoint>& points, int x, int y) {
 }
 
 void AlphaMask::convexHull(vector<wxPoint>& points) const {
-	if (!alpha) throw InternalError(_("AlphaMask::convexHull"));
+	if (!alpha) throw InternalError((L"AlphaMask::convexHull"));
 	// Left side, top to bottom
 	int miny = size.y, maxy = -1, lastx = 0;
 	for (int y = 0 ; y < size.y ; ++y) {

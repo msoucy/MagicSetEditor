@@ -384,12 +384,12 @@ void CardListBase::onDrag(wxMouseEvent& ev) {
 void CardListBase::onContextMenu(wxContextMenuEvent&) {
 	if (allowModify()) {
 		IconMenu m;
-		m.Append(wxID_CUT,		_("cut"),		_CONTEXT_MENU_("cut"),			_HELP_("cut card"));
-		m.Append(wxID_COPY,		_("copy"),		_CONTEXT_MENU_("copy"),			_HELP_("copy card"));
-		m.Append(wxID_PASTE,	_("paste"),		_CONTEXT_MENU_("paste"),		_HELP_("paste card"));
+		m.Append(wxID_CUT,		(L"cut"),		_CONTEXT_MENU_("cut"),			_HELP_("cut card"));
+		m.Append(wxID_COPY,		(L"copy"),		_CONTEXT_MENU_("copy"),			_HELP_("copy card"));
+		m.Append(wxID_PASTE,	(L"paste"),		_CONTEXT_MENU_("paste"),		_HELP_("paste card"));
 		m.AppendSeparator();
-		m.Append(ID_CARD_ADD,	_("card_add"),	_CONTEXT_MENU_("add card"),		_HELP_("add card"));
-		m.Append(ID_CARD_REMOVE,_("card_del"),	_CONTEXT_MENU_("remove card"),	_HELP_("remove card"));
+		m.Append(ID_CARD_ADD,	(L"card_add"),	_CONTEXT_MENU_("add card"),		_HELP_("add card"));
+		m.Append(ID_CARD_REMOVE,(L"card_del"),	_CONTEXT_MENU_("remove card"),	_HELP_("remove card"));
 		PopupMenu(&m);
 	}
 }

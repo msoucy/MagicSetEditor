@@ -109,11 +109,11 @@ void ProfilerPanel::draw_profiler(wxDC& dc, int x0, int y0) {
 		bool any_active = false;
 		long now = stopwatch.Time();
 		// Draw table
-		dc.DrawText(_("Function"), pos[0], y0 + 2);
-		draw_right(dc,_("calls"),  pos[1], y0 + 2);
-		draw_right(dc,_("avg"),    pos[2], y0 + 2);
-		draw_right(dc,_("total"),  pos[3], y0 + 2);
-		draw_right(dc,_("max"),    pos[4], y0 + 2);
+		dc.DrawText((L"Function"), pos[0], y0 + 2);
+		draw_right(dc,(L"calls"),  pos[1], y0 + 2);
+		draw_right(dc,(L"avg"),    pos[2], y0 + 2);
+		draw_right(dc,(L"total"),  pos[3], y0 + 2);
+		draw_right(dc,(L"max"),    pos[4], y0 + 2);
 		dc.DrawLine(x0, y0 + line_height + 2, x1, y0 + line_height + 2);
 		int i = 0;
 		for(auto& prof : boost::adaptors::reverse(profiles)) {
@@ -138,10 +138,10 @@ void ProfilerPanel::draw_profiler(wxDC& dc, int x0, int y0) {
 			// draw line
 			int y = y0 + (++i) * line_height + 6;
 			dc.DrawText(prof->name,                                        pos[0], y);
-			draw_right(dc,wxString::Format(_("%d"),   prof->calls),        pos[1], y);
-			draw_right(dc,wxString::Format(_("%.2f"), prof->avg_time()),   pos[2], y);
-			draw_right(dc,wxString::Format(_("%.2f"), prof->total_time()), pos[3], y);
-			draw_right(dc,wxString::Format(_("%.2f"), prof->max_time()),   pos[4], y);
+			draw_right(dc,wxString::Format((L"%d"),   prof->calls),        pos[1], y);
+			draw_right(dc,wxString::Format((L"%.2f"), prof->avg_time()),   pos[2], y);
+			draw_right(dc,wxString::Format((L"%.2f"), prof->total_time()), pos[3], y);
+			draw_right(dc,wxString::Format((L"%.2f"), prof->max_time()),   pos[4], y);
 		}
 		// are any fancy effects active?
 		if (fancy_effects && any_active && !timer.IsRunning()) {
@@ -172,7 +172,7 @@ END_EVENT_TABLE()
 
 
 void show_profiler_window(wxWindow* parent) {
-	wxDialog* dlg = new wxDialog(parent, wxID_ANY, _("Profiler"), wxDefaultPosition,wxSize(450,600), wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER);
+	wxDialog* dlg = new wxDialog(parent, wxID_ANY, (L"Profiler"), wxDefaultPosition,wxSize(450,600), wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER);
 	wxSizer* sizer = new wxBoxSizer(wxVERTICAL);
 	sizer->Add(new ProfilerPanel(dlg,true), 1, wxEXPAND | wxALL, 8);
 	sizer->Add(dlg->CreateButtonSizer(wxOK), 0, wxALIGN_CENTER | wxALL, 8);

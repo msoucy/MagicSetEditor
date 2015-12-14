@@ -73,12 +73,12 @@ template <>
 intrusive_ptr<SymbolFilter> read_new<SymbolFilter>(Reader& reader) {
 	// there must be a fill type specified
 	String fill_type;
-	reader.handle(_("fill_type"), fill_type);
-	if      (fill_type == _("solid"))			return intrusive(new SolidFillSymbolFilter);
-	else if (fill_type == _("linear gradient"))	return intrusive(new LinearGradientSymbolFilter);
-	else if (fill_type == _("radial gradient"))	return intrusive(new RadialGradientSymbolFilter);
+	reader.handle((L"fill_type"), fill_type);
+	if      (fill_type == (L"solid"))			return intrusive(new SolidFillSymbolFilter);
+	else if (fill_type == (L"linear gradient"))	return intrusive(new LinearGradientSymbolFilter);
+	else if (fill_type == (L"radial gradient"))	return intrusive(new RadialGradientSymbolFilter);
 	else if (fill_type.empty()) {
-		reader.warning(_ERROR_1_("expected key", _("fill type")));
+		reader.warning(_ERROR_1_("expected key", (L"fill type")));
 		throw ParseError(_ERROR_("aborting parsing"));
 	} else {
 		reader.warning(_ERROR_1_("unsupported fill type", fill_type));
@@ -88,7 +88,7 @@ intrusive_ptr<SymbolFilter> read_new<SymbolFilter>(Reader& reader) {
 
 // ----------------------------------------------------------------------------- : SolidFillSymbolFilter
 
-String SolidFillSymbolFilter::fillType() const { return _("solid"); }
+String SolidFillSymbolFilter::fillType() const { return (L"solid"); }
 
 AColor SolidFillSymbolFilter::color(double x, double y, SymbolSet point) const {
 	if      (point == SYMBOL_INSIDE) return fill_color;
@@ -137,7 +137,7 @@ IMPLEMENT_REFLECTION(GradientSymbolFilter) {
 // TODO: move to some general util header
 inline double sqr(double x) { return x * x; }
 
-String LinearGradientSymbolFilter::fillType() const { return _("linear gradient"); }
+String LinearGradientSymbolFilter::fillType() const { return (L"linear gradient"); }
 
 LinearGradientSymbolFilter::LinearGradientSymbolFilter()
 	: center_x(0.5), center_y(0.5)
@@ -178,7 +178,7 @@ IMPLEMENT_REFLECTION(LinearGradientSymbolFilter) {
 
 // ----------------------------------------------------------------------------- : RadialGradientSymbolFilter
 
-String RadialGradientSymbolFilter::fillType() const { return _("radial gradient"); }
+String RadialGradientSymbolFilter::fillType() const { return (L"radial gradient"); }
 
 AColor RadialGradientSymbolFilter::color(double x, double y, SymbolSet point) const {
 	return GradientSymbolFilter::color(x,y,point,this);

@@ -25,7 +25,7 @@ Card::Card()
 	, has_styling(false)
 {
 	if (!game_for_reading()) {
-		throw InternalError(_("game_for_reading not set"));
+		throw InternalError((L"game_for_reading not set"));
 	}
 	data.init(game_for_reading()->card_fields);
 }
@@ -67,7 +67,7 @@ ScriptValueP& Card::value(const String& name) {
 			return (*it)->value;
 		}
 	}
-	throw InternalError(_("Expected a card field with name '")+name+_("'"));
+	throw InternalError((L"Expected a card field with name '")+name+(L"'"));
 }
 const ScriptValueP& Card::value(const String& name) const {
 	for (IndexMap<FieldP, ValueP>::const_iterator it = data.begin() ; it != data.end() ; ++it) {
@@ -75,7 +75,7 @@ const ScriptValueP& Card::value(const String& name) const {
 			return (*it)->value;
 		}
 	}
-	throw InternalError(_("Expected a card field with name '")+name+_("'"));
+	throw InternalError((L"Expected a card field with name '")+name+(L"'"));
 }
 
 IndexMap<FieldP, ValueP>& Card::extraDataFor(const StyleSheet& stylesheet) {

@@ -22,7 +22,7 @@ Writer::Writer(wxOutputStream& output, Version file_app_version)
 	, stream(output)
 {
 	stream.WriteString(BYTE_ORDER_MARK);
-	handle(_("mse_version"), file_app_version);
+	handle((L"mse_version"), file_app_version);
 }
 
 
@@ -48,7 +48,7 @@ void Writer::writePending() {
 	for (size_t i = 0 ; i < pending_opened.size() ; ++i) {
 		if (i > 0) {
 			// before entering a sub-block, write a colon after the parent's name
-			stream.WriteString(_(":\n"));
+			stream.WriteString((L":\n"));
 		}
 		indentation += 1;
 		writeIndentation();
@@ -59,7 +59,7 @@ void Writer::writePending() {
 
 void Writer::writeIndentation() {
 	for(int i = 1 ; i < indentation ; ++i) {
-		stream.PutChar(_('\t'));
+		stream.PutChar((L'\t'));
 	}
 }
 
@@ -67,38 +67,38 @@ void Writer::writeIndentation() {
 
 void Writer::handle(const String& value) {
 	if (pending_opened.empty()) {
-		throw InternalError(_("Can only write a value in a key that was just opened"));
+		throw InternalError((L"Can only write a value in a key that was just opened"));
 	}
 	writePending();
 	// write indentation and key
-	if (value.find_first_of(_('\n')) != String::npos || (!value.empty() && isSpace(value.GetChar(0)))) {
+	if (value.find_first_of((L'\n')) != String::npos || (!value.empty() && isSpace(value.GetChar(0)))) {
 		// multiline string, or contains leading whitespace
-		stream.WriteString(_(":\n"));
+		stream.WriteString((L":\n"));
 		indentation += 1;
 		// split lines, and write each line
 		size_t start = 0, end, size = value.size();
 		while (start < size) {
-			end = value.find_first_of(_("\n\r"), start); // until end of line
+			end = value.find_first_of((L"\n\r"), start); // until end of line
 			// write the line
 			writeIndentation();
 			writeUTF8(stream, value.substr(start, end - start));
 			// Skip \r and \n
 			if (end == String::npos) break;
-			stream.PutChar(_('\n'));
+			stream.PutChar((L'\n'));
 			start = end + 1;
 			if (start < size) {
 				Char c1 = value.GetChar(start - 1);
 				Char c2 = value.GetChar(start);
 				// skip second character of \r\n or \n\r
-				if (c1 != c2 && (c2 == _('\r') || c2 == _('\n')))  start += 1;
+				if (c1 != c2 && (c2 == (L'\r') || c2 == (L'\n')))  start += 1;
 			}
 		}
 		indentation -= 1;
 	} else {
-		stream.WriteString(_(": "));
+		stream.WriteString((L": "));
 		writeUTF8(stream, value);
 	}
-	stream.PutChar(_('\n'));
+	stream.PutChar((L'\n'));
 }
 
 template <> void Writer::handle(const int& value) {
@@ -111,11 +111,11 @@ template <> void Writer::handle(const double& value) {
 	handle(String() << value);
 }
 template <> void Writer::handle(const bool& value) {
-	handle(value ? _("true") : _("false"));
+	handle(value ? (L"true") : (L"false"));
 }
 template <> void Writer::handle(const tribool& value) {
 	if (!indeterminate(value)) {
-		handle(value ? _("true") : _("false"));
+		handle(value ? (L"true") : (L"false"));
 	}
 }
 
@@ -123,14 +123,14 @@ template <> void Writer::handle(const tribool& value) {
 
 template <> void Writer::handle(const wxDateTime& date) {
 	if (date.IsValid()) {
-		handle(date.Format(_("%Y-%m-%d %H:%M:%S")));
+		handle(date.Format((L"%Y-%m-%d %H:%M:%S")));
 	}
 }
 template <> void Writer::handle(const Vector2D& vec) {
-	handle(String::Format(_("(%.10lf,%.10lf)"), vec.x, vec.y));
+	handle(String::Format((L"(%.10lf,%.10lf)"), vec.x, vec.y));
 }
 template <> void Writer::handle(const Color& col) {
-	handle(String::Format(_("rgb(%u,%u,%u)"), col.Red(), col.Green(), col.Blue()));
+	handle(String::Format((L"rgb(%u,%u,%u)"), col.Red(), col.Green(), col.Blue()));
 }
 
 template <> void Writer::handle(const LocalFileName& value) {

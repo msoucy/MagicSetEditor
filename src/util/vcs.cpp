@@ -16,21 +16,21 @@ template <>
 VCSP read_new<VCS>(Reader& reader) {
 	// there must be a type specified
 	String type;
-	reader.handle(_("type"), type);
-	if      (type == _("none"))				return intrusive(new VCS);
-	else if (type == _("subversion"))		return intrusive(new SubversionVCS);
+	reader.handle((L"type"), type);
+	if      (type == (L"none"))				return intrusive(new VCS);
+	else if (type == (L"subversion"))		return intrusive(new SubversionVCS);
 	else if (type.empty()) {
-		reader.warning(_ERROR_1_("expected key", _("version control system")));
+		reader.warning(_ERROR_1_("expected key", (L"version control system")));
 		throw ParseError(_ERROR_("aborting parsing"));
 	} else {
-		reader.warning(format_string(_("Unsupported version control type: '%s'"), type));
+		reader.warning(format_string((L"Unsupported version control type: '%s'"), type));
 		throw ParseError(_ERROR_("aborting parsing"));
 	}
 }
 
 IMPLEMENT_REFLECTION(VCS) {
 	REFLECT_IF_NOT_READING {
-		String type = _("none");
+		String type = (L"none");
 		REFLECT(type);
 	}
 }

@@ -26,7 +26,7 @@ String normalize_filename(const String& name) {
 String normalize_internal_filename(const String& name) {
 	String ret;
 	for(const auto& c : name) {
-		if (c==_('\\')) ret += _('/');
+		if (c==(L'\\')) ret += (L'/');
 		else            ret += toLower(c);
 	}
 	return ret;
@@ -35,7 +35,7 @@ String normalize_internal_filename(const String& name) {
 bool ignore_file(const String& name) {
 	// Files that are never part of a package,
 	// i.e. random stuff the OS file manager dumps without being asked
-	return name == _("Thumbs.db"); // winXP explorer thumbnails
+	return name == (L"Thumbs.db"); // winXP explorer thumbnails
 }
 
 String add_extension(const String& filename, String const& extension) {
@@ -47,7 +47,7 @@ String add_extension(const String& filename, String const& extension) {
 }
 
 bool is_filename_char(Char c) {
-	return isAlnum(c) || c == _(' ') || c == _('_') || c == _('-') || c == _('.');
+	return isAlnum(c) || c == (L' ') || c == (L'_') || c == (L'-') || c == (L'.');
 }
 
 String clean_filename(const String& name) {
@@ -55,17 +55,17 @@ String clean_filename(const String& name) {
 	// allow only valid characters, and remove leading whitespace
 	bool start = true;
 	for(const auto& c : name) {
-		if (is_filename_char(c) && !(start && c == _(' '))) {
+		if (is_filename_char(c) && !(start && c == (L' '))) {
 			start = false;
 			clean += c;
 		}
 	}
 	// remove trailing whitespace
-	while (!clean.empty() && clean[clean.size()-1] == _(' ')) {
+	while (!clean.empty() && clean[clean.size()-1] == (L' ')) {
 		clean.resize(clean.size()-1);
 	}
-	if (clean.empty() || starts_with(clean, _("."))) {
-		clean = _("no-name") + clean;
+	if (clean.empty() || starts_with(clean, (L"."))) {
+		clean = (L"no-name") + clean;
 	}
 	return clean;
 }
@@ -80,7 +80,7 @@ bool resolve_filename_conflicts(wxFileName& fn, FilenameConflicts conflicts, set
 			int i = 0;
 			String ext = fn.GetExt();
 			while(fn.FileExists()) {
-				fn.SetExt(String() << ++i << _(".") << ext);
+				fn.SetExt(String() << ++i << (L".") << ext);
 			}
 			return true;
 		}
@@ -88,12 +88,12 @@ bool resolve_filename_conflicts(wxFileName& fn, FilenameConflicts conflicts, set
 			int i = 0;
 			String ext = fn.GetExt();
 			while(used.find(fn.GetFullPath()) != used.end()) {
-				fn.SetExt(String() << ++i << _(".") << ext);
+				fn.SetExt(String() << ++i << (L".") << ext);
 			}
 			return true;
 		}
 		default: {
-			throw InternalError(_("resolve_filename_conflicts: default case"));
+			throw InternalError((L"resolve_filename_conflicts: default case"));
 		}
 	}
 }
@@ -107,7 +107,7 @@ time_t file_modified_time(const String& path) {
 		if (errno == ENOENT) {
 			return 0;
 		} else {
-			throw InternalError(_("could not stat ") + path);
+			throw InternalError((L"could not stat ") + path);
 		}
 	}
 	return statbuf.st_mtime;
@@ -116,9 +116,9 @@ time_t file_modified_time(const String& path) {
 // ----------------------------------------------------------------------------- : Directories
 
 bool create_parent_dirs(const String& file) {
-	for (size_t pos = file.find_first_of(_("\\/"), 1) ;
+	for (size_t pos = file.find_first_of((L"\\/"), 1) ;
 	     pos != String::npos ;
-	     pos = file.find_first_of(_("\\/"),pos+1)) {
+	     pos = file.find_first_of((L"\\/"),pos+1)) {
 		String part = file.substr(0,pos);
 		if (!wxDirExists(part)) {
 			if (!wxMkdir(part)) return false;
@@ -135,27 +135,29 @@ class RecursiveDeleter : public wxDirTraverser {
 		to_delete.push_back(start);
 		ok = true;
 	}
-	
+
 	bool ok;
-	
+
 	void remove() {
 		for(auto& dir : boost::adaptors::reverse(to_delete)) {
 			if (!wxRmdir(dir)) {
 				ok = false;
-				handle_error(_("Cannot delete ") + dir + _("\n")
-					_("The remainder of the package has still been removed, if possible.\n")
-					_("Other packages may have been removed, including packages that this on is dependent on. Please remove manually."));
+				handle_error(
+                    L"Cannot delete " + dir + L"\n"
+					L"The remainder of the package has still been removed, if possible.\n"
+					L"Other packages may have been removed, including packages that this on is dependent on. Please remove manually.");
 			}
 		}
 	}
-	
+
 	wxDirTraverseResult OnFile(const String& filename) {
 		if (!wxRemoveFile(filename)) {
 			ok = false;
-			handle_error(_("Cannot delete ") + filename + _("\n")
-				_("The remainder of the package has still been removed, if possible.\n")
-				_("Other packages may have been removed, including packages that this on is dependent on. Please remove manually."));
-		}
+			handle_error(
+                L"Cannot delete " + filename + L"\n"
+				L"The remainder of the package has still been removed, if possible.\n"
+				L"Other packages may have been removed, including packages that this on is dependent on. Please remove manually.");
+        }
 		return wxDIR_CONTINUE;
 	}
 	wxDirTraverseResult OnDir(const String& dirname) {

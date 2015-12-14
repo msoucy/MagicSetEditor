@@ -113,7 +113,7 @@ class ScriptError : public Error {
 /// "Variable not set"
 class ScriptErrorNoVariable : public ScriptError {
   public:
-	inline ScriptErrorNoVariable(const String& var) : ScriptError(_("Variable not set: ") + var) {}
+	inline ScriptErrorNoVariable(const String& var) : ScriptError((L"Variable not set: ") + var) {}
 };
 
 /// "Can't convert from A to B"
@@ -176,7 +176,7 @@ String get_stack_trace();
 		String message(e.what(), wxConvLocal); \
 		handle_error(InternalError(message)); \
 	} catch (...) { \
-		handle_error(InternalError(_("An unexpected exception occurred!"))); \
+		handle_error(InternalError((L"An unexpected exception occurred!"))); \
 	}
 
 // ----------------------------------------------------------------------------- : EOF

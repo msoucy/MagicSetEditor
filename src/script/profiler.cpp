@@ -42,7 +42,7 @@ ProfileTime Timer::delta = 0;
 
 // ----------------------------------------------------------------------------- : FunctionProfile
 
-FunctionProfile profile_root(_("root"));
+FunctionProfile profile_root((L"root"));
 
 inline bool compare_time(const FunctionProfileP& a, const FunctionProfileP& b) {
 	return a->time_ticks < b->time_ticks;
@@ -55,7 +55,7 @@ void FunctionProfile::get_children(vector<FunctionProfileP>& out) const {
 }
 
 // note: not thread safe
-FunctionProfile profile_aggr(_("everywhere"));
+FunctionProfile profile_aggr((L"everywhere"));
 
 void profile_aggregate(FunctionProfile& parent, int level, int max_level, const FunctionProfile& p);
 void profile_aggregate(FunctionProfile& parent, int level, int max_level, size_t idx, const FunctionProfile& p) {

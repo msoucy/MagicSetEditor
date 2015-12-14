@@ -68,11 +68,11 @@ void read_compat(Reader& reflector, Keyword* k) {
 	if (start != String::npos && end != String::npos) {
 		k->match += separator.substr(start + 1, end - start - 1);
 	}
-	if (parameter == _("no parameter")) {
+	if (parameter == (L"no parameter")) {
 		parameter.clear(); // was used for magic to indicate absence of parameter
 	}
 	if (!parameter.empty()) {
-		k->match += _("<atom-param>") + parameter + _("</atom-param>");
+		k->match += (L"<atom-param>") + parameter + (L"</atom-param>");
 	}
 }
 
@@ -100,26 +100,26 @@ String KeywordParam::make_separator_before() const {
 	int disabled = 0;
 	for (size_t i = 0 ; i < separator_before_is.size() ; ++i) {
 		Char c = separator_before_is.GetChar(i);
-		if (c == _('(')) {
+		if (c == (L'(')) {
 			if (disabled) ++disabled;
-		} else if (c == _(')')) {
+		} else if (c == (L')')) {
 			if (disabled) --disabled;
 		} else if (!disabled) {
-			if (c == _('|')) {
+			if (c == (L'|')) {
 				disabled = 1; // disable after |
-			} else if (c == _('+') || c == _('*') || c == _('?') || c == _('^') || c == _('$')) {
+			} else if (c == (L'+') || c == (L'*') || c == (L'?') || c == (L'^') || c == (L'$')) {
 				// ignore
-			} else if (c == _('\\') && i + 1 < separator_before_is.size()) {
+			} else if (c == (L'\\') && i + 1 < separator_before_is.size()) {
 				// escape
 				ret += separator_before_is.GetChar(++i);
-			} else if (c == _('[') && i + 1 < separator_before_is.size()) {
+			} else if (c == (L'[') && i + 1 < separator_before_is.size()) {
 				// character class
 				c = separator_before_is.GetChar(++i);
-				if (c != _('^')) ret += c;
+				if (c != (L'^')) ret += c;
 				// ignore the rest of the class
 				for ( ++i ; i < separator_before_is.size() ; ++i) {
 					c = separator_before_is.GetChar(i);
-					if (c == _(']')) break;
+					if (c == (L']')) break;
 				}
 			} else {
 				ret += c;
@@ -131,16 +131,16 @@ String KeywordParam::make_separator_before() const {
 void KeywordParam::compile() {
 	// compile separator_before
 	if (!separator_before_is.empty() && separator_before_re.empty()) {
-		separator_before_re.assign(_("^") + separator_before_is);
+		separator_before_re.assign((L"^") + separator_before_is);
 		if (eat_separator) {
-			separator_before_eat.assign(separator_before_is + _("$"));
+			separator_before_eat.assign(separator_before_is + (L"$"));
 		}
 	}
 	// compile separator_after
 	if (!separator_after_is.empty() && separator_after_re.empty()) {
-		separator_after_re.assign(separator_after_is + _("$"));
+		separator_after_re.assign(separator_after_is + (L"$"));
 		if (eat_separator) {
-			separator_after_eat.assign(_("^") + separator_after_is);
+			separator_after_eat.assign((L"^") + separator_after_is);
 		}
 	}
 }
@@ -190,12 +190,12 @@ void Keyword::prepare(const vector<KeywordParamP>& param_types, bool force) {
 	String text; // normal, non-regex, text
 	vector<KeywordParamP>::const_iterator param = parameters.begin();
 	#if USE_CASE_INSENSITIVE_KEYWORDS
-		regex = _("(?i)"); // case insensitive matching
+		regex = (L"(?i)"); // case insensitive matching
 	#endif
 	// Parse the 'match' string
 	for (size_t i = 0 ; i < match.size() ;) {
 		Char c = match.GetChar(i);
-		if (is_substr(match, i, _("<atom-param"))) {
+		if (is_substr(match, i, (L"<atom-param"))) {
 			// parameter, determine type...
 			size_t start = skip_tag(match, i), end = match_close_tag(match, i);
 			String type = match.substr(start, end-start);
@@ -210,8 +210,8 @@ void Keyword::prepare(const vector<KeywordParamP>& param_types, bool force) {
 			if (!param) {
 				// throwing an error can mean a set will not be loaded!
 				// instead, simply disable the keyword
-				//throw InternalError(_("Unknown keyword parameter type: ") + type);
-				handle_error(_("Unknown keyword parameter type: ") + type);
+				//throw InternalError((L"Unknown keyword parameter type: ") + type);
+				handle_error((L"Unknown keyword parameter type: ") + type);
 				valid = false;
 				return;
 			}
@@ -220,10 +220,10 @@ void Keyword::prepare(const vector<KeywordParamP>& param_types, bool force) {
 			param->compile();
 			// remove the separator from the text to prevent duplicates
 			param->eat_separator_before(text);
-			regex += _("(") + regex_escape(text) + _(")");
+			regex += (L"(") + regex_escape(text) + (L")");
 			text.clear();
 			// modify regex : match parameter
-			regex += _("(") + make_non_capturing(param->match) + (param->optional ? _(")?") : _(")"));
+			regex += (L"(") + make_non_capturing(param->match) + (param->optional ? (L")?") : (L")"));
 			i = skip_tag(match, end);
 			// eat separator_after?
 			param->eat_separator_after(match, i);
@@ -232,16 +232,16 @@ void Keyword::prepare(const vector<KeywordParamP>& param_types, bool force) {
 			i++;
 		}
 	}
-	regex += _("(") + regex_escape(text) + _(")");
+	regex += (L"(") + regex_escape(text) + (L")");
 	#if USE_BOOST_REGEX
-		regex = _("\\<")
+		regex = (L"\\<")
 	#else
-		regex = _("\\y")
+		regex = (L"\\y")
 	#endif
-	      + regex + _("(?=$|[^a-zA-Z0-9\\(])"); // only match whole words
+	      + regex + (L"(?=$|[^a-zA-Z0-9\\(])"); // only match whole words
 	match_re.assign(regex);
 	// not valid if it matches "", that would make MSE hang
-	valid = !match_re.matches(_(""));
+	valid = !match_re.matches((L""));
 }
 
 // ----------------------------------------------------------------------------- : KeywordTrie
@@ -341,7 +341,7 @@ void KeywordDatabase::add(const Keyword& kw) {
 	bool only_star = true;
 	for (size_t i = 0 ; i < kw.match.size() ;) {
 		Char c = kw.match.GetChar(i);
-		if (is_substr(kw.match, i, _("<atom-param"))) {
+		if (is_substr(kw.match, i, (L"<atom-param"))) {
 			i = match_close_tag_end(kw.match, i);
 			// parameter, is there a separator we should eat?
 			if (param < kw.parameters.size()) {
@@ -392,11 +392,11 @@ void closure(vector<KeywordTrie*>& state) {
 #ifdef _DEBUG
 void dump(int i, KeywordTrie* t) {
 	for(auto& c : t->children) {
-		wxLogDebug(String(i,_(' ')) + c.first + _("     ") + String::Format(_("%p"),c.second));
+		wxLogDebug(String(i,(L' ')) + c.first + (L"     ") + String::Format((L"%p"),c.second));
 		dump(i+2, c.second);
 	}
 	if (t->on_any_star) {
-		wxLogDebug(String(i,_(' ')) + _(".*") + _("     ") + String::Format(_("%p"),t->on_any_star));
+		wxLogDebug(String(i,(L' ')) + (L".*") + (L"     ") + String::Format((L"%p"),t->on_any_star));
 		if (t->on_any_star != t) dump(i+2, t->on_any_star);
 	}
 }
@@ -422,11 +422,11 @@ String KeywordDatabase::expand(const String& text,
 	}
 	
 	// Remove all old reminder texts
-	String tagged = remove_tag_contents(text, _("<atom-reminder"));
-	tagged = remove_tag_contents(tagged, _("<atom-keyword")); // OLD, TODO: REMOVEME
-	tagged = remove_tag_contents(tagged, _("<atom-kwpph>"));
-	tagged = remove_tag(tagged, _("<keyword-param"));
-	tagged = remove_tag(tagged, _("<param-"));
+	String tagged = remove_tag_contents(text, (L"<atom-reminder"));
+	tagged = remove_tag_contents(tagged, (L"<atom-keyword")); // OLD, TODO: REMOVEME
+	tagged = remove_tag_contents(tagged, (L"<atom-kwpph>"));
+	tagged = remove_tag(tagged, (L"<keyword-param"));
+	tagged = remove_tag(tagged, (L"<param-"));
 	String untagged = untag_no_escape(tagged);
 	
 	if (!root) return tagged;
@@ -452,14 +452,14 @@ String KeywordDatabase::expand(const String& text,
 		for (size_t i = 0 ; i < tagged.size() ;) {
 			Char c = tagged.GetChar(i);
 			// tag?
-			if (c == _('<')) {
-				if (is_substr(tagged, i, _("<kw-")) && i + 4 < tagged.size()) {
+			if (c == (L'<')) {
+				if (is_substr(tagged, i, (L"<kw-")) && i + 4 < tagged.size()) {
 					expand_type = tagged.GetChar(i + 4); // <kw-?>
 					tagged = tagged.erase(i, skip_tag(tagged,i)-i); // remove the tag from the string
-				} else if (is_substr(tagged, i, _("</kw-"))) {
+				} else if (is_substr(tagged, i, (L"</kw-"))) {
 					expand_type = default_expand_type;
 					tagged = tagged.erase(i, skip_tag(tagged,i)-i); // remove the tag from the string
-				} else if (is_substr(tagged, i, _("<atom"))) {
+				} else if (is_substr(tagged, i, (L"<atom"))) {
 					i = match_close_tag_end(tagged, i); // skip <atom>s
 				} else {
 					i = skip_tag(tagged, i);
@@ -550,10 +550,10 @@ bool KeywordDatabase::tryExpand(const Keyword& kw,
 	// this can happen when the trie incorrectly matches too early
 	for (size_t j = expand_type_known_upto+1 ; j < start ;) {
 		Char c = tagged.GetChar(j);
-		if (c == _('<')) {
-			if (is_substr(tagged, j, _("<kw-")) && j + 4 < tagged.size()) {
+		if (c == (L'<')) {
+			if (is_substr(tagged, j, (L"<kw-")) && j + 4 < tagged.size()) {
 				expand_type = tagged.GetChar(j + 4); // <kw-?>
-			} else if (is_substr(tagged, j, _("</kw-"))) {
+			} else if (is_substr(tagged, j, (L"</kw-"))) {
 				expand_type = 'a';
 			}
 			j = skip_tag(tagged, j);
@@ -583,7 +583,7 @@ bool KeywordDatabase::tryExpand(const Keyword& kw,
 		size_t part_end = part_len_u > 0 ? untagged_to_index(tagged, part_end_u, false) : part_start;
 		String part(tagged, part_start, part_end - part_start);
 		// strip left over </kw tags
-		part = remove_tag(part,_("</kw-"));
+		part = remove_tag(part,(L"</kw-"));
 		
 		// we start counting at 1, so
 		// submatch = 1 mod 2 -> text
@@ -605,7 +605,7 @@ bool KeywordDatabase::tryExpand(const Keyword& kw,
 				part = get_tags(part, 0, sep_end_t, true, true) + part.substr(sep_end_t);
 				// transform?
 				if (kwp.separator_script) {
-					ctx.setVariable(_("input"), to_script(separator_before));
+					ctx.setVariable((L"input"), to_script(separator_before));
 					separator_before = kwp.separator_script.invoke(ctx)->toString();
 				}
 			}
@@ -620,7 +620,7 @@ bool KeywordDatabase::tryExpand(const Keyword& kw,
 				part = part.substr(0, sep_start_t) + get_tags(part, sep_start_t, part.size(), true, true);
 				// transform?
 				if (kwp.separator_script) {
-					ctx.setVariable(_("input"), to_script(separator_after));
+					ctx.setVariable((L"input"), to_script(separator_after));
 					separator_after = kwp.separator_script.invoke(ctx)->toString();
 				}
 			}
@@ -631,21 +631,21 @@ bool KeywordDatabase::tryExpand(const Keyword& kw,
 			if (param.empty()) {
 				// placeholder
 				used_placeholders = true;
-				script_param->value = _("<atom-kwpph>") + (kwp.placeholder.empty() ? kwp.name : kwp.placeholder) + _("</atom-kwpph>");
+				script_param->value = (L"<atom-kwpph>") + (kwp.placeholder.empty() ? kwp.name : kwp.placeholder) + (L"</atom-kwpph>");
 				script_part->value  = part + script_param->value; // keep tags
 			} else {
 				// apply parameter script
 				if (kwp.script) {
-					ctx.setVariable(_("input"), script_part);
+					ctx.setVariable((L"input"), script_part);
 					script_part->value  = kwp.script.invoke(ctx)->toString();
 				}
 				if (kwp.reminder_script) {
-					ctx.setVariable(_("input"), script_param);
+					ctx.setVariable((L"input"), script_param);
 					script_param->value = kwp.reminder_script.invoke(ctx)->toString();
 				}
 			}
 			part  = separator_before + script_part->toString() + separator_after;
-			ctx.setVariable(String(_("param")) << (int)(submatch/2), script_param);
+			ctx.setVariable(String((L"param")) << (int)(submatch/2), script_param);
 			
 		} else if (correct_case) {
 			// Plain text, check if the case matches
@@ -663,7 +663,7 @@ bool KeywordDatabase::tryExpand(const Keyword& kw,
 				}
 			}
 			// we should have arrived at a param tag, skip it
-			if (pos_in_match_string < kw.match.size() && is_substr(kw.match, pos_in_match_string, _("<atom-param"))) {
+			if (pos_in_match_string < kw.match.size() && is_substr(kw.match, pos_in_match_string, (L"<atom-param"))) {
 				pos_in_match_string = match_close_tag_end(kw.match, pos_in_match_string);
 			}
 		}
@@ -671,9 +671,9 @@ bool KeywordDatabase::tryExpand(const Keyword& kw,
 		total += part;
 		part_start = part_end;
 	}
-	ctx.setVariable(_("mode"), to_script(kw.mode));
-	ctx.setVariable(_("correct_case"), to_script(correct_case));
-	ctx.setVariable(_("used_placeholders"), to_script(used_placeholders));
+	ctx.setVariable((L"mode"), to_script(kw.mode));
+	ctx.setVariable((L"correct_case"), to_script(correct_case));
+	ctx.setVariable((L"used_placeholders"), to_script(used_placeholders));
 	
 	// Final check whether the keyword matches
 	if (match_condition && match_condition->eval(ctx)->toBool() == false) {
@@ -681,15 +681,15 @@ bool KeywordDatabase::tryExpand(const Keyword& kw,
 	}
 	
 	// Show reminder text?
-	bool expand = expand_type == _('1');
-	if (!expand && expand_type != _('0')) {
+	bool expand = expand_type == (L'1');
+	if (!expand && expand_type != (L'0')) {
 		// default expand, determined by script
 		expand = expand_default ? expand_default->eval(ctx)->toBool() : true;
-		expand_type = expand ? _('A') : _('a');
+		expand_type = expand ? (L'A') : (L'a');
 	}
 	
 	// Copy text before keyword
-	result += remove_tag(tagged.substr(0, start), _("<kw-"));
+	result += remove_tag(tagged.substr(0, start), (L"<kw-"));
 	
 	// Combine keyword & reminder with result
 	String reminder;
@@ -698,12 +698,12 @@ bool KeywordDatabase::tryExpand(const Keyword& kw,
 	} catch (const Error& e) {
 		handle_error(_ERROR_2_("in keyword reminder", e.what(), kw.keyword));
 	}
-	ctx.setVariable(_("keyword"),  to_script(total));
-	ctx.setVariable(_("reminder"), to_script(reminder));
-	ctx.setVariable(_("expand"),   to_script(expand));
-	result +=  _("<kw-"); result += expand_type; result += _(">");
+	ctx.setVariable((L"keyword"),  to_script(total));
+	ctx.setVariable((L"reminder"), to_script(reminder));
+	ctx.setVariable((L"expand"),   to_script(expand));
+	result +=  (L"<kw-"); result += expand_type; result += (L">");
 	result += combine_script->eval(ctx)->toString();
-	result += _("</kw-"); result += expand_type; result += _(">");
+	result += (L"</kw-"); result += expand_type; result += (L">");
 	
 	// Add to usage statistics
 	if (stat && stat_key) {
@@ -720,14 +720,14 @@ bool KeywordDatabase::tryExpand(const Keyword& kw,
 // ----------------------------------------------------------------------------- : KeywordParamValue
 
 ScriptType KeywordParamValue::type() const { return SCRIPT_STRING; }
-String KeywordParamValue::typeName() const { return _("keyword parameter"); }
+String KeywordParamValue::typeName() const { return (L"keyword parameter"); }
 
 String KeywordParamValue::toString() const {
 	String safe_type = replace_all(replace_all(replace_all(type_name,
-							_("("),_("-")),
-							_(")"),_("-")),
-							_(" "),_("-"));
-	return _("<param-") + safe_type + _(">") + value  + _("</param-") + safe_type + _(">");
+							(L"("),(L"-")),
+							(L")"),(L"-")),
+							(L" "),(L"-"));
+	return (L"<param-") + safe_type + (L">") + value  + (L"</param-") + safe_type + (L">");
 }
 
 int    KeywordParamValue::toInt()     const { return to_script(value)->toInt(); } // a bit of a hack
@@ -737,10 +737,10 @@ AColor KeywordParamValue::toColor()   const { return to_script(value)->toColor()
 int    KeywordParamValue::itemCount() const { return to_script(value)->itemCount(); }
 
 ScriptValueP KeywordParamValue::getMember(const String& name) const {
-	if (name == _("type"))             return to_script(type_name);
-	if (name == _("separator before")) return to_script(separator_before);
-	if (name == _("separator after"))  return to_script(separator_after);
-	if (name == _("value"))            return to_script(value);
-	if (name == _("param"))            return to_script(value);
+	if (name == (L"type"))             return to_script(type_name);
+	if (name == (L"separator before")) return to_script(separator_before);
+	if (name == (L"separator after"))  return to_script(separator_after);
+	if (name == (L"value"))            return to_script(value);
+	if (name == (L"param"))            return to_script(value);
 	return ScriptValue::getMember(name);
 }

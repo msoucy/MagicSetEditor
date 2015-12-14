@@ -28,10 +28,6 @@ typedef wxString String;
 
 // ----------------------------------------------------------------------------- : Unicode
 
-#undef _
-/// A string/character constant, correctly handled in unicode builds
-#define _(S) BOOST_PP_CAT(L,S)
-
 /// The character type used
 typedef wchar_t Char;
 

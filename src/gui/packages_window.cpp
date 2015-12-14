@@ -89,9 +89,9 @@ wxThread::ExitCode DownloadableInstallerList::Thread::Entry() {
 		return 0;
 	}
 	// Read installer list
-	Reader reader(*stream, nullptr, _("installers"), true);
+	Reader reader(*stream, nullptr, (L"installers"), true);
 	vector<DownloadableInstallerP> installers;
-	reader.handle(_("installers"),installers);
+	reader.handle((L"installers"),installers);
 	// done
 	{
 		wxMutexLocker l(downloadable_installers.lock);
@@ -164,7 +164,7 @@ void PackageInfoPanel::draw(DC& dc) {
 	}
 	// package name
 	x += 7;
-	dc.SetFont(wxFont(16, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, _("Arial")));
+	dc.SetFont(wxFont(16, wxFONTFAMILY_SWISS, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, (L"Arial")));
 	dc.DrawText(d.full_name, x, y);
 	y += dc.GetCharHeight() + 7;
 	
@@ -184,8 +184,8 @@ void PackageInfoPanel::draw(DC& dc) {
 	x += max_dx + 5;
 	dc.DrawText(package->installed ? package->installed->version.toString()   : _LABEL_("no version"), x, y);
 	dc.DrawText(package->installer ? package->description->version.toString() : _LABEL_("no version"), x, y + 1*dy);
-	//dc.DrawText(_("?"), x, y + 2*dy);
-	//dc.DrawText(_("?"), x, y + 3*dy);
+	//dc.DrawText((L"?"), x, y + 2*dy);
+	//dc.DrawText((L"?"), x, y + 3*dy);
 }
 
 wxSize PackageInfoPanel::DoGetBestSize() const {
@@ -349,7 +349,7 @@ void PackagesWindow::onOk(wxCommandEvent& ev) {
 			if (!is) {
 				throw Error(_ERROR_2_("can't download installer", ip->description->name, ip->installer->installer_url));
 			}
-			ip->installer->installer_file = wxFileName::CreateTempFileName(_("mse-installer"));
+			ip->installer->installer_file = wxFileName::CreateTempFileName((L"mse-installer"));
 			wxFileOutputStream os(ip->installer->installer_file);
 			os.Write(*is);
 			os.Close();

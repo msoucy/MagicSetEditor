@@ -66,7 +66,7 @@ ScriptP ScriptableImage::getValidScriptP() {
 
 template <> void Reader::handle(ScriptableImage& s) {
 	handle(s.script.unparsed);
-	if (starts_with(s.script.unparsed, _("script:"))) {
+	if (starts_with(s.script.unparsed, (L"script:"))) {
 		s.script.unparsed = s.script.unparsed.substr(7);
 		s.script.parse(*this);
 	} else if (s.script.unparsed.find_first_of('{') != String::npos) {

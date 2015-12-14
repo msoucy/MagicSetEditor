@@ -20,8 +20,8 @@ SpellChecker& SpellChecker::get(const String& language) {
 	if (!speller) {
 		String local_dir  = package_manager.getDictionaryDir(true);
 		String global_dir = package_manager.getDictionaryDir(false);
-		String aff_path = language + _(".aff");
-		String dic_path = language + _(".dic");
+		String aff_path = language + (L".aff");
+		String dic_path = language + (L".dic");
 		if (wxFileExists(local_dir + aff_path) && wxFileExists(local_dir + dic_path)) {
 			speller = SpellCheckerP(new SpellChecker((local_dir + aff_path).mb_str(),
 			                                         (local_dir + dic_path).mb_str()));
@@ -29,21 +29,21 @@ SpellChecker& SpellChecker::get(const String& language) {
 			speller = SpellCheckerP(new SpellChecker((global_dir + aff_path).mb_str(),
 			                                         (global_dir + dic_path).mb_str()));
 		} else {
-			throw Error(_("Dictionary not found for language: ") + language);
+			throw Error((L"Dictionary not found for language: ") + language);
 		}
 	}
 	return *speller;
 }
 
 SpellChecker& SpellChecker::get(const String& filename, const String& language) {
-	SpellCheckerP& speller = spellers[filename + _(".") + language];
+	SpellCheckerP& speller = spellers[filename + (L".") + language];
 	if (!speller) {
 		Packaged* package = nullptr;
-		String prefix = package_manager.openFilenameFromPackage(package, filename) + _(".");
+		String prefix = package_manager.openFilenameFromPackage(package, filename) + (L".");
 		String local_dir  = package_manager.getDictionaryDir(true);
 		String global_dir = package_manager.getDictionaryDir(false);
-		String aff_path = language + _(".aff");
-		String dic_path = language + _(".dic");
+		String aff_path = language + (L".aff");
+		String dic_path = language + (L".dic");
 		if (wxFileExists(prefix + aff_path) && wxFileExists(prefix + dic_path)) {
 			speller = SpellCheckerP(new SpellChecker((prefix + aff_path).mb_str(),
 			                                         (prefix + dic_path).mb_str()));
@@ -54,7 +54,7 @@ SpellChecker& SpellChecker::get(const String& filename, const String& language) 
 			speller = SpellCheckerP(new SpellChecker((global_dir + aff_path).mb_str(),
 			                                         (prefix + dic_path).mb_str()));
 		} else {
-			throw Error(_("Dictionary '") + filename + _("' not found for language: ") + language);
+			throw Error((L"Dictionary '") + filename + (L"' not found for language: ") + language);
 		}
 	}
 	return *speller;
@@ -76,20 +76,20 @@ bool SpellChecker::convert_encoding(const String& word, CharBuffer& out) {
 	String fixed;
 	for(const auto& c :word) {
 		if (c == LEFT_SINGLE_QUOTE || c == RIGHT_SINGLE_QUOTE) {
-			fixed += _('\'');
+			fixed += (L'\'');
 		} else if (c == LEFT_DOUBLE_QUOTE || c == RIGHT_DOUBLE_QUOTE) {
-			fixed += _('\"');
+			fixed += (L'\"');
 		} else if (c == 0x00C6) {
 			// expand ligatures, TODO: put this in a better place
-			fixed += _("Ae");
+			fixed += (L"Ae");
 		} else if (c == 0x0132) {
-			fixed += _("IJ");
+			fixed += (L"IJ");
 		} else if (c == 0x0152) {
-			fixed += _("Oe");
+			fixed += (L"Oe");
 		} else if (c == 0xFB01) {
-			fixed += _("fi");
+			fixed += (L"fi");
 		} else if (c == 0xFB02) {
-			fixed += _("fl");
+			fixed += (L"fl");
 		} else {
 			fixed += c;
 		}

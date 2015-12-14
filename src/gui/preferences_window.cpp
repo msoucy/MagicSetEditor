@@ -150,15 +150,15 @@ GlobalPreferencesPage::GlobalPreferencesPage(Window* parent)
 	: PreferencesPage(parent)
 {
 	// init controls
-	language = new wxComboBox(this, wxID_ANY, _(""), wxDefaultPosition, wxDefaultSize, 0, nullptr, wxCB_READONLY);
+	language = new wxComboBox(this, wxID_ANY, (L""), wxDefaultPosition, wxDefaultSize, 0, nullptr, wxCB_READONLY);
 	open_sets_in_new_window = new wxCheckBox(this, wxID_ANY, _BUTTON_("open sets in new window"));
 	// set values
 	vector<PackagedP> locales;
-	package_manager.findMatching(_("*.mse-locale"), locales);
+	package_manager.findMatching((L"*.mse-locale"), locales);
 	sort(locales.begin(), locales.end(), compare_package_name);
 	int n = 0;
 	for(auto& package : locales) {
-		language->Append(package->name() + _(": ") + package->full_name, package.get());
+		language->Append(package->name() + (L": ") + package->full_name, package.get());
 		if (settings.locale == package->name()) {
 			language->SetSelection(n);
 		}
@@ -215,10 +215,10 @@ DisplayPreferencesPage::DisplayPreferencesPage(Window* parent)
 	non_normal_export-> SetValue(!settings.default_stylesheet_settings.card_normal_export());
 	#if USE_ZOOM_COMBOBOX
 		zoom_int = static_cast<int>(settings.default_stylesheet_settings.card_zoom() * 100);
-		zoom->SetValue(String::Format(_("%d%%"),zoom_int));
+		zoom->SetValue(String::Format((L"%d%%"),zoom_int));
 		int choices[] = {50,66,75,100,120,150,200};
 		for (unsigned int i = 0 ; i < sizeof(choices)/sizeof(choices[0]) ; ++i) {
-			zoom->Append(String::Format(_("%d%%"),choices[i]));
+			zoom->Append(String::Format((L"%d%%"),choices[i]));
 		}
 	#else
 		zoom->SetRange(1, 1000);
@@ -241,9 +241,9 @@ DisplayPreferencesPage::DisplayPreferencesPage(Window* parent)
 			s2->Add(new wxStaticText(this, wxID_ANY,     _HELP_("zoom export")),       0, wxALL & ~wxTOP, 4);
 		s->Add(s2, 0, wxEXPAND | wxALL, 8);
 		/*
-		wxSizer* s4 = new wxStaticBoxSizer(wxVERTICAL, this, _("Card List"));
+		wxSizer* s4 = new wxStaticBoxSizer(wxVERTICAL, this, (L"Card List"));
 			wxSizer* s5 = new wxBoxSizer(wxHORIZONTAL);
-				s5->Add(new wxStaticText(this, wxID_ANY, _("Columns: ")),      0, wxALL & ~wxLEFT | wxEXPAND, 4);
+				s5->Add(new wxStaticText(this, wxID_ANY, (L"Columns: ")),      0, wxALL & ~wxLEFT | wxEXPAND, 4);
 				s5->Add(columns);
 			s4->Add(s5, 0, wxEXPAND | wxALL, 4);
 		s->Add(s4, 0, wxEXPAND | wxALL & ~wxTOP, 8);
@@ -277,10 +277,10 @@ void DisplayPreferencesPage::onSelectColumns(wxCommandEvent&) {
 	void DisplayPreferencesPage::updateZoom() {
 		String s = zoom->GetValue();
 		int i = zoom_int;
-		if (wxSscanf(s.c_str(),_("%u"),&i)) {
+		if (wxSscanf(s.c_str(),(L"%u"),&i)) {
 			zoom_int = min(max(i,1),1000);
 		}
-		zoom->SetValue(String::Format(_("%d%%"),(int)zoom_int));
+		zoom->SetValue(String::Format((L"%d%%"),(int)zoom_int));
 	}
 #endif
 
@@ -322,7 +322,7 @@ void DirsPreferencesPage::store() {
 
 void DirsPreferencesPage::onApprenticeBrowse(wxCommandEvent&) {
 	// browse for appr.exe
-	wxFileDialog dlg(this, _TITLE_("locate apprentice"), apprentice->GetValue(), _(""), _LABEL_("apprentice exe") + _("|appr.exe"), wxFD_OPEN);
+	wxFileDialog dlg(this, _TITLE_("locate apprentice"), apprentice->GetValue(), (L""), _LABEL_("apprentice exe") + (L"|appr.exe"), wxFD_OPEN);
 	if (dlg.ShowModal() == wxID_OK) {
 		wxFileName fn(dlg.GetPath());
 		apprentice->SetValue(fn.GetPath());

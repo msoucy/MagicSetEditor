@@ -17,8 +17,8 @@ using std::min;
 // ----------------------------------------------------------------------------- : Util
 
 bool is_vowel(Char c) {
-	return c == _('a') || c == _('e') || c == _('i') || c == _('o') || c == _('u')
-	    || c == _('A') || c == _('E') || c == _('I') || c == _('O') || c == _('U');
+	return c == (L'a') || c == (L'e') || c == (L'i') || c == (L'o') || c == (L'u')
+	    || c == (L'A') || c == (L'E') || c == (L'I') || c == (L'O') || c == (L'U');
 }
 inline bool is_constant(Char c) {
 	return !is_vowel(c);
@@ -29,38 +29,38 @@ inline bool is_constant(Char c) {
 /// Write a number using words, for example 23 -> "twenty-three"
 String english_number(int i) {
 	switch (i) {
-		case 0:  return _("zero");
-		case 1:  return _("one");
-		case 2:  return _("two");
-		case 3:  return _("three");
-		case 4:  return _("four");
-		case 5:  return _("five");
-		case 6:  return _("six");
-		case 7:  return _("seven");
-		case 8:  return _("eight");
-		case 9:  return _("nine");
-		case 10: return _("ten");
-		case 11: return _("eleven");
-		case 12: return _("twelve");
-		case 13: return _("thirteen");
-		case 15: return _("fifteen");
-		case 18: return _("eighteen");
-		case 20: return _("twenty");
-		case 30: return _("thirty");
-		case 40: return _("forty");
-		case 50: return _("fifty");
-		case 80: return _("eighty");
+		case 0:  return (L"zero");
+		case 1:  return (L"one");
+		case 2:  return (L"two");
+		case 3:  return (L"three");
+		case 4:  return (L"four");
+		case 5:  return (L"five");
+		case 6:  return (L"six");
+		case 7:  return (L"seven");
+		case 8:  return (L"eight");
+		case 9:  return (L"nine");
+		case 10: return (L"ten");
+		case 11: return (L"eleven");
+		case 12: return (L"twelve");
+		case 13: return (L"thirteen");
+		case 15: return (L"fifteen");
+		case 18: return (L"eighteen");
+		case 20: return (L"twenty");
+		case 30: return (L"thirty");
+		case 40: return (L"forty");
+		case 50: return (L"fifty");
+		case 80: return (L"eighty");
 		default: {
 			if (i < 0 || i >= 100) {
 				// number too large, keep as digits
 				return (String() << i);
 			} else if (i < 20) {
-				return english_number(i%10) + _("teen");
+				return english_number(i%10) + (L"teen");
 			} else if (i % 10 == 0) {
-				return english_number(i/10) + _("ty");
+				return english_number(i/10) + (L"ty");
 			} else {
 				// <a>ty-<b>
-				return english_number(i/10*10) + _("-") + english_number(i%10);
+				return english_number(i/10*10) + (L"-") + english_number(i%10);
 			}
 		}
 	}
@@ -69,26 +69,26 @@ String english_number(int i) {
 /// Write an ordinal number using words, for example 23 -> "twenty-third"
 String english_ordinal(int i) {
 	switch (i) {
-		case 1:  return _("first");
-		case 2:  return _("second");
-		case 3:  return _("third");
-		case 5:  return _("fifth");
-		case 8:  return _("eighth");
-		case 9:  return _("ninth");
-		case 11: return _("eleventh");
-		case 12: return _("twelfth");
+		case 1:  return (L"first");
+		case 2:  return (L"second");
+		case 3:  return (L"third");
+		case 5:  return (L"fifth");
+		case 8:  return (L"eighth");
+		case 9:  return (L"ninth");
+		case 11: return (L"eleventh");
+		case 12: return (L"twelfth");
 		default: {
 			if (i <= 0 || i >= 100) {
 				// number too large, keep as digits
-				return String::Format(_("%dth"), i);
+				return String::Format((L"%dth"), i);
 			} else if (i < 20) {
-				return english_number(i) + _("th");
+				return english_number(i) + (L"th");
 			} else if (i % 10 == 0) {
 				String num = english_number(i);
-				return num.substr(0,num.size()-1) + _("ieth"); // twentieth
+				return num.substr(0,num.size()-1) + (L"ieth"); // twentieth
 			} else {
 				// <a>ty-<b>th
-				return english_number(i/10*10) + _("-") + english_ordinal(i%10);
+				return english_number(i/10*10) + (L"-") + english_ordinal(i%10);
 			}
 		}
 	}
@@ -96,36 +96,36 @@ String english_ordinal(int i) {
 
 /// Write a number using words, use "a" for 1
 String english_number_a(int i) {
-	if (i == 1) return _("a");
+	if (i == 1) return (L"a");
 	else        return english_number(i);
 }
 /// Write a number using words, use "" for 1
 String english_number_multiple(int i) {
-	if (i == 1) return _("");
+	if (i == 1) return (L"");
 	else        return english_number(i);
 }
 
 
 // script_english_number_*
 String do_english_num(String input, String(*fun)(int)) {
-	if (is_substr(input, 0, _("<param-"))) {
+	if (is_substr(input, 0, (L"<param-"))) {
 		// a keyword parameter, of the form "<param->123</param->"
 		size_t start = skip_tag(input, 0);
 		if (start != String::npos) {
-			size_t end = input.find_first_of(_('<'), start);
+			size_t end = input.find_first_of((L'<'), start);
 			if (end != String::npos) {
 				String is = input.substr(start, end - start);
 				long i = 0;
 				if (is.ToLong(&i)) {
 					if (i == 1) {
-						return _("<hint-1>") + substr_replace(input, start, end, fun(i));
+						return (L"<hint-1>") + substr_replace(input, start, end, fun(i));
 					} else {
-						return _("<hint-2>") + substr_replace(input, start, end, fun(i));
+						return (L"<hint-2>") + substr_replace(input, start, end, fun(i));
 					}
 				}
 			}
 		}
-		return _("<hint-2>") + input;
+		return (L"<hint-2>") + input;
 	} else {
 		long i = 0;
 		if (input.ToLong(&i)) {
@@ -155,22 +155,22 @@ SCRIPT_FUNCTION(english_number_ordinal) {
 // ----------------------------------------------------------------------------- : Singular/plural
 
 String english_singular(const String& str) {
-	if (str.size() > 3 && is_substr(str, str.size()-3, _("ies"))) {
-		return str.substr(0, str.size() - 3) + _("y");
-	} else if (str.size() > 3 && is_substr(str, str.size()-3, _("oes"))) {
+	if (str.size() > 3 && is_substr(str, str.size()-3, (L"ies"))) {
+		return str.substr(0, str.size() - 3) + (L"y");
+	} else if (str.size() > 3 && is_substr(str, str.size()-3, (L"oes"))) {
 		return str.substr(0, str.size() - 2);
-	} else if (str.size() > 4 && is_substr(str, str.size()-4, _("ches"))) {
+	} else if (str.size() > 4 && is_substr(str, str.size()-4, (L"ches"))) {
 		return str.substr(0, str.size() - 2);
-	} else if (str.size() > 4 && is_substr(str, str.size()-4, _("shes"))) {
+	} else if (str.size() > 4 && is_substr(str, str.size()-4, (L"shes"))) {
 		return str.substr(0, str.size() - 2);
-	} else if (str.size() > 4 && is_substr(str, str.size()-4, _("sses"))) {
+	} else if (str.size() > 4 && is_substr(str, str.size()-4, (L"sses"))) {
 		return str.substr(0, str.size() - 2);
-	} else if (str.size() > 5 && is_substr(str, str.size()-3, _("ves")) && (is_substr(str, str.size()-5, _("el")) || is_substr(str, str.size()-5, _("ar")) )) {
-		return str.substr(0, str.size() - 3) + _("f");
-	} else if (str.size() > 1 && str.GetChar(str.size() - 1) == _('s')) {
+	} else if (str.size() > 5 && is_substr(str, str.size()-3, (L"ves")) && (is_substr(str, str.size()-5, (L"el")) || is_substr(str, str.size()-5, (L"ar")) )) {
+		return str.substr(0, str.size() - 3) + (L"f");
+	} else if (str.size() > 1 && str.GetChar(str.size() - 1) == (L's')) {
 		return str.substr(0, str.size() - 1);
-	} else if (str.size() >= 3 && is_substr(str, str.size()-3, _("men"))) {
-		return str.substr(0, str.size() - 2) + _("an");
+	} else if (str.size() >= 3 && is_substr(str, str.size()-3, (L"men"))) {
+		return str.substr(0, str.size() - 2) + (L"an");
 	} else {
 		return str;
 	}
@@ -179,28 +179,28 @@ String english_plural(const String& str) {
 	if (str.size() > 2) {
 		Char a = str.GetChar(str.size() - 2);
 		Char b = str.GetChar(str.size() - 1);
-		if (b == _('y') && is_constant(a)) {
-			return str.substr(0, str.size() - 1) + _("ies");
-		} else if (b == _('o') && is_constant(a)) {
-			return str + _("es");
-		} else if ((a == _('s') || a == _('c')) && b == _('h')) {
-			return str + _("es");
-		} else if (b == _('s')) {
-			return str + _("es");
+		if (b == (L'y') && is_constant(a)) {
+			return str.substr(0, str.size() - 1) + (L"ies");
+		} else if (b == (L'o') && is_constant(a)) {
+			return str + (L"es");
+		} else if ((a == (L's') || a == (L'c')) && b == (L'h')) {
+			return str + (L"es");
+		} else if (b == (L's')) {
+			return str + (L"es");
 		} else {
-			return str + _("s");
+			return str + (L"s");
 		}
 	}
-	return str + _("s");
+	return str + (L"s");
 }
 
 // script_english_singular/plural/singplur
 String do_english(String input, String(*fun)(const String&)) {
-	if (is_substr(input, 0, _("<param-"))) {
+	if (is_substr(input, 0, (L"<param-"))) {
 		// a keyword parameter, of the form "<param->123</param->"
 		size_t start = skip_tag(input, 0);
 		if (start != String::npos) {
-			size_t end = input.find_first_of(_('<'), start);
+			size_t end = input.find_first_of((L'<'), start);
 			if (end != String::npos) {
 				String is = input.substr(start, end - start);
 				return substr_replace(input, start, end, fun(is));
@@ -243,28 +243,28 @@ String process_english_hints(const String& str) {
 	int singplur = 0;
 	for (size_t i = 0 ; i < str.size() ; ) {
 		Char c = str.GetChar(i);
-		if (is_substr(str, i, _("<hint-"))) {
+		if (is_substr(str, i, (L"<hint-"))) {
 			Char h = str.GetChar(i + 6); // hint code
-			if (h == _('1')) {
+			if (h == (L'1')) {
 				singplur = 1;
-			} else if (h == _('2')) {
+			} else if (h == (L'2')) {
 				singplur = 2;
 			}
 			i = skip_tag(str, i);
-		} else if (is_substr(str, i, _("<param-"))) {
+		} else if (is_substr(str, i, (L"<param-"))) {
 			size_t after = skip_tag(str, i);
 			if (after != String::npos) {
 				Char c = str.GetChar(after);
-				if (singplur == 1 && is_substr(str, after, _("a</param-"))) {
+				if (singplur == 1 && is_substr(str, after, (L"a</param-"))) {
 					// a -> an, where the a originates from english_number_a(1)
 					size_t after_end = skip_tag(str,after+1);
 					if (after_end == String::npos) {
-						throw Error(_("Incomplete </param> tag"));
+						throw Error((L"Incomplete </param> tag"));
 					}
 					if (after_end != String::npos && after_end + 1 < str.size()
 					&& isSpace(str.GetChar(after_end)) && is_vowel(str.GetChar(after_end+1))) {
 						ret.append(str,i,after-i);
-						ret += _("an");
+						ret += (L"an");
 						i = after + 1;
 						continue;
 					}
@@ -273,18 +273,18 @@ String process_english_hints(const String& str) {
 					// is there "a" before this?
 					String last = ret.substr(ret.size() - 2);
 					if ( (ret.size() == 2 || !isAlpha(ret.GetChar(ret.size() - 3))) &&
-						(last == _("a ") || last == _("A ")) ) {
-						ret.insert(ret.size() - 1, _('n'));
+						(last == (L"a ") || last == (L"A ")) ) {
+						ret.insert(ret.size() - 1, (L'n'));
 					}
-				} else if (is_substr(str, after, _("</param-")) && ret.size() >= 1 &&
-							ret.GetChar(ret.size() - 1) == _(' ')) {
+				} else if (is_substr(str, after, (L"</param-")) && ret.size() >= 1 &&
+							ret.GetChar(ret.size() - 1) == (L' ')) {
 					// empty param, drop space before it
 					ret.resize(ret.size() - 1);
 				}
 			}
 			ret.append(str,i,min(after,str.size())-i);
 			i = after;
-		} else if (is_substr(str, i, _("<singular>"))) {
+		} else if (is_substr(str, i, (L"<singular>"))) {
 			// singular -> keep, plural -> drop
 			size_t start = skip_tag(str, i);
 			size_t end   = match_close_tag(str, start);
@@ -293,7 +293,7 @@ String process_english_hints(const String& str) {
 			}
 			singplur = 0;
 			i = skip_tag(str, end);
-		} else if (is_substr(str, i, _("<plural>"))) {
+		} else if (is_substr(str, i, (L"<plural>"))) {
 			// singular -> drop, plural -> keep
 			size_t start = skip_tag(str, i);
 			size_t end   = match_close_tag(str, start);
@@ -302,9 +302,9 @@ String process_english_hints(const String& str) {
 			}
 			singplur = 0;
 			i = skip_tag(str, end);
-		} else if (c == _('(') && singplur) {
+		} else if (c == (L'(') && singplur) {
 			// singular -> drop (...), plural -> keep it
-			size_t end = str.find_first_of(_(')'), i);
+			size_t end = str.find_first_of((L')'), i);
 			if (end != String::npos) {
 				if (singplur == 2) {
 					ret += str.substr(i + 1, end - i - 1);
@@ -315,7 +315,7 @@ String process_english_hints(const String& str) {
 				++i;
 			}
 			singplur = 0;
-		} else if (c == _('<')) {
+		} else if (c == (L'<')) {
 			size_t after = skip_tag(str, i);
 			ret.append(str,i,min(after,str.size())-i);
 			i = after;
@@ -336,11 +336,11 @@ SCRIPT_FUNCTION(process_english_hints) {
 // ----------------------------------------------------------------------------- : Init
 
 void init_script_english_functions(Context& ctx) {
-	ctx.setVariable(_("english_number"),          script_english_number);
-	ctx.setVariable(_("english_number_a"),        script_english_number_a);
-	ctx.setVariable(_("english_number_multiple"), script_english_number_multiple);
-	ctx.setVariable(_("english_number_ordinal"),  script_english_number_ordinal);
-	ctx.setVariable(_("english_singular"),        script_english_singular);
-	ctx.setVariable(_("english_plural"),          script_english_plural);
-	ctx.setVariable(_("process_english_hints"),   script_process_english_hints);
+	ctx.setVariable((L"english_number"),          script_english_number);
+	ctx.setVariable((L"english_number_a"),        script_english_number_a);
+	ctx.setVariable((L"english_number_multiple"), script_english_number_multiple);
+	ctx.setVariable((L"english_number_ordinal"),  script_english_number_ordinal);
+	ctx.setVariable((L"english_singular"),        script_english_singular);
+	ctx.setVariable((L"english_plural"),          script_english_plural);
+	ctx.setVariable((L"process_english_hints"),   script_process_english_hints);
 }

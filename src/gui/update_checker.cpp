@@ -111,7 +111,7 @@ class CheckUpdateThread : public wxThread {
 			// Read version data
 			// ignore errors for forwards compatability
 			VersionDataP version_data;
-			Reader reader(*stream, nullptr, _("updates"), true);
+			Reader reader(*stream, nullptr, (L"updates"), true);
 			reader.handle(version_data);
 			// has the updates url changed?
 			if (!version_data->new_updates_url.empty()) {

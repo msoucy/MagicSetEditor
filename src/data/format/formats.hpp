@@ -28,7 +28,7 @@ class FileFormat : public IntrusivePtrVirtualBase {
 	virtual String extension() = 0;
 	/// What to match against
 	virtual String matches() {
-		return _("*.") + extension();
+		return (L"*.") + extension();
 	}
 	/// Name of the filter
 	virtual String name() = 0;
@@ -38,12 +38,12 @@ class FileFormat : public IntrusivePtrVirtualBase {
 	virtual bool canExport(const Game&) = 0;
 	/// Import using this filter
 	virtual SetP importSet(const String& filename) {
-		throw InternalError(_("Import not supported by this file format"));
+		throw InternalError((L"Import not supported by this file format"));
 	}
 	/// Export using this filter
 	/** If is_copy, then the set should not be modified */
 	virtual void exportSet(Set& set, const String& filename, bool is_copy = false) {
-		throw InternalError(_("Export not supported by this file format"));
+		throw InternalError((L"Export not supported by this file format"));
 	}
 };
 
@@ -54,7 +54,7 @@ class FileFormat : public IntrusivePtrVirtualBase {
 void init_file_formats();
 
 /// List of supported import formats
-/** Formated as _("All supported (type1,...)|type1,...|name|type|...|All files(*.*)|*.*").
+/** Formated as (L"All supported (type1,...)|type1,...|name|type|...|All files(*.*)|*.*").
  *  For use in file selection dialogs.
  */
 String import_formats();

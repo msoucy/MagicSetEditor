@@ -138,12 +138,12 @@ template <>
 SymbolPartP read_new<SymbolPart>(Reader& reader) {
 	// there must be a type specified
 	String type;
-	reader.handle(_("type"), type);
-	if      (type == _("shape") || type.empty())	return intrusive(new SymbolShape);
-	else if (type == _("symmetry"))					return intrusive(new SymbolSymmetry);
-	else if (type == _("group"))					return intrusive(new SymbolGroup);
+	reader.handle((L"type"), type);
+	if      (type == (L"shape") || type.empty())	return intrusive(new SymbolShape);
+	else if (type == (L"symmetry"))					return intrusive(new SymbolSymmetry);
+	else if (type == (L"group"))					return intrusive(new SymbolGroup);
 	else {
-		throw ParseError(_("Unsupported symbol part type: '") + type + _("'"));
+		throw ParseError((L"Unsupported symbol part type: '") + type + (L"'"));
 	}
 }
 
@@ -173,7 +173,7 @@ void fix(Reader& reader, SymbolShape& shape) {
 		p->delta_before /= 500.0;
 		p->delta_after  /= 500.0;
 	}
-	if (shape.name.empty()) shape.name = _("Shape");
+	if (shape.name.empty()) shape.name = (L"Shape");
 	shape.updateBounds();
 }
 
@@ -195,7 +195,7 @@ SymbolShape::SymbolShape()
 {}
 
 String SymbolShape::typeName() const {
-	return _("shape");
+	return (L"shape");
 }
 
 SymbolPartP SymbolShape::clone() const {
@@ -237,7 +237,7 @@ SymbolSymmetry::SymbolSymmetry()
 {}
 
 String SymbolSymmetry::typeName() const {
-	return _("symmetry");
+	return (L"symmetry");
 }
 
 SymbolPartP SymbolSymmetry::clone() const {
@@ -251,7 +251,7 @@ SymbolPartP SymbolSymmetry::clone() const {
 
 String SymbolSymmetry::expectedName() const {
 	return capitalize(kind == SYMMETRY_ROTATION ? _TYPE_("rotation") : _TYPE_("reflection"))
-	     + String::Format(_(" (%d)"), copies);
+	     + String::Format((L" (%d)"), copies);
 }
 
 Bounds SymbolSymmetry::calculateBounds(const Vector2D& origin, const Matrix2D& m, bool is_identity) {
@@ -296,7 +296,7 @@ SymbolGroup::SymbolGroup() {
 }
 
 String SymbolGroup::typeName() const {
-	return _("group");
+	return (L"group");
 }
 
 SymbolPartP SymbolGroup::clone() const {
@@ -364,7 +364,7 @@ SymbolShapeP default_symbol_part(double d) {
 	part->points.push_back(intrusive(new ControlPoint(d + .2, d + .8)));
 	part->points.push_back(intrusive(new ControlPoint(d + .8, d + .8)));
 	part->points.push_back(intrusive(new ControlPoint(d + .8, d + .2)));
-	part->name = _("Square");
+	part->name = (L"Square");
 	return part;
 }
 

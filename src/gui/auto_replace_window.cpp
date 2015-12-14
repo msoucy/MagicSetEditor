@@ -81,7 +81,7 @@ AutoReplaceList::AutoReplaceList(Window* parent, int id, const Game& game)
 		items.push_back(ar->clone());
 	}
 	// Add columns
-	InsertColumn(0, _(""),                   wxLIST_FORMAT_LEFT,    0); // dummy, prevent the image from taking up space
+	InsertColumn(0, (L""),                   wxLIST_FORMAT_LEFT,    0); // dummy, prevent the image from taking up space
 	InsertColumn(1, _LABEL_("auto match"),   wxLIST_FORMAT_LEFT,  100);
 	InsertColumn(2, _LABEL_("auto replace"), wxLIST_FORMAT_LEFT,  200);
 	// grey for disabled items
@@ -143,7 +143,7 @@ String AutoReplaceList::OnGetItemText (long pos, long col) const {
 	if (col == 0) return ar->match;
 	if (col == 1) return ar->match;
 	if (col == 2) return ar->replace;
-	throw InternalError(_("too many columns"));
+	throw InternalError((L"too many columns"));
 }
 
 int AutoReplaceList::OnGetItemImage(long pos) const {

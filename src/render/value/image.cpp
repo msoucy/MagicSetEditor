@@ -125,15 +125,15 @@ Bitmap ImageValueViewer::imagePlaceholder(const Rotation& rot, UInt w, UInt h, c
 		// only when in editor mode
 		for (UInt size = 12 ; size > 2 ; --size) {
 			dc.SetFont(wxFont(size, wxSWISS, wxNORMAL, wxNORMAL));
-			RealSize rs = dc.GetTextExtent(_("double click to load image"));
+			RealSize rs = dc.GetTextExtent((L"double click to load image"));
 			if (rs.width <= w - 10 && rs.height < h - 10) {
 				// text fits
 				RealPoint pos = align_in_rect(ALIGN_MIDDLE_CENTER, rs, rect);
 				bool black_on_white = !background.Ok() || very_light(background);
 				dc.SetTextForeground(black_on_white ? *wxWHITE : *wxBLACK);
-				dc.DrawText(_("double click to load image"), pos, 2, 4); // blurred
+				dc.DrawText((L"double click to load image"), pos, 2, 4); // blurred
 				dc.SetTextForeground(black_on_white ? *wxBLACK : *wxWHITE);
-				dc.DrawText(_("double click to load image"), pos);
+				dc.DrawText((L"double click to load image"), pos);
 				break;
 			}
 		}

@@ -28,7 +28,7 @@ DECLARE_POINTER_TYPE(wxZipInputStream);
 
 // ----------------------------------------------------------------------------- : Installer
 
-String Installer::typeName() const { return _("installer"); }
+String Installer::typeName() const { return (L"installer"); }
 Version Installer::fileVersion() const { return file_version_installer; }
 
 IMPLEMENT_REFLECTION(Installer) {
@@ -40,11 +40,11 @@ void Installer::validate(Version file_app_version) {
 	Packaged::validate(file_app_version);
 	// load icons where possible
 	for(auto& p :packages) {
-		if (!p->icon_url.empty() && !starts_with(p->icon_url,_("http:"))) {
+		if (!p->icon_url.empty() && !starts_with(p->icon_url,(L"http:"))) {
 			// TODO: support absolute icon names
 			try{
-				String filename = p->name + _("/") + p->icon_url;
-				InputStreamP img = openIn(p->name + _("/") + p->icon_url);
+				String filename = p->name + (L"/") + p->icon_url;
+				InputStreamP img = openIn(p->name + (L"/") + p->icon_url);
 				p->icon.LoadFile(*img);
 			} catch (...) {
 				// ignore errors, it's just an image
@@ -68,8 +68,8 @@ void Installer::installFrom(const String& filename, bool message_on_success, boo
 	}
 	if (message_on_success) {
 		//wxMessageBox(_ERROR_2_("successful install", i.name(), String() << i.packaged.size(), 
-		wxMessageBox(String::Format(_("'%s' successfully installed %d package%s."), i.name().c_str(), i.packages.size(), i.packages.size() == 1 ? _("") : _("s")),
-		             _("Magic Set Editor"), wxOK | wxICON_INFORMATION);
+		wxMessageBox(String::Format((L"'%s' successfully installed %d package%s."), i.name().c_str(), i.packages.size(), i.packages.size() == 1 ? (L"") : (L"s")),
+		             (L"Magic Set Editor"), wxOK | wxICON_INFORMATION);
 	}
 }
 
@@ -85,7 +85,7 @@ struct dependency_check : public unary_function<bool, PackagedP> {
 void Installer::install(bool local, bool check_dependencies) {
 	// Destination directory
 //	String install_dir = local ? ::packages.getLocalDataDir() : ::packages.getGlobalDataDir();
-	String install_dir = _("TODO");
+	String install_dir = (L"TODO");
 	if (!wxDirExists(install_dir)) {
 		wxMkdir(install_dir, 0755);
 	}
@@ -94,21 +94,21 @@ void Installer::install(bool local, bool check_dependencies) {
 	vector<PackagedP> new_packages;
 
 	for(auto& p : packages) {
-		if (wxDirExists(install_dir + _("/") + p) || wxFileExists(install_dir + _("/") + p)) {
-			throw PackageError(_("Package ") + p + _(" is already installed. Overwriting currently not supported."));
+		if (wxDirExists(install_dir + (L"/") + p) || wxFileExists(install_dir + (L"/") + p)) {
+			throw PackageError((L"Package ") + p + (L" is already installed. Overwriting currently not supported."));
 		}
 		PackagedP pack;
 		wxString fn(wxFileName(p).GetExt());
-		if      (fn == _("mse-game"))            pack = intrusive(new Game());
-		else if (fn == _("mse-style"))           pack = intrusive(new StyleSheet());
-		else if (fn == _("mse-locale"))          pack = intrusive(new Locale());
-		else if (fn == _("mse-include"))         pack = intrusive(new IncludePackage());
-		else if (fn == _("mse-symbol-font"))     pack = intrusive(new SymbolFont());
-		else if (fn == _("mse-export-template")) pack = intrusive(new ExportTemplate());
+		if      (fn == (L"mse-game"))            pack = intrusive(new Game());
+		else if (fn == (L"mse-style"))           pack = intrusive(new StyleSheet());
+		else if (fn == (L"mse-locale"))          pack = intrusive(new Locale());
+		else if (fn == (L"mse-include"))         pack = intrusive(new IncludePackage());
+		else if (fn == (L"mse-symbol-font"))     pack = intrusive(new SymbolFont());
+		else if (fn == (L"mse-export-template")) pack = intrusive(new ExportTemplate());
 		else {
-			throw PackageError(_("Unrecognized package type: '") + fn + _("'\nwhile trying to install: ") + p);
+			throw PackageError((L"Unrecognized package type: '") + fn + (L"'\nwhile trying to install: ") + p);
 		}
-		Reader reader(openIn(p + _("/") + pack->typeName()));
+		Reader reader(openIn(p + (L"/") + pack->typeName()));
 		pack->Packaged::reflect_impl(reader);
 		new_packages.push_back(pack);
 	}
@@ -119,7 +119,7 @@ void Installer::install(bool local, bool check_dependencies) {
 			for(auto& d : p->dependencies) {
 				if (find_if(new_packages.begin(), new_packages.end(), dependency_check(d)) == new_packages.end() &&
 					!::packages.checkDependency(*d, false)) {
-					throw PackageError(_("Unmet dependency for package ") + p->relativeFilename() + _(": ") + d->package + _(", version ") + d->version.toString() + _(" or higher."));
+					throw PackageError((L"Unmet dependency for package ") + p->relativeFilename() + (L": ") + d->package + (L", version ") + d->version.toString() + (L" or higher."));
 				}
 			}
 		}
@@ -138,16 +138,16 @@ void Installer::install(bool local, bool check_dependencies) {
 		
 		String current_dir = install_dir;
 		for (size_t j = 0; j < dirs.GetCount(); ++j) {
-			current_dir += _("/") + dirs[j];
+			current_dir += (L"/") + dirs[j];
 			if (!wxDirExists(current_dir) && !wxMkdir(current_dir, 0755)) {
-				throw PackageError(_("Cannot create folder ") + current_dir + _(" for install. Warning: some packages may have been installed anyway, and some may only be partially installed."));
+				throw PackageError((L"Cannot create folder ") + current_dir + (L" for install. Warning: some packages may have been installed anyway, and some may only be partially installed."));
 			}
 		}
 		
 		InputStreamP is = openIn(file);
-		wxFileOutputStream os (install_dir + _("/") + file);
+		wxFileOutputStream os (install_dir + (L"/") + file);
 		if (!os.IsOk()) {
-			throw PackageError(_("Cannot create file ") + install_dir + _("/") + file + _(" for install. Warning: some packages may have been installed anyway, and some may only be partially installed."));
+			throw PackageError((L"Cannot create file ") + install_dir + (L"/") + file + (L" for install. Warning: some packages may have been installed anyway, and some may only be partially installed."));
 		}
 		os.Write(*is);
 	}
@@ -164,7 +164,7 @@ void Installer::install(const String& package) {
 
 void Installer::addPackage(const String& package) {
 	wxFileName fn(package);
-	if (fn.GetExt() == _("mse-installer")) {
+	if (fn.GetExt() == (L"mse-installer")) {
 		prefered_filename = package;
 	} else {
 		PackagedP p = package_manager.openAny(package);
@@ -183,14 +183,14 @@ void Installer::addPackage(Packaged& package) {
 	packages.push_back(intrusive(new PackageDescription(package)));
 	// use this as a filename?
 	if (prefered_filename.empty()) {
-		prefered_filename = package.name() + _(".mse-installer");
+		prefered_filename = package.name() + (L".mse-installer");
 	}
 	// Copy all files from that package to this one
 	const FileInfos& file_infos = package.getFileInfos();
 	for (FileInfos::const_iterator it = file_infos.begin() ; it != file_infos.end() ; ++it) {
 		String file = it->first;
 		InputStreamP  is = package.openIn(file);
-		OutputStreamP os = openOut(name + _("/") + file);
+		OutputStreamP os = openOut(name + (L"/") + file);
 		os->Write(*is);
 	}
 }
@@ -215,15 +215,15 @@ PackageDescription::PackageDescription(const Packaged& package)
 	if (installer_group.empty()) {
 		// "game-style.mse-something" -> "game/style_short_name"
 		installer_group = package.name();
-		size_t pos = installer_group.find_last_of(_('-'));
+		size_t pos = installer_group.find_last_of((L'-'));
 		if (pos != String::npos) installer_group.resize(pos);
 		if (!installer_group.empty()) {
-			installer_group = _("unclassified/") + replace_all(installer_group,_("-"),_("/")) + _("/");
+			installer_group = (L"unclassified/") + replace_all(installer_group,(L"-"),(L"/")) + (L"/");
 		} else {
-			installer_group = _("unclassified/");
+			installer_group = (L"unclassified/");
 		}
 		if (dynamic_cast<const Game*>(&package)) {
-			installer_group += _("Game files");
+			installer_group += (L"Game files");
 		} else {
 			installer_group += short_name;
 		}
@@ -603,7 +603,7 @@ bool set_package_action(InstallablePackages& packages, const InstallablePackageP
 
 // ----------------------------------------------------------------------------- : MSE package
 
-String mse_package = _("magicseteditor.exe");
+String mse_package = (L"magicseteditor.exe");
 
 InstallablePackageP mse_installable_package() {
 	PackageVersionP mse_version(new PackageVersion(
@@ -617,7 +617,7 @@ InstallablePackageP mse_installable_package() {
 	mse_description->short_name    = mse_description->full_name = mse_description->installer_group
 	        = _TITLE_("magic set editor");
 	mse_description->position_hint = -100;
-	mse_description->icon          = load_resource_image(_("installer_program"));
+	mse_description->icon          = load_resource_image((L"installer_program"));
 	//mse_description->description   = _LABEL_("magic set editor package");
 	return intrusive(new InstallablePackage(mse_description, mse_version));
 }

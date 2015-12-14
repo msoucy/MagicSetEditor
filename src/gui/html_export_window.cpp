@@ -48,7 +48,7 @@ HtmlExportWindow::HtmlExportWindow(Window* parent, const SetP& set, const Export
 	SetSizer(s);
 	SetSize(700,500);
 	// list
-	list->showData<ExportTemplate>(set->game->name() + _("-*"));
+	list->showData<ExportTemplate>(set->game->name() + (L"-*"));
 	list->select(settings.gameSettingsFor(*set->game).default_export);
 }
 
@@ -61,9 +61,9 @@ ScriptValueP export_set(SetP const& set, vector<CardP> const& cards, ExportTempl
 	WITH_DYNAMIC_ARG(export_info, &info);
 	// create directory?
 	if (exp->create_directory) {
-		if (outname.empty()) throw Error(_("No output filename specified for export"));
+		if (outname.empty()) throw Error((L"No output filename specified for export"));
 		wxFileName fn(outname);
-		info.directory_relative = fn.GetName() + _("-files");
+		info.directory_relative = fn.GetName() + (L"-files");
 		fn.SetFullName(info.directory_relative);
 		info.directory_absolute = fn.GetFullPath();
 		if (!wxDirExists(info.directory_absolute)) {
@@ -73,9 +73,9 @@ ScriptValueP export_set(SetP const& set, vector<CardP> const& cards, ExportTempl
 	// run export script
 	Context& ctx = set->getContext();
 	LocalScope scope(ctx);
-	ctx.setVariable(_("cards"),     to_script(&cards));
-	ctx.setVariable(_("options"),   to_script(&settings.exportOptionsFor(*exp)));
-	ctx.setVariable(_("directory"), to_script(info.directory_relative));
+	ctx.setVariable((L"cards"),     to_script(&cards));
+	ctx.setVariable((L"options"),   to_script(&settings.exportOptionsFor(*exp)));
+	ctx.setVariable((L"directory"), to_script(info.directory_relative));
 	ScriptValueP result = exp->script.invoke(ctx);
 	// Save to file
 	if (!outname.empty()) {
@@ -91,7 +91,7 @@ ScriptValueP export_set(SetP const& set, vector<CardP> const& cards, ExportTempl
 void HtmlExportWindow::onOk(wxCommandEvent&) {
 	ExportTemplateP exp = list->getSelection<ExportTemplate>();
 	// get filename
-	String name = wxFileSelector(_TITLE_("save html"),settings.default_export_dir,_(""),_(""),exp->file_type, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
+	String name = wxFileSelector(_TITLE_("save html"),settings.default_export_dir,(L""),(L""),exp->file_type, wxFD_SAVE | wxFD_OVERWRITE_PROMPT);
 	if (name.empty()) return;
 	settings.default_export_dir = wxPathOnly(name);
 	// export

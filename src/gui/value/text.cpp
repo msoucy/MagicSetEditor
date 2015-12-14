@@ -194,12 +194,12 @@ void DropDownWordList::addWordsFromScript(const WordListWordP& w) {
 	vector<String> strings;
 	{
 		size_t prev  = 0;
-		size_t comma = str.find_first_of(_(','));
+		size_t comma = str.find_first_of((L','));
 		while (comma != String::npos) {
 			strings.push_back(str.substr(prev, comma - prev));
 			prev = comma + 1;
-			if (prev + 1 < str.size() && str.GetChar(prev + 1) == _(' ')) ++prev; // skip space after comma
-			comma = str.find_first_of(_(','), prev);
+			if (prev + 1 < str.size() && str.GetChar(prev + 1) == (L' ')) ++prev; // skip space after comma
+			comma = str.find_first_of((L','), prev);
 		}
 		strings.push_back(str.substr(prev));
 		sort(strings.begin(), strings.end());
@@ -487,19 +487,19 @@ bool TextValueEditor::onChar(wxKeyEvent& ev) {
 			if (field().multi_line) {
 				if (ev.ShiftDown()) {
 					// soft line break
-					replaceSelection(_("<soft-line>\n</soft-line>"), _ACTION_("soft line break"));
+					replaceSelection((L"<soft-line>\n</soft-line>"), _ACTION_("soft line break"));
 				} else {
-					replaceSelection(_("\n"), _ACTION_("enter"));
+					replaceSelection((L"\n"), _ACTION_("enter"));
 				}
 			}
 			break;
 		default:
 		  #ifdef __WXMSW__
-			if (ev.GetKeyCode() >= _(' ') && ev.GetKeyCode() == (int)ev.GetRawKeyCode()) {
+			if (ev.GetKeyCode() >= (L' ') && ev.GetKeyCode() == (int)ev.GetRawKeyCode()) {
 				// This check is need, otherwise pressing a key, say "0" on the numpad produces "a0"
 				// (don't ask me why)
 		  #else
-			if (ev.GetKeyCode() >= _(' ') /*&& ev.GetKeyCode() == (int)ev.GetRawKeyCode()*/) {
+			if (ev.GetKeyCode() >= (L' ') /*&& ev.GetKeyCode() == (int)ev.GetRawKeyCode()*/) {
 		  #endif
 				// TODO: Find a more correct way to determine normal characters,
 				//       this might not work for internationalized input.
@@ -521,8 +521,8 @@ String spellcheck_word_at(const String& str, size_t start) {
 
 void spellcheck_language_at(const String& str, size_t error_pos, SpellChecker** out) {
 	String tag  = tag_at(str,error_pos);
-	size_t pos  = min(tag.find_first_of(_(':')), tag.size()-1);
-	size_t pos2 = min(tag.find_first_of(_(':'),pos+1), tag.size());
+	size_t pos  = min(tag.find_first_of((L':')), tag.size()-1);
+	size_t pos2 = min(tag.find_first_of((L':'),pos+1), tag.size());
 	String language = tag.substr(pos+1,pos2-pos-1);
 	if (language.empty()) return;
 	out[0] = &SpellChecker::get(language);
@@ -561,13 +561,13 @@ void TextValueEditor::onLoseFocus() {
 bool TextValueEditor::onContextMenu(IconMenu& m, wxContextMenuEvent& ev) {
 	// in a keword? => "reminder text" option
 	String val = value().value->toString();
-	size_t kwpos = in_tag(val, _("<kw-"), selection_start_i, selection_start_i);
+	size_t kwpos = in_tag(val, (L"<kw-"), selection_start_i, selection_start_i);
 	if (kwpos != String::npos) {
 		m.InsertSeparator(0);
-		m.Insert(0,ID_FORMAT_REMINDER,	_("reminder"),		_MENU_("reminder text"),	_HELP_("reminder text"),	wxITEM_CHECK);
+		m.Insert(0,ID_FORMAT_REMINDER,	(L"reminder"),		_MENU_("reminder text"),	_HELP_("reminder text"),	wxITEM_CHECK);
 	}
 	// in a spelling error? => show suggestions and "add to dictionary"
-	size_t error_pos = in_tag(val, _("<error-spelling"), selection_start_i, selection_start_i);
+	size_t error_pos = in_tag(val, (L"<error-spelling"), selection_start_i, selection_start_i);
 	if (error_pos != String::npos) {
 		// TODO: "add to dictionary"
 		//%m.InsertSeparator(0);
@@ -597,7 +597,7 @@ bool TextValueEditor::onCommand(int id) {
 		if ((style().always_symbol || style().allow_formating) && style().symbol_font.valid()) {
 			String code = style().symbol_font.font->insertSymbolCode(id);
 			if (!style().always_symbol) {
-				code = _("<sym>") + code + _("</sym>");
+				code = (L"<sym>") + code + (L"</sym>");
 			}
 			replaceSelection(code, _ACTION_("insert symbol"));
 			return true;
@@ -606,8 +606,8 @@ bool TextValueEditor::onCommand(int id) {
 		// TODO
 	} else if (id >= ID_SPELLING_SUGGEST && id <= ID_SPELLING_SUGGEST_MAX) {
 		String val = value().value->toString();
-		size_t error_pos = in_tag(val, _("<error-spelling"), selection_start_i, selection_start_i);
-		if (error_pos == String::npos) throw InternalError(_("Unexpected spelling suggestion")); // wrong
+		size_t error_pos = in_tag(val, (L"<error-spelling"), selection_start_i, selection_start_i);
+		if (error_pos == String::npos) throw InternalError((L"Unexpected spelling suggestion")); // wrong
 		// find the suggestions to pick from
 		vector<String> suggestions;
 		get_spelling_suggestions(val, error_pos, suggestions);
@@ -721,7 +721,7 @@ wxCursor TextValueEditor::cursor(const RealPoint& pos) const {
 		Radians angle = viewer.getRotation().getAngle() + deg_to_rad(style().angle);
 		if (is_sideways(angle)) { // 90 or 270 degrees
 			if (!rotated_ibeam.Ok()) {
-				rotated_ibeam = wxCursor(load_resource_cursor(_("rot_text")));
+				rotated_ibeam = wxCursor(load_resource_cursor((L"rot_text")));
 			}
 			return rotated_ibeam;
 		} else {
@@ -816,7 +816,7 @@ bool TextValueEditor::canFormat(int type) const {
 			return !style().always_symbol && style().allow_formating && style().symbol_font.valid();
 		case ID_FORMAT_REMINDER:
 			return !style().always_symbol && style().allow_formating &&
-			       is_in_tag(val, _("<kw"), selection_start_i, selection_start_i);
+			       is_in_tag(val, (L"<kw"), selection_start_i, selection_start_i);
 		default:
 			return false;
 	}
@@ -826,16 +826,16 @@ bool TextValueEditor::hasFormat(int type) const {
 	const String& val = value().value->toString();
 	switch (type) {
 		case ID_FORMAT_BOLD:
-			return is_in_tag(val, _("<b"),   selection_start_i, selection_end_i);
+			return is_in_tag(val, (L"<b"),   selection_start_i, selection_end_i);
 		case ID_FORMAT_ITALIC:
-			return is_in_tag(val, _("<i"),   selection_start_i, selection_end_i);
+			return is_in_tag(val, (L"<i"),   selection_start_i, selection_end_i);
 		case ID_FORMAT_SYMBOL:
-			return is_in_tag(val, _("<sym"), selection_start_i, selection_end_i);
+			return is_in_tag(val, (L"<sym"), selection_start_i, selection_end_i);
 		case ID_FORMAT_REMINDER: {
-			size_t tag = in_tag(val, _("<kw"),  selection_start_i, selection_start_i);
+			size_t tag = in_tag(val, (L"<kw"),  selection_start_i, selection_start_i);
 			if (tag != String::npos && tag + 4 < val.size()) {
 				Char c = val.GetChar(tag + 4);
-				return c == _('1') || c == _('A');
+				return c == (L'1') || c == (L'A');
 			}
 			return false;
 		} default:
@@ -847,15 +847,15 @@ void TextValueEditor::doFormat(int type) {
 	size_t ss = selection_start, se = selection_end;
 	switch (type) {
 		case ID_FORMAT_BOLD: {
-			addAction(toggle_format_action(valueP(), _("b"),   selection_start_i, selection_end_i, selection_start, selection_end, _("Bold")));
+			addAction(toggle_format_action(valueP(), (L"b"),   selection_start_i, selection_end_i, selection_start, selection_end, (L"Bold")));
 			break;
 		}
 		case ID_FORMAT_ITALIC: {
-			addAction(toggle_format_action(valueP(), _("i"),   selection_start_i, selection_end_i, selection_start, selection_end, _("Italic")));
+			addAction(toggle_format_action(valueP(), (L"i"),   selection_start_i, selection_end_i, selection_start, selection_end, (L"Italic")));
 			break;
 		}
 		case ID_FORMAT_SYMBOL: {
-			addAction(toggle_format_action(valueP(), _("sym"), selection_start_i, selection_end_i, selection_start, selection_end, _("Symbols")));
+			addAction(toggle_format_action(valueP(), (L"sym"), selection_start_i, selection_end_i, selection_start, selection_end, (L"Symbols")));
 			break;
 		}
 		case ID_FORMAT_REMINDER: {
@@ -898,7 +898,7 @@ void TextValueEditor::showCaret() {
 				// TODO : high quality?
 				dc.SetFont(style().font.toWxFont(1.0));
 				int hi;
-				dc.GetTextExtent(_(" "), 0, &hi);
+				dc.GetTextExtent((L" "), 0, &hi);
 				#ifdef __WXGTK__
 					// HACK: Some fonts don't get the descender height set correctly.
 					int charHeight = dc.GetCharHeight();
@@ -1099,7 +1099,7 @@ void TextValueEditor::fixSelection(IndexType t, Movement dir) {
 	selection_start_i = cursor_to_index(val, selection_start, direction_of(selection_end, selection_start));
 	selection_end_i   = cursor_to_index(val, selection_end,   direction_of(selection_start, selection_end));
 	// start and end must be on the same side of separators
-	size_t seppos = val.find(_("<sep"));
+	size_t seppos = val.find((L"<sep"));
 	while (seppos != String::npos) {
 		size_t sepend = match_close_tag_end(val, seppos);
 		if (selection_start_i <= seppos && selection_end_i > seppos) {
@@ -1112,7 +1112,7 @@ void TextValueEditor::fixSelection(IndexType t, Movement dir) {
 			selection_end_i = cursor_to_index(val, selection_end, direction_of(selection_start, selection_end));
 		}
 		// find next separator
-		seppos = val.find(_("<sep"), seppos + 1);
+		seppos = val.find((L"<sep"), seppos + 1);
 	}
 }
 
@@ -1124,10 +1124,10 @@ size_t TextValueEditor::nextCharBoundary(size_t pos) const {
 	return min(index_to_cursor(value().value->toString(), String::npos), pos + 1);
 }
 
-static const Char word_bound_chars[] = _(" ,.:;()\n");
+static const Char word_bound_chars[] = (L" ,.:;()\n");
 bool isWordBoundaryChar(Char c) {
-	return c == _(' ') || c == _(',') || c == _('.') || c == _(':') || c == _(';') ||
-	       c == _('(') || c == _(')') || c == _('\n') || isPunct(c);
+	return c == (L' ') || c == (L',') || c == (L'.') || c == (L':') || c == (L';') ||
+	       c == (L'(') || c == (L')') || c == (L'\n') || isPunct(c);
 }
 
 size_t TextValueEditor::prevWordBoundary(size_t pos_i) const {
@@ -1153,7 +1153,7 @@ bool TextValueEditor::isWordBoundary(size_t pos_i) const {
 	while (true) {
 		if (pos >= val.size()) return true;
 		Char c = val.GetChar(pos);
-		if (c == _('<')) pos = skip_tag(val,pos); // skip tags
+		if (c == (L'<')) pos = skip_tag(val,pos); // skip tags
 		else if (isWordBoundaryChar(c)) return true;
 		else break;
 	}
@@ -1162,14 +1162,14 @@ bool TextValueEditor::isWordBoundary(size_t pos_i) const {
 	while (true) {
 		if (pos == 0) return true;
 		Char c = val.GetChar(pos - 1);
-		if (c == _('>')) {
+		if (c == (L'>')) {
 			// (try to) skip tags in reverse
 			while (true) {
 				if (pos == 0) return false; // not a tag
 				--pos;
 				c = val.GetChar(pos - 1);
-				if      (c == _('<')) { --pos; break; } // was a tag
-				else if (c == _('>')) return false; // was not a tag
+				if      (c == (L'<')) { --pos; break; } // was a tag
+				else if (c == (L'>')) return false; // was not a tag
 			}
 		}
 		else return isWordBoundaryChar(c);
@@ -1354,9 +1354,9 @@ void TextValueEditor::findWordLists() {
 	hovered_words = nullptr;
 	// for each word list...
 	String str = value().value->toString();
-	size_t pos = str.find(_("<word-list-"));
+	size_t pos = str.find((L"<word-list-"));
 	while (pos != String::npos) {
-		size_t type_end = str.find_first_of(_('>'), pos);
+		size_t type_end = str.find_first_of((L'>'), pos);
 		size_t end = match_close_tag_end(str, pos);
 		if (type_end == String::npos || end == String::npos) return;
 		String name = str.substr(pos + 11, type_end - pos - 11);
@@ -1375,7 +1375,7 @@ void TextValueEditor::findWordLists() {
 			queue_message(MESSAGE_WARNING, _ERROR_1_("word list type not found", name));
 		}
 		// next
-		pos = str.find(_("<word-list-"), end);
+		pos = str.find((L"<word-list-"), end);
 	}
 }
 

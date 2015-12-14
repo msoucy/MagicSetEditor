@@ -24,8 +24,8 @@ ScriptValueP script_local_image_file(LocalFileName const& filename);
 /// The file format of MSE1 files
 class MSE1FileFormat : public FileFormat {
   public:
-	virtual String extension()          { return _("mse"); }
-	virtual String name()               { return _("Magic Set Editor version 1 files (*.mse)"); }
+	virtual String extension()          { return (L"mse"); }
+	virtual String name()               { return (L"Magic Set Editor version 1 files (*.mse)"); }
 	virtual bool canImport()            { return true; }
 	virtual bool canExport(const Game&) { return false; }
 	virtual SetP importSet(const String& filename);
@@ -42,19 +42,19 @@ void read_mse1_card(Set& set, wxFileInputStream& f, wxTextInputStream& file);
 
 SetP MSE1FileFormat::importSet(const String& filename) {
 	wxFileInputStream f(filename);
-    wxTextInputStream file(f, _('\n'), wxConvLibc);
+    wxTextInputStream file(f, (L'\n'), wxConvLibc);
 	// create set
-	SetP set(new Set(Game::byName(_("magic"))));
+	SetP set(new Set(Game::byName((L"magic"))));
 
 	// file version check
 	String format = file.ReadLine();
-	if (format.substr(0,8) != _("MTG Set8")) {
-		throw ParseError(_("Expected MSE format version 8\nTo convert files made with older versions of Magic Set Editor:\n  1. Download the latest version 1 from http:://magicsetedtitor.sourceforge.net\n  2. Open the set, then save the set\n  3. Try to open them again in this program."));
+	if (format.substr(0,8) != (L"MTG Set8")) {
+		throw ParseError((L"Expected MSE format version 8\nTo convert files made with older versions of Magic Set Editor:\n  1. Download the latest version 1 from http:://magicsetedtitor.sourceforge.net\n  2. Open the set, then save the set\n  3. Try to open them again in this program."));
 	}
 	// read general info
-	set->value(_("title"))     = to_script(file.ReadLine());
-	set->value(_("artist"))    = to_script(file.ReadLine());
-	set->value(_("copyright")) = to_script(file.ReadLine());
+	set->value((L"title"))     = to_script(file.ReadLine());
+	set->value((L"artist"))    = to_script(file.ReadLine());
+	set->value((L"copyright")) = to_script(file.ReadLine());
 	file.ReadLine(); // border color, ignored
 	String stylesheet = file.ReadLine();
 	set->apprentice_code = file.ReadLine(); // apprentice prefix
@@ -65,21 +65,21 @@ SetP MSE1FileFormat::importSet(const String& filename) {
 	String desc, line;
 	while (!f.Eof()) {
 		line = file.ReadLine();
-		if (line == _("\xFF")) break;
+		if (line == (L"\xFF")) break;
 		desc += line;
 	}
-	set->value(_("description")) = to_script(desc);
+	set->value((L"description")) = to_script(desc);
 
 	// load stylesheet
-	if (stylesheet.substr(0,3) == _("old")) {
+	if (stylesheet.substr(0,3) == (L"old")) {
 		try {
-			set->stylesheet = StyleSheet::byGameAndName(*set->game, _("old"));
+			set->stylesheet = StyleSheet::byGameAndName(*set->game, (L"old"));
 		} catch (const Error&) {
 			// If old style doesn't work try the new one
-			set->stylesheet = StyleSheet::byGameAndName(*set->game, _("new"));
+			set->stylesheet = StyleSheet::byGameAndName(*set->game, (L"new"));
 		}
 	} else {
-		set->stylesheet = StyleSheet::byGameAndName(*set->game, _("new"));
+		set->stylesheet = StyleSheet::byGameAndName(*set->game, (L"new"));
 	}
 
 	// read cards
@@ -96,7 +96,7 @@ SetP MSE1FileFormat::importSet(const String& filename) {
 // append a line to a ScriptString, this is a bit inefficient, since we keep copying the string
 void append_line(ScriptValueP& target, String const& line) {
 	String old_value = target->toString();
-	if (!is_default(target)) old_value += _("\n");
+	if (!is_default(target)) old_value += (L"\n");
 	target = to_script(old_value + line);
 }
 
@@ -114,59 +114,59 @@ void read_mse1_card(Set& set, wxFileInputStream& f, wxTextInputStream& file) {
 				set.cards.push_back(card);
 				return;
 			} case 'B': {	// name
-				card->value(_("name")) = to_script(line);
+				card->value((L"name")) = to_script(line);
 				break;
 			} case 'C': case 'D': { // image filename
-				LocalFileName image_file = set.newFileName(_("image"),_("")); // a new unique name in the package
+				LocalFileName image_file = set.newFileName((L"image"),(L"")); // a new unique name in the package
 				if (wxCopyFile(line, set.nameOut(image_file), true)) {
-					card->value(_("image")) = script_local_image_file(image_file);
+					card->value((L"image")) = script_local_image_file(image_file);
 				}
 				break;
 			} case 'E':	{	// super type
-				card->value(_("super type")) = to_script(line);
+				card->value((L"super type")) = to_script(line);
 				break;
 			} case 'F': {	// sub type
-				card->value(_("sub type")) = to_script(line);
+				card->value((L"sub type")) = to_script(line);
 				break;
 			} case 'G': {	// casting cost
-				card->value(_("casting cost")) = to_script(line);
+				card->value((L"casting cost")) = to_script(line);
 				break;
 			} case 'H': {	// rarity
 				String rarity;
-				if      (line == _("(U)")) rarity = _("uncommon");
-				else if (line == _("(R)")) rarity = _("rare");
-				else                       rarity = _("common");
-				card->value(_("rarity")) = to_script(rarity);
+				if      (line == (L"(U)")) rarity = (L"uncommon");
+				else if (line == (L"(R)")) rarity = (L"rare");
+				else                       rarity = (L"common");
+				card->value((L"rarity")) = to_script(rarity);
 				break;
 			} case 'I': {	// power/thoughness
-				size_t pos = line.find_first_of(_('/'));
+				size_t pos = line.find_first_of((L'/'));
 				if (pos != String::npos) {
-					card->value(_("power")) = to_script(line.substr(0, pos));
-					card->value(_("toughness")) = to_script(line.substr(pos+1));
+					card->value((L"power")) = to_script(line.substr(0, pos));
+					card->value((L"toughness")) = to_script(line.substr(pos+1));
 				}
 				break;
 			} case 'J': {	// rule text or part of text
-				append_line(card->value(_("rule text")), line);
+				append_line(card->value((L"rule text")), line);
 				break;
 			} case 'K':	{	// flavor text or part of text
-				append_line(card->value(_("flavor text")), line);
+				append_line(card->value((L"flavor text")), line);
 				break;
 			} case 'L': {	// card color (if not default)
 				// decode color
 				String color;
-				if      (line == _("1")) color = _("white");
-				else if (line == _("2")) color = _("blue");
-				else if (line == _("3")) color = _("black");
-				else if (line == _("4")) color = _("red");
-				else if (line == _("5")) color = _("green");
-				else if (line == _("6")) color = _("colorless");
-				else if (line == _("7")) color = _("land");
-				else if (line == _("9")) color = _("multicolor");
-				else                     color = _("colorless");
-				card->value(_("card color")) = to_script(color);
+				if      (line == (L"1")) color = (L"white");
+				else if (line == (L"2")) color = (L"blue");
+				else if (line == (L"3")) color = (L"black");
+				else if (line == (L"4")) color = (L"red");
+				else if (line == (L"5")) color = (L"green");
+				else if (line == (L"6")) color = (L"colorless");
+				else if (line == (L"7")) color = (L"land");
+				else if (line == (L"9")) color = (L"multicolor");
+				else                     color = (L"colorless");
+				card->value((L"card color")) = to_script(color);
 				break;
 			} default: {
-				throw ParseError(_("Not a valid MSE1 file"));
+				throw ParseError((L"Not a valid MSE1 file"));
 			}
 		}
 	}

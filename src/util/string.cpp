@@ -34,7 +34,7 @@ void writeUTF8(wxTextOutputStream& stream, const String& str) {
 
 Char toLower(Char c) {
 	if (c <= 128) {
-		if (c >= _('A') && c <= _('Z')) return c + (_('a') - _('A'));
+		if (c >= (L'A') && c <= (L'Z')) return c + ((L'a') - (L'A'));
 		else                            return c;
 	} else {
 		return towlower(c);
@@ -43,7 +43,7 @@ Char toLower(Char c) {
 
 Char toUpper(Char c) {
 	if (c <= 128) {
-		if (c >= _('a') && c <= _('z')) return c + (_('A') - _('a'));
+		if (c >= (L'a') && c <= (L'z')) return c + ((L'A') - (L'a'));
 		else                            return c;
 	} else {
 		return towupper(c);
@@ -55,8 +55,8 @@ Char toUpper(Char c) {
 // ----------------------------------------------------------------------------- : String utilities
 
 String trim(const String& s){
-	size_t start = s.find_first_not_of(_(" \t"));
-	size_t end   = s.find_last_not_of( _(" \t"));
+	size_t start = s.find_first_not_of((L" \t"));
+	size_t end   = s.find_last_not_of( (L" \t"));
 	if (start == String::npos) {
 		return String();
 	} else if (start == 0 && end == s.size() - 1) {
@@ -67,7 +67,7 @@ String trim(const String& s){
 }
 
 String trim_left(const String& s) {
-	size_t start = s.find_first_not_of(_(" \t"));
+	size_t start = s.find_first_not_of((L" \t"));
 	if (start == String::npos) {
 		return String();
 	} else {
@@ -88,8 +88,8 @@ String replace_all(const String& heystack, const String& needle, const String& r
 // ----------------------------------------------------------------------------- : Words
 
 String last_word(const String& s) {
-	size_t endLastWord   = s.find_last_not_of(_(' '));
-	size_t startLastWord = s.find_last_of(    _(' '), endLastWord);
+	size_t endLastWord   = s.find_last_not_of((L' '));
+	size_t startLastWord = s.find_last_of(    (L' '), endLastWord);
 	if (endLastWord == String::npos) {
 		return String(); // empty string
 	} else if (startLastWord == String::npos) {
@@ -100,8 +100,8 @@ String last_word(const String& s) {
 }
 
 String strip_last_word(const String& s) {
-	size_t endLastWord   = s.find_last_not_of(_(' '));
-	size_t startLastWord = s.find_last_of(_(' '), endLastWord);
+	size_t endLastWord   = s.find_last_not_of((L' '));
+	size_t startLastWord = s.find_last_of((L' '), endLastWord);
 	if (endLastWord == String::npos || startLastWord == String::npos) {
 		return String(); // single word or empty string
 	} else {
@@ -109,8 +109,8 @@ String strip_last_word(const String& s) {
 	}
 }
 
-const String word_start_chars = String(_("[({\"\'")) + LEFT_SINGLE_QUOTE + LEFT_DOUBLE_QUOTE;
-const String word_end_chars   = String(_("])}.,;:?!\"\'")) + RIGHT_SINGLE_QUOTE + RIGHT_DOUBLE_QUOTE;
+const String word_start_chars = String((L"[({\"\'")) + LEFT_SINGLE_QUOTE + LEFT_DOUBLE_QUOTE;
+const String word_end_chars   = String((L"])}.,;:?!\"\'")) + RIGHT_SINGLE_QUOTE + RIGHT_DOUBLE_QUOTE;
 
 void trim_punctuation(const String& str, size_t& start, size_t& end) {
 	start = str.find_first_not_of(word_start_chars, start);
@@ -139,17 +139,17 @@ String capitalize(const String& s) {
 	String result = s;
 	bool after_space = true;
 	for(String::iterator it = result.begin(); it != result.end(); ++it) {
-		if (*it == _(' ') || *it == _('/')) {
+		if (*it == (L' ') || *it == (L'/')) {
 			after_space = true;
 		} else if (after_space) {
 			after_space = false;
 			// See http://trac.wxwidgets.org/ticket/12594
 			//if (it != s.begin() &&
 			if (s.begin() != it &&
-			    (is_substr(result,it,_("is ")) || is_substr(result,it,_("the ")) ||
-			     is_substr(result,it,_("in ")) || is_substr(result,it,_("of "))  ||
-			     is_substr(result,it,_("to ")) || is_substr(result,it,_("at "))  ||
-			     is_substr(result,it,_("a " )))) {
+			    (is_substr(result,it,(L"is ")) || is_substr(result,it,(L"the ")) ||
+			     is_substr(result,it,(L"in ")) || is_substr(result,it,(L"of "))  ||
+			     is_substr(result,it,(L"to ")) || is_substr(result,it,(L"at "))  ||
+			     is_substr(result,it,(L"a " )))) {
 				// Short words are not capitalized, keep lower case
 			} else {
 				*it = toUpper(*it);
@@ -168,7 +168,7 @@ String capitalize_sentence(const String& s) {
 }
 
 Char canonical_name_form(Char c) {
-	if (c == _(' ')) return _('_');
+	if (c == (L' ')) return (L'_');
 	return c;
 }
 String canonical_name_form(const String& str) {
@@ -181,7 +181,7 @@ String canonical_name_form(const String& str) {
 }
 
 Char uncanonical_name_form(Char c) {
-	if (c == _('_')) return _(' ');
+	if (c == (L'_')) return (L' ');
 	return c;
 }
 String uncanonical_name_form(const String& str) {
@@ -198,8 +198,8 @@ String name_to_caption(const String& str) {
 	ret.reserve(str.size());
 	bool leading = true;
 	for(const auto& c : str) {
-		if ((c == _('_') || c == _(' '))) {
-			ret += leading ? c : _(' ');
+		if ((c == (L'_') || c == (L' '))) {
+			ret += leading ? c : (L' ');
 		} else {
 			ret += c;
 			leading = false;
@@ -214,15 +214,15 @@ String name_to_caption(const String& str) {
 
 String singular_form(const String& str) {
 	assert(str.size() > 1);
-	assert(str.GetChar(str.size() - 1) == _('s')); // ends in 's'
-	if (str.size() > 3 && is_substr(str, str.size()-3, _("ies"))) {
-		return str.substr(0, str.size() - 3) + _("y");
+	assert(str.GetChar(str.size() - 1) == (L's')); // ends in 's'
+	if (str.size() > 3 && is_substr(str, str.size()-3, (L"ies"))) {
+		return str.substr(0, str.size() - 3) + (L"y");
 	}
 	return str.substr(0, str.size() - 1);
 }
 
 String remove_shortcut(const String& str) {
-	size_t tab = str.find_last_of(_('\t'));
+	size_t tab = str.find_last_of((L'\t'));
 	if (tab == String::npos) return str;
 	else                     return str.substr(0, tab);
 }
@@ -295,11 +295,11 @@ Char decompose_char2(Char c) {
 	if (c <  0xC6) {
 		return 0;
 	} else if (c == 0xC6 || c == 0xE6 || c == 0x152 || c == 0x153 || c == 0x1E2 || c == 0x1E3 || c == 0x1FC || c == 0x1FD) {
-		return _('e'); // "ae" or "oe"
+		return (L'e'); // "ae" or "oe"
 	} else if (c == 0x132 || c == 0x133 || (c >= 0x1C7 && c <= 0x1CC)) {
-		return _('j'); // "ij", "lj", "nj"
+		return (L'j'); // "ij", "lj", "nj"
 	} else if ((c >= 0x1C4 && c <= 0x1C6) || (c >= 0x1F1 && c <= 0x1F3)) {
-		return _('z'); // "dz"
+		return (L'z'); // "dz"
 	} else {
 		return 0;
 	}
@@ -397,7 +397,7 @@ bool is_substr(const String& str, size_t pos, const Char* cmp) {
 	for (String::const_iterator it = str.begin() + pos ; *cmp && it < str.end() ; ++cmp, ++it) {
 		if (*cmp != *it) return false;
 	}
-	return *cmp == _('\0');
+	return *cmp == (L'\0');
 }
 bool is_substr(const String& str, size_t pos, const String& cmp) {
 	return str.size() >= cmp.size() + pos && str.compare(pos, cmp.size(), cmp) == 0;
@@ -408,7 +408,7 @@ bool is_substr_i(const String& str, size_t pos, const Char* cmp) {
 	for (String::const_iterator it = str.begin() + pos ; *cmp && it < str.end() ; ++cmp, ++it) {
 		if (toLower(*cmp) != toLower(*it)) return false;
 	}
-	return *cmp == _('\0');
+	return *cmp == (L'\0');
 }
 bool is_substr_i(const String& str, size_t pos, const String& cmp) {
 	return is_substr_i(str, pos, static_cast<const Char*>(cmp.c_str()));
@@ -418,8 +418,8 @@ bool canoncial_name_compare(const String& as, const Char* b) {
 	assert(canonical_name_form(b) == b);
 	const Char* a = as.c_str();
 	while (true) {
-		if (*a != *b && !(*a == _('_') && *b == _(' '))) return false;
-		if (*a == _('\0')) return true;
+		if (*a != *b && !(*a == (L'_') && *b == (L' '))) return false;
+		if (*a == (L'\0')) return true;
 		a++; b++;
 	}
 }
@@ -436,11 +436,11 @@ size_t find_i(const String& heystack, const String& needle) {
 
 /// Escape a single character for use in regular expressions
 String regex_escape(Char c) {
-	if (c == _('(') || c == _(')') || c == _('[') || c == _(']') || c == _('{') ||
-	    c == _('.') || c == _('^') || c == _('$') || c == _('#') || c == _('\\') ||
-	    c == _('|') || c == _('+') || c == _('*') || c == _('?')) {
+	if (c == (L'(') || c == (L')') || c == (L'[') || c == (L']') || c == (L'{') ||
+	    c == (L'.') || c == (L'^') || c == (L'$') || c == (L'#') || c == (L'\\') ||
+	    c == (L'|') || c == (L'+') || c == (L'*') || c == (L'?')) {
 		// c needs to be escaped
-		return _("\\") + String(1,c);
+		return (L"\\") + String(1,c);
 	} else {
 		return String(1,c);
 	}
@@ -457,25 +457,25 @@ String make_non_capturing(const String& re) {
 	bool escape = false, bracket = false, capture = false;
 	for(const auto& c : re) {
 		if (capture) {
-			if (c != _('?')) {
+			if (c != (L'?')) {
 				// change this capture into a non-capturing "(" by appending "?:"
-				ret += _("?:");
+				ret += (L"?:");
 			}
 			capture = false;
 		}
 		if (escape) { // second char of escape sequence
 			escape = false;
-		} else if (c == _('\\')) { // start of escape sequence
+		} else if (c == (L'\\')) { // start of escape sequence
 			escape = true;
-		} else if (c == _('[')) { // start of [...]
+		} else if (c == (L'[')) { // start of [...]
 			bracket = true;
-		} else if (c == _(']')) { // end of [...]
+		} else if (c == (L']')) { // end of [...]
 			bracket = false;
-		} else if (bracket && c == _('(')) {
+		} else if (bracket && c == (L'(')) {
 			// wx has a bug, it counts the '(' in "[(]" as a matching group
 			// escape it so wx doesn't see it
-			ret += _('\\');
-		} else if (c == _('(')) { // start of capture?
+			ret += (L'\\');
+		} else if (c == (L'(')) { // start of capture?
 			capture = true;
 		}
 		ret += c;

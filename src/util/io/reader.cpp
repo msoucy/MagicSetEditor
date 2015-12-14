@@ -37,7 +37,7 @@ InputStreamP Reader::openIncludedFile() {
 }
 
 void Reader::handleAppVersion() {
- 	if (enterBlock(_("mse_version"))) {
+ 	if (enterBlock((L"mse_version"))) {
 		handle(file_app_version);
 		if (app_version < file_app_version) {
 			queue_message(MESSAGE_WARNING, _ERROR_2_("newer version", filename, file_app_version.toString()));
@@ -47,14 +47,14 @@ void Reader::handleAppVersion() {
 }
 
 void Reader::warning(const String& msg, int line_number_delta, bool warn_on_previous_line) {
-	warnings += String(_("\nOn line "))
+	warnings += String((L"\nOn line "))
 	         << ((warn_on_previous_line ? previous_line_number : line_number) + line_number_delta)
-	         << _(": \t") << msg;
+	         << (L": \t") << msg;
 }
 
 void Reader::showWarnings() {
 	if (!warnings.empty()) {
-		queue_message(MESSAGE_WARNING, _("Warnings while reading file:\n") + filename + _("\n") + warnings);
+		queue_message(MESSAGE_WARNING, (L"Warnings while reading file:\n") + filename + (L"\n") + warnings);
 		warnings.clear();
 	}
 }
@@ -166,9 +166,9 @@ String read_utf8_line(wxInputStream& input, bool eat_bom, bool until_eof) {
 	buffer.push_back('\0');
 	size_t size = wxConvUTF8.MB2WC(nullptr, buffer.get(), 0);
 	if (size == size_t(-1)) {
-		throw ParseError(_("Invalid UTF-8 sequence"));
+		throw ParseError((L"Invalid UTF-8 sequence"));
 	} else if (size == 0) {
-		return _("");
+		return (L"");
 	}
     #if wxVERSION_NUMBER >= 2900
         String result = wxString::FromUTF8(buffer.get(), buffer.size());
@@ -189,34 +189,34 @@ void Reader::readLine(bool in_string) {
 	try {
 		line = read_utf8_line(input, line_number == 1);
 	} catch (const ParseError& e) {
-		throw ParseError(e.what() + String(_(" on line ")) << line_number);
+		throw ParseError(e.what() + String((L" on line ")) << line_number);
 	}
 	// pragma handler
 	if (reader_pragma_handler()) reader_pragma_handler()(line);
 	// read indentation
 	indent = 0;
-	while ((UInt)indent < line.size() && line.GetChar(indent) == _('\t')) {
+	while ((UInt)indent < line.size() && line.GetChar(indent) == (L'\t')) {
 		indent += 1;
 	}
 	// read key / value
-	if (line.find_first_not_of(_(" \t")) == String::npos || line.GetChar(indent) == _('#')) {
+	if (line.find_first_not_of((L" \t")) == String::npos || line.GetChar(indent) == (L'#')) {
 		// empty line or comment
 		key.clear();
 		return;
 	}
-	size_t pos = line.find_first_of(_(':'), indent);
+	size_t pos = line.find_first_of((L':'), indent);
 	key = line.substr(indent, pos - indent);
-	if (!ignore_invalid && !in_string && starts_with(key, _(" "))) {
-		warning(_("key: '") + key + _("' starts with a space; only use TABs for indentation!"), 0, false);
+	if (!ignore_invalid && !in_string && starts_with(key, (L" "))) {
+		warning((L"key: '") + key + (L"' starts with a space; only use TABs for indentation!"), 0, false);
 		// try to fix up: 8 spaces is a tab
-		while (starts_with(key, _("        "))) {
+		while (starts_with(key, (L"        "))) {
 			key = key.substr(8);
 			indent += 1;
 		}
 	}
 	key   = canonical_name_form(trim(key));
-	value = pos == String::npos ? _("") : trim_left(line.substr(pos+1));
-	if (key.empty() && pos!=String::npos) key = _(" "); // we don't want an empty key if there was a colon
+	value = pos == String::npos ? (L"") : trim_left(line.substr(pos+1));
+	if (key.empty() && pos!=String::npos) key = (L" "); // we don't want an empty key if there was a colon
 }
 
 void Reader::unknownKey() {
@@ -228,7 +228,7 @@ void Reader::unknownKey() {
 		return;
 	}
 	if (indent >= expected_indent) {
-		warning(_("Unexpected key: '") + key + _("'"), 0, false);
+		warning((L"Unexpected key: '") + key + (L"'"), 0, false);
 		do {
 			moveNext();
 		} while (indent > expected_indent);
@@ -256,7 +256,7 @@ const String& Reader::getValue() {
 		readLine(true);
 		previous_line_number = line_number;
 		while (indent >= expected_indent && !input.Eof()) {
-			previous_value.resize(previous_value.size() + pending_newlines, _('\n'));
+			previous_value.resize(previous_value.size() + pending_newlines, (L'\n'));
 			pending_newlines = 0;
 			previous_value += line.substr(expected_indent); // strip expected indent
 			do {
@@ -276,9 +276,9 @@ const String& Reader::getValue() {
 			indent = -1;
 		}
 		if (indent >= expected_indent) {
-			warning(_("Blank line or comment in text block, that is insufficiently indented.\n")
-			        _("\t\tEither indent the comment/blank line, or add a 'key:' after it.\n")
-			        _("\t\tThis could cause more more error messages.\n"), -1, false);
+			warning(L"Blank line or comment in text block, that is insufficiently indented.\n"
+			        L"\t\tEither indent the comment/blank line, or add a 'key:' after it.\n"
+			        L"\t\tThis could cause more more error messages.\n", -1, false);
 		}
 		return previous_value;
 	} else {
@@ -294,32 +294,32 @@ template <> void Reader::handle(String& s) {
 template <> void Reader::handle(int& i) {
 	long l = 0;
 	if (!getValue().ToLong(&l)) {
-		warning(_("Expected integer instead of '") + previous_value + _("'"));
+		warning((L"Expected integer instead of '") + previous_value + (L"'"));
 	}
 	i = l;
 }
 template <> void Reader::handle(unsigned int& i) {
 	long l = 0;
 	if (!getValue().ToLong(&l)) {
-		warning(_("Expected non-negative integer instead of '") + previous_value + _("'"));
+		warning((L"Expected non-negative integer instead of '") + previous_value + (L"'"));
 	} else if (l < 0) {
-		warning(wxString::Format(_("Expected non-negative integer instead of %d"),(int)l));
+		warning(wxString::Format((L"Expected non-negative integer instead of %d"),(int)l));
 	}
 	i = abs(l); // abs, because it will seem strange if -1 comes out as MAX_INT
 }
 template <> void Reader::handle(double& d) {
 	if (!getValue().ToDouble(&d)) {
-		warning(_("Expected floating point number instead of '") + previous_value + _("'"));
+		warning((L"Expected floating point number instead of '") + previous_value + (L"'"));
 	}
 }
 template <> void Reader::handle(bool& b) {
 	const String& v = getValue();
-	if (v==_("true") || v==_("1") || v==_("yes")) {
+	if (v==(L"true") || v==(L"1") || v==(L"yes")) {
 		b = true;
-	} else if (v==_("false") || v==_("0") || v==_("no")) {
+	} else if (v==(L"false") || v==(L"0") || v==(L"no")) {
 		b = false;
 	} else {
-		warning(_("Expected boolean ('true' or 'false') instead of '") + v + _("'"));
+		warning((L"Expected boolean ('true' or 'false') instead of '") + v + (L"'"));
 	}
 }
 template <> void Reader::handle(tribool& tb) {
@@ -332,13 +332,13 @@ template <> void Reader::handle(tribool& tb) {
 
 template <> void Reader::handle(wxDateTime& date) {
 	if (!date.ParseDateTime(getValue().c_str())) {
-		throw ParseError(_("Expected a date and time"));
+		throw ParseError((L"Expected a date and time"));
 	}
 }
 
 template <> void Reader::handle(Vector2D& vec) {
-	if (!wxSscanf(getValue().c_str(), _("(%lf,%lf)"), &vec.x, &vec.y)) {
-		throw ParseError(_("Expected (x,y)"));
+	if (!wxSscanf(getValue().c_str(), (L"(%lf,%lf)"), &vec.x, &vec.y)) {
+		throw ParseError((L"Expected (x,y)"));
 	}
 }
 
@@ -349,7 +349,7 @@ template <> void Reader::handle(LocalFileName& f) {
 // ----------------------------------------------------------------------------- : EnumReader
 
 String EnumReader::notDoneErrorMessage() const {
-	if (!first) throw InternalError(_("No first value in EnumReader"));
+	if (!first) throw InternalError((L"No first value in EnumReader"));
 	return _ERROR_2_("unrecognized value", read.c_str(), first);
 }
 

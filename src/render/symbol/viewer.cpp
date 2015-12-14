@@ -298,7 +298,7 @@ void SymbolViewer::highlightPart(DC& dc, const SymbolPart& part, HighlightStyle 
 	} else if (const SymbolGroup* g = part.isSymbolGroup()) {
 		highlightPart(dc, *g, style);
 	} else {
-		throw InternalError(_("Invalid symbol part type"));
+		throw InternalError((L"Invalid symbol part type"));
 	}
 }
 

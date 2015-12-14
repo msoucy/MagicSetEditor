@@ -226,7 +226,7 @@ size_t StatDimensionList::itemCount() const {
 void StatDimensionList::drawItem(DC& dc, int x, int y, size_t item) {
 	if (show_empty && item == 0) {
 		RealRect rect(RealPoint(x + 24, y), RealSize(item_size.x - 30, item_size.y));
-		String str = _("None");
+		String str = (L"None");
 		dc.SetFont(*wxNORMAL_FONT);
 		int w, h;
 		dc.GetTextExtent(str, &w, &h);
@@ -323,11 +323,11 @@ void StatsPanel::initControls() {
 
 	// init menu
 	menuGraph = new IconMenu();
-		menuGraph->Append(ID_GRAPH_PIE,         _("graph_pie"),         _MENU_("pie"),         _HELP_("pie"),         wxITEM_CHECK);
-		menuGraph->Append(ID_GRAPH_BAR,         _("graph_bar"),         _MENU_("bar"),         _HELP_("bar"),         wxITEM_CHECK);
-		menuGraph->Append(ID_GRAPH_STACK,       _("graph_stack"),       _MENU_("stack"),       _HELP_("stack"),       wxITEM_CHECK);
-		menuGraph->Append(ID_GRAPH_SCATTER,     _("graph_scatter"),     _MENU_("scatter"),     _HELP_("scatter"),     wxITEM_CHECK);
-		menuGraph->Append(ID_GRAPH_SCATTER_PIE, _("graph_scatter_pie"), _MENU_("scatter pie"), _HELP_("scatter pie"), wxITEM_CHECK);
+		menuGraph->Append(ID_GRAPH_PIE,         (L"graph_pie"),         _MENU_("pie"),         _HELP_("pie"),         wxITEM_CHECK);
+		menuGraph->Append(ID_GRAPH_BAR,         (L"graph_bar"),         _MENU_("bar"),         _HELP_("bar"),         wxITEM_CHECK);
+		menuGraph->Append(ID_GRAPH_STACK,       (L"graph_stack"),       _MENU_("stack"),       _HELP_("stack"),       wxITEM_CHECK);
+		menuGraph->Append(ID_GRAPH_SCATTER,     (L"graph_scatter"),     _MENU_("scatter"),     _HELP_("scatter"),     wxITEM_CHECK);
+		menuGraph->Append(ID_GRAPH_SCATTER_PIE, (L"graph_scatter_pie"), _MENU_("scatter pie"), _HELP_("scatter pie"), wxITEM_CHECK);
 }
 
 StatsPanel::~StatsPanel() {
@@ -371,11 +371,11 @@ void StatsPanel::initUI   (wxToolBar* tb, wxMenuBar* mb) {
 	if (!up_to_date) showCategory();
 	// Toolbar
 	#if USE_DIMENSION_LISTS || USE_SEPARATE_DIMENSION_LISTS
-		tb->AddTool(ID_GRAPH_PIE,         _(""), load_resource_tool_image(_("graph_pie")),         wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("pie"),         _HELP_("pie"));
-		tb->AddTool(ID_GRAPH_BAR,         _(""), load_resource_tool_image(_("graph_bar")),         wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("bar"),         _HELP_("bar"));
-		tb->AddTool(ID_GRAPH_STACK,       _(""), load_resource_tool_image(_("graph_stack")),       wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("stack"),       _HELP_("stack"));
-		tb->AddTool(ID_GRAPH_SCATTER,     _(""), load_resource_tool_image(_("graph_scatter")),     wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("scatter"),     _HELP_("scatter"));
-		tb->AddTool(ID_GRAPH_SCATTER_PIE, _(""), load_resource_tool_image(_("graph_scatter_pie")), wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("scatter pie"), _HELP_("scatter pie"));
+		tb->AddTool(ID_GRAPH_PIE,         (L""), load_resource_tool_image((L"graph_pie")),         wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("pie"),         _HELP_("pie"));
+		tb->AddTool(ID_GRAPH_BAR,         (L""), load_resource_tool_image((L"graph_bar")),         wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("bar"),         _HELP_("bar"));
+		tb->AddTool(ID_GRAPH_STACK,       (L""), load_resource_tool_image((L"graph_stack")),       wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("stack"),       _HELP_("stack"));
+		tb->AddTool(ID_GRAPH_SCATTER,     (L""), load_resource_tool_image((L"graph_scatter")),     wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("scatter"),     _HELP_("scatter"));
+		tb->AddTool(ID_GRAPH_SCATTER_PIE, (L""), load_resource_tool_image((L"graph_scatter_pie")), wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("scatter pie"), _HELP_("scatter pie"));
 		tb->Realize();
 		// Menu
 		mb->Insert(2, menuGraph, _MENU_("graph"));

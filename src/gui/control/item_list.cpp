@@ -20,8 +20,8 @@ ItemList::ItemList(Window* parent, int id, long additional_style, bool multi_sel
 {
 	// create image list
 	wxImageList* il = new wxImageList(18,14);
-	il->Add(load_resource_image(_("sort_asc")),  Color(255,0,255));
-	il->Add(load_resource_image(_("sort_desc")), Color(255,0,255));
+	il->Add(load_resource_image((L"sort_asc")),  Color(255,0,255));
+	il->Add(load_resource_image((L"sort_desc")), Color(255,0,255));
 	AssignImageList(il, wxIMAGE_LIST_SMALL);
 	// Theming things wx fails to do for us
 	#if defined(__WXMSW__) && defined(LVS_EX_DOUBLEBUFFER)

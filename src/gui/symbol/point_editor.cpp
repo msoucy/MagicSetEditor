@@ -25,10 +25,10 @@ SymbolPointEditor::SymbolPointEditor(SymbolControl* control, const SymbolShapeP&
 	, selection(SELECTED_NONE)
 	, hovering(SELECTED_NONE)
 	// Load gui stock
-	, pointSelect(load_resource_cursor(_("point")))
-	, pointAdd   (load_resource_cursor(_("point_add")))
-	, pointCurve (load_resource_cursor(_("curve")))
-	, pointMove  (load_resource_cursor(_("point_move")))
+	, pointSelect(load_resource_cursor((L"point")))
+	, pointAdd   (load_resource_cursor((L"point_add")))
+	, pointCurve (load_resource_cursor((L"curve")))
+	, pointMove  (load_resource_cursor((L"point_move")))
 {
 	resetActions();
 //	// fix pen joins
@@ -146,7 +146,7 @@ wxPen SymbolPointEditor::handlePen(WhichPen p, LockMode lock) {
 		case PEN_NORMAL: return wxPen(col);
 		case PEN_HOVER:  return wxPen(col, 2);
 		case PEN_LINE:   return wxPen(col, 1, wxDOT);
-		default:         throw InternalError(_("SymbolPointEditor::handlePen"));
+		default:         throw InternalError((L"SymbolPointEditor::handlePen"));
 	}
 }
 
@@ -155,15 +155,15 @@ wxPen SymbolPointEditor::handlePen(WhichPen p, LockMode lock) {
 void SymbolPointEditor::initUI(wxToolBar* tb, wxMenuBar* mb) {
 	// Initialize toolbar
 	tb->AddSeparator();
-	tb->AddTool(ID_SEGMENT_LINE,	_TOOL_("line segment"),		load_resource_tool_image(_("line")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("line segment"),		_HELP_("line segment"));
-	tb->AddTool(ID_SEGMENT_CURVE,	_TOOL_("curve segment"),	load_resource_tool_image(_("curve")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("curve segment"),		_HELP_("curve segment"));
+	tb->AddTool(ID_SEGMENT_LINE,	_TOOL_("line segment"),		load_resource_tool_image((L"line")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("line segment"),		_HELP_("line segment"));
+	tb->AddTool(ID_SEGMENT_CURVE,	_TOOL_("curve segment"),	load_resource_tool_image((L"curve")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("curve segment"),		_HELP_("curve segment"));
 	tb->AddSeparator();																													
-	tb->AddTool(ID_LOCK_FREE,		_TOOL_("free point"),		load_resource_tool_image(_("lock_free")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("free point"),		_HELP_("free point"));
-	tb->AddTool(ID_LOCK_DIR,		_TOOL_("smooth point"),		load_resource_tool_image(_("lock_dir")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("smooth point"),		_HELP_("smooth point"));
-	tb->AddTool(ID_LOCK_SIZE,		_TOOL_("symmetric point"),	load_resource_tool_image(_("lock_size")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("symmetric point"),	_HELP_("symmetric point"));
+	tb->AddTool(ID_LOCK_FREE,		_TOOL_("free point"),		load_resource_tool_image((L"lock_free")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("free point"),		_HELP_("free point"));
+	tb->AddTool(ID_LOCK_DIR,		_TOOL_("smooth point"),		load_resource_tool_image((L"lock_dir")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("smooth point"),		_HELP_("smooth point"));
+	tb->AddTool(ID_LOCK_SIZE,		_TOOL_("symmetric point"),	load_resource_tool_image((L"lock_size")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("symmetric point"),	_HELP_("symmetric point"));
 	tb->Realize();
 	// TODO : menu bar
-	//mb->Insert(2, curveMenu, _("&Curve"))
+	//mb->Insert(2, curveMenu, (L"&Curve"))
 }
 
 void SymbolPointEditor::destroyUI(wxToolBar* tb, wxMenuBar* mb) {
@@ -511,7 +511,7 @@ void SymbolPointEditor::findHoveredItem(const Vector2D& pos, bool altDown) {
 		} else {
 			hovering = SELECTED_NONE;
 			control.SetCursor(*wxSTANDARD_CURSOR);
-			SetStatusText(_(""));
+			SetStatusText((L""));
 		}
 	}
 }

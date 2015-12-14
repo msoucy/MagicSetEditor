@@ -37,15 +37,15 @@ void SymbolBasicShapeEditor::draw(DC& dc) {
 // ----------------------------------------------------------------------------- : UI
 
 void SymbolBasicShapeEditor::initUI(wxToolBar* tb, wxMenuBar* mb) {
-	sides  = new wxSpinCtrl(  tb, ID_SIDES, _("3"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 3, 50, 3);
-// 	sidesL = new wxStaticText(tb, ID_SIDES, _(" ") + _LABEL_("sides") + _(": "));
+	sides  = new wxSpinCtrl(  tb, ID_SIDES, (L"3"), wxDefaultPosition, wxDefaultSize, wxSP_ARROW_KEYS, 3, 50, 3);
+// 	sidesL = new wxStaticText(tb, ID_SIDES, (L" ") + _LABEL_("sides") + (L": "));
 	sides->SetHelpText(_HELP_("sides"));
 	sides->SetSize(50, -1);
 	tb->AddSeparator();
-	tb->AddTool(ID_SHAPE_CIRCLE,	_TOOL_("ellipse"),		load_resource_tool_image(_("circle")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("ellipse"),	_HELP_("ellipse"));
-	tb->AddTool(ID_SHAPE_RECTANGLE,	_TOOL_("rectangle"),	load_resource_tool_image(_("rectangle")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("rectangle"),	_HELP_("rectangle"));
-	tb->AddTool(ID_SHAPE_POLYGON,	_TOOL_("polygon"),		load_resource_tool_image(_("triangle")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("polygon"),	_HELP_("polygon"));
-	tb->AddTool(ID_SHAPE_STAR,		_TOOL_("star"),			load_resource_tool_image(_("star")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("star"),		_HELP_("star"));
+	tb->AddTool(ID_SHAPE_CIRCLE,	_TOOL_("ellipse"),		load_resource_tool_image((L"circle")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("ellipse"),	_HELP_("ellipse"));
+	tb->AddTool(ID_SHAPE_RECTANGLE,	_TOOL_("rectangle"),	load_resource_tool_image((L"rectangle")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("rectangle"),	_HELP_("rectangle"));
+	tb->AddTool(ID_SHAPE_POLYGON,	_TOOL_("polygon"),		load_resource_tool_image((L"triangle")),	wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("polygon"),	_HELP_("polygon"));
+	tb->AddTool(ID_SHAPE_STAR,		_TOOL_("star"),			load_resource_tool_image((L"star")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("star"),		_HELP_("star"));
 // 	tb->AddControl(sidesL);
 	tb->AddControl(sides);
 	tb->Realize();

@@ -128,7 +128,7 @@ class PackageManager {
 		if (typedP) {
 			return typedP;
 		} else {
-			throw InternalError(format_string(_("Package %s loaded as wrong type"),name));
+			throw InternalError(format_string((L"Package %s loaded as wrong type"),name));
 		}
 	}
 	

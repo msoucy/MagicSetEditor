@@ -17,7 +17,7 @@
 IMPLEMENT_VALUE_EDITOR(Symbol)
 	, button_down(-2)
 {
-	button_images[0] = Bitmap(load_resource_image(_("edit_symbol")));
+	button_images[0] = Bitmap(load_resource_image((L"edit_symbol")));
 }
 
 void SymbolValueEditor::draw(RotatedDC& dc) {
@@ -26,8 +26,8 @@ void SymbolValueEditor::draw(RotatedDC& dc) {
 	if (symbols.empty()) {
 		dc.SetFont(wxFont(10,wxSWISS,wxNORMAL,wxNORMAL));
 		dc.SetTextForeground(*wxBLACK);
-		RealSize text_size = dc.GetTextExtent(_("double click to edit symbol"));
-		dc.DrawText(_("double click to edit symbol"), align_in_rect(ALIGN_MIDDLE_CENTER, text_size, style().getInternalRect()));
+		RealSize text_size = dc.GetTextExtent((L"double click to edit symbol"));
+		dc.DrawText((L"double click to edit symbol"), align_in_rect(ALIGN_MIDDLE_CENTER, text_size, style().getInternalRect()));
 	}
 	if (nativeLook()) {
 		// draw editor buttons

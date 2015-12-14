@@ -52,15 +52,15 @@ String Package::name() const {
 	// wxFileName is too slow (profiled)
 	//   wxFileName fn(filename);
 	//   return fn.GetName();
-	size_t ext   = filename.find_last_of(_('.'));
-	size_t slash = filename.find_last_of(_("/\\:"), ext);
+	size_t ext   = filename.find_last_of((L'.'));
+	size_t slash = filename.find_last_of((L"/\\:"), ext);
 	if      (slash == String::npos && ext == String::npos) return filename;
 	else if (slash == String::npos)                        return filename.substr(0,ext);
 	else if (                         ext == String::npos) return filename.substr(slash+1);
 	else                                                   return filename.substr(slash+1, ext-slash-1);
 }
 String Package::relativeFilename() const {
-	size_t slash = filename.find_last_of(_("/\\:"));
+	size_t slash = filename.find_last_of((L"/\\:"));
 	if (slash == String::npos) return filename;
 	else                       return filename.substr(slash+1);
 }
@@ -70,7 +70,7 @@ const String& Package::absoluteFilename() const {
 
 void Package::open(const String& n, bool fast) {
 	assert(!isOpened()); // not already opened
-	PROFILER(_("open package"));
+	PROFILER((L"open package"));
 	// get absolute path
 	wxFileName fn(n);
 	fn.Normalize();
@@ -85,7 +85,7 @@ void Package::open(const String& n, bool fast) {
 	} else if (wxFileExists(filename)) {
 		openZipfile();
 	} else {
-		throw PackageNotFoundError(_("Package not found: '") + filename + _("'"));
+		throw PackageNotFoundError((L"Package not found: '") + filename + (L"'"));
 	}
 }
 
@@ -199,7 +199,7 @@ class BufferedFileInputStream : private BufferedFileInputStream_aux, public wxBu
 };
 
 InputStreamP Package::openIn(const String& file) {
-	if (!file.empty() && file.GetChar(0) == _('/')) {
+	if (!file.empty() && file.GetChar(0) == (L'/')) {
 		// absolute path, open file from another package
 		Packaged* p = dynamic_cast<Packaged*>(this);
 		return package_manager.openFileFromPackage(p, file);
@@ -207,7 +207,7 @@ InputStreamP Package::openIn(const String& file) {
 	FileInfos::iterator it = files.find(normalize_internal_filename(file));
 	if (it == files.end()) {
 		// does it look like a relative filename?
-		if (filename.find(_(".mse-")) != String::npos) {
+		if (filename.find((L".mse-")) != String::npos) {
 			throw PackageError(_ERROR_2_("file not found package like", file, filename));
 		}
 	}
@@ -215,9 +215,9 @@ InputStreamP Package::openIn(const String& file) {
 	if (it != files.end() && it->second.wasWritten()) {
 		// written to this file, open the temp file
 		stream = shared(new BufferedFileInputStream(it->second.tempName));
-	} else if (wxFileExists(filename+_("/")+file)) {
+	} else if (wxFileExists(filename+(L"/")+file)) {
 		// a file in directory package
-		stream = shared(new BufferedFileInputStream(filename+_("/")+file));
+		stream = shared(new BufferedFileInputStream(filename+(L"/")+file));
 	} else if (wxFileExists(filename) && it != files.end() && it->second.zipEntry) {
 		// a file in a zip archive
 		// somebody in wx thought seeking was no longer needed, it now only works with the 'compatability constructor'
@@ -254,7 +254,7 @@ String Package::nameOut(const String& file) {
 		return it->second.tempName;
 	} else {
 		// create temp file
-		String name = wxFileName::CreateTempFileName(_("mse"));
+		String name = wxFileName::CreateTempFileName((L"mse"));
 		it->second.tempName = name;
 		return name;
 	}
@@ -284,7 +284,7 @@ LocalFileName Package::newFileName(const String& prefix, const String& suffix) {
 void Package::referenceFile(const String& file) {
 	if (file.empty()) return;
 	FileInfos::iterator it = files.find(file);
-	if (it == files.end()) throw InternalError(_("referencing a nonexistant file"));
+	if (it == files.end()) throw InternalError((L"referencing a nonexistant file"));
 	it->second.keep = true;
 }
 
@@ -299,22 +299,22 @@ String Package::absoluteName(const String& file) {
 	if (it->second.wasWritten()) {
 		// written to this file, return the temp file
 		return it->second.tempName;
-	} else if (wxFileExists(filename+_("/")+file)) {
+	} else if (wxFileExists(filename+(L"/")+file)) {
 		// dir package
-		return filename+_("/")+file;
+		return filename+(L"/")+file;
 	} else {
 		// assume zip package
-		return filename + _("\1") + file;
+		return filename + (L"\1") + file;
 	}
 }
 
 // Open a file that is in some package
 InputStreamP Package::openAbsoluteFile(const String& name) {
-	size_t pos = name.find_first_of(_('\1'));
+	size_t pos = name.find_first_of((L'\1'));
 	if (pos == String::npos) {
 		// temp or dir file
 		shared_ptr<wxFileInputStream> f = shared(new wxFileInputStream(name));
-		if (!f->IsOk()) throw FileNotFoundError(_("<unknown>"), name);
+		if (!f->IsOk()) throw FileNotFoundError((L"<unknown>"), name);
 		return f;
 	} else {
 		// packaged file, always in zip format
@@ -331,7 +331,7 @@ String LocalFileName::toStringForWriting() const {
 			return clipboard_package()->absoluteName(fn);
 		} catch (const Error&) {
 			// ignore errors
-			return _("");
+			return (L"");
 		}
 	} else if (!fn.empty() && writing_package()) {
 		writing_package()->referenceFile(fn);
@@ -345,7 +345,7 @@ LocalFileName LocalFileName::fromReadString(String const& fn, String const& pref
 	if (!fn.empty() && clipboard_package()) {
 		// copy file into current package
 		try {
-			LocalFileName local_name = clipboard_package()->newFileName(prefix,_("")); // a new unique name in the package, assume it's an image
+			LocalFileName local_name = clipboard_package()->newFileName(prefix,(L"")); // a new unique name in the package, assume it's an image
 			OutputStreamP out = clipboard_package()->openOut(local_name);
 			InputStreamP in = Package::openAbsoluteFile(fn);
 			out->Write(*in); // copy
@@ -385,7 +385,7 @@ void Package::openDirectory(bool fast) {
 }
 
 void Package::openSubdir(const String& name) {
-	wxDir d(filename + _("/") + name);
+	wxDir d(filename + (L"/") + name);
 	if (!d.IsOpened()) return; // ignore errors here
 	// find files
 	String f; // filename
@@ -394,14 +394,14 @@ void Package::openSubdir(const String& name) {
 		// add file to list of known files
 		addFile(name + f);
 		// get modified time
-		wxDateTime file_time = file_modified_time(filename + _("/") + name + f);
+		wxDateTime file_time = file_modified_time(filename + (L"/") + name + f);
 		modified = max(modified,file_time);
 	}
 	// find subdirs
 	for(bool ok = d.GetFirst(&f, wxEmptyString, wxDIR_DIRS | wxDIR_HIDDEN) ; ok ; ok = d.GetNext(&f)) {
-		if (!f.empty() && f.GetChar(0) != _('.')) {
+		if (!f.empty() && f.GetChar(0) != (L'.')) {
 			// skip directories starting with '.', like ., .. and .svn
-			openSubdir(name+f+_("/"));
+			openSubdir(name+f+(L"/"));
 		}
 	}
 }
@@ -426,24 +426,24 @@ void Package::saveToDirectory(const String& saveAs, bool remove_unused, bool is_
 		if (!f.second.keep && remove_unused) {
 			// remove files that are not to be kept
 			// ignore failure (new file that is not kept)
-			vcs->removeFile(saveAs+_("/")+f.first);
+			vcs->removeFile(saveAs+(L"/")+f.first);
 		} else if (f.second.wasWritten()) {
 			// move files that were updated
-			wxRemoveFile(saveAs+_("/")+f.first);
-			if (!(is_copy ? wxCopyFile  (f.second.tempName, saveAs+_("/")+f.first)
-			              : wxRenameFile(f.second.tempName, saveAs+_("/")+f.first))) {
+			wxRemoveFile(saveAs+(L"/")+f.first);
+			if (!(is_copy ? wxCopyFile  (f.second.tempName, saveAs+(L"/")+f.first)
+			              : wxRenameFile(f.second.tempName, saveAs+(L"/")+f.first))) {
 				throw PackageError(_ERROR_("unable to store file"));
 			}
 			if (f.second.created) {
-				vcs->addFile(saveAs+_("/")+f.first);
+				vcs->addFile(saveAs+(L"/")+f.first);
 				f.second.created = false;
 			}
 		} else if (filename != saveAs) {
 			// save as, copy old filess
-			if (!wxCopyFile(filename+_("/")+f.first, saveAs+_("/")+f.first)) {
+			if (!wxCopyFile(filename+(L"/")+f.first, saveAs+(L"/")+f.first)) {
 				throw PackageError(_ERROR_("unable to store file"));
 			}
-			vcs->addFile(saveAs+_("/")+f.first);
+			vcs->addFile(saveAs+(L"/")+f.first);
 		} else {
 			// old file, just keep it
 		}
@@ -452,7 +452,7 @@ void Package::saveToDirectory(const String& saveAs, bool remove_unused, bool is_
 
 void Package::saveToZipfile(const String& saveAs, bool remove_unused, bool is_copy) {
 	// create a temporary zip file name
-	String tempFile = saveAs + _(".tmp");
+	String tempFile = saveAs + (L".tmp");
 	wxRemoveFile(tempFile);
 	// open zip file
 	try {
@@ -491,8 +491,8 @@ void Package::saveToZipfile(const String& saveAs, bool remove_unused, bool is_co
 	// replace the old file with the new file, in effect commiting the changes
 	if (wxFileExists(saveAs)) {
 		// rename old file to .bak
-		wxRemoveFile(saveAs + _(".bak"));
-		wxRenameFile(saveAs, saveAs + _(".bak"));
+		wxRemoveFile(saveAs + (L".bak"));
+		wxRenameFile(saveAs, saveAs + (L".bak"));
 	}
 	wxRenameFile(tempFile, saveAs);
 }
@@ -507,8 +507,8 @@ DateTime Package::modificationTime(const pair<String, FileInfo>& fi) const {
 		return wxFileName(fi.first).GetModificationTime();
 	} else if (fi.second.zipEntry) {
 		return fi.second.zipEntry->GetDateTime();
-	} else if (wxFileExists(filename+_("/")+fi.first)) {
-		return wxFileName(filename+_("/")+fi.first).GetModificationTime();
+	} else if (wxFileExists(filename+(L"/")+fi.first)) {
+		return wxFileName(filename+(L"/")+fi.first).GetModificationTime();
 	} else {
 		return DateTime((wxLongLong)0ul);
 	}
@@ -520,20 +520,20 @@ DateTime Package::modificationTime(const pair<String, FileInfo>& fi) const {
 template <> void Reader::handle(PackageDependency& dep) {
 	if (!isCompound()) {
 		handle(dep.package);
-		size_t pos = dep.package.find_first_of(_(' '));
+		size_t pos = dep.package.find_first_of((L' '));
 		if (pos != String::npos) {
 			dep.version = Version::fromString(dep.package.substr(pos+1));
 			dep.package = dep.package.substr(0,pos);
 		}
 	} else {
-		handle(_("package"), dep.package);
-		handle(_("suggests"), dep.suggests);
-		handle(_("version"), dep.version);
+		handle((L"package"), dep.package);
+		handle((L"suggests"), dep.suggests);
+		handle((L"version"), dep.version);
 	}
 }
 template <> void Writer::handle(const PackageDependency& dep) {
 	if (dep.version != Version()) {
-		handle(dep.package + _(" ") + dep.version.toString());
+		handle(dep.package + (L" ") + dep.version.toString());
 	} else {
 		handle(dep.package);
 	}
@@ -576,16 +576,16 @@ template <> void Reader::handle(JustAsPackageProxy& object) {
 void Packaged::open(const String& package, bool just_header) {
 	Package::open(package);
 	fully_loaded = false;
-	PROFILER(just_header ? _("open package header") : _("open package fully"));
+	PROFILER(just_header ? (L"open package header") : (L"open package fully"));
 	if (just_header) {
 		// Read just the header (the part common to all Packageds)
 		InputStreamP stream = openIn(typeName());
-		Reader reader(*stream, this, absoluteFilename() + _("/") + typeName(), true);
+		Reader reader(*stream, this, absoluteFilename() + (L"/") + typeName(), true);
 		try {
 			JustAsPackageProxy proxy(this);
 			reader.handle_greedy(proxy);
 		} catch (const ParseError& err) {
-			throw FileParseError(err.what(), absoluteFilename() + _("/") + typeName()); // more detailed message
+			throw FileParseError(err.what(), absoluteFilename() + (L"/") + typeName()); // more detailed message
 		}
 	} else {
 		loadFully();
@@ -594,12 +594,12 @@ void Packaged::open(const String& package, bool just_header) {
 void Packaged::loadFully() {
 	if (fully_loaded) return;
 	InputStreamP stream = openIn(typeName());
-	Reader reader(*stream, this, absoluteFilename() + _("/") + typeName());
+	Reader reader(*stream, this, absoluteFilename() + (L"/") + typeName());
 	try {
 		reader.handle_greedy(*this);
 		fully_loaded = true; // only after loading and validating succeeded, be careful with recursion!
 	} catch (const ParseError& err) {
-		throw FileParseError(err.what(), absoluteFilename() + _("/") + typeName()); // more detailed message
+		throw FileParseError(err.what(), absoluteFilename() + (L"/") + typeName()); // more detailed message
 	}
 }
 
@@ -654,7 +654,7 @@ void Packaged::requireDependency(Packaged* package) {
 
 // ----------------------------------------------------------------------------- : IncludePackage
 
-String IncludePackage::typeName() const { return _("include"); }
+String IncludePackage::typeName() const { return (L"include"); }
 Version IncludePackage::fileVersion() const { return file_version_script; }
 
 IMPLEMENT_REFLECTION(IncludePackage) {

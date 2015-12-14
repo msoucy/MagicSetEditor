@@ -38,7 +38,7 @@ class ConsoleMessage : public IntrusivePtrBase<ConsoleMessage> {
 	int height;
 	int bottom() const { return top+height; }
 	
-	ConsoleMessage(MessageType type, String const& text = _(""), bool joined_to_previous = false)
+	ConsoleMessage(MessageType type, String const& text = (L""), bool joined_to_previous = false)
 		: type(type), text(text), line_number(-1), joined_to_previous(joined_to_previous), top(-1), height(-1)
 	{}
 };
@@ -53,11 +53,11 @@ class MessageCtrl : public wxScrolledWindow {
 		EnableScrolling(false,true);
 		// icons
 		BOOST_STATIC_ASSERT(MESSAGE_TYPE_MAX == 6);
-		icons[MESSAGE_INPUT]   = wxBitmap(load_resource_image(_("message_input")));
+		icons[MESSAGE_INPUT]   = wxBitmap(load_resource_image((L"message_input")));
 		icons[MESSAGE_OUTPUT]  = wxBitmap();
-		icons[MESSAGE_INFO]    = wxBitmap(load_resource_image(_("message_information")));
-		icons[MESSAGE_WARNING] = wxBitmap(load_resource_image(_("message_warning")));
-		icons[MESSAGE_ERROR]   = wxBitmap(load_resource_image(_("message_error")));
+		icons[MESSAGE_INFO]    = wxBitmap(load_resource_image((L"message_information")));
+		icons[MESSAGE_WARNING] = wxBitmap(load_resource_image((L"message_warning")));
+		icons[MESSAGE_ERROR]   = wxBitmap(load_resource_image((L"message_error")));
 		icons[MESSAGE_FATAL_ERROR] = icons[MESSAGE_ERROR];
 		// color
 		colors[MESSAGE_INPUT]   = wxColour(0,80,0);
@@ -224,7 +224,7 @@ class MessageCtrl : public wxScrolledWindow {
 		String::const_iterator begin = msg.text.begin();
 		String::const_iterator it = begin;
 		while (it != msg.text.end()) {
-			if (*it == _('\n')) {
+			if (*it == (L'\n')) {
 				// break here
 				dc.DrawText(String(begin,it), text_left, text_top);
 				begin = it = it + 1;
@@ -256,7 +256,7 @@ class MessageCtrl : public wxScrolledWindow {
 		String::const_iterator begin = msg.text.begin();
 		String::const_iterator it = begin;
 		while (it != msg.text.end()) {
-			if (*it == _('\n')) {
+			if (*it == (L'\n')) {
 				// break here
 				begin = it = it + 1;
 				text_height += dc.GetCharHeight() + TEXT_LINE_SPACING;
@@ -331,7 +331,7 @@ END_EVENT_TABLE()
 class HistoryTextCtrl : public wxTextCtrl {
   public:
 	HistoryTextCtrl(wxWindow* parent, wxWindowID id)
-		: wxTextCtrl(parent, id, _(""), wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER)
+		: wxTextCtrl(parent, id, (L""), wxDefaultPosition, wxDefaultSize, wxTE_PROCESS_ENTER)
 		, history_pos(0)
 	{}
 	
@@ -339,7 +339,7 @@ class HistoryTextCtrl : public wxTextCtrl {
 		String command = GetValue();
 		history.push_back(command);
 		history_pos = (int)history.size();
-		SetValue(_(""));
+		SetValue((L""));
 		return command;
 	}
 	
@@ -567,12 +567,12 @@ void ConsolePanel::onTimer(wxTimerEvent&) {
 void ConsolePanel::update_blinker() {
 	SetWindow* parent = static_cast<SetWindow*>(GetParent());
 	if (blinker_state % 2 == 1 || !new_errors_since_last_view) {
-		parent->setPanelIcon(this, load_resource_image(_("tool/window_console")));
+		parent->setPanelIcon(this, load_resource_image((L"tool/window_console")));
 	} else if (new_errors_since_last_view == MESSAGE_INFO) {
-		parent->setPanelIcon(this, load_resource_image(_("message_information")));
+		parent->setPanelIcon(this, load_resource_image((L"message_information")));
 	} else if (new_errors_since_last_view == MESSAGE_WARNING) {
-		parent->setPanelIcon(this, load_resource_image(_("message_warning")));
+		parent->setPanelIcon(this, load_resource_image((L"message_warning")));
 	} else {
-		parent->setPanelIcon(this, load_resource_image(_("message_error")));
+		parent->setPanelIcon(this, load_resource_image((L"message_error")));
 	}
 }

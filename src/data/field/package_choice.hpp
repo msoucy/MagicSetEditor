@@ -24,7 +24,7 @@ DECLARE_POINTER_TYPE(PackageChoiceStyle);
 /// A field for PackageChoice values, it contains a list of choices for PackageChoices
 class PackageChoiceField : public Field {
   public:
-	PackageChoiceField() : required(true), empty_name(_("none")) {}
+	PackageChoiceField() : required(true), empty_name((L"none")) {}
 	DECLARE_FIELD_TYPE();
 	
 	String             match;			///< Glob of package filenames to match

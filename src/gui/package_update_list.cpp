@@ -36,9 +36,9 @@ void PackageUpdateList::TreeItem::add(const InstallablePackageP& package, const 
 		return;
 	}
 	// split path
-	size_t pos = path.find_first_of(_('/'));
+	size_t pos = path.find_first_of((L'/'));
 	String name = path.substr(0,pos);
-	String rest = pos == String::npos ? _("") : path.substr(pos+1);
+	String rest = pos == String::npos ? (L"") : path.substr(pos+1);
 	// find/add child
 	for(auto ti = children.begin(); ti != children.end(); ++ti) {
 		if ((*ti)->label == name) {
@@ -86,15 +86,15 @@ bool PackageUpdateList::TreeItem::highlight() const {
 
 PackageUpdateList::TreeItem::PackageType PackageUpdateList::TreeItem::package_type(const PackageDescription& desc) {
 	if (desc.name == mse_package)                           return TYPE_PROG;
-	size_t pos = desc.name.find_last_of(_('.'));
+	size_t pos = desc.name.find_last_of((L'.'));
 	if (pos == String::npos)                                return TYPE_OTHER;
-	if (is_substr(desc.name,pos,_(".mse-locale")))          return TYPE_LOCALE;
-	if (is_substr(desc.name,pos,_(".mse-game")))            return TYPE_GAME;
-	if (is_substr(desc.name,pos,_(".mse-style")))           return TYPE_STYLESHEET;
-	if (is_substr(desc.name,pos,_(".mse-export-template"))) return TYPE_EXPORT_TEMPLATE;
-	if (is_substr(desc.name,pos,_(".mse-symbol-font")))     return TYPE_SYMBOL_FONT;
-	if (is_substr(desc.name,pos,_(".mse-include")))         return TYPE_INCLUDE;
-	if (is_substr(desc.name,pos,_(".ttf")))                 return TYPE_FONT;
+	if (is_substr(desc.name,pos,(L".mse-locale")))          return TYPE_LOCALE;
+	if (is_substr(desc.name,pos,(L".mse-game")))            return TYPE_GAME;
+	if (is_substr(desc.name,pos,(L".mse-style")))           return TYPE_STYLESHEET;
+	if (is_substr(desc.name,pos,(L".mse-export-template"))) return TYPE_EXPORT_TEMPLATE;
+	if (is_substr(desc.name,pos,(L".mse-symbol-font")))     return TYPE_SYMBOL_FONT;
+	if (is_substr(desc.name,pos,(L".mse-include")))         return TYPE_INCLUDE;
+	if (is_substr(desc.name,pos,(L".ttf")))                 return TYPE_FONT;
 	return TYPE_OTHER;
 }
 
@@ -162,7 +162,7 @@ class PackageIconRequest : public ThumbnailRequest {
 	PackageIconRequest(PackageUpdateList* list, PackageUpdateList::TreeItem* ti)
 		: ThumbnailRequest(
 			list,
-			_("package_") + ti->package->description->icon_url + _("_") + ti->package->description->version.toString(),
+			(L"package_") + ti->package->description->icon_url + (L"_") + ti->package->description->version.toString(),
 			wxDateTime(1,wxDateTime::Jan,2000))
 		, list(list), ti(ti)
 	{}
@@ -205,7 +205,7 @@ void PackageUpdateList::initItems() {
 	TreeItem root;
 	for(const auto& ip : packages) {
 		String group = ip->description->installer_group;
-		if (group.empty()) group = _("custom");
+		if (group.empty()) group = (L"custom");
 		if (!show_only_installable || ip->installer) {
 			root.add(ip, group);
 		}
@@ -222,15 +222,15 @@ void PackageUpdateList::initItems() {
 		if (p && p->description->icon.Ok()) { // it has an icon
 			ti.setIcon(p->description->icon);
 		} else if (p) {                       // it doesn't have an icon (yet)
-			ti.setIcon(load_resource_image(_("installer_package")));
+			ti.setIcon(load_resource_image((L"installer_package")));
 			if (!p->description->icon_url.empty()) {
 				// download icon
 				thumbnail_thread.request(intrusive(new PackageIconRequest(this,&ti)));
 			}
 		} else if (ti.position_type == TreeItem::TYPE_LOCALE) { // locale folder
-			ti.setIcon(load_resource_image(_("installer_locales")));
+			ti.setIcon(load_resource_image((L"installer_locales")));
 		} else {                                                // other folder
-			ti.setIcon(load_resource_image(_("installer_group")));
+			ti.setIcon(load_resource_image((L"installer_group")));
 		}
 	}
 }
@@ -292,7 +292,7 @@ String PackageUpdateList::columnText(size_t column) const {
 	if       (column == 0) return _LABEL_("package name");
 	else if  (column == 1) return _LABEL_("package status");
 	else if  (column == 2) return _LABEL_("package action");
-	else                   throw InternalError(_("Unknown column"));
+	else                   throw InternalError((L"Unknown column"));
 }
 
 int PackageUpdateList::columnWidth(size_t column) const {

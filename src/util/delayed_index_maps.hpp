@@ -26,7 +26,7 @@ IndexMap<Key,Value>& DelayedIndexMaps<Key,Value>::get(const String& name, const 
 	} else if (!item->unread_data.empty()) { // not read, read now
 		item->read_data.init(init_with);
 		wxStringInputStream stream(item->unread_data);
-		Reader reader(stream, nullptr, _("delayed data for ") + name);
+		Reader reader(stream, nullptr, (L"delayed data for ") + name);
 		reader.handle_greedy(item->read_data);
 		item->unread_data.clear();
 	}
@@ -55,12 +55,12 @@ template <typename Key, typename Value> void GetMember::handle(const DelayedInde
 template <typename Key, typename Value>
 void Reader::handle(DelayedIndexMapsData<Key,Value>& d) {
 	handle(d.unread_data);
-	if (d.unread_data.empty()) d.unread_data = _("\n"); // never empty (invariant)
+	if (d.unread_data.empty()) d.unread_data = (L"\n"); // never empty (invariant)
 }
 template <typename Key, typename Value>
 void Writer::handle(const DelayedIndexMapsData<Key,Value>& d) {
 	if (!d.unread_data.empty()) {
-		if (d.unread_data == _("\n")) {
+		if (d.unread_data == (L"\n")) {
 			// this is not interesting, it is only used to make unread_data nonempty (see above)
 			// we don't need to write it
 		} else {
@@ -69,7 +69,7 @@ void Writer::handle(const DelayedIndexMapsData<Key,Value>& d) {
 	} else {
 		// also write the app version, because a separate Reader is used to read it.
 		// the unread_data can therefore have a different version number
-		handle(_("mse_version"), app_version);
+		handle((L"mse_version"), app_version);
 		handle(d.read_data);
 	}
 }

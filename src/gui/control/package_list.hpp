@@ -24,12 +24,12 @@ class PackageList : public GalleryList {
 	
 	/// Shows packages that match a specific patern, and that are of the given type
 	template <typename T>
-	void showData(const String& pattern = _("*")) {
-		showData(pattern + _(".mse-") + T::typeNameStatic());
+	void showData(const String& pattern = (L"*")) {
+		showData(pattern + (L".mse-") + T::typeNameStatic());
 	}
 	
 	/// Shows packages that match a specific patern
-	void showData(const String& pattern = _("*"));
+	void showData(const String& pattern = (L"*"));
 	
 	/// Clears this list
 	void clear();
@@ -40,7 +40,7 @@ class PackageList : public GalleryList {
 	template <typename T>
 	intrusive_ptr<T> getSelection(bool load_fully = true) const {
 		intrusive_ptr<T> ret = dynamic_pointer_cast<T>(packages.at(getSelectionId()).package);
-		if (!ret) throw InternalError(_("PackageList: Selected package has the wrong type"));
+		if (!ret) throw InternalError((L"PackageList: Selected package has the wrong type"));
 		if (load_fully) ret->loadFully();
 		return ret;
 	}

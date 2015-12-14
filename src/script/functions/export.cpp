@@ -28,9 +28,9 @@ using std::make_pair;
 // Make sure we can export files to a data directory
 void guard_export_info(const String& fun, bool need_template = false) {
 	if (!export_info() && (!need_template || export_info()->export_template)) {
-		throw ScriptError(_("Can only use ") + fun + _(" from export templates"));
+		throw ScriptError((L"Can only use ") + fun + (L" from export templates"));
 	} else if (export_info()->directory_relative.empty()) {
-		throw ScriptError(_("Can only use ") + fun + _(" when 'create directory' is set to true"));
+		throw ScriptError((L"Can only use ") + fun + (L" when 'create directory' is set to true"));
 	}
 }
 
@@ -43,13 +43,13 @@ String get_export_full_path(String& rel_name) {
 	fn.Normalize(wxPATH_NORM_ALL, ei.directory_absolute);
 	if (!ei.allow_writes_outside) {
 		// check if path is okay
-		wxFileName fn2(_("x"));
+		wxFileName fn2((L"x"));
 		fn2.Normalize(wxPATH_NORM_ALL, ei.directory_absolute);
 		String p1 = fn.GetFullPath();
 		String p2 = fn2.GetFullPath();
 		p2.resize(p2.size() - 1); // drop the x
 		if (p2.empty() || p1.size() < p2.size() || p1.substr(0,p2.size()-1) != p2.substr(0,p2.size()-1)) {
-			throw ScriptError(_("Not a relative filename: ") + rel_name);
+			throw ScriptError((L"Not a relative filename: ") + rel_name);
 		}
 	}
 	rel_name = fn.GetFullName(); // TODO: does this work correctly with subdirectories in target dir?
@@ -163,18 +163,18 @@ class TagStack {
 String html_escape(const String& str) {
 	String ret;
 	for(const auto& c : str) {
-		if (c == _('\1') || c == _('<')) { // escape <
-			ret += _("&lt;");
-		} else if (c == _('>')) {  // escape >
-			ret += _("&gt;");
-		} else if (c == _('&')) {  // escape &
-			ret += _("&amp;");
-		} else if (c == _('\'')) {  // escape '
-			ret += _("&#39;");
-		} else if (c == _('\"')) {  // escape "
-			ret += _("&quot;");
+		if (c == (L'\1') || c == (L'<')) { // escape <
+			ret += (L"&lt;");
+		} else if (c == (L'>')) {  // escape >
+			ret += (L"&gt;");
+		} else if (c == (L'&')) {  // escape &
+			ret += (L"&amp;");
+		} else if (c == (L'\'')) {  // escape '
+			ret += (L"&#39;");
+		} else if (c == (L'\"')) {  // escape "
+			ret += (L"&quot;");
 		} else if (c >= 0x80) {    // escape non ascii
-			ret += String(_("&#")) << (int)c << _(';');
+			ret += String((L"&#")) << (int)c << (L';');
 		} else {
 			ret += c;
 		}
@@ -184,13 +184,13 @@ String html_escape(const String& str) {
 
 // write symbols to html
 String symbols_to_html(const String& str, SymbolFont& symbol_font, double size) {
-	guard_export_info(_("symbols_to_html"));
+	guard_export_info((L"symbols_to_html"));
 	ExportInfo& ei = *export_info();
 	vector<SymbolFont::DrawableSymbol> symbols;
 	symbol_font.split(str, symbols);
 	String html;
 	for(auto& sym : symbols) {
-		String filename = symbol_font.name() + _("-") + clean_filename(sym.text) + _(".png");
+		String filename = symbol_font.name() + (L"-") + clean_filename(sym.text) + (L".png");
 		map<String,wxSize>::iterator it = ei.exported_images.find(filename);
 		if (it == ei.exported_images.end()) {
 			// save symbol image
@@ -201,36 +201,36 @@ String symbols_to_html(const String& str, SymbolFont& symbol_font, double size) 
 			img.SaveFile(fn.GetFullPath());
 			it = ei.exported_images.insert(make_pair(filename, wxSize(img.GetWidth(), img.GetHeight()))).first;
 		}
-		html += _("<img src='") + filename + _("' alt='") + html_escape(sym.text)
-		     +  _("' width='")  + (String() << it->second.x)
-		     +  _("' height='") + (String() << it->second.y) + _("'>");
+		html += (L"<img src='") + filename + (L"' alt='") + html_escape(sym.text)
+		     +  (L"' width='")  + (String() << it->second.x)
+		     +  (L"' height='") + (String() << it->second.y) + (L"'>");
 	}
 	return html;
 }
 
 String to_html(const String& str_in, const SymbolFontP& symbol_font, double symbol_size) {
-	String str = remove_tag_contents(str_in,_("<sep-soft"));
+	String str = remove_tag_contents(str_in,(L"<sep-soft"));
 	String ret;
-	Tag bold  (_("<b>"), _("</b>")),
-        italic(_("<i>"), _("</i>")),
-        symbol(_("<span class=\"symbol\">"), _("</span>"));
+	Tag bold  ((L"<b>"), (L"</b>")),
+        italic((L"<i>"), (L"</i>")),
+        symbol((L"<span class=\"symbol\">"), (L"</span>"));
 	TagStack tags;
 	String symbols;
 	for (size_t i = 0 ; i < str.size() ; ) {
 		Char c = str.GetChar(i);
-		if (c == _('<')) {
+		if (c == (L'<')) {
 			++i;
-			if        (is_substr(str, i, _("b"))) {
+			if        (is_substr(str, i, (L"b"))) {
 				tags.open (ret, bold);
-			} else if (is_substr(str, i, _("/b"))) {
+			} else if (is_substr(str, i, (L"/b"))) {
 				tags.close(ret, bold);
-			} else if (is_substr(str, i, _("i"))) {
+			} else if (is_substr(str, i, (L"i"))) {
 				tags.open (ret, italic);
-			} else if (is_substr(str, i, _("/i"))) {
+			} else if (is_substr(str, i, (L"/i"))) {
 				tags.close(ret, italic);
-			} else if (is_substr(str, i, _("sym"))) {
+			} else if (is_substr(str, i, (L"sym"))) {
 				tags.open (ret, symbol);
-			} else if (is_substr(str, i, _("/sym"))) {
+			} else if (is_substr(str, i, (L"/sym"))) {
 				if (!symbols.empty()) {
 					// write symbols in a special way
 					tags.write_pending_tags(ret);
@@ -248,14 +248,14 @@ String to_html(const String& str_in, const SymbolFontP& symbol_font, double symb
 				symbols += c; // write as symbols instead
 			} else {
 				c = untag_char(c);
-				if (c == _('<')) { // escape <
-					ret += _("&lt;");
-				} else if (c == _('&')) {  // escape &
-					ret += _("&amp;");
+				if (c == (L'<')) { // escape <
+					ret += (L"&lt;");
+				} else if (c == (L'&')) {  // escape &
+					ret += (L"&amp;");
 				} else if (c >= 0x80) {    // escape non ascii
-					ret += String(_("&#")) << (int)c << _(';');
-				} else if (c == _('\n')) {
-					ret += _("<br>\n");
+					ret += String((L"&#")) << (int)c << (L';');
+				} else if (c == (L'\n')) {
+					ret += (L"<br>\n");
 				} else {
 					ret += c;
 				}
@@ -277,7 +277,7 @@ SCRIPT_FUNCTION(to_html) {
 	SCRIPT_PARAM_C(String, input);
 	// symbol font?
 	SymbolFontP symbol_font;
-	SCRIPT_OPTIONAL_PARAM_N(String, _("symbol_font"), font_name) {
+	SCRIPT_OPTIONAL_PARAM_N(String, (L"symbol_font"), font_name) {
 		symbol_font = SymbolFont::byName(font_name);
 		symbol_font->update(ctx);
 	}
@@ -289,7 +289,7 @@ SCRIPT_FUNCTION(to_html) {
 // convert a symbol string to html
 SCRIPT_FUNCTION(symbols_to_html) {
 	SCRIPT_PARAM_C(String, input);
-	SCRIPT_PARAM_N(String, _("symbol_font"), font_name);
+	SCRIPT_PARAM_N(String, (L"symbol_font"), font_name);
 	SCRIPT_OPTIONAL_PARAM_(double, symbol_font_size);
 	SymbolFontP symbol_font = SymbolFont::byName(font_name);
 	symbol_font->update(ctx);
@@ -300,27 +300,27 @@ SCRIPT_FUNCTION(symbols_to_html) {
 // ----------------------------------------------------------------------------- : BB Code
 
 String to_bbcode(const String& str_in) {
-	String str = remove_tag_contents(str_in,_("<sep-soft"));
+	String str = remove_tag_contents(str_in,(L"<sep-soft"));
 	String ret;
-	Tag bold  (_("[b]"), _("[/b]")),
-        italic(_("[i]"), _("[/i]"));
+	Tag bold  ((L"[b]"), (L"[/b]")),
+        italic((L"[i]"), (L"[/i]"));
 	TagStack tags;
 	String symbols;
 	for (size_t i = 0 ; i < str.size() ; ) {
 		Char c = str.GetChar(i);
-		if (c == _('<')) {
+		if (c == (L'<')) {
 			++i;
-			if        (is_substr(str, i, _("b"))) {
+			if        (is_substr(str, i, (L"b"))) {
 				tags.open (ret, bold);
-			} else if (is_substr(str, i, _("/b"))) {
+			} else if (is_substr(str, i, (L"/b"))) {
 				tags.close(ret, bold);
-			} else if (is_substr(str, i, _("i"))) {
+			} else if (is_substr(str, i, (L"i"))) {
 				tags.open (ret, italic);
-			} else if (is_substr(str, i, _("/i"))) {
+			} else if (is_substr(str, i, (L"/i"))) {
 				tags.close(ret, italic);
-			} /*else if (is_substr(str, i, _("sym"))) {
+			} /*else if (is_substr(str, i, (L"sym"))) {
 				tags.open (ret, symbol);
-			} else if (is_substr(str, i, _("/sym"))) {
+			} else if (is_substr(str, i, (L"/sym"))) {
 				if (!symbols.empty()) {
 					// write symbols in a special way
 					tags.write_pending_tags(ret);
@@ -354,7 +354,7 @@ String to_bbcode(const String& str_in) {
 // convert a tagged string to BBCode
 SCRIPT_FUNCTION(to_bbcode) {
 	SCRIPT_PARAM_C(String, input);
-	throw InternalError(_("TODO: to_bbcode"));
+	throw InternalError((L"TODO: to_bbcode"));
 //	SCRIPT_RETURN(to_bbcode(input, symbol_font));
 }
 
@@ -370,7 +370,7 @@ SCRIPT_FUNCTION(to_text) {
 
 // copy from source package -> destination directory, return new filename (relative)
 SCRIPT_FUNCTION(copy_file) {
-	guard_export_info(_("copy_file"));
+	guard_export_info((L"copy_file"));
 	SCRIPT_PARAM_C(String, input); // file to copy
 	// output path
 	String out_name = input;
@@ -379,21 +379,21 @@ SCRIPT_FUNCTION(copy_file) {
 	ExportInfo& ei = *export_info();
 	InputStreamP in = ei.export_template->openIn(input);
 	wxFileOutputStream out(out_path);
-	if (!out.Ok()) throw Error(_("Unable to open file '") + out_path + _("' for output"));
+	if (!out.Ok()) throw Error((L"Unable to open file '") + out_path + (L"' for output"));
 	out.Write(*in);
 	SCRIPT_RETURN(out_name);
 }
 
 // write a file to the destination directory
 SCRIPT_FUNCTION(write_text_file) {
-	guard_export_info(_("write_text_file"));
+	guard_export_info((L"write_text_file"));
 	SCRIPT_PARAM_C(String, input); // text to write
 	SCRIPT_PARAM(String, file); // file to write to
 	// output path
 	String out_path = get_export_full_path(file);
 	// write
 	wxFileOutputStream out(out_path);
-	if (!out.Ok()) throw Error(_("Unable to open file '") + out_path + _("' for output"));
+	if (!out.Ok()) throw Error((L"Unable to open file '") + out_path + (L"' for output"));
 	wxTextOutputStream tout(out);
 	tout.WriteString(BYTE_ORDER_MARK);
 	tout.WriteString(input);
@@ -401,7 +401,7 @@ SCRIPT_FUNCTION(write_text_file) {
 }
 
 SCRIPT_FUNCTION(write_image_file) {
-	guard_export_info(_("write_image_file"));
+	guard_export_info((L"write_image_file"));
 	// output path
 	SCRIPT_PARAM(String, file); // file to write to
 	String out_path = get_export_full_path(file);
@@ -422,7 +422,7 @@ SCRIPT_FUNCTION(write_image_file) {
 	} else {
 		image = input->toImage()->generateConform(options);
 	}
-	if (!image.Ok()) throw Error(_("Unable to generate image for file ") + file);
+	if (!image.Ok()) throw Error((L"Unable to generate image for file ") + file);
 	// write
 	image.SaveFile(out_path);
 	ei.exported_images.insert(make_pair(file, wxSize(image.GetWidth(), image.GetHeight())));
@@ -430,7 +430,7 @@ SCRIPT_FUNCTION(write_image_file) {
 }
 
 SCRIPT_FUNCTION(write_set_file) {
-	guard_export_info(_("write_set_file"));
+	guard_export_info((L"write_set_file"));
 	// output path
 	SCRIPT_PARAM(String, file); // file to write to
 	String out_path = get_export_full_path(file);
@@ -450,12 +450,12 @@ SCRIPT_FUNCTION(sanitize) {
 // ----------------------------------------------------------------------------- : Init
 
 void init_script_export_functions(Context& ctx) {
-	ctx.setVariable(_("to_html"),          script_to_html);
-	ctx.setVariable(_("symbols_to_html"),  script_symbols_to_html);
-	ctx.setVariable(_("to_text"),          script_to_text);
-	ctx.setVariable(_("copy_file"),        script_copy_file);
-	ctx.setVariable(_("write_text_file"),  script_write_text_file);
-	ctx.setVariable(_("write_image_file"), script_write_image_file);
-	ctx.setVariable(_("write_set_file"),   script_write_set_file);
-	ctx.setVariable(_("sanitize"),         script_sanitize);
+	ctx.setVariable((L"to_html"),          script_to_html);
+	ctx.setVariable((L"symbols_to_html"),  script_symbols_to_html);
+	ctx.setVariable((L"to_text"),          script_to_text);
+	ctx.setVariable((L"copy_file"),        script_copy_file);
+	ctx.setVariable((L"write_text_file"),  script_write_text_file);
+	ctx.setVariable((L"write_image_file"), script_write_image_file);
+	ctx.setVariable((L"write_set_file"),   script_write_set_file);
+	ctx.setVariable((L"sanitize"),         script_sanitize);
 }

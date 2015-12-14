@@ -17,12 +17,12 @@ UInt Version::toNumber() const { return version; }
 String Version::toString() const {
 	if (version > 20000000) {
 		// major > 2000, the version is a date, use ISO notation
-		return String::Format(_("%04d-%02d-%02d"),
+		return String::Format((L"%04d-%02d-%02d"),
 					(version / 10000)      ,
 					(version / 100)   % 100,
 					(version / 1)     % 100);
 	} else {
-		return String::Format(_("%d.%d.%d"),
+		return String::Format((L"%d.%d.%d"),
 					(version / 10000)      ,
 					(version / 100)   % 100,
 					(version / 1)     % 100);
@@ -31,8 +31,8 @@ String Version::toString() const {
 
 Version Version::fromString(const String& version) {
 	UInt major = 0, minor = 0, build = 0;
-	if (wxSscanf(version, _("%u.%u.%u"), &major, &minor, &build)<=1)  // a.b.c style
-	    wxSscanf(version, _("%u-%u-%u"), &major, &minor, &build);  // date style
+	if (wxSscanf(version, (L"%u.%u.%u"), &major, &minor, &build)<=1)  // a.b.c style
+	    wxSscanf(version, (L"%u-%u-%u"), &major, &minor, &build);  // date style
 	return Version(major * 10000 + minor * 100 + build);
 }
 
@@ -51,7 +51,7 @@ template <> void GetDefaultMember::handle(const Version& v) {
 
 // NOTE: Don't use leading zeroes, they mean octal
 const Version app_version  = 20001; // 2.0.1
-const Char* version_suffix = _("");
+const Char* version_suffix = (L"");
 
 /// Which version of MSE are the files we write out compatible with?
 /*  The saved files will have these version numbers attached.
@@ -59,7 +59,7 @@ const Char* version_suffix = _("");
  *
  *  Changes:
  *     0.2.0 : start of version numbering practice
- *     0.2.2 : _("include file")
+ *     0.2.2 : (L"include file")
  *     0.2.6 : fix in settings loading
  *     0.2.7 : new tag system, different style of close tags
  *     0.3.0 : port of code to C++

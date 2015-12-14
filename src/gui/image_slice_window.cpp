@@ -95,26 +95,26 @@ ImageSliceWindow::ImageSliceWindow(Window* parent, const Image& source, const wx
 	                 , _LABEL_("custom size") };
 	size      = new wxRadioBox(this, ID_SIZE, _LABEL_("size"), defPos, wxDefaultSize, 4, sizes, 1);
 	
-	left      = new wxSpinCtrl(this, ID_LEFT,   _(""), defPos, spinSize);
-	top       = new wxSpinCtrl(this, ID_TOP,    _(""), defPos, spinSize);
-	width     = new wxSpinCtrl(this, ID_WIDTH,  _(""), defPos, spinSize);
-	height    = new wxSpinCtrl(this, ID_HEIGHT, _(""), defPos, spinSize);
+	left      = new wxSpinCtrl(this, ID_LEFT,   (L""), defPos, spinSize);
+	top       = new wxSpinCtrl(this, ID_TOP,    (L""), defPos, spinSize);
+	width     = new wxSpinCtrl(this, ID_WIDTH,  (L""), defPos, spinSize);
+	height    = new wxSpinCtrl(this, ID_HEIGHT, (L""), defPos, spinSize);
 	top   ->SetRange(-5000,5000);
 	left  ->SetRange(-5000,5000);
 	width ->SetRange(0,5000);
 	height->SetRange(0,5000);
 	
 	fix_aspect = new wxCheckBox(this, ID_FIX_ASPECT, _LABEL_("fix aspect ratio"));
-	zoom_x     = new wxSpinCtrl(this, ID_ZOOM_X,     _(""), defPos, spinSize);
-	zoom_y     = new wxSpinCtrl(this, ID_ZOOM_Y,     _(""), defPos, spinSize);
-	zoom       = new wxSpinCtrl(this, ID_ZOOM,       _(""), defPos, spinSize);
+	zoom_x     = new wxSpinCtrl(this, ID_ZOOM_X,     (L""), defPos, spinSize);
+	zoom_y     = new wxSpinCtrl(this, ID_ZOOM_Y,     (L""), defPos, spinSize);
+	zoom       = new wxSpinCtrl(this, ID_ZOOM,       (L""), defPos, spinSize);
 	zoom_x->SetRange(1,10000);
 	zoom_y->SetRange(1,10000);
 	zoom  ->SetRange(1,10000);
 	
 	sharpen        = new wxCheckBox(this, ID_SHARPEN, _LABEL_("sharpen filter"));
 	sharpen_amount = new wxSlider(this, ID_SHARPEN_AMOUNT, 0, 0, 100);
-//	allowOutside= new CheckBox(&this, idSliceAllowOutside, _("Allow selection outside source"))
+//	allowOutside= new CheckBox(&this, idSliceAllowOutside, (L"Allow selection outside source"))
 //	bgColor       = new ColorSelector(&this, wxID_ANY)
 	
 	// init sizers

@@ -42,23 +42,23 @@ bool match_quicksearch_query(String const& query, T const& object) {
 	bool need_match = true;
 	// iterate over the components of the query
 	for (size_t i = 0 ; i < query.size() ; ) {
-		if (query.GetChar(i) == _(' ')) {
+		if (query.GetChar(i) == (L' ')) {
 			// skip spaces
 			i++;
-		} else if (query.GetChar(i) == _('-')) {
+		} else if (query.GetChar(i) == (L'-')) {
 			// negate the next query, i.e. match only if it is not on the card
 			need_match = !need_match;
 			i++;
 		} else {
 			size_t end, next;
-			if (query.GetChar(i) == _('"')) {
+			if (query.GetChar(i) == (L'"')) {
 				// quoted string, match exactly
 				i++;
-				end =query.find_first_of(_('"'),i);
+				end =query.find_first_of((L'"'),i);
 				next = std::min(end,query.size()) + 1;
 			} else {
 				// single word
-				next = end = query.find_first_of(_(' '),i);
+				next = end = query.find_first_of((L' '),i);
 			}
 			bool match = object.contains(query.substr(i,end-i));
 			if (match != need_match) {

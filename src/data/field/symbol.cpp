@@ -53,10 +53,10 @@ ScriptValueP script_local_symbol_file(LocalFileName const& filename) {
 
 String quote_string(String const& str);
 String LocalSymbolFile::toCode() const {
-	return _("local_symbol_file(") + quote_string(filename.toStringForWriting()) + _(")");
+	return (L"local_symbol_file(") + quote_string(filename.toStringForWriting()) + (L")");
 }
 String LocalSymbolFile::typeName() const {
-	return _("symbol");
+	return (L"symbol");
 }
 GeneratedImageP LocalSymbolFile::toImage() const {
 	SymbolVariationP variation(new SymbolVariation);
@@ -64,5 +64,5 @@ GeneratedImageP LocalSymbolFile::toImage() const {
 	return intrusive(new SymbolToImage(true, filename, variation));
 }
 String LocalSymbolFile::toFriendlyString() const {
-	return _("<") + _TYPE_("symbol") + _(">");
+	return (L"<") + _TYPE_("symbol") + (L">");
 }

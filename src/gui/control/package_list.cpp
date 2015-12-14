@@ -38,7 +38,7 @@ void PackageList::drawItem(DC& dc, int x, int y, size_t item) {
 		dc.DrawBitmap(d.image, x + int(align_delta_x(ALIGN_CENTER, item_size.x, d.image.GetWidth())), y + 3, true);
 	}
 	// draw short name
-	dc.SetFont(wxFont(12,wxSWISS,wxNORMAL,wxBOLD,false,_("Arial")));
+	dc.SetFont(wxFont(12,wxSWISS,wxNORMAL,wxBOLD,false,(L"Arial")));
 	dc.GetTextExtent(capitalize(d.package->short_name), &w, &h);
 	pos = align_in_rect(ALIGN_CENTER, RealSize(w,h), rect);
 	dc.DrawText(capitalize(d.package->short_name), max(x+1,(int)pos.x), (int)pos.y + 110);
@@ -66,12 +66,12 @@ void PackageList::showData(const String& pattern) {
 	// find matching packages
 	vector<PackagedP> matching;
 	{
-		PROFILER(_("find matching packages"));
+		PROFILER((L"find matching packages"));
 		package_manager.findMatching(pattern, matching);
 	}
 	for(auto& p : matching) {
 		// open image
-		PROFILER(_("load package image"));
+		PROFILER((L"load package image"));
 		InputStreamP stream = p->openIconFile();
 		Image img;
 		Bitmap bmp;

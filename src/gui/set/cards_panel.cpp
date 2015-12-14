@@ -45,7 +45,7 @@ CardsPanel::CardsPanel(Window* parent, int id)
 	card_list   = new FilteredImageCardList(splitter, ID_CARD_LIST);
 	nodes_panel = new wxPanel(splitter, wxID_ANY);
 	notes       = new TextCtrl(nodes_panel, ID_NOTES, true);
-	collapse_notes = new HoverButton(nodes_panel, ID_COLLAPSE_NOTES, _("btn_collapse"), wxNullColour, false);
+	collapse_notes = new HoverButton(nodes_panel, ID_COLLAPSE_NOTES, (L"btn_collapse"), wxNullColour, false);
 	collapse_notes->SetExtraStyle(wxWS_EX_PROCESS_UI_UPDATES);
 	filter    = nullptr;
 	editor->next_in_tab_order = card_list;
@@ -76,30 +76,30 @@ CardsPanel::CardsPanel(Window* parent, int id)
 		menuCard->Append(ID_CARD_PREV,								_MENU_("previous card"),	_HELP_("previous card"));
 		menuCard->Append(ID_CARD_NEXT,								_MENU_("next card"),		_HELP_("next card"));
 		menuCard->AppendSeparator();
-		menuCard->Append(ID_CARD_ADD,		_("card_add"),			_MENU_("add card"),			_HELP_("add card"));
+		menuCard->Append(ID_CARD_ADD,		(L"card_add"),			_MENU_("add card"),			_HELP_("add card"));
 		insertManyCardsMenu = new wxMenuItem(menuCard, ID_CARD_ADD_MULT, _MENU_("add cards"), _HELP_("add cards"));
-		set_menu_item_image(insertManyCardsMenu, _("card_add_multiple"));
+		set_menu_item_image(insertManyCardsMenu, (L"card_add_multiple"));
 		((wxMenu*)menuCard)->Append(insertManyCardsMenu);
 																	// NOTE: space after "Del" prevents wx from making del an accellerator
 																	// otherwise we delete a card when delete is pressed inside the editor
 																	// Adding a space never hurts, please keep it just to be safe.
-		menuCard->Append(ID_CARD_REMOVE,	_("card_del"),			_MENU_("remove card")+_(" "),_HELP_("remove card"));
+		menuCard->Append(ID_CARD_REMOVE,	(L"card_del"),			_MENU_("remove card")+(L" "),_HELP_("remove card"));
 		menuCard->AppendSeparator();
 		IconMenu* menuRotate = new IconMenu();
-			menuRotate->Append(ID_CARD_ROTATE_0,		_("card_rotate_0"),		_MENU_("rotate 0"),		_HELP_("rotate 0"),		wxITEM_CHECK);
-			menuRotate->Append(ID_CARD_ROTATE_270,		_("card_rotate_270"),	_MENU_("rotate 270"),	_HELP_("rotate 270"),	wxITEM_CHECK);
-			menuRotate->Append(ID_CARD_ROTATE_90,		_("card_rotate_90"),	_MENU_("rotate 90"),	_HELP_("rotate 90"),	wxITEM_CHECK);
-			menuRotate->Append(ID_CARD_ROTATE_180,		_("card_rotate_180"),	_MENU_("rotate 180"),	_HELP_("rotate 180"),	wxITEM_CHECK);
-		menuCard->Append(wxID_ANY,			_("card_rotate"),		_MENU_("orientation"),		_HELP_("orientation"),		wxITEM_NORMAL, menuRotate);
+			menuRotate->Append(ID_CARD_ROTATE_0,		(L"card_rotate_0"),		_MENU_("rotate 0"),		_HELP_("rotate 0"),		wxITEM_CHECK);
+			menuRotate->Append(ID_CARD_ROTATE_270,		(L"card_rotate_270"),	_MENU_("rotate 270"),	_HELP_("rotate 270"),	wxITEM_CHECK);
+			menuRotate->Append(ID_CARD_ROTATE_90,		(L"card_rotate_90"),	_MENU_("rotate 90"),	_HELP_("rotate 90"),	wxITEM_CHECK);
+			menuRotate->Append(ID_CARD_ROTATE_180,		(L"card_rotate_180"),	_MENU_("rotate 180"),	_HELP_("rotate 180"),	wxITEM_CHECK);
+		menuCard->Append(wxID_ANY,			(L"card_rotate"),		_MENU_("orientation"),		_HELP_("orientation"),		wxITEM_NORMAL, menuRotate);
 		menuCard->AppendSeparator();
 		// This probably belongs in the window menu, but there we can't remove the separator once it is added
 		menuCard->Append(ID_SELECT_COLUMNS,							_MENU_("card list columns"),_HELP_("card list columns"));
 	
 	menuFormat = new IconMenu();
-		menuFormat->Append(ID_FORMAT_BOLD,		_("bold"),			_MENU_("bold"),				_HELP_("bold"),				wxITEM_CHECK);
-		menuFormat->Append(ID_FORMAT_ITALIC,	_("italic"),		_MENU_("italic"),			_HELP_("italic"),			wxITEM_CHECK);
-		menuFormat->Append(ID_FORMAT_SYMBOL,	_("symbol"),		_MENU_("symbols"),			_HELP_("symbols"),			wxITEM_CHECK);
-		menuFormat->Append(ID_FORMAT_REMINDER,	_("reminder"),		_MENU_("reminder text"),	_HELP_("reminder text"),	wxITEM_CHECK);
+		menuFormat->Append(ID_FORMAT_BOLD,		(L"bold"),			_MENU_("bold"),				_HELP_("bold"),				wxITEM_CHECK);
+		menuFormat->Append(ID_FORMAT_ITALIC,	(L"italic"),		_MENU_("italic"),			_HELP_("italic"),			wxITEM_CHECK);
+		menuFormat->Append(ID_FORMAT_SYMBOL,	(L"symbol"),		_MENU_("symbols"),			_HELP_("symbols"),			wxITEM_CHECK);
+		menuFormat->Append(ID_FORMAT_REMINDER,	(L"reminder"),		_MENU_("reminder text"),	_HELP_("reminder text"),	wxITEM_CHECK);
 		menuFormat->AppendSeparator();
 		insertSymbolMenu = new wxMenuItem(menuFormat, ID_INSERT_SYMBOL, _MENU_("insert symbol"));
 		menuFormat->Append(insertSymbolMenu);
@@ -135,7 +135,7 @@ bool CardsPanel::Layout() {
 }
 
 /*void removeInsertSymbolMenu() {
-		menuFormat->Append(ID_INSERT_SYMBOL,	_(""),				 _MENU_("insert symbol"));
+		menuFormat->Append(ID_INSERT_SYMBOL,	(L""),				 _MENU_("insert symbol"));
 }*/// TODO
 CardsPanel::~CardsPanel() {
 //	settings.card_notes_height = splitter->GetSashPosition();
@@ -174,7 +174,7 @@ wxMenu* CardsPanel::makeAddCardsSubmenu(bool add_single_card_option) {
 	// default item?
 	if (add_single_card_option) {
 		cards_scripts_menu = new IconMenu;
-		cards_scripts_menu->Append(ID_CARD_ADD, _("card_add"), _MENU_("add card"), _HELP_("add card"));
+		cards_scripts_menu->Append(ID_CARD_ADD, (L"card_add"), _MENU_("add card"), _HELP_("add card"));
 		cards_scripts_menu->AppendSeparator();
 	}
 	// create menu for add_cards_scripts
@@ -192,29 +192,29 @@ wxMenu* CardsPanel::makeAddCardsSubmenu(bool add_single_card_option) {
 
 void CardsPanel::initUI(wxToolBar* tb, wxMenuBar* mb) {
 	// Toolbar
-	tb->AddTool(ID_FORMAT_BOLD,		_(""), load_resource_tool_image(_("bold")),			wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("bold"),			_HELP_("bold"));
-	tb->AddTool(ID_FORMAT_ITALIC,	_(""), load_resource_tool_image(_("italic")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("italic"),		_HELP_("italic"));
-	tb->AddTool(ID_FORMAT_SYMBOL,	_(""), load_resource_tool_image(_("symbol")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("symbols"),		_HELP_("symbols"));
-	tb->AddTool(ID_FORMAT_REMINDER,	_(""), load_resource_tool_image(_("reminder")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("reminder text"),	_HELP_("reminder text"));
+	tb->AddTool(ID_FORMAT_BOLD,		(L""), load_resource_tool_image((L"bold")),			wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("bold"),			_HELP_("bold"));
+	tb->AddTool(ID_FORMAT_ITALIC,	(L""), load_resource_tool_image((L"italic")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("italic"),		_HELP_("italic"));
+	tb->AddTool(ID_FORMAT_SYMBOL,	(L""), load_resource_tool_image((L"symbol")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("symbols"),		_HELP_("symbols"));
+	tb->AddTool(ID_FORMAT_REMINDER,	(L""), load_resource_tool_image((L"reminder")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("reminder text"),	_HELP_("reminder text"));
 	tb->AddSeparator();
 	#if HAVE_TOOLBAR_DROPDOWN_MENU
-		toolAddCard = tb->AddTool(ID_CARD_ADD,		_(""), load_resource_tool_image(_("card_add")),		wxNullBitmap, wxITEM_DROPDOWN,_TOOLTIP_("add card"),		_HELP_("add card"));
+		toolAddCard = tb->AddTool(ID_CARD_ADD,		(L""), load_resource_tool_image((L"card_add")),		wxNullBitmap, wxITEM_DROPDOWN,_TOOLTIP_("add card"),		_HELP_("add card"));
 		toolAddCard->SetDropdownMenu(makeAddCardsSubmenu(true));
 	#else
-		tb->AddTool(ID_CARD_ADD,		_(""), load_resource_tool_image(_("card_add")),		wxNullBitmap, wxITEM_NORMAL,_TOOLTIP_("add card"),		_HELP_("add card"));
+		tb->AddTool(ID_CARD_ADD,		(L""), load_resource_tool_image((L"card_add")),		wxNullBitmap, wxITEM_NORMAL,_TOOLTIP_("add card"),		_HELP_("add card"));
 	#endif
-	tb->AddTool(ID_CARD_REMOVE,		_(""), load_resource_tool_image(_("card_del")),		wxNullBitmap, wxITEM_NORMAL,_TOOLTIP_("remove card"),	_HELP_("remove card"));
+	tb->AddTool(ID_CARD_REMOVE,		(L""), load_resource_tool_image((L"card_del")),		wxNullBitmap, wxITEM_NORMAL,_TOOLTIP_("remove card"),	_HELP_("remove card"));
 	tb->AddSeparator();
 	#if HAVE_TOOLBAR_DROPDOWN_MENU
-		wxToolBarToolBase* rot = tb->AddTool(ID_CARD_ROTATE,		_(""), load_resource_tool_image(_("card_rotate")),	wxNullBitmap, wxITEM_DROPDOWN, _TOOLTIP_("rotate card"),	_HELP_("rotate card"));
+		wxToolBarToolBase* rot = tb->AddTool(ID_CARD_ROTATE,		(L""), load_resource_tool_image((L"card_rotate")),	wxNullBitmap, wxITEM_DROPDOWN, _TOOLTIP_("rotate card"),	_HELP_("rotate card"));
 		IconMenu* menuRotate = new IconMenu();
-			menuRotate->Append(ID_CARD_ROTATE_0,		_("card_rotate_0"),		_MENU_("rotate 0"),		_HELP_("rotate 0"),		wxITEM_CHECK);
-			menuRotate->Append(ID_CARD_ROTATE_270,		_("card_rotate_270"),	_MENU_("rotate 270"),	_HELP_("rotate 270"),	wxITEM_CHECK);
-			menuRotate->Append(ID_CARD_ROTATE_90,		_("card_rotate_90"),	_MENU_("rotate 90"),	_HELP_("rotate 90"),	wxITEM_CHECK);
-			menuRotate->Append(ID_CARD_ROTATE_180,		_("card_rotate_180"),	_MENU_("rotate 180"),	_HELP_("rotate 180"),	wxITEM_CHECK);
+			menuRotate->Append(ID_CARD_ROTATE_0,		(L"card_rotate_0"),		_MENU_("rotate 0"),		_HELP_("rotate 0"),		wxITEM_CHECK);
+			menuRotate->Append(ID_CARD_ROTATE_270,		(L"card_rotate_270"),	_MENU_("rotate 270"),	_HELP_("rotate 270"),	wxITEM_CHECK);
+			menuRotate->Append(ID_CARD_ROTATE_90,		(L"card_rotate_90"),	_MENU_("rotate 90"),	_HELP_("rotate 90"),	wxITEM_CHECK);
+			menuRotate->Append(ID_CARD_ROTATE_180,		(L"card_rotate_180"),	_MENU_("rotate 180"),	_HELP_("rotate 180"),	wxITEM_CHECK);
 		rot->SetDropdownMenu(menuRotate);
 	#else
-		tb->AddTool(ID_CARD_ROTATE,		_(""), load_resource_tool_image(_("card_rotate")),	wxNullBitmap,wxITEM_NORMAL, _TOOLTIP_("rotate card"),	_HELP_("rotate card"));
+		tb->AddTool(ID_CARD_ROTATE,		(L""), load_resource_tool_image((L"card_rotate")),	wxNullBitmap,wxITEM_NORMAL, _TOOLTIP_("rotate card"),	_HELP_("rotate card"));
 	#endif
 	// Filter/search textbox
 	tb->AddSeparator();
@@ -286,7 +286,7 @@ void CardsPanel::onUpdateUI(wxUpdateUIEvent& ev) {
 		}
 		case ID_COLLAPSE_NOTES: {
 			bool collapse = notes->GetSize().y > 0;
-			collapse_notes->loadBitmaps(collapse ? _("btn_collapse") : _("btn_expand"));
+			collapse_notes->loadBitmaps(collapse ? (L"btn_collapse") : (L"btn_expand"));
 			collapse_notes->SetHelpText(collapse ? _HELP_("collapse notes") : _HELP_("expand notes"));
 			break;
 		}
@@ -445,7 +445,7 @@ class CardsPanel::ReplaceFindInfo : public FindInfo {
 		panel.card_list->setCard(card);
 		// Replace
 		if (was_selection) {
-			panel.editor->insert(escape(what.GetReplaceString()), _("Replace"));
+			panel.editor->insert(escape(what.GetReplaceString()), (L"Replace"));
 			return false;
 		} else {
 			return true;

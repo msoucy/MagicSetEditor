@@ -37,7 +37,7 @@ class ChoiceThumbnailRequest : public ThumbnailRequest {
 ChoiceThumbnailRequest::ChoiceThumbnailRequest(ValueViewer* viewer, int id, bool from_disk, bool thread_safe)
 	: ThumbnailRequest(
 		static_cast<void*>(viewer),
-		viewer->getStylePackage().name() + _("/") + viewer->getField()->name + _("/") << id,
+		viewer->getStylePackage().name() + (L"/") + viewer->getField()->name + (L"/") << id,
 		from_disk ? viewer->getStylePackage().lastModified()
 		          : wxDateTime::Now()
 	)
@@ -183,11 +183,11 @@ void DropDownChoiceListBase::generateThumbnailImages() {
 		for (int i = 0 ; i < end ; ++i) {
 			try {
 				String name = canonical_name_form(field().choices->choiceName(i));
-				ctx.setVariable(_("input"), to_script(name));
+				ctx.setVariable((L"input"), to_script(name));
 				GeneratedImageP img = style().image.getValidScriptP()->eval(ctx)->toImage();
 				style().choice_images.insert(make_pair(name, ScriptableImage(img)));
 			} catch (const Error& e) {
-				handle_error(Error(e.what() + _("\n  while generating choice images for drop down list")));
+				handle_error(Error(e.what() + (L"\n  while generating choice images for drop down list")));
 			}
 		}
 	}

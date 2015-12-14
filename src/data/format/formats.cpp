@@ -28,20 +28,20 @@ String import_formats() {
 	String type_strings;   // |name1|type1|name2|type2
 	for(auto& f : file_formats) {
 		if (f->canImport()) {
-			if (!all_extensions.empty()) all_extensions += _(";");
+			if (!all_extensions.empty()) all_extensions += (L";");
 			all_extensions += f->matches();
-			type_strings   += _("|") + f->name() + _("|") + f->matches();
+			type_strings   += (L"|") + f->name() + (L"|") + f->matches();
 		}
 	}
-	return _("Set files|") + all_extensions + type_strings + _("|All files (*.*)|*");
+	return (L"Set files|") + all_extensions + type_strings + (L"|All files (*.*)|*");
 }
 
 String export_formats(const Game& game) {
 	String type_strings; // name1|type1|name2|type2
 	for(auto& f : file_formats) {
 		if (f->canExport(game)) {
-			if (!type_strings.empty()) type_strings += _("|");
-			type_strings += f->name() + _("|") + f->matches();
+			if (!type_strings.empty()) type_strings += (L"|");
+			type_strings += f->name() + (L"|") + f->matches();
 		}
 	}
 	return type_strings;
@@ -50,14 +50,14 @@ String export_formats(const Game& game) {
 void export_set(Set& set, const String& filename, size_t format_index, bool is_copy) {
 	FileFormatP format = file_formats.at(format_index);
 	if (!format->canExport(*set.game)) {
-		throw InternalError(_("File format doesn't apply to set"));
+		throw InternalError((L"File format doesn't apply to set"));
 	}
 	format->exportSet(set, filename, is_copy);
 }
 
 SetP import_set(String name) {
-	size_t pos = name.find_last_of(_('.'));
-	String extension = pos==String::npos ? _("") : name.substr(pos + 1);
+	size_t pos = name.find_last_of((L'.'));
+	String extension = pos==String::npos ? (L"") : name.substr(pos + 1);
 	// determine format
 	for(auto& f : file_formats) {
 		if (f->extension() == extension) {

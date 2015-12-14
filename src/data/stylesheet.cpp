@@ -27,7 +27,7 @@ StyleSheet::StyleSheet()
 StyleSheetP StyleSheet::byGameAndName(const Game& game, const String& name) {
 	/// Alternative stylesheets for game
 	static map<String, String> stylesheet_alternatives;
-	String full_name = game.name() + _("-") + name + _(".mse-style");
+	String full_name = game.name() + (L"-") + name + (L".mse-style");
 	try {
 		map<String, String>::const_iterator it = stylesheet_alternatives.find(full_name);
 		if (it != stylesheet_alternatives.end()) {
@@ -59,8 +59,8 @@ String StyleSheet::stylesheetName() const {
 	}
 }
 
-String StyleSheet::typeNameStatic() { return _("style"); }
-String StyleSheet::typeName() const { return _("style"); }
+String StyleSheet::typeNameStatic() { return (L"style"); }
+String StyleSheet::typeName() const { return (L"style"); }
 Version StyleSheet::fileVersion() const { return file_version_stylesheet; }
 
 void StyleSheet::validate(Version ver) {
@@ -81,7 +81,7 @@ StyleP StyleSheet::styleFor(const FieldP& field) {
 	} else if (styling_style.containsKey(field)) {
 		return styling_style[field];
 	} else {
-		throw InternalError(_("Can not find styling for field '")+field->name+_("'in stylesheet"));
+		throw InternalError((L"Can not find styling for field '")+field->name+(L"'in stylesheet"));
 	}
 }
 
@@ -130,7 +130,7 @@ IMPLEMENT_REFLECTION(StyleSheet) {
 
 void Reader::handle(StyleSheetP& stylesheet) {
 	if (!game_for_reading()) {
-		throw InternalError(_("game_for_reading not set"));
+		throw InternalError((L"game_for_reading not set"));
 	}
 	stylesheet = StyleSheet::byGameAndName(*game_for_reading(), getValue());
 }

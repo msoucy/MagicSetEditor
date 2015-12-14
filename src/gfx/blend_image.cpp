@@ -63,7 +63,7 @@ void linear_blend(Image& img1, const Image& img2, double x1,double y1, double x2
 void mask_blend(Image& img1, const Image& img2, const Image& mask) {
 	if (img2.GetWidth() != img1.GetWidth() || img2.GetHeight() != img1.GetHeight()
 	 || mask.GetWidth() != img1.GetWidth() || mask.GetHeight() != img1.GetHeight()) {
-		throw Error(_("Images used for blending must have the same size"));
+		throw Error((L"Images used for blending must have the same size"));
 	}
 	
 	UInt size = img1.GetWidth() * img1.GetHeight() * 3;
@@ -88,7 +88,7 @@ void set_alpha(Image& img, const Image& img_alpha) {
 
 void set_alpha(Image& img, Byte* al, const wxSize& alpha_size) {
 	if (img.GetWidth() != alpha_size.GetWidth() || img.GetHeight() != alpha_size.GetHeight()) {
-		throw Error(_("Image must have same size as mask"));
+		throw Error((L"Image must have same size as mask"));
 	}
 	if (!img.HasAlpha()) {
 		// copy

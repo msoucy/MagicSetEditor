@@ -57,7 +57,7 @@ IMPLEMENT_REFLECTION_NAMELESS(MultipleChoiceValue) {
 bool MultipleChoiceValue::update(Context& ctx, const Action* act) {
 	String old_value = value->toString();
 	if (const MultipleChoiceValueAction* mvca = dynamic_cast<const MultipleChoiceValueAction*>(act)) {
-		ctx.setVariable(_("last_change"), to_script(mvca->changed_choice));
+		ctx.setVariable((L"last_change"), to_script(mvca->changed_choice));
 	}
 	ChoiceValue::update(ctx,act);
 	normalForm();
@@ -70,10 +70,10 @@ void MultipleChoiceValue::get(vector<String>& out) const {
 	bool is_new = true;
 	String val = value->toString();
 	for(const auto& c : val) {
-		if (c == _(',')) {
+		if (c == (L',')) {
 			is_new = true;
 		} else if (is_new) {
-			if (c != _(' ')) { // ignore whitespace after ,
+			if (c != (L' ')) { // ignore whitespace after ,
 				is_new = false;
 				out.push_back(String(1, c));
 			}
@@ -89,11 +89,11 @@ void MultipleChoiceValue::normalForm() {
 	// which choices are active?
 	vector<bool> seen(field().choices->lastId());
 	for (size_t pos = 0 ; pos < val.size() ; ) {
-		if (val.GetChar(pos) == _(' ')) {
+		if (val.GetChar(pos) == (L' ')) {
 			++pos; // ingore whitespace
 		} else {
 			// does this choice match the one asked about?
-			size_t end = val.find_first_of(_(','), pos);
+			size_t end = val.find_first_of((L','), pos);
 			if (end == String::npos) end = val.size();
 			// find this choice
 			for (size_t i = 0 ; i < seen.size() ; ++i) {
@@ -109,7 +109,7 @@ void MultipleChoiceValue::normalForm() {
 	val.clear();
 	for (size_t i = 0 ; i < seen.size() ; ++i) {
 		if (seen[i]) {
-			if (!val.empty()) val += _(", ");
+			if (!val.empty()) val += (L", ");
 			val += field().choices->choiceName((int)i);
 		}
 	}

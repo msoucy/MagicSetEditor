@@ -23,20 +23,20 @@ SymbolSelectEditor::SymbolSelectEditor(SymbolControl* control, bool rotate)
 	: SymbolEditorBase(control)
 	, click_mode(CLICK_NONE)
 	, rotate(rotate)
-	, cursorRotate(load_resource_cursor(_("rotate")))
-	, cursorShearX(load_resource_cursor(_("shear_x")))
-	, cursorShearY(load_resource_cursor(_("shear_y")))
+	, cursorRotate(load_resource_cursor((L"rotate")))
+	, cursorShearX(load_resource_cursor((L"shear_x")))
+	, cursorShearY(load_resource_cursor((L"shear_y")))
 {
 	// Load resource images
-	Image rot = load_resource_image(_("handle_rotate"));
+	Image rot = load_resource_image((L"handle_rotate"));
 	handleRotateTL = wxBitmap(rot);
 	handleRotateTR = wxBitmap(rotate_image(rot,rad90));
 	handleRotateBR = wxBitmap(rotate_image(rot,rad180));
 	handleRotateBL = wxBitmap(rotate_image(rot,rad270));
-	Image shear = load_resource_image(_("handle_shear_x"));
+	Image shear = load_resource_image((L"handle_shear_x"));
 	handleShearX = wxBitmap(shear);
 	handleShearY = wxBitmap(rotate_image(shear,rad90));
-	handleCenter = wxBitmap(load_resource_image(_("handle_center")));
+	handleCenter = wxBitmap(load_resource_image((L"handle_center")));
 	// Make sure all parts have updated bounds
 	getSymbol()->updateBounds();
 	resetActions();
@@ -117,12 +117,12 @@ void SymbolSelectEditor::drawRotationCenter(DC& dc, const Vector2D& pos) {
 
 void SymbolSelectEditor::initUI(wxToolBar* tb, wxMenuBar* mb) {
 	tb->AddSeparator();
-	tb->AddTool(ID_SYMBOL_COMBINE_MERGE,        _TOOL_("merge"),      load_resource_image(_("combine_or")),       wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("merge"),      _HELP_("merge"));
-	tb->AddTool(ID_SYMBOL_COMBINE_SUBTRACT,     _TOOL_("subtract"),   load_resource_image(_("combine_sub_dark")), wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("subtract"),   _HELP_("subtract"));
-	tb->AddTool(ID_SYMBOL_COMBINE_INTERSECTION, _TOOL_("intersect"),  load_resource_image(_("combine_and_dark")), wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("intersect"),  _HELP_("intersect"));
-	tb->AddTool(ID_SYMBOL_COMBINE_DIFFERENCE,   _TOOL_("difference"), load_resource_image(_("combine_xor")),      wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("difference"), _HELP_("difference"));
-	tb->AddTool(ID_SYMBOL_COMBINE_OVERLAP,      _TOOL_("overlap"),    load_resource_image(_("combine_over")),     wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("overlap"),    _HELP_("overlap"));
-	tb->AddTool(ID_SYMBOL_COMBINE_BORDER,       _TOOL_("border"),     load_resource_image(_("combine_border")),   wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("border"),     _HELP_("border"));
+	tb->AddTool(ID_SYMBOL_COMBINE_MERGE,        _TOOL_("merge"),      load_resource_image((L"combine_or")),       wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("merge"),      _HELP_("merge"));
+	tb->AddTool(ID_SYMBOL_COMBINE_SUBTRACT,     _TOOL_("subtract"),   load_resource_image((L"combine_sub_dark")), wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("subtract"),   _HELP_("subtract"));
+	tb->AddTool(ID_SYMBOL_COMBINE_INTERSECTION, _TOOL_("intersect"),  load_resource_image((L"combine_and_dark")), wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("intersect"),  _HELP_("intersect"));
+	tb->AddTool(ID_SYMBOL_COMBINE_DIFFERENCE,   _TOOL_("difference"), load_resource_image((L"combine_xor")),      wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("difference"), _HELP_("difference"));
+	tb->AddTool(ID_SYMBOL_COMBINE_OVERLAP,      _TOOL_("overlap"),    load_resource_image((L"combine_over")),     wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("overlap"),    _HELP_("overlap"));
+	tb->AddTool(ID_SYMBOL_COMBINE_BORDER,       _TOOL_("border"),     load_resource_image((L"combine_border")),   wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("border"),     _HELP_("border"));
 	tb->Realize();
 }
 void SymbolSelectEditor::destroyUI(wxToolBar* tb, wxMenuBar* mb) {
@@ -280,7 +280,7 @@ void SymbolSelectEditor::onMouseMove  (const Vector2D& from, const Vector2D& to,
 		if (highlightPart) {
 			SetStatusText(_HELP_("click to select shape"));
 		} else {
-			SetStatusText(_(""));
+			SetStatusText((L""));
 		}
 		control.SetCursor(*wxSTANDARD_CURSOR);
 	}

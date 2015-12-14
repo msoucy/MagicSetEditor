@@ -54,7 +54,7 @@ template <typename K, typename V> inline String type_name(const std::pair<K,V>& 
 
 /// Script code for an object, or anything else we can show
 template <typename T> inline String to_code(const T& v) {
-	return format_string(_("<%s>"),type_name(v));
+	return format_string((L"<%s>"),type_name(v));
 }
 template <typename T> inline String to_code(const intrusive_ptr<T>& p) {
 	return type_name(*p.get());
@@ -112,7 +112,7 @@ class ScriptDefault : public ScriptValue {
 	virtual String typeName() const { return un_default->typeName(); }
 	virtual String toString() const { return un_default->toString(); }
 	virtual String toFriendlyString() const { return un_default->toFriendlyString(); }
-	virtual String toCode()   const { return _("mark_default(") + un_default->toCode() + _(")"); }
+	virtual String toCode()   const { return (L"mark_default(") + un_default->toCode() + (L")"); }
 	virtual double toDouble() const { return un_default->toDouble(); }
 	virtual int    toInt()    const { return un_default->toInt(); }
 	virtual bool   toBool()   const { return un_default->toBool(); }
@@ -151,7 +151,7 @@ class ScriptLocalFileName : public ScriptValue {
 	inline ScriptLocalFileName(Packaged* package, String const& fn, Type file_type = IMAGE) : package(package), fn(fn), file_type(file_type) {}
 	
 	virtual ScriptType type() const { return SCRIPT_FILENAME; }
-	virtual String typeName() const { return _("filename"); }
+	virtual String typeName() const { return (L"filename"); }
 	// TODO: need to add a "to_image" function
 	
 	Packaged* package; //< Package the file is in
@@ -344,7 +344,7 @@ class ScriptObject : public ScriptValue {
 	virtual ScriptValueP getMember(const String& name) const {
 		#if USE_SCRIPT_PROFILING
 			Timer t;
-			Profiler prof(t, (void*)mangled_name(typeid(T)), _("get member of ") + type_name(*value));
+			Profiler prof(t, (void*)mangled_name(typeid(T)), (L"get member of ") + type_name(*value));
 		#endif
 		GetMember gm(name);
 		gm.handle(*value);

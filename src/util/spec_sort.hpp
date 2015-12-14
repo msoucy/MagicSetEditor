@@ -29,7 +29,7 @@
  *               consider the specified characters as a clockwise circle
  *               then returns the input in the order that:
  *                 1. takes the shortest clockwise path over this circle.
- *                 2. has _('holes') early, a hole means a character that is in the specification
+ *                 2. has (L'holes') early, a hole means a character that is in the specification
  *                    but not in the input
  *                 3. prefer the one that comes the earliest in the expression (a in this case)
  *   - compound(abc)    = the connect sting "abc" goes gere
@@ -39,7 +39,7 @@
  *    spec_sort("XYZ<0123456789>cycle(WUBRG)",..)  // used by magic
  *     "W1G")      -> "1GW"      // could be "W...G" or "...GW", second is shorter
  *     "GRBUWWUG") -> "WWUUBRGG" // no difference by rule 1,2, could be "WUBRG", "UBRGW", etc.
- *                               // becomes _("WUBRG") by rule 3
+ *                               // becomes (L"WUBRG") by rule 3
  *     "WUR")      -> "RWU"      // by rule 1 could be "R WU" or "WU R", "RWU" has an earlier hole
  */
 String spec_sort(const String& spec, String input);

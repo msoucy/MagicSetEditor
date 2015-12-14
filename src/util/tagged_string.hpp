@@ -120,9 +120,9 @@ void cursor_to_index_range(const String& str, size_t cursor, size_t& begin, size
 size_t cursor_to_index(const String& str, size_t cursor, Movement dir = MOVE_MID);
 
 
-const Char UNTAG_ATOM       = _('\2');
-const Char UNTAG_SEP        = _('\3');
-const Char UNTAG_ATOM_KWPPH = _('\4');
+const Char UNTAG_ATOM       = (L'\2');
+const Char UNTAG_SEP        = (L'\3');
+const Char UNTAG_ATOM_KWPPH = (L'\4');
 
 /// Untag a string for use with cursors, <atom>...</atom> becomes a single character.
 /** This string should only be used for cursor position calculations. */

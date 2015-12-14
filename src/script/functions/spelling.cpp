@@ -21,8 +21,8 @@ inline size_t spelled_correctly(const String& input, size_t start, size_t end, S
 	String word = untag(input.substr(start,end-start));
 	if (word.empty()) return true;
 	// symbol?
-	if (is_in_tag(input,_("<sym"),start,end) ||
-		is_in_tag(input,_("<nospellcheck"),start,end)) {
+	if (is_in_tag(input,(L"<sym"),start,end) ||
+		is_in_tag(input,(L"<nospellcheck"),start,end)) {
 		// symbols are always spelled correctly
 		// and <nospellcheck> tags should prevent spellcheck
 		return true;
@@ -52,9 +52,9 @@ inline size_t spelled_correctly(const String& input, size_t start, size_t end, S
 void check_word(const String& tag, const String& input, String& out, size_t start, size_t end, SpellChecker** checkers, const ScriptValueP& extra_test, Context& ctx) {
 	if (start >= end) return;
 	bool good = spelled_correctly(input, start, end, checkers, extra_test, ctx);
-	if (!good) out += _("<") + tag;
+	if (!good) out += (L"<") + tag;
 	out.append(input, start, end-start);
-	if (!good) out += _("</") + tag;
+	if (!good) out += (L"</") + tag;
 }
 
 void check_word(const String& tag, const String& input, String& out, Char sep, size_t prev, size_t start, size_t end, size_t after, SpellChecker** checkers, const ScriptValueP& extra_test, Context& ctx) {
@@ -63,10 +63,10 @@ void check_word(const String& tag, const String& input, String& out, Char sep, s
 		if (untag(input.substr(prev,after-prev)).empty()) {
 			if (isSpace(sep) && (after == input.size() || isSpace(input.GetChar(after)))) {
 				// double space
-				out += _("<error-spelling>");
+				out += (L"<error-spelling>");
 				out.append(sep);
 				out.append(input, prev, after-prev);
-				out += _("</error-spelling>");
+				out += (L"</error-spelling>");
 			} else {
 				if (sep) out.append(sep);
 				out.append(input, prev, after-prev);
@@ -74,9 +74,9 @@ void check_word(const String& tag, const String& input, String& out, Char sep, s
 		} else {
 			// stand alone punctuation
 			if (sep) out.append(sep);
-			out += _("<error-spelling>");
+			out += (L"<error-spelling>");
 			out.append(input, prev, after-prev);
-			out += _("</error-spelling>");
+			out += (L"</error-spelling>");
 		}
 	} else {
 		// before the word
@@ -99,7 +99,7 @@ SCRIPT_FUNCTION(check_spelling) {
 	SCRIPT_OPTIONAL_PARAM_(String,extra_dictionary);
 	SCRIPT_OPTIONAL_PARAM_(ScriptValueP,extra_match);
 	// remove old spelling error tags
-	input = remove_tag(input, _("<error-spelling"));
+	input = remove_tag(input, (L"<error-spelling"));
 	// no language -> spelling checking
 	if (language.empty()) {
 		SCRIPT_RETURN(input);
@@ -110,12 +110,12 @@ SCRIPT_FUNCTION(check_spelling) {
 		checkers[1] = &SpellChecker::get(extra_dictionary,language);
 	}
 	// what will the missspelling tag be?
-	String tag = _("error-spelling:");
+	String tag = (L"error-spelling:");
 	tag += language;
 	if (!extra_dictionary.empty()) {
-		tag += _(":") + extra_dictionary;
+		tag += (L":") + extra_dictionary;
 	}
-	tag += _(">");
+	tag += (L">");
 	// now walk over the words in the input, and mark misspellings
 	String result;
 	Char sep = 0;
@@ -129,7 +129,7 @@ SCRIPT_FUNCTION(check_spelling) {
 	size_t prev_end = 0, word_start = 0, word_end = 0, pos = 0;
 	while (pos < input.size()) {
 		Char c = input.GetChar(pos);
-		if (c == _('<')) {
+		if (c == (L'<')) {
 			if (word_start == pos) {
 				// prefer to place word start inside tags, i.e. as late as possible
 				word_end = word_start = pos = skip_tag(input,pos);
@@ -176,6 +176,6 @@ SCRIPT_FUNCTION(check_spelling_word) {
 // ----------------------------------------------------------------------------- : Init
 
 void init_script_spelling_functions(Context& ctx) {
-	ctx.setVariable(_("check_spelling"),       script_check_spelling);
-	ctx.setVariable(_("check_spelling_word"),  script_check_spelling_word);
+	ctx.setVariable((L"check_spelling"),       script_check_spelling);
+	ctx.setVariable((L"check_spelling_word"),  script_check_spelling_word);
 }

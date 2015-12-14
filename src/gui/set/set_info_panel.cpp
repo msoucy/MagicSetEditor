@@ -35,16 +35,16 @@ void SetInfoPanel::onChangeSet() {
 
 void SetInfoPanel::initUI(wxToolBar* tb, wxMenuBar* mb) {
 	// Toolbar
-	tb->AddTool(ID_FORMAT_BOLD,		_(""), load_resource_tool_image(_("bold")),			wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("bold"),			_HELP_("bold"));
-	tb->AddTool(ID_FORMAT_ITALIC,	_(""), load_resource_tool_image(_("italic")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("italic"),		_HELP_("italic"));
-	tb->AddTool(ID_FORMAT_SYMBOL,	_(""), load_resource_tool_image(_("symbol")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("symbols"),		_HELP_("symbols"));
+	tb->AddTool(ID_FORMAT_BOLD,		(L""), load_resource_tool_image((L"bold")),			wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("bold"),			_HELP_("bold"));
+	tb->AddTool(ID_FORMAT_ITALIC,	(L""), load_resource_tool_image((L"italic")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("italic"),		_HELP_("italic"));
+	tb->AddTool(ID_FORMAT_SYMBOL,	(L""), load_resource_tool_image((L"symbol")),		wxNullBitmap, wxITEM_CHECK, _TOOLTIP_("symbols"),		_HELP_("symbols"));
 	tb->Realize();
 	// Menus
 	IconMenu* menuFormat = new IconMenu();
-		menuFormat->Append(ID_FORMAT_BOLD,		_("bold"),			_MENU_("bold"),				_HELP_("bold"),				wxITEM_CHECK);
-		menuFormat->Append(ID_FORMAT_ITALIC,	_("italic"),		_MENU_("italic"),			_HELP_("italic"),			wxITEM_CHECK);
-		menuFormat->Append(ID_FORMAT_SYMBOL,	_("symbol"),		_MENU_("symbols"),			_HELP_("symbols"),			wxITEM_CHECK);
-		menuFormat->Append(ID_FORMAT_REMINDER,	_("reminder"),		_MENU_("reminder text"),	_HELP_("reminder text"),	wxITEM_CHECK);
+		menuFormat->Append(ID_FORMAT_BOLD,		(L"bold"),			_MENU_("bold"),				_HELP_("bold"),				wxITEM_CHECK);
+		menuFormat->Append(ID_FORMAT_ITALIC,	(L"italic"),		_MENU_("italic"),			_HELP_("italic"),			wxITEM_CHECK);
+		menuFormat->Append(ID_FORMAT_SYMBOL,	(L"symbol"),		_MENU_("symbols"),			_HELP_("symbols"),			wxITEM_CHECK);
+		menuFormat->Append(ID_FORMAT_REMINDER,	(L"reminder"),		_MENU_("reminder text"),	_HELP_("reminder text"),	wxITEM_CHECK);
 	mb->Insert(2, menuFormat, _MENU_("format"));
 	// focus on editor
 	editor->SetFocus();
