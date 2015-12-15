@@ -77,11 +77,11 @@ typedef unsigned int UInt;
 
 // MSE Headers {{{
 // MSE utility headers unlikely to change and used everywhere
+#include "error.hpp"
 #include "string.hpp"
 #include "smart_ptr.hpp"
 #include "index_map.hpp"
 #include "locale.hpp"
-#include "error.hpp"
 #include "reflect.hpp"
 // }}}
 

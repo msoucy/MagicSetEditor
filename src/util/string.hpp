@@ -15,9 +15,8 @@
 // -----------------------------------------------------------------------------
 // : Includes
 
-#include "prec.hpp"
+#include <wx/string.h>
 #include <ctype.h>
-#include <boost/preprocessor/cat.hpp>
 
 class wxTextOutputStream;
 
